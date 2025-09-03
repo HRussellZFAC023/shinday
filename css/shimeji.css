@@ -3,7 +3,7 @@
   position: fixed;
   width: 64px;
   height: 64px;
-  overflow: hidden;
+  overflow: visible;
   z-index: 9999;
   pointer-events: none;
   transition: transform 0.1s ease;

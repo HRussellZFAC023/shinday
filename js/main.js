@@ -15,10 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
       color: "#1db954",
     },
     {
-      label: "Favorite Playlist",
-      url: "https://open.spotify.com/playlist/2iZTdm4HQoGhzKNEsKeOGz",
-      icon: "🎶",
-      color: "#1db954",
+      label: "Merch Store",
+      url: "https://shinun-merch.creator-spring.com/",
+      icon: "🛍️",
+      color: "#ff6b35",
     },
     {
       label: "Linktree Hub",
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
       icon: "🌲",
       color: "#39e09b",
     },
-    { label: "Discord Server", url: "#", icon: "💬", color: "#5865f2" },
+    { label: "Discord Server", url: "https://discord.gg/jB7mbHwK", icon: "💬", color: "#5865f2" },
     {
       label: "Instagram",
       url: "https://www.instagram.com/b4by.p13n/",
@@ -108,6 +108,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let visitorCount =
     parseInt(localStorage.getItem("pixelbelle-visitors")) ||
     Math.floor(Math.random() * 1000) + 100;
+  let lastMilestone =
+    parseInt(localStorage.getItem("pixelbelle-last-milestone")) || 0;
 
   // Increment visitor count
   visitorCount++;
@@ -140,6 +142,202 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 5000);
   }
 
+  // ====== GACHA (upgraded random Miku) ======
+  function initMikuGacha() {
+    const poolReady = () =>
+      Array.isArray(MIKU_IMAGES) && MIKU_IMAGES.length > 0;
+
+    // Elements
+    const tokensEl = document.getElementById("gachaTokens");
+    const pull1Btn = document.getElementById("gachaPull1");
+    const pull10Btn = document.getElementById("gachaPull10");
+    const dailyBtn = document.getElementById("gachaDaily");
+    const convertBtn = document.getElementById("gachaConvert");
+    const resultsEl = document.getElementById("gachaResults");
+    const dexBtn = document.getElementById("gachaCollectionBtn");
+    const dexEl = document.getElementById("mikuDex");
+    if (
+      !tokensEl ||
+      !pull1Btn ||
+      !pull10Btn ||
+      !dailyBtn ||
+      !resultsEl ||
+      !dexBtn ||
+      !dexEl
+    )
+      return;
+
+    const LS_TOKENS = "gacha.tokens";
+    const LS_DAILY = "gacha.lastDaily";
+    const LS_COLL = "gacha.collection";
+
+    let tokens = parseInt(localStorage.getItem(LS_TOKENS) || "3", 10);
+    let collection = {};
+    try {
+      collection = JSON.parse(localStorage.getItem(LS_COLL) || "{}");
+    } catch (e) {
+      collection = {};
+    }
+
+    function updateTokens(n = tokens) {
+      tokens = n;
+      localStorage.setItem(LS_TOKENS, String(tokens));
+      tokensEl.textContent = String(tokens);
+    }
+    updateTokens(tokens);
+
+    function hashCode(s) {
+      let h = 0;
+      for (let i = 0; i < s.length; i++) {
+        h = (h << 5) - h + s.charCodeAt(i);
+        h |= 0;
+      }
+      return h >>> 0;
+    }
+    function rarityFor(url) {
+      const r = hashCode(url) % 100;
+      if (r < 55) return 1;
+      if (r < 85) return 2;
+      if (r < 95) return 3;
+      if (r < 99) return 4;
+      return 5;
+    }
+    function stars(n) {
+      return "★".repeat(n);
+    }
+
+    function ensurePool(cb) {
+      if (poolReady()) {
+        cb();
+        return;
+      }
+      let tries = 0;
+      const t = setInterval(() => {
+        if (poolReady() || tries++ > 60) {
+          clearInterval(t);
+          cb();
+        }
+      }, 150);
+    }
+
+    function addToCollection(card) {
+      const id = card.id;
+      const prev = collection[id] || { count: 0, rarity: card.rarity };
+      prev.count += 1;
+      prev.rarity = card.rarity;
+      collection[id] = prev;
+      localStorage.setItem(LS_COLL, JSON.stringify(collection));
+      return prev.count === 1;
+    }
+
+    function pickRandom() {
+      const url = MIKU_IMAGES[Math.floor(Math.random() * MIKU_IMAGES.length)];
+      return { id: url, url, rarity: rarityFor(url) };
+    }
+
+    function guaranteeAtLeast(minRarity, pack) {
+      if (pack.some((c) => c.rarity >= minRarity)) return pack;
+      let card;
+      let guard = 0;
+      do {
+        card = pickRandom();
+        guard++;
+      } while (card.rarity < minRarity && guard < 1000);
+      pack[pack.length - 1] = card;
+      return pack;
+    }
+
+    function renderResults(cards) {
+      resultsEl.innerHTML = cards
+        .map((c) => {
+          const isNew = addToCollection(c);
+          const newBadge = isNew ? '<div class="gacha-new">NEW!</div>' : "";
+          return `
+          <div class="gacha-card rarity-${c.rarity}">
+            <div class="gacha-stars">${stars(c.rarity)}</div>
+            ${newBadge}
+            <img src="${c.url}" alt="Miku card" />
+          </div>
+        `;
+        })
+        .join("");
+      resultsEl.animate(
+        [{ transform: "scale(0.98)" }, { transform: "scale(1)" }],
+        { duration: 200, easing: "ease-out" }
+      );
+      renderDex();
+    }
+
+    function renderDex() {
+      const tiles = MIKU_IMAGES.map((url) => {
+        const entry = collection[url];
+        const owned = !!entry;
+        const r = rarityFor(url);
+        const ownClass = owned ? "owned rarity-" + r : "";
+        const count = owned
+          ? `<span class=\"dex-count\">x${entry.count}</span>`
+          : "";
+        return `
+          <div class="dex-card ${ownClass}">
+            <div class="dex-stars">${stars(r)}</div>
+            ${count}
+            <img src="${url}" alt="Miku dex" />
+          </div>
+        `;
+      }).join("");
+      dexEl.innerHTML = `<div class="dex-grid">${tiles}</div>`;
+    }
+
+    function pull(n) {
+      if (!poolReady()) {
+        loveToast("画像の読み込み中…");
+        return;
+      }
+      if (tokens < n) {
+        loveToast("チケットが足りないよ！");
+        return;
+      }
+      updateTokens(tokens - n);
+      const cards = Array.from({ length: n }, () => pickRandom());
+      if (n >= 10) guaranteeAtLeast(3, cards);
+      renderResults(cards);
+    }
+
+    pull1Btn.addEventListener("click", () => ensurePool(() => pull(1)));
+    pull10Btn.addEventListener("click", () => ensurePool(() => pull(10)));
+    dailyBtn.addEventListener("click", () => {
+      const last = localStorage.getItem(LS_DAILY);
+      const today = new Date().toDateString();
+      if (last === today) {
+        loveToast("今日はもう受け取ったよ！");
+        return;
+      }
+      localStorage.setItem(LS_DAILY, today);
+      updateTokens(tokens + 1);
+      loveToast("デイリーチケット＋1！");
+    });
+    convertBtn.addEventListener("click", () => {
+      const convertCost = 100;
+      if (heartCount < convertCost) {
+        loveToast(`💖が足りないよ！(${convertCost}必要)`);
+        return;
+      }
+      heartCount -= convertCost;
+      localStorage.setItem("pixelbelle-hearts", heartCount);
+      updateCounters();
+      updateTokens(tokens + 1);
+      loveToast("💖→チケット +1");
+    });
+    dexBtn.addEventListener("click", () => {
+      dexEl.classList.toggle("hidden");
+      renderDex();
+      dexBtn.textContent = dexEl.classList.contains("hidden")
+        ? "Open MikuDex"
+        : "Close MikuDex";
+    });
+
+    ensurePool(() => renderDex());
+  }
   // ====== MAIN SITE INITIALIZATION ======
   function initSite() {
     initNavigation();
@@ -196,11 +394,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const container = document.getElementById("floatingMikusContainer");
     const available = MIKU_IMAGES.length;
-    const spawnAmount = 10;
+    const spawnAmount = 15;
 
-    
     const numMikus = Math.min(
-      Math.floor((Math.random() * spawnAmount) + 1),
+      Math.floor(Math.random() * spawnAmount + 1),
       available
     );
     console.log(`Spawning ${numMikus} Miku(s)`);
@@ -264,10 +461,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     socialsGrid.innerHTML = SOCIALS.map(
       (social) => `
-      <div class="social-card" style="border-left: 4px solid ${social.color}">
+      <div class="social-card embedded-player" style="border-left: 4px solid ${social.color}">
         <div class="social-icon">${social.icon}</div>
         <h4>${social.label}</h4>
-        <a href="${social.url}" target="_blank" class="pixel-btn">Visit</a>
+        <div class="player-controls">
+          <div class="play-button" style="background-color: ${social.color}">▶</div>
+          <div class="player-info">
+            <div class="track-title">Click to visit</div>
+            <div class="artist-name">${social.label}</div>
+          </div>
+        </div>
+        <a href="${social.url}" target="_blank" class="pixel-btn player-btn" style="background-color: ${social.color}">Open</a>
       </div>
     `
     ).join("");
@@ -347,7 +551,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function initGames() {
     initMemoryGame();
     initHeartCollector();
-    initRandomMiku();
+    initMikuGacha();
   }
 
   function initMemoryGame() {
@@ -836,30 +1040,45 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("pixelbelle-hearts", heartCount);
     updateCounters();
 
-    // Milestone banner: show a special toast when we've hit a milestone step
+    // Milestone banner: show a special toast when we've hit a NEW milestone step
     if (Array.isArray(LOVE_MILESTONES) && LOVE_MILESTONES.length > 0) {
-      // pick the largest milestone that divides the current heartCount
-      const milestone = [...LOVE_MILESTONES]
-        .sort((a, b) => b.step - a.step)
-        .find((m) => m.step > 0 && heartCount % m.step === 0);
-      if (milestone) {
-        loveToast(milestone.msg);
-        console.info(`Milestone reached: ${milestone.step} -> ${milestone.msg}`);
+      // Find the highest milestone we've reached
+      const reachedMilestones = LOVE_MILESTONES.filter(
+        (m) => heartCount >= m.step
+      );
+      if (reachedMilestones.length > 0) {
+        const highestMilestone = reachedMilestones.reduce((max, m) =>
+          m.step > max.step ? m : max
+        );
+
+        // Only show if this is a new milestone
+        if (highestMilestone.step > lastMilestone) {
+          lastMilestone = highestMilestone.step;
+          localStorage.setItem("pixelbelle-last-milestone", lastMilestone);
+          loveToast(highestMilestone.msg);
+          console.info(
+            `New milestone reached: ${highestMilestone.step} -> ${highestMilestone.msg}`
+          );
+
+          // Make shimejis say love toasts too
+          shimejiBroadcastLove();
+        }
       }
     }
 
     // Core celebration
     const counterEl = document.getElementById("heartCount");
     createSparkleEffect(counterEl);
-    
+
     burstHeartsAndStars(Math.min(8, 2 + amount * 2));
     shimejiCelebrate(amount);
   }
 
   // Show a small floating toast message
   function loveToast(text) {
-    const msg =
-      `${text} ${LOVE_TOASTS[Math.floor(Math.random() * LOVE_TOASTS.length)]}`;
+    const msg = `${text} ${
+      LOVE_TOASTS[Math.floor(Math.random() * LOVE_TOASTS.length)]
+    }`;
     const toast = document.createElement("div");
     toast.textContent = msg;
     toast.style.cssText = `
@@ -919,6 +1138,20 @@ document.addEventListener("DOMContentLoaded", () => {
       if (heartCount % 25 === 0 && s.triggerMassDance) s.triggerMassDance();
     } catch (e) {
       // ignore
+    }
+  }
+
+  // Make shimejis say love messages
+  function shimejiBroadcastLove() {
+    const s = window.shimejiFunctions;
+    if (!s || !s.makeAllSpeak) return;
+
+    try {
+      const loveMessage =
+        LOVE_TOASTS[Math.floor(Math.random() * LOVE_TOASTS.length)];
+      s.makeAllSpeak(loveMessage, 3000); // Show for 3 seconds
+    } catch (e) {
+      console.warn("Failed to make shimejis speak:", e);
     }
   }
 
@@ -1049,6 +1282,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize splash screen
   initSplash();
+
+  // Expose love toasts globally for shimejis
+  window.LOVE_TOASTS = LOVE_TOASTS;
 
   // Global functions for console interaction
   window.pixelBelleGarden = {

@@ -292,6 +292,7 @@ window.addEventListener('DOMContentLoaded', () => {
       this.container = document.createElement('div');
       this.container.className = 'webmeji-container';
       this.container.id = containerId;
+      this.container.style.overflow = 'visible'; // Allow speech bubbles to show outside
       document.body.appendChild(this.container);
 
       // Create image
@@ -325,6 +326,7 @@ window.addEventListener('DOMContentLoaded', () => {
       this.interactionCooldown = 0;
       this.climbTarget = null;
       this.jumpCooldown = 0;
+      this.speechBubble = null;
 
       // Get container dimensions
       const containerStyle = window.getComputedStyle(this.container);
@@ -369,6 +371,9 @@ window.addEventListener('DOMContentLoaded', () => {
     updatePosition() {
       this.container.style.left = this.position.x + 'px';
       this.container.style.bottom = (window.innerHeight - this.position.y - this.containerHeight) + 'px';
+      
+      // Update speech bubble position if it exists
+      this.updateSpeechBubblePosition();
     }
 
     updateImageDirection() {
@@ -635,6 +640,90 @@ window.addEventListener('DOMContentLoaded', () => {
           this.setNextAction();
         }
       });
+      
+      // Sometimes say something when reacting to mouse
+      if (Math.random() < 0.3 && window.LOVE_TOASTS) {
+        const message = window.LOVE_TOASTS[Math.floor(Math.random() * window.LOVE_TOASTS.length)];
+        this.speak(message, 2000);
+      }
+    }
+
+    // NEW FEATURE: Speech bubbles
+    speak(message, duration = 3000) {
+      // Remove existing speech bubble
+      this.removeSpeechBubble();
+      
+      // Create speech bubble
+      this.speechBubble = document.createElement('div');
+      this.speechBubble.className = 'shimeji-speech';
+      this.speechBubble.textContent = message;
+      this.speechBubble.style.cssText = `
+        position: fixed;
+        bottom: ${window.innerHeight - this.position.y + 10}px;
+        left: ${this.position.x + this.containerWidth / 2}px;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid #b7d7ff;
+        border-radius: 12px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #2b2b44;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 10000;
+        pointer-events: none;
+        animation: speechBubbleIn 0.3s ease-out;
+        max-width: 200px;
+        word-wrap: break-word;
+        white-space: normal;
+        text-align: center;
+      `;
+      
+      // Add speech bubble tail
+      const tail = document.createElement('div');
+      tail.style.cssText = `
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid #b7d7ff;
+      `;
+      this.speechBubble.appendChild(tail);
+      
+      // Add directly to body so it's not clipped
+      document.body.appendChild(this.speechBubble);
+      
+      // Update position when shimeji moves
+      this.updateSpeechBubblePosition();
+      
+      // Auto-remove after duration
+      setTimeout(() => {
+        this.removeSpeechBubble();
+      }, duration);
+    }
+    
+    updateSpeechBubblePosition() {
+      if (this.speechBubble) {
+        this.speechBubble.style.bottom = `${window.innerHeight - this.position.y + 10}px`;
+        this.speechBubble.style.left = `${this.position.x + this.containerWidth / 2}px`;
+      }
+    }
+    
+    removeSpeechBubble() {
+      if (this.speechBubble && this.speechBubble.parentNode) {
+        this.speechBubble.style.animation = 'speechBubbleOut 0.2s ease-in forwards';
+        setTimeout(() => {
+          if (this.speechBubble && this.speechBubble.parentNode) {
+            this.speechBubble.parentNode.removeChild(this.speechBubble);
+          }
+          this.speechBubble = null;
+        }, 200);
+      }
     }
 
     // Enhanced physics simulation
@@ -722,6 +811,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     destroy() {
       this.resetAnimation();
+      this.removeSpeechBubble();
       if (this.animationFrameId) {
         cancelAnimationFrame(this.animationFrameId);
       }
@@ -818,6 +908,22 @@ window.addEventListener('DOMContentLoaded', () => {
       creatures.forEach(creature => {
         creature.triggerFall();
       });
+    },
+    
+    makeAllSpeak: (message, duration = 3000) => {
+      creatures.forEach(creature => {
+        // Stagger speech bubbles slightly to avoid overlap
+        setTimeout(() => {
+          creature.speak(message, duration);
+        }, Math.random() * 500);
+      });
+    },
+    
+    makeRandomSpeak: (message, duration = 3000) => {
+      if (creatures.length > 0) {
+        const randomCreature = creatures[Math.floor(Math.random() * creatures.length)];
+        randomCreature.speak(message, duration);
+      }
     }
   };
 
