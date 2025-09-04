@@ -1,103 +1,48 @@
 /* Main JavaScript for PixelBelle's Garden */
 document.addEventListener("DOMContentLoaded", () => {
+  const C = window.SITE_CONTENT || {};
   // ====== DATA CONFIGURATION ======
-  const SOCIALS = [
-    {
-      label: "YouTube Channel",
-      url: "https://www.youtube.com/@babyelle-e",
-      icon: "📺",
-      color: "#ff0000",
-    },
-    {
-      label: "Spotify Profile",
-      url: "https://open.spotify.com/user/31hkk7assbfbsaqjfybnyfmuakqq",
-      icon: "🎵",
-      color: "#1db954",
-    },
-    {
-      label: "Merch Store",
-      url: "https://shinun-merch.creator-spring.com/",
-      icon: "🛍️",
-      color: "#ff6b35",
-    },
-    {
-      label: "Linktree Hub",
-      url: "https://linktr.ee/babbybean",
-      icon: "🌲",
-      color: "#39e09b",
-    },
-    { label: "Discord Server", url: "https://discord.gg/jB7mbHwK", icon: "💬", color: "#5865f2" },
-    {
-      label: "Instagram",
-      url: "https://www.instagram.com/b4by.p13n/",
-      icon: "📷",
-      color: "#e4405f",
-    },
-  ];
-
-  const FRIENDS = [
-    { name: "Cinnamoroll Club", url: "#", emoji: "🐶" },
-    { name: "Cozy Gaming Pals", url: "#", emoji: "🎮" },
-    { name: "Kawaii Creators", url: "#", emoji: "🌸" },
-    { name: "Vocaloid Fans", url: "#", emoji: "🎤" },
-    { name: "Study Buddies", url: "#", emoji: "📚" },
-    { name: "Art Friends", url: "#", emoji: "🎨" },
-  ];
-
-  const PLAYLIST_SONGS = [
-    { title: "World is Mine", artist: "Hatsune Miku (ryo)", mood: "✨" },
-    { title: "Senbonzakura", artist: "Hatsune Miku (Kurousa-P)", mood: "🌸" },
-    { title: "Tell Your World", artist: "Hatsune Miku (kz)", mood: "🌍" },
-    { title: "Love is War", artist: "Hatsune Miku (ryo)", mood: "💖" },
-    { title: "Rolling Girl", artist: "Hatsune Miku (wowaka)", mood: "🌀" },
-    { title: "Magical Mirai", artist: "Hatsune Miku", mood: "✨" },
-  ];
-
-  // Love feedback messages (JP + cute vibes)
-  const LOVE_TOASTS = [
-    "ありがとう！💖",
-    "大好き〜！(だいすき) 💙",
-    "うれしい！✨",
-    "かわいいね〜 🎀",
-    "キラキラ！🌟",
-    "心がぽかぽか〜 💗",
-    "ラブ注入！💘",
-    "ぎゅっ！(Hug) 🤗",
-    "最高！🫶",
-    "えらい！👏",
-    "今日もがんばったね！💪",
-    "幸せいっぱい〜 🍓",
-    "にこにこ☺️",
-    "とても素敵！💎",
-  ];
-  const LOVE_MILESTONES = [
-    { step: 5, msg: "５ハート達成！すごい〜！🌸" },
-    { step: 10, msg: "１０ハート！ありがと〜！🎉" },
-    { step: 20, msg: "２０ハート！最強の推し！⭐" },
-    { step: 30, msg: "３０ハート！心から感謝！💖" },
-    { step: 50, msg: "５０ハート！愛が溢れてる〜！✨" },
-  ];
+  const SOCIALS = (C.socials && C.socials.items) || [];
+  const FRIENDS = (C.friends && C.friends.items) || [];
+  const PLAYLIST_SONGS = (C.music && C.music.songs) || [];
+  const LOVE_TOASTS = (C.love && C.love.toasts) || ["ありがとう！💖"];
+  const LOVE_MILESTONES = (C.love && C.love.milestones) || [];
   const MIKU_IMAGES = [];
+  // Expose a promise that resolves when we've finished probing available Miku images
+  let resolveMiku;
+  window.MIKU_IMAGES_READY = new Promise((res) => (resolveMiku = res));
 
   (async function loadImages() {
-    let i = 1;
-    while (true) {
-      const path = `./assets/pixel-miku/Hatsune Miku @illufinch ${i
-        .toString()
-        .padStart(2, "0")}.png`;
-      const img = new Image();
-      img.src = path;
-      try {
-        await new Promise((resolve, reject) => {
-          img.onload = resolve;
-          img.onerror = reject;
-        });
-        MIKU_IMAGES.push(path);
-        i++;
-      } catch (e) {
-        break;
+    // Try actual folder name from assets: "Pixel Hatsune Miku by Cutebunni (68581)"
+    const roots = [
+      "./assets/Pixel Hatsune Miku by Cutebunni (68581)/Hatsune Miku @illufinch ",
+      "./assets/pixel-miku/Hatsune Miku @illufinch ",
+    ];
+    let foundAny = false;
+    for (const root of roots) {
+      let i = 1;
+      while (true) {
+        const indexStr = i.toString().padStart(2, "0");
+        const path = `${root}${indexStr}.png`;
+        const img = new Image();
+        img.src = path;
+        try {
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+          });
+          MIKU_IMAGES.push(path);
+          foundAny = true;
+          i++;
+        } catch (e) {
+          break; // stop this root
+        }
       }
+      if (foundAny) break; // use the first root that works
     }
+    // Resolve readiness and notify listeners
+    if (typeof resolveMiku === "function") resolveMiku(MIKU_IMAGES.slice());
+    document.dispatchEvent(new CustomEvent("miku-images-ready", { detail: { images: MIKU_IMAGES.slice() } }));
   })();
 
   // ====== SITE INITIALIZATION ======
@@ -340,19 +285,338 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   // ====== MAIN SITE INITIALIZATION ======
   function initSite() {
+    applyContent();
     initNavigation();
     initStatusBar();
+    initRadio();
     initSocials();
-    initMusic();
     initGames();
     initShrine();
     initFriends();
     initCursorEffects();
     initPeriodicUpdates();
+    initFloatingHearts();
     updateCounters();
     loadSavedData();
 
     console.log("PixelBelle's Garden initialized! 🌸");
+  }
+
+  // ====== APPLY CONTENT (copy from SITE_CONTENT) ======
+  function applyContent() {
+    try {
+      if (C.site?.htmlTitle) document.title = C.site.htmlTitle;
+      if (C.site?.title) {
+        const t = document.getElementById("siteTitle");
+        if (t) t.textContent = C.site.title;
+      }
+      if (C.site?.subtitle) {
+        const s = document.getElementById("siteSub");
+        if (s) s.textContent = C.site.subtitle;
+      }
+
+      // Meta and icons
+      if (C.images?.ogImage) {
+        const og = document.getElementById("metaOgImage");
+        if (og) og.setAttribute("content", C.images.ogImage);
+      }
+      if (C.images?.favicon) {
+        const fav = document.getElementById("faviconLink");
+        if (fav) fav.setAttribute("href", C.images.favicon);
+      }
+
+      // Header background image (override)
+      if (C.images?.headerBg) {
+        const header = document.getElementById("header");
+        if (header)
+          header.style.backgroundImage = `linear-gradient(135deg, rgba(189,227,255,.9), rgba(255,209,236,.9)), url('${C.images.headerBg}')`;
+      }
+
+  // Splash/hero/shrine images
+      const splashImg = document.getElementById("splashMiku");
+  if (splashImg) splashImg.src = (C.images?.splashMiku) || "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png";
+      const heroMiku = document.getElementById("heroMiku");
+      if (heroMiku) heroMiku.src = (C.images?.heroMiku) || "./assets/hatsune_miku_render_by_jimmyisaac_d68ibgy-pre.png";
+      const shrineMiku = document.getElementById("shrineMiku");
+      if (shrineMiku) shrineMiku.src = (C.images?.shrineMiku) || "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png";
+
+      // Pet iframe
+      const pet = document.getElementById("petIframe");
+      if (pet && C.embeds?.petIframeSrc) pet.src = C.embeds.petIframeSrc;
+
+      // Stats badges
+      if (Array.isArray(C.images?.statsBadges)) {
+        const b1 = document.getElementById("statBadge1");
+        const b2 = document.getElementById("statBadge2");
+        if (b1 && C.images.statsBadges[0]) b1.src = C.images.statsBadges[0];
+        if (b2 && C.images.statsBadges[1]) b2.src = C.images.statsBadges[1];
+      }
+
+      // Web badges (right sidebar)
+      if (Array.isArray(C.images?.webBadges)) {
+        const wrap = document.getElementById("webBadges");
+        if (wrap)
+          wrap.innerHTML = C.images.webBadges
+            .map((u) => `<img src="${u}" class="badge" alt="badge"/>`)
+            .join("");
+      }
+
+      // Splash copy
+      const splashTitle = document.querySelector("#splash .glitch");
+      if (splashTitle && C.splash?.title) {
+        splashTitle.textContent = C.splash.title;
+        splashTitle.setAttribute("data-text", C.splash.title);
+      }
+      const splashSub = document.querySelector("#splash .typing-text");
+      if (splashSub && C.splash?.subtitle)
+        splashSub.textContent = C.splash.subtitle;
+      const splashBtn = document.getElementById("enterSite");
+      if (splashBtn && C.splash?.button)
+        splashBtn.textContent = C.splash.button;
+
+      // Nav labels (keep anchors, replace text)
+      const navLinks = Array.from(
+        document.querySelectorAll("#navbar a[data-section]")
+      );
+      if (Array.isArray(C.nav) && C.nav.length === navLinks.length) {
+        C.nav.forEach((n, i) => {
+          const a = navLinks[i];
+          if (a && n) a.innerHTML = `${n.emoji || ""} ${n.label}`;
+        });
+      }
+
+      // Status now-playing placeholder if empty
+      const nowPlaying = document.getElementById("nowPlaying");
+      if (
+        nowPlaying &&
+        !localStorage.getItem("pixelbelle-now-playing") &&
+        C.status?.nowPlayingPlaceholder
+      ) {
+        nowPlaying.textContent = C.status.nowPlayingPlaceholder;
+      }
+      // Status labels
+      const onlineStatus = document.getElementById("onlineStatus");
+      if (onlineStatus && C.status?.onlineLabel)
+        onlineStatus.textContent = C.status.onlineLabel;
+      const heartCountLbl = document.querySelector(".status-item:nth-child(3)");
+      if (heartCountLbl && C.status?.heartsLabel) {
+        const span = heartCountLbl.querySelector("span");
+        if (span)
+          span.previousSibling &&
+            (span.previousSibling.textContent = ` ${C.status.heartsLabel} `);
+      }
+
+      // Home hero + cards
+      if (C.home) {
+        const h2 = document.querySelector("#home .hero-text h2");
+        if (h2 && C.home.heroTitle) h2.textContent = C.home.heroTitle;
+        const p = document.querySelector("#home .hero-text p");
+        if (p && Array.isArray(C.home.heroParagraphs)) {
+          p.innerHTML = C.home.heroParagraphs.map((line) => line).join(" <br />");
+        }
+        const heartBtn = document.getElementById("heartBtn");
+        if (heartBtn && C.home.heartButton) heartBtn.textContent = C.home.heartButton;
+
+        // Rebuild the grid with smaller logical containers
+        const grid = document.querySelector("#home .content-grid");
+        if (grid) {
+          const likes = (C.home.likes || []).map((li) => `<li>${li}</li>`).join("");
+          const dislikes = (C.home.dislikes || []).map((li) => `<li>${li}</li>`).join("");
+          const dreams = (C.home.dreams || []).map((li) => `<li>${li}</li>`).join("");
+          const aboutPs = (C.home.aboutParagraphs || []).map((txt) => `<p>${txt}</p>`).join("");
+          const updates = (C.home.updates || []).map((u) => `<li>${u}</li>`).join("");
+
+          const pieces = [];
+          pieces.push(`
+            <div class="card">
+              <h3>${C.home.aboutTitle || "About Me"}</h3>
+              ${aboutPs}
+            </div>
+          `);
+          if (likes) pieces.push(`
+            <div class="card">
+              <h3>${C.home.likesTitle || "Likes"}</h3>
+              <ul>${likes}</ul>
+            </div>
+          `);
+          if (dislikes) pieces.push(`
+            <div class="card">
+              <h3>${C.home.dislikesTitle || "Dislikes"}</h3>
+              <ul>${dislikes}</ul>
+            </div>
+          `);
+          if (dreams) pieces.push(`
+            <div class="card">
+              <h3>${C.home.dreamsTitle || "Dreams"}</h3>
+              <ul>${dreams}</ul>
+            </div>
+          `);
+          pieces.push(`
+            <div class="card">
+              <h3>${C.home.updatesTitle || "What's New"}</h3>
+              <ul id="updates">${updates}</ul>
+            </div>
+          `);
+
+          grid.innerHTML = pieces.join("");
+        }
+      }
+
+      // Socials section title
+      if (C.socials?.title) {
+        const h2 = document.querySelector("#socials h2");
+        if (h2) h2.textContent = C.socials.title;
+      }
+
+      // Quick Links in left sidebar
+      if (C.quickLinks) {
+        const h3 = document.getElementById("quickLinksTitle");
+        const ul = document.getElementById("quickLinksList");
+        if (h3 && C.quickLinks.title) h3.textContent = C.quickLinks.title;
+        if (ul && Array.isArray(C.quickLinks.items)) {
+          ul.innerHTML = C.quickLinks.items
+            .map(
+              (i) =>
+                `<li><a href="${i.url}" target="_blank" rel="noopener" ${i.cls ? `class="${i.cls}"` : ''}>${i.label}</a></li>`
+            )
+            .join("");
+        }
+      }
+
+      // Study copy
+      if (C.study) {
+        const h2 = document.querySelector("#study h2");
+        if (h2) h2.textContent = C.study.title;
+        const levelCard = document.querySelector(
+          "#study .study-card:nth-child(1)"
+        );
+        if (levelCard) {
+          const h3 = levelCard.querySelector("h3");
+          const progress = levelCard.querySelector(".progress");
+          const p = levelCard.querySelector("p");
+          if (h3 && C.study.levelTitle) h3.textContent = C.study.levelTitle;
+          if (progress && Number.isFinite(C.study.progressPercent))
+            progress.style.width = `${C.study.progressPercent}%`;
+          if (p && C.study.levelText) p.textContent = C.study.levelText;
+        }
+        const wodCard = document.querySelector(
+          "#study .study-card:nth-child(2)"
+        );
+        if (wodCard && C.study.wordOfDay) {
+          const jp = wodCard.querySelector(".japanese");
+          const romaji = wodCard.querySelector(".romaji");
+          const meaning = wodCard.querySelector(".meaning");
+          if (jp) jp.textContent = C.study.wordOfDay.japanese || "";
+          if (romaji) romaji.textContent = C.study.wordOfDay.romaji || "";
+          if (meaning) meaning.textContent = C.study.wordOfDay.meaning || "";
+        }
+        const goalsCard = document.querySelector(
+          "#study .study-card:nth-child(3)"
+        );
+        if (goalsCard) {
+          const h3 = goalsCard.querySelector("h3");
+          const ul = goalsCard.querySelector("ul");
+          if (h3 && C.study.goalsTitle) h3.textContent = C.study.goalsTitle;
+          if (ul && Array.isArray(C.study.goals))
+            ul.innerHTML = C.study.goals.map((g) => `<li>${g}</li>`).join("");
+        }
+      }
+
+      // Games titles/buttons
+      if (C.games) {
+        const h2 = document.querySelector("#games h2");
+        if (h2) h2.textContent = C.games.title;
+        const cards = document.querySelectorAll("#games .game-widget");
+        const mem = cards[0],
+          heart = cards[1],
+          gacha = cards[2];
+        if (mem) {
+          const h3 = mem.querySelector("h3");
+          if (h3 && C.games.memoryTitle) h3.textContent = C.games.memoryTitle;
+          const reset = document.getElementById("resetMemory");
+          if (reset && C.games.memoryReset)
+            reset.textContent = C.games.memoryReset;
+        }
+        if (heart) {
+          const h3 = heart.querySelector("h3");
+          if (h3 && C.games.heartsTitle) h3.textContent = C.games.heartsTitle;
+          const zone = document.getElementById("heartZone");
+          if (zone && C.games.heartsZone) zone.textContent = C.games.heartsZone;
+          const btn = document.getElementById("resetHearts");
+          if (btn && C.games.heartsReset) btn.textContent = C.games.heartsReset;
+        }
+        if (gacha) {
+          const h3 = gacha.querySelector("h3");
+          if (h3 && C.games.gachaTitle) h3.textContent = C.games.gachaTitle;
+          const dexBtn = document.getElementById("gachaCollectionBtn");
+          if (dexBtn && C.games.gachaOpenDex)
+            dexBtn.textContent = C.games.gachaOpenDex;
+        }
+      }
+
+      // Shrine copy
+      if (C.shrine) {
+        const h2 = document.querySelector("#shrine h2");
+        if (h2) h2.textContent = C.shrine.title;
+        const aboutTitle = document.querySelector("#shrine .shrine-info h3");
+        if (aboutTitle && C.shrine.aboutTitle)
+          aboutTitle.textContent = C.shrine.aboutTitle;
+        const aboutP = document.querySelector("#shrine .shrine-info p");
+        if (aboutP && C.shrine.aboutText)
+          aboutP.textContent = C.shrine.aboutText;
+        const listTitle = document.querySelectorAll(
+          "#shrine .shrine-info h3"
+        )[1];
+        if (listTitle && C.shrine.favoriteSongsTitle)
+          listTitle.textContent = C.shrine.favoriteSongsTitle;
+        const ul = document.querySelector("#shrine .song-list");
+        if (ul && Array.isArray(C.shrine.favoriteSongs))
+          ul.innerHTML = C.shrine.favoriteSongs
+            .map((s) => `<li>${s}</li>`)
+            .join("");
+        const galTitle = document.querySelector("#shrine .gallery h3");
+        if (galTitle && C.shrine.galleryTitle)
+          galTitle.textContent = C.shrine.galleryTitle;
+      }
+
+      // Friends title
+      if (C.friends?.title) {
+        const h3 = document.querySelector("#rightSidebar .widget h3");
+        if (h3) h3.textContent = C.friends.title;
+      }
+
+      // Sidebar widget titles
+      if (C.sidebarTitles) {
+        const left = C.sidebarTitles.left || {};
+        const right = C.sidebarTitles.right || {};
+        const leftWidgets = document.querySelectorAll(
+          "#leftSidebar .widget h3"
+        );
+        if (leftWidgets[0] && left.mood) leftWidgets[0].textContent = left.mood;
+        if (leftWidgets[1] && left.quickLinks)
+          leftWidgets[1].textContent = left.quickLinks; // may be overridden by quickLinks.title
+        if (leftWidgets[3] && left.stats)
+          leftWidgets[3].textContent = left.stats; // depending on iframe block presence
+
+        const rightWidgets = document.querySelectorAll(
+          "#rightSidebar .widget h3"
+        );
+        if (rightWidgets[0] && (C.friends?.title || right.friends))
+          rightWidgets[0].textContent = C.friends?.title || right.friends;
+        if (rightWidgets[1] && right.badges)
+          rightWidgets[1].textContent = right.badges;
+        if (rightWidgets[2] && right.vibe)
+          rightWidgets[2].textContent = right.vibe;
+      }
+
+      // Footer
+      if (C.footer?.text) {
+        const p = document.querySelector("#footer p");
+        if (p) p.textContent = C.footer.text;
+      }
+    } catch (e) {
+      console.warn("applyContent failed", e);
+    }
   }
 
   // ====== NAVIGATION ======
@@ -392,29 +656,34 @@ document.addEventListener("DOMContentLoaded", () => {
       // Add entrance animation
       targetSection.style.animation = "fadeInUp 0.5s ease-out";
     }
-    const container = document.getElementById("floatingMikusContainer");
-    const available = MIKU_IMAGES.length;
-    const spawnAmount = 15;
-
-    const numMikus = Math.min(
-      Math.floor(Math.random() * spawnAmount + 1),
-      available
-    );
-    console.log(`Spawning ${numMikus} Miku(s)`);
-
-    const selected = new Set();
-    for (let i = 0; i < numMikus; i++) {
-      let index;
-      do {
-        index = Math.floor(Math.random() * available);
-      } while (selected.has(index));
-      selected.add(index);
-      const img = document.createElement("img");
-      img.src = MIKU_IMAGES[index];
-      img.className = "float-miku";
-      img.alt = "Pixel Miku";
-      container.appendChild(img);
+    function spawnFloatingMikus() {
+      const container = document.getElementById("floatingMikusContainer");
+      if (!container) return;
+      container.innerHTML = "";
+      const available = MIKU_IMAGES.length;
+      if (!available) return;
+      const spawnAmount = 15;
+      const numMikus = Math.min(
+        Math.floor(Math.random() * spawnAmount + 1),
+        available
+      );
+      const selected = new Set();
+      for (let i = 0; i < numMikus; i++) {
+        let index;
+        do {
+          index = Math.floor(Math.random() * available);
+        } while (selected.has(index));
+        selected.add(index);
+        const img = document.createElement("img");
+        img.src = MIKU_IMAGES[index];
+        img.className = "float-miku";
+        img.alt = "Pixel Miku";
+        container.appendChild(img);
+      }
     }
+
+    if (MIKU_IMAGES.length) spawnFloatingMikus();
+    else document.addEventListener("miku-images-ready", spawnFloatingMikus, { once: true });
   }
 
   // ====== STATUS BAR ======
@@ -431,12 +700,14 @@ document.addEventListener("DOMContentLoaded", () => {
     visitorCountEl.textContent = visitorCount.toLocaleString();
 
     // Now playing auto-save
-    nowPlaying.addEventListener("input", () => {
-      localStorage.setItem("pixelbelle-now-playing", nowPlaying.textContent);
-    });
+    if (nowPlaying) {
+      nowPlaying.addEventListener("input", () => {
+        localStorage.setItem("pixelbelle-now-playing", nowPlaying.textContent);
+      });
+    }
 
     // Mood system
-    saveMoodBtn.addEventListener("click", () => {
+  if (saveMoodBtn) saveMoodBtn.addEventListener("click", () => {
       const mood = moodInput.value.trim();
       if (mood) {
         moodDisplay.textContent = `💭 ${mood}`;
@@ -448,7 +719,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    moodInput.addEventListener("keypress", (e) => {
+  if (moodInput) moodInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
         saveMoodBtn.click();
       }
@@ -458,79 +729,206 @@ document.addEventListener("DOMContentLoaded", () => {
   // ====== SOCIALS SECTION ======
   function initSocials() {
     const socialsGrid = document.getElementById("socialsGrid");
+    if (!socialsGrid) return;
 
-    socialsGrid.innerHTML = SOCIALS.map(
-      (social) => `
-      <div class="social-card embedded-player" style="border-left: 4px solid ${social.color}">
-        <div class="social-icon">${social.icon}</div>
-        <h4>${social.label}</h4>
-        <div class="player-controls">
-          <div class="play-button" style="background-color: ${social.color}">▶</div>
-          <div class="player-info">
-            <div class="track-title">Click to visit</div>
-            <div class="artist-name">${social.label}</div>
+    function ytVideoIdFromUrl(u) {
+      try {
+        const url = new URL(u);
+        if (url.hostname === "youtu.be") return url.pathname.slice(1);
+        const v = url.searchParams.get("v");
+        return v || null;
+      } catch {
+        return null;
+      }
+    }
+
+    function ytHandleFromUrl(u) {
+      try {
+        const url = new URL(u);
+        const m = url.pathname.match(/@([A-Za-z0-9_\-\.]+)/);
+        return m ? m[1] : null;
+      } catch {
+        return null;
+      }
+    }
+
+    const SPOTIFY_PROFILE =
+      "https://open.spotify.com/user/31hkk7assbfbsaqjfybnyfmuakqq";
+
+    function renderEmbed(s) {
+      const { label, url, icon, color } = s;
+      let domain = "";
+      try {
+        domain = new URL(url).hostname.replace("www.", "");
+      } catch {}
+
+      // Blocklist some sites that should not be embedded (e.g., jigsawplanet)
+      if (domain.includes("jigsawplanet.com")) {
+        return `
+          <div class="social-item" style="--accent:${color}">
+            <div class="social-title"><span class="icon">${icon}</span> ${label}</div>
+            <div class="social-embed">
+              <a class="pixel-btn" href="${url}" target="_blank" rel="noopener">Open Puzzle in new tab</a>
+            </div>
+          </div>
+        `;
+      }
+
+      // YouTube video/channel fallback
+
+      if (domain.includes("youtube.com") || domain === "youtu.be") {
+        // Force a specific default video if not explicitly given
+        const forced = "YTinkSv10Qs"; // requested video ID
+        const vid = ytVideoIdFromUrl(url) || forced;
+        if (vid) {
+          return `
+            <div class="social-item" style="--accent:${color}">
+              <div class="social-title"><span class="icon">${icon}</span> ${label}</div>
+              <div class="social-embed" style="aspect-ratio:16/9">
+                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed/${vid}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+              </div>
+            </div>
+          `;
+        }
+        const handle = ytHandleFromUrl(url);
+        if (handle) {
+          return `
+            <div class="social-item" style="--accent:${color}">
+              <div class="social-title"><span class="icon">${icon}</span> ${label}</div>
+              <div class="social-embed" style="aspect-ratio:16/9">
+                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed?listType=user_uploads&list=${handle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+              </div>
+            </div>
+          `;
+        }
+        return `
+          <div class="social-item" style="--accent:${color}">
+            <div class="social-title"><span class="icon">${icon}</span> ${label}</div>
+            <div class="social-embed"><a class="pixel-btn" href="${url}" target="_blank" rel="noopener">Open YouTube</a></div>
+          </div>
+        `;
+      }
+
+      // Spotify playlist
+      if (domain.includes("open.spotify.com") && /\/playlist\//.test(url)) {
+        const id = url.split("/playlist/")[1]?.split("?")[0];
+        if (id) {
+          return `
+            <div class="social-item" style="--accent:${color}">
+              <div class="social-title"><span class="icon">${icon}</span> ${label}</div>
+              <div class="social-embed">
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/${id}" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // Twitch (if provided in SOCIALS)
+      if (domain.includes("twitch.tv")) {
+        const ch = (() => {
+          try {
+            const u = new URL(url);
+            const parts = u.pathname.split("/").filter(Boolean);
+            return parts[0] || "";
+          } catch {
+            return "";
+          }
+        })();
+        const parent = location.hostname || "localhost";
+        return `
+          <div class="social-item" style="--accent:${color}">
+            <div class="social-title"><span class="icon">${icon}</span> ${label}</div>
+            <div class="social-embed" style="aspect-ratio:16/9">
+              <iframe src="https://player.twitch.tv/?channel=${ch}&parent=${parent}&muted=true" allowfullscreen style="border:0;width:100%;height:100%;border-radius:12px"></iframe>
+            </div>
+          </div>
+        `;
+      }
+
+      // Spring/Teespring store (simple iframe embed)
+      if (
+        domain.includes("creator-spring.com") ||
+        domain.includes("teespring.com")
+      ) {
+        return `
+          <div class="social-item" style="--accent:${color}">
+            <div class="social-title"><span class="icon">${icon}</span> ${label}</div>
+            <div class="social-embed" style="height:420px">
+              <iframe src="${url}" style="border:0;width:100%;height:100%;border-radius:12px" loading="lazy" referrerpolicy="no-referrer"></iframe>
+            </div>
+          </div>
+        `;
+      }
+
+      // Fallback: iframe
+      return `
+        <div class="social-item" style="--accent:${color}">
+          <div class="social-title"><span class="icon">${icon}</span> ${label}</div>
+          <div class="social-embed">
+            <iframe src="${url}" style="border:0;width:100%;height:400px;border-radius:12px" loading="lazy" referrerpolicy="no-referrer"></iframe>
           </div>
         </div>
-        <a href="${social.url}" target="_blank" class="pixel-btn player-btn" style="background-color: ${social.color}">Open</a>
-      </div>
-    `
-    ).join("");
+      `;
+    }
+
+    socialsGrid.innerHTML = SOCIALS.map(renderEmbed).join("");
   }
 
-  // ====== MUSIC SECTION ======
-  function initMusic() {
+  // ====== RADIO SECTION ======
+  function initRadio() {
     const playBtn = document.getElementById("playRadio");
     const pauseBtn = document.getElementById("pauseRadio");
-    const nextBtn = document.getElementById("nextSong");
     const radioStatus = document.getElementById("radioStatus");
-    const playlist = document.getElementById("playlist");
+    const radioDisplayStatus = document.getElementById("radioDisplayStatus");
+    const onlineStatus = document.getElementById("onlineStatus");
 
-    let currentSongIndex = 0;
-    let isPlaying = false;
+  let isPlaying = false;
 
-    // Populate playlist
-    playlist.innerHTML = PLAYLIST_SONGS.map(
-      (song, index) => `
-      <div class="playlist-item ${
-        index === 0 ? "current" : ""
-      }" data-index="${index}">
-        <span class="song-mood">${song.mood}</span>
-        <div class="song-info">
-          <div class="song-title">${song.title}</div>
-          <div class="song-artist">${song.artist}</div>
-        </div>
-      </div>
-    `
-    ).join("");
+    // Stream source (Vocaloid Radio)
+    const STREAM_URL = "https://vocaloid.radioca.st/stream";
+    const audio = new Audio();
+    audio.src = STREAM_URL;
+    audio.preload = "none";
+    audio.crossOrigin = "anonymous";
+    audio.volume = 0.85;
 
-    // Radio controls
+  // Initialize labels
+  if (onlineStatus) onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
+  if (radioStatus) radioStatus.textContent = C.radio?.defaultStatus || "Kawaii FM 📻";
+  if (radioDisplayStatus) radioDisplayStatus.textContent = C.radio?.defaultStatus || "Kawaii FM 📻";
+
+  // Radio controls
     playBtn.addEventListener("click", () => {
       isPlaying = true;
-      radioStatus.textContent = `🎵 ${PLAYLIST_SONGS[currentSongIndex].title}`;
+      const status = C.radio?.playingStatus || "Now Playing";
+      radioStatus.textContent = status;
+      if (radioDisplayStatus) radioDisplayStatus.textContent = status;
+      if (onlineStatus) onlineStatus.textContent = "Playing";
+      audio.play().catch(()=>{});
       startEqualizer();
-      updatePlaylistDisplay();
     });
 
     pauseBtn.addEventListener("click", () => {
       isPlaying = false;
-      radioStatus.textContent = "Kawaii FM 📻 (Paused)";
+      audio.pause();
+      const status = C.radio?.stoppedStatus || "Radio Stopped";
+      radioStatus.textContent = status;
+      if (radioDisplayStatus) radioDisplayStatus.textContent = status;
+      if (onlineStatus) onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
       stopEqualizer();
     });
 
-    nextBtn.addEventListener("click", () => {
-      currentSongIndex = (currentSongIndex + 1) % PLAYLIST_SONGS.length;
-      if (isPlaying) {
-        radioStatus.textContent = `🎵 ${PLAYLIST_SONGS[currentSongIndex].title}`;
-      }
-      updatePlaylistDisplay();
+    audio.addEventListener("error", ()=>{
+      radioStatus.textContent = "⚠️ Stream error";
+      if (radioDisplayStatus) radioDisplayStatus.textContent = "⚠️ Stream error";
     });
-
-    function updatePlaylistDisplay() {
-      const items = playlist.querySelectorAll(".playlist-item");
-      items.forEach((item, index) => {
-        item.classList.toggle("current", index === currentSongIndex);
-      });
-    }
+    
+    audio.addEventListener("playing", ()=>{
+      const status = C.radio?.playingStatus || "Now Playing";
+      radioStatus.textContent = status;
+      if (radioDisplayStatus) radioDisplayStatus.textContent = status;
+    });
 
     function startEqualizer() {
       const bars = document.querySelectorAll(".eq-bars .bar");
@@ -909,13 +1307,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function initHeartCollector() {
-    const heartZone = document.getElementById("heartZone");
-    const gameHeartCountEl = document.getElementById("gameHeartCount");
-    const resetHeartsBtn = document.getElementById("resetHearts");
+  const heartZone = document.getElementById("heartZone");
+  const gameHeartCountEl = document.getElementById("gameHeartCount");
+  const resetHeartsBtn = document.getElementById("resetHearts");
+  if (!heartZone || !gameHeartCountEl || !resetHeartsBtn) return;
 
-    gameHeartCountEl.textContent = gameHeartCount;
+  gameHeartCountEl.textContent = gameHeartCount;
 
-    heartZone.addEventListener("click", (e) => {
+  heartZone.addEventListener("click", (e) => {
       gameHeartCount++;
       gameHeartCountEl.textContent = gameHeartCount;
       localStorage.setItem("pixelbelle-game-hearts", gameHeartCount);
@@ -929,7 +1328,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    resetHeartsBtn.addEventListener("click", () => {
+  resetHeartsBtn.addEventListener("click", () => {
       gameHeartCount = 0;
       gameHeartCountEl.textContent = gameHeartCount;
       localStorage.setItem("pixelbelle-game-hearts", gameHeartCount);
@@ -956,14 +1355,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // ====== SHRINE SECTION ======
   function initShrine() {
     const mikuGallery = document.getElementById("mikuGallery");
+    if (!mikuGallery) return;
 
-    mikuGallery.innerHTML = MIKU_IMAGES.map(
-      (img, index) => `
-      <img src="${img}" alt="Miku ${
-        index + 1
-      }" class="gallery-image" onclick="openImageModal('${img}')">
-    `
-    ).join("");
+    function renderGallery() {
+      mikuGallery.innerHTML = MIKU_IMAGES.map(
+        (img, index) => `
+        <img src="${img}" alt="Miku ${index + 1}" class="gallery-image" onclick="openImageModal('${img}')">
+      `
+      ).join("");
+    }
+
+    if (MIKU_IMAGES.length) renderGallery();
+    else document.addEventListener("miku-images-ready", renderGallery, { once: true });
   }
 
   function openImageModal(imageSrc) {
@@ -1220,25 +1623,21 @@ document.addEventListener("DOMContentLoaded", () => {
   function initPeriodicUpdates() {
     // Heart button functionality
     const heartBtn = document.getElementById("heartBtn");
-    if (heartBtn) {
+  if (heartBtn) {
       heartBtn.addEventListener("click", () => {
         addHearts(1);
-        createFloatingHeart(
+    createFloatingHeart(
           heartBtn.getBoundingClientRect().left + heartBtn.offsetWidth / 2,
           heartBtn.getBoundingClientRect().top
         );
+    // Also sparkle at the button
+    createSparkleEffect(heartBtn);
       });
     }
 
     // Random updates every 30 seconds
     setInterval(() => {
-      const updates = [
-        "New kawaii energy detected! ✨",
-        "Miku companions are vibing! 🎵",
-        "Hearts are flowing! 💖",
-        "Pastel dreams activated! 🌸",
-        "Cozy mode: ON! 🥰",
-      ];
+      const updates = (C.love && C.love.periodicUpdates) || [];
 
       const randomUpdate = updates[Math.floor(Math.random() * updates.length)];
 
@@ -1277,6 +1676,11 @@ document.addEventListener("DOMContentLoaded", () => {
       50% { opacity: 1; transform: scale(1) rotate(180deg); }
       100% { opacity: 0; transform: scale(0) rotate(360deg); }
     }
+    @keyframes heartPop {
+      0% { opacity: 0; transform: translateY(0) scale(0.8); }
+      20% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
+    }
   `;
   document.head.appendChild(sparkleStyles);
 
@@ -1287,6 +1691,150 @@ document.addEventListener("DOMContentLoaded", () => {
   window.LOVE_TOASTS = LOVE_TOASTS;
 
   // Global functions for console interaction
+  // ====== FLOATING HEARTS SYSTEM ======
+  function initFloatingHearts() {
+    const hearts = ['💖', '💙', '💚', '💛', '💜', '🤍', '🖤'];
+    const container = document.querySelector('.floating-hearts');
+    
+    if (!container) return;
+
+    // Clear existing hearts
+    container.innerHTML = '';
+
+    // Inject styles for heart particles and swallow
+    const style = document.createElement('style');
+    style.textContent = `
+      .heart-particle { position: fixed; bottom: -24px; font-size: 22px; pointer-events:none; z-index: 2; animation: heartRise 8s linear forwards; }
+      @keyframes heartRise {
+        0%   { transform: translateX(0) translateY(0); opacity: .8; }
+        50%  { transform: translateX(var(--drift, 0)) translateY(-50vh); opacity: .9; }
+        100% { transform: translateX(calc(var(--drift, 0) * 2)) translateY(-110vh); opacity: 0; }
+      }
+      .heart-eaten { animation: heartEaten .4s ease-out forwards !important; }
+      @keyframes heartEaten { from { transform: scale(1); opacity:1 } to { transform: scale(0); opacity:0 } }
+      .swallow { position: fixed; bottom: 8vh; left: -120px; width: 80px; height:auto; image-rendering: pixelated; z-index: 3; pointer-events:none; }
+    `;
+    document.head.appendChild(style);
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart-particle';
+      heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+      
+      // Random starting position
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.setProperty('--drift', (Math.random() - 0.5) * 200 + 'px');
+      
+      container.appendChild(heart);
+      
+      // Remove after animation
+      setTimeout(() => {
+        if (heart.parentNode) {
+          heart.parentNode.removeChild(heart);
+        }
+      }, 8000);
+    }
+
+    // Create hearts periodically
+    setInterval(createHeart, 2000);
+    
+    // Create initial hearts
+    for (let i = 0; i < 5; i++) {
+      setTimeout(createHeart, i * 400);
+    }
+    
+    // Initialize heart collector sync and swallow
+    syncHeartCollector();
+    initSwallow();
+  }
+
+  // ====== SYNC HEART COLLECTOR WITH FLOATING HEARTS ======
+  function syncHeartCollector() {
+    const heartZone = document.getElementById("heartZone");
+    
+    if (!heartZone) return;
+
+    // Add event listener for floating heart interaction
+    heartZone.addEventListener("click", (e) => {
+      // Find nearby floating hearts and "eat" them
+      const floatingHearts = document.querySelectorAll('.heart-particle');
+      const clickX = e.clientX;
+      const clickY = e.clientY;
+      
+      let heartsEaten = 0;
+      
+      floatingHearts.forEach(heart => {
+        const rect = heart.getBoundingClientRect();
+        const heartX = rect.left + rect.width / 2;
+        const heartY = rect.top + rect.height / 2;
+        
+        const distance = Math.sqrt(
+          Math.pow(clickX - heartX, 2) + Math.pow(clickY - heartY, 2)
+        );
+        
+        if (distance < 100) { // Within 100px
+          heart.classList.add('heart-eaten');
+          heartsEaten++;
+        }
+      });
+      
+      // Add bonus hearts for eating floating hearts
+      if (heartsEaten > 0) {
+        addHearts(heartsEaten);
+      }
+    });
+  }
+
+  // Swallow mascot that "eats" hearts as they float by
+  function initSwallow() {
+    const swallowSrc = (C.images && C.images.swallowGif) || null;
+    if (!swallowSrc) return; // no asset configured
+
+    const img = document.createElement('img');
+    img.className = 'swallow';
+
+    // preload to avoid broken image flashes
+    const preload = new Image();
+    preload.onload = () => {
+      img.src = swallowSrc;
+      document.body.appendChild(img);
+      start();
+    };
+    preload.onerror = () => { /* skip if missing */ };
+    preload.src = swallowSrc;
+
+    function start() {
+      let x = -120;
+      let y = window.innerHeight * 0.12 + Math.random() * window.innerHeight * 0.4;
+      let vx = 1.2; // px per frame (approx)
+
+      function step() {
+        x += vx;
+        if (x > window.innerWidth + 120) {
+          // reset and randomize altitude
+          x = -120;
+          y = window.innerHeight * (0.12 + Math.random() * 0.5);
+        }
+        img.style.transform = `translate(${x}px, ${y}px)`;
+
+        // Eat nearby hearts
+        const hearts = document.querySelectorAll('.heart-particle');
+        hearts.forEach(h => {
+          const r1 = img.getBoundingClientRect();
+          const r2 = h.getBoundingClientRect();
+          const overlap = !(r2.right < r1.left + 10 || r2.left > r1.right - 10 || r2.bottom < r1.top + 10 || r2.top > r1.bottom - 10);
+          if (overlap) {
+            h.classList.add('heart-eaten');
+            setTimeout(()=> h.remove(), 350);
+          }
+        });
+
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+  }
+
   window.pixelBelleGarden = {
     addHearts: addHearts,
     showSection: (section) => {

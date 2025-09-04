@@ -8,18 +8,15 @@
       name="description"
       content="A cozy pastel web home for Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) — links, music, games, study corner, and interactive Miku companions!"
     />
-    <meta property="og:title" content="Baby Belle — Pastel Miku Garden" />
+  <meta property="og:title" content="Baby Belle — Pastel Miku Garden" />
     <meta
       property="og:description"
       content="A magical retro website with interactive Miku friends and kawaii vibes"
     />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:image"
-      content="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png"
-    />
+  <meta property="og:image" content="" id="metaOgImage" />
 
-    <link rel="icon" href="./assets/icon.jpg" />
+  <link rel="icon" href="" id="faviconLink" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap"
@@ -33,11 +30,7 @@
     <!-- Loading splash -->
     <div id="splash" class="splash-screen">
       <div class="splash-content">
-        <img
-          src="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png"
-          alt="Miku"
-          class="splash-miku"
-        />
+  <img src="" alt="Miku" class="splash-miku" id="splashMiku" />
         <h1 class="glitch" data-text="Baby Belle's Pixel Garden">
           Baby Belle's Pixel Garden
         </h1>
@@ -56,97 +49,70 @@
         <header id="header">
           <div class="header-content">
             <h1 id="siteTitle">Baby Belle's Pixel Garden</h1>
-            <p id="siteSub">
-              where sweet dreams come to life ♡ • べべベルのデジタル庭
-            </p>
+            <p id="siteSub">where sweet dreams come to life ♡ • べべベルのデジタル庭</p>
           </div>
           <div id="floatingMikusContainer" class="floating-mikus"></div>
         </header>
 
-        <!-- Status bar -->
+        <!-- Status bar with integrated navigation -->
         <div id="statusBar" class="status-bar">
-          <div class="status-item">
-            <span class="blink">●</span> <span id="onlineStatus">Online</span>
+          <div class="status-left">
+            <div class="status-item">
+              <span class="blink">●</span> <span id="onlineStatus">Online</span>
+            </div>
+            <div class="status-item">
+              🎵 <span id="radioStatus">Kawaii FM 📻</span>
+            </div>
+            <div class="status-item">
+              💖 Hearts collected: <span id="heartCount">0</span>
+            </div>
           </div>
-          <div class="status-item">
-            🎵 Now playing:
-            <span id="nowPlaying" contenteditable="true" class="editable"
-              >Enter current mood/song...</span
-            >
-          </div>
-          <div class="status-item">
-            💖 Hearts collected: <span id="heartCount">0</span>
-          </div>
+          <nav id="navbar" class="status-nav">
+            <ul>
+              <li><a href="#home" data-section="home">🏠 Home</a></li>
+              <li><a href="#socials" data-section="socials">🔗 Socials</a></li>
+              <li><a href="#study" data-section="study">📚 日本語</a></li>
+              <li><a href="#games" data-section="games">🎮 Games</a></li>
+              <li><a href="#shrine" data-section="shrine">⛩️ Miku Shrine</a></li>
+            </ul>
+          </nav>
         </div>
-
-        <!-- Navigation -->
-        <nav id="navbar">
-          <ul>
-            <li><a href="#home" data-section="home">🏠 Home</a></li>
-            <li><a href="#socials" data-section="socials">🔗 Socials</a></li>
-            <li><a href="#music" data-section="music">🎵 Music</a></li>
-            <li><a href="#study" data-section="study">📚 日本語</a></li>
-            <li><a href="#games" data-section="games">🎮 Games</a></li>
-            <li><a href="#shrine" data-section="shrine">⛩️ Miku Shrine</a></li>
-          </ul>
-        </nav>
 
         <!-- Main layout -->
         <div id="flex">
           <!-- Left sidebar -->
           <aside id="leftSidebar">
             <div class="widget">
-              <h3>💭 Current Mood</h3>
-              <div class="mood-widget">
-                <input
-                  id="moodInput"
-                  placeholder="feeling cute today..."
-                  maxlength="50"
-                />
-                <button id="saveMood" class="pixel-btn">Save</button>
-                <div id="moodDisplay" class="mood-display"></div>
+                <h3>📻 Kawaii Radio</h3>
+              <div class="radio-widget">
+                <div class="retro-radio">
+                  <div class="radio-display">
+                    <span id="radioDisplayStatus">Kawaii FM 📻</span>
+                    <div class="eq-bars">
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                      <div class="bar"></div>
+                    </div>
+                  </div>
+                  <div class="radio-controls">
+                    <button id="playRadio" class="radio-btn">▶️</button>
+                    <button id="pauseRadio" class="radio-btn">⏸️</button>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div class="widget">
-              <h3>🌟 Quick Links</h3>
-              <ul class="quick-links">
-                <li>
-                  <a href="https://www.youtube.com/@babyelle-e" target="_blank"
-                    >📺 YouTube</a
-                  >
-                </li>
-                <li>
-                  <a
-                    href="https://open.spotify.com/user/31hkk7assbfbsaqjfybnyfmuakqq"
-                    target="_blank"
-                    >🎵 Spotify</a
-                  >
-                </li>
-                <li>
-                  <a
-                    href="https://open.spotify.com/playlist/2iZTdm4HQoGhzKNEsKeOGz"
-                    target="_blank"
-                    >🎶 Playlist</a
-                  >
-                </li>
-                <li>
-                  <a href="https://linktr.ee/babbybean" target="_blank"
-                    >🌲 Linktree</a
-                  >
-                </li>
+                <h3 id="quickLinksTitle">🌟 Quick Links</h3>
+              <ul class="quick-links" id="quickLinksList">
+                <!-- Will be populated by JS -->
               </ul>
             </div>
 
             <div class="widget">
               <h3>🐾 Your e-pet</h3>
-              <iframe
-                width="314"
-                height="321"
-                scrolling="no"
-                src="https://gifypet.neocities.org/pet/pet.html?name=PixieBel&dob=1756939149&gender=f&element=Air&pet=https%3A%2F%2Fi.imgur.com%2FYV9mzxS.gif&map=https%3A%2F%2Fmockup-api.teespring.com%2Fv3%2Fimage%2FVdD9pr10BfC397r7l0ygS_pExiU%2F800%2F800.jpg&background=https%3A%2F%2Fi.imgur.com%2FDHjfhbo.png&tablecolor=black&textcolor=black"
-                frameborder="0"
-              ></iframe>
+              <iframe width="314" height="321" scrolling="no" src="" frameborder="0" id="petIframe"></iframe>
               <small style="display: block; color: #596286; margin-top: 6px"
                 >Powered by
                 <a
@@ -162,18 +128,10 @@
               <h3>🌸 Site Stats</h3>
               <div class="stats">
                 <div class="stat-item">
-                  <img
-                    src="https://stuff.charm.lu/88x31/compu.gif"
-                    alt="Computer"
-                    class="badge"
-                  />
+                  <img src="" alt="Computer" class="badge" id="statBadge1" />
                 </div>
                 <div class="stat-item">
-                  <img
-                    src="https://anlucas.neocities.org/88x31Buttons/notepad.gif"
-                    alt="Made with love"
-                    class="badge"
-                  />
+                  <img src="" alt="Made with love" class="badge" id="statBadge2" />
                 </div>
                 <div class="visitor-counter">
                   <span class="counter-label">Visitors:</span>
@@ -190,11 +148,7 @@
             <!-- Home section -->
             <section id="home" class="content-section active">
               <div class="hero-banner">
-                <img
-                  src="./assets/hatsune_miku_render_by_jimmyisaac_d68ibgy-pre.png"
-                  alt="Miku Hero"
-                  class="hero-miku"
-                />
+                <img src="" alt="Miku Hero" class="hero-miku" id="heroMiku" />
                 <div class="hero-text">
                   <h2>Welcome to my garden! 🌸</h2>
                   <p>
@@ -217,7 +171,7 @@
                   <p>
                     I love collecting Hatsune Miku figures, kawaii aesthetics
                     and gaming. Sometimes I get sad... so if its all right with
-                    you, can you cheer me up too?
+                    you, can you cheer me up too? <br />I dont want to feel lonely or be bullied.
                   </p>
                   <h4>Likes</h4>
                   <ul>
@@ -251,36 +205,6 @@
               <h2>🔗 Find Me Online</h2>
               <div class="socials-grid" id="socialsGrid">
                 <!-- Will be populated by JS -->
-              </div>
-            </section>
-
-            <!-- Music section -->
-            <section id="music" class="content-section">
-              <h2>🎵 Music Corner</h2>
-              <div class="music-player">
-                <div class="retro-radio">
-                  <div class="radio-display">
-                    <span id="radioStatus">Kawaii FM 📻</span>
-                    <div class="eq-bars">
-                      <div class="bar"></div>
-                      <div class="bar"></div>
-                      <div class="bar"></div>
-                      <div class="bar"></div>
-                    </div>
-                  </div>
-                  <div class="radio-controls">
-                    <button id="playRadio" class="radio-btn">▶️</button>
-                    <button id="pauseRadio" class="radio-btn">⏸️</button>
-                    <button id="nextSong" class="radio-btn">⏭️</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="playlist-section">
-                <h3>🎶 Current Favorites</h3>
-                <div class="playlist" id="playlist">
-                  <!-- Will be populated by JS -->
-                </div>
               </div>
             </section>
 
@@ -377,11 +301,7 @@
               <h2>⛩️ Miku Shrine</h2>
               <div class="shrine-content">
                 <div class="shrine-altar">
-                  <img
-                    src="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png"
-                    alt="Miku Shrine"
-                    class="shrine-image"
-                  />
+                  <img src="" alt="Miku Shrine" class="shrine-image" id="shrineMiku" />
                   <div class="offering-candles">
                     <div class="candle">🕯️</div>
                     <div class="candle">🕯️</div>
@@ -427,38 +347,7 @@
 
             <div class="widget">
               <h3>💫 Web Badges</h3>
-              <div class="badges-collection">
-                <img
-                  src="https://cyber.dabamos.de/88x31/best_viewed_with_eyes.gif"
-                  alt="Best viewed with eyes"
-                  class="badge"
-                />
-                <img
-                  src="https://cyber.dabamos.de/88x31/get_firefox.gif"
-                  alt="Get Firefox"
-                  class="badge"
-                />
-                <img
-                  src="https://cyber.dabamos.de/88x31/made_with_windows_notepad.gif"
-                  alt="Made with notepad"
-                  class="badge"
-                />
-                <img
-                  src="https://cyber.dabamos.de/88x31/gay_rights.gif"
-                  alt="Gay rights"
-                  class="badge"
-                />
-                <img
-                  src="https://cyber.dabamos.de/88x31/kawaii.gif"
-                  alt="Kawaii"
-                  class="badge"
-                />
-                <img
-                  src="https://cyber.dabamos.de/88x31/transnow2.gif"
-                  alt="Trans rights"
-                  class="badge"
-                />
-              </div>
+              <div class="badges-collection" id="webBadges"></div>
             </div>
 
             <div class="widget">
@@ -496,635 +385,16 @@
 
       <!-- Background animations -->
       <div class="bg-animations">
-        <div class="floating-hearts">💖 💙 💚 💛 💜 🤍 🖤 💖 💙 💚</div>
-        <div class="stars">✨ ⭐ 🌟 ✨ ⭐ 🌟 ✨ ⭐ 🌟</div>
+        <div class="floating-hearts">💖 💙 💚 💛 💜 🤍 🖤 💖 💙 💚 💖 💙 💚 💛 💜 🤍 🖤 💖 💙 💚</div>
       </div>
     </div>
 
     <!-- Scripts -->
-    <script src="./js/shimeji.js"></script>
+  <script src="./js/shimeji.js"></script>
+  <!-- Centralized editable copy -->
+  <script src="./js/content.js"></script>
     <script src="./js/main.js"></script>
 
-    <div id="body">
-      <div id="container">
-        <div id="headerArea">
-          <div id="header">
-            <div id="siteTitle">Baby Belle • ミクの空</div>
-            <div id="siteSub">
-              cozy retro home • Finland → Japan • gamer / streamer / learner
-            </div>
-          </div>
-          <nav id="navbar">
-            <ul>
-              <li><a href="#home">Home</a></li>
-              <li><a href="#socials">Socials</a></li>
-              <li><a href="#music">Music</a></li>
-              <li><a href="#japanese">日本語</a></li>
-              <li><a href="#friends">Friends</a></li>
-              <li><a href="#toybox">Toybox</a></li>
-              <li><a href="#guestbook">Guestbook</a></li>
-            </ul>
-          </nav>
-        </div>
 
-        <div id="flex">
-          <!-- LEFT SIDEBAR -->
-          <aside id="leftSidebar">
-            <h2>Status</h2>
-            <div id="topBar">
-              <span id="nowPlaying">Now Playing:</span>
-              <span
-                contenteditable="true"
-                class="editable"
-                id="statusGame"
-                title="Click to edit. Saves automatically."
-                >Animal Crossing: New Horizons</span
-              >
-              <span>• Mood:</span>
-              <span
-                contenteditable="true"
-                class="editable"
-                id="statusMood"
-                title="Click to edit. Saves automatically."
-                >soft & cozy ☁️</span
-              >
-            </div>
-
-            <h2>Updates</h2>
-            <div class="box" id="updatesBox">
-              <ul style="padding-left: 14px; margin: 0">
-                <li><strong>Sep 2025:</strong> Site launched 💙</li>
-                <li><strong>Sep 2025:</strong> Added mini Miku walkers</li>
-                <li><strong>Sep 2025:</strong> Press-for-cute button!</li>
-              </ul>
-            </div>
-
-            <h2>Quick Links</h2>
-            <ul style="margin-top: 0">
-              <li><a href="#music">♫ Spotify playlist</a></li>
-              <li><a href="#socials">Stream schedule</a></li>
-              <li><a href="#japanese">Study corner</a></li>
-              <li><a href="#toybox">Mini games</a></li>
-            </ul>
-
-            <h3>Badges</h3>
-            <div class="badges">
-              <span class="badge">Made with 💖</span>
-              <span class="badge">GitHub Pages</span>
-              <span class="badge">Kawaii Core</span>
-              <span class="badge">Hatsune Miku Fan</span>
-              <span class="badge">Cinnamoroll Approved</span>
-            </div>
-          </aside>
-
-          <!-- MAIN -->
-          <main>
-            <!-- HOME -->
-            <section id="home">
-              <h1>Welcome to my pastel Miku garden 🌸</h1>
-              <p>
-                Heya! I’m <strong>[Friend Name]</strong> — a Finland-born gamer
-                girl living in Japan. This is my cozy corner of the old web.
-                You’ll find my streams, music, Japanese learning notes, friends,
-                and some silly toys to click.
-              </p>
-              <p>Press the button below when you need a burst of cute:</p>
-              <p>
-                <a href="#" class="button" id="btnCute">Press for cute ✨</a>
-              </p>
-              <hr />
-              <p>
-                <strong>Tip:</strong> Watch for the tiny Mikus climbing around
-                your screen. Click them to make them giggle.
-              </p>
-            </section>
-
-            <!-- SOCIALS -->
-            <section id="socials">
-              <h1>Socials & Streams</h1>
-              <p>
-                Everything in one place. Add or swap platforms any time
-                (plugin-style).
-              </p>
-              <div
-                class="box"
-                id="socialGrid"
-                style="
-                  display: grid;
-                  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                  gap: 12px;
-                "
-              >
-                <!-- Cards populated by JS from the SOCIALS array -->
-              </div>
-              <hr />
-              <h3>Twitch Embed</h3>
-              <div class="box" style="aspect-ratio: 16/9">
-                <!-- Replace "channel" with her twitch handle -->
-                <iframe
-                  src="https://player.twitch.tv/?channel=TWITCH_HANDLE&parent=example.com&muted=true"
-                  allowfullscreen
-                  style="
-                    border: 0;
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 12px;
-                  "
-                ></iframe>
-              </div>
-            </section>
-
-            <!-- MUSIC -->
-            <section id="music">
-              <h1>Music Corner ♫</h1>
-              <p>Vocaloid vibes, cozy BGM, and current obsessions.</p>
-              <div
-                class="box"
-                style="display: grid; grid-template-columns: 1fr; gap: 12px"
-              >
-                <div>
-                  <h3>Spotify Playlist</h3>
-                  <!-- Replace with her playlist/artist embed -->
-                  <iframe
-                    style="border-radius: 12px"
-                    src="https://open.spotify.com/embed/playlist/37i9dQZF1DX4dyzvuaRJ0n?utm_source=generator"
-                    width="100%"
-                    height="352"
-                    frameborder="0"
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                  ></iframe>
-                </div>
-                <div>
-                  <h3>Latest YouTube</h3>
-                  <!-- Replace with her latest video -->
-                  <div style="aspect-ratio: 16/9">
-                    <iframe
-                      style="
-                        width: 100%;
-                        height: 100%;
-                        border: 0;
-                        border-radius: 12px;
-                      "
-                      src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                      title="YouTube video"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowfullscreen
-                    ></iframe>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <!-- JAPANESE -->
-            <section id="japanese">
-              <h1>日本語コーナー • Japanese Corner</h1>
-              <p>Tracking my study journey + handy links.</p>
-              <div class="box">
-                <h3>Study Log</h3>
-                <ul id="studyLog" style="padding-left: 18px; margin: 0">
-                  <li>
-                    JLPT vocab grind — 20 new words today!（がんばった〜）
-                  </li>
-                  <li>Shadowing practice: 10 minutes with anime lines.</li>
-                  <li>Kanji of the week: 憩・迎・慶・渓</li>
-                </ul>
-              </div>
-              <div class="box" style="margin-top: 12px">
-                <h3>Favorite Resources</h3>
-                <ul style="padding-left: 18px; margin: 0">
-                  <li>
-                    <a
-                      href="https://www.wanikani.com/"
-                      target="_blank"
-                      rel="noopener"
-                      >WaniKani</a
-                    >
-                    — kanji SRS
-                  </li>
-                  <li>
-                    <a
-                      href="https://apps.ankiweb.net/"
-                      target="_blank"
-                      rel="noopener"
-                      >Anki</a
-                    >
-                    — spaced repetition
-                  </li>
-                  <li>
-                    <a
-                      href="https://www3.nhk.or.jp/nhkworld/en/learnjapanese/"
-                      target="_blank"
-                      rel="noopener"
-                      >NHK Easy / Lessons</a
-                    >
-                  </li>
-                  <li>
-                    <a href="https://jisho.org/" target="_blank" rel="noopener"
-                      >Jisho</a
-                    >
-                    — dictionary
-                  </li>
-                </ul>
-              </div>
-              <div class="box" style="margin-top: 12px">
-                <h3>Mini Phrase Randomizer</h3>
-                <p id="phrase">
-                  Click for a phrase →
-                  <a href="#" class="button" id="btnPhrase"
-                    >新しいフレーズ ✨</a
-                  >
-                </p>
-              </div>
-            </section>
-
-            <!-- FRIENDS -->
-            <section id="friends">
-              <h1>Friends & Affiliates</h1>
-              <p>Cute 88×31-style buttons for besties & creators.</p>
-              <div
-                id="friendsWrap"
-                style="display: flex; flex-wrap: wrap; gap: 8px"
-                class="box"
-              >
-                <!-- friend buttons via JS -->
-              </div>
-            </section>
-
-            <!-- TOYBOX -->
-            <section id="toybox">
-              <h1>Toybox 🎮</h1>
-              <p>Little toys and mini-games in Geocities spirit.</p>
-              <div class="box">
-                <h3>Pixel Hearts Clicker</h3>
-                <p>Hearts: <strong id="hearts">0</strong></p>
-                <p>
-                  <a href="#" class="button" id="btnHeart">+1 💙</a>
-                  <a href="#" class="button" id="btnHeartReset">Reset</a>
-                </p>
-              </div>
-              <div class="box" style="margin-top: 12px">
-                <h3>Neopets (iframe)</h3>
-                <div
-                  style="
-                    position: relative;
-                    border-radius: 12px;
-                    overflow: hidden;
-                    border: 2px solid var(--border);
-                    background: #fff;
-                    min-height: 260px;
-                  "
-                >
-                  <iframe
-                    id="neopetsFrame"
-                    src="https://www.neopets.com"
-                    style="width: 100%; height: 360px; border: 0"
-                  ></iframe>
-                  <div
-                    id="neopetsFallback"
-                    style="
-                      display: none;
-                      position: absolute;
-                      inset: 0;
-                      background: #fff;
-                      padding: 16px;
-                    "
-                  >
-                    <p>
-                      <strong>Iframe blocked by site.</strong> Click here
-                      instead:
-                      <a
-                        class="button"
-                        href="https://www.neopets.com"
-                        target="_blank"
-                        rel="noopener"
-                        >Open Neopets</a
-                      >
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <!-- GUESTBOOK -->
-            <section id="guestbook">
-              <h1>Guestbook 💌</h1>
-              <p>
-                Sign a note for me! (External guestbook link keeps it simple.)
-              </p>
-              <p>
-                <a
-                  class="button"
-                  href="https://smartgb.com"
-                  target="_blank"
-                  rel="noopener"
-                  >Open Guestbook</a
-                >
-              </p>
-            </section>
-          </main>
-
-          <!-- RIGHT SIDEBAR -->
-          <aside id="rightSidebar">
-            <h2>About Me</h2>
-            <p>
-              <strong>[Friend Name]</strong><br />Finland → Japan<br />Streamer
-              • Music lover • JP learner
-            </p>
-            <h3>Likes</h3>
-            <ul>
-              <li>Hatsune Miku 💙</li>
-              <li>Sanrio (Cinnamoroll!)</li>
-              <li>Cozy games & café hopping</li>
-            </ul>
-            <h3>Dislikes</h3>
-            <ul>
-              <li>Loud jump scares 🙀</li>
-              <li>Spicy level 🔥🔥🔥</li>
-            </ul>
-            <h3>Site Buttons</h3>
-            <div class="badges">
-              <a class="badge" href="#home">Home</a>
-              <a class="badge" href="#socials">Socials</a>
-              <a class="badge" href="#music">Music</a>
-              <a class="badge" href="#japanese">日本語</a>
-              <a class="badge" href="#friends">Friends</a>
-              <a class="badge" href="#toybox">Toybox</a>
-            </div>
-          </aside>
-        </div>
-
-        <footer id="footer">
-          Hand-crafted for Baby Belle• Hosted on GitHub Pages • © you two 💙
-        </footer>
-      </div>
-    </div>
-
-    <!-- ====== INTERACTIVITY (client-side only) ====== -->
-    <script>
-      /* ---------- Plugin-style data (edit here or wire to a CMS later) ---------- */
-      const SOCIALS = [
-        {
-          name: "Twitch",
-          url: "https://twitch.tv/TWITCH_HANDLE",
-          blurb: "Live streams • schedule & VODs",
-          icon: "🎮",
-        },
-        {
-          name: "YouTube",
-          url: "https://youtube.com/@YOUTUBE_HANDLE",
-          blurb: "Videos, shorts, covers",
-          icon: "▶️",
-        },
-        {
-          name: "Spotify",
-          url: "https://open.spotify.com/user/SPOTIFY_ID",
-          blurb: "Playlists & listens",
-          icon: "🎵",
-        },
-        {
-          name: "Merch",
-          url: "#",
-          blurb: "Storefront • cute drops",
-          icon: "🛍️",
-        },
-        { name: "Twitter/X", url: "#", blurb: "Updates & memes", icon: "🐦" },
-        { name: "Instagram", url: "#", blurb: "Photos & stories", icon: "📷" },
-      ];
-
-      const FRIENDS = [
-        { name: "Bestie A", url: "#", label: "88×31" },
-        { name: "Creator B", url: "#", label: "88×31" },
-        { name: "Guild C", url: "#", label: "88×31" },
-      ];
-
-      const PHRASES = [
-        "今日はいい日だね！",
-        "がんばって！ You’ve got this.",
-        "かわいいね〜 (super cute!)",
-        "小さな一歩は大きな一歩。",
-        "一緒に勉強しよう！",
-      ];
-
-      const CUTE_GIFS = [
-        "https://media.giphy.com/media/26AHG5KGFxSkUWw1i/giphy.gif",
-        "https://media.giphy.com/media/l0He4fJxPCbfqv7Xi/giphy.gif",
-        "https://media.giphy.com/media/l3vR7pWz0i0q7R2716/giphy.gif",
-        "https://media.giphy.com/media/3oEduG9XcQbYxR2716/giphy.gif",
-      ];
-
-      /* ---------- Build socials grid ---------- */
-      (function renderSocials() {
-        const grid = document.getElementById("socialGrid");
-        grid.innerHTML = "";
-        SOCIALS.forEach((s) => {
-          const card = document.createElement("a");
-          card.href = s.url;
-          card.target = "_blank";
-          card.rel = "noopener";
-          card.className = "box";
-          card.style.display = "grid";
-          card.style.gridTemplateColumns = "42px 1fr";
-          card.style.alignItems = "center";
-          card.style.gap = "10px";
-          card.innerHTML = `
-      <div style="font-size:26px">${s.icon}</div>
-      <div>
-        <div style="font-weight:900;color:#174a75">${s.name}</div>
-        <div style="font-size:13px;color:#596286">${s.blurb}</div>
-      </div>
-    `;
-          grid.appendChild(card);
-        });
-      })();
-
-      /* ---------- Friends buttons ---------- */
-      (function renderFriends() {
-        const wrap = document.getElementById("friendsWrap");
-        wrap.innerHTML = "";
-        FRIENDS.forEach((f) => {
-          const a = document.createElement("a");
-          a.href = f.url;
-          a.target = "_blank";
-          a.rel = "noopener";
-          a.className = "badge";
-          a.textContent = `${f.name} [${f.label}]`;
-          wrap.appendChild(a);
-        });
-      })();
-
-      /* ---------- Phrase randomizer ---------- */
-      document.getElementById("btnPhrase").addEventListener("click", (e) => {
-        e.preventDefault();
-        const pick = PHRASES[Math.floor(Math.random() * PHRASES.length)];
-        document.getElementById("phrase").firstChild.textContent = pick + " ";
-      });
-
-      /* ---------- Hearts mini-game ---------- */
-      const heartsKey = "toybox.hearts";
-      const heartsEl = document.getElementById("hearts");
-      heartsEl.textContent = Number(localStorage.getItem(heartsKey) || 0);
-      document.getElementById("btnHeart").addEventListener("click", (e) => {
-        e.preventDefault();
-        const n = Number(localStorage.getItem(heartsKey) || 0) + 1;
-        localStorage.setItem(heartsKey, n);
-        heartsEl.textContent = n;
-      });
-      document
-        .getElementById("btnHeartReset")
-        .addEventListener("click", (e) => {
-          e.preventDefault();
-          localStorage.setItem(heartsKey, 0);
-          heartsEl.textContent = 0;
-        });
-
-      /* ---------- Editable status (auto-save) ---------- */
-      ["statusGame", "statusMood"].forEach((id) => {
-        const el = document.getElementById(id);
-        const k = "status." + id;
-        const saved = localStorage.getItem(k);
-        if (saved) el.textContent = saved;
-        el.addEventListener("input", () =>
-          localStorage.setItem(k, el.textContent.trim())
-        );
-      });
-
-      /* ---------- Press for cute (popup) ---------- */
-      const popup = (() => {
-        const div = document.createElement("div");
-        div.id = "cutePopup";
-        div.innerHTML = `
-    <img id="cuteImg" alt="cute surprise"/>
-    <p style="margin:8px 0 0; font-size:13px; color:#596286">Here’s a little cute for your day ✨</p>
-  `;
-        document.body.appendChild(div);
-        return div;
-      })();
-      document.getElementById("btnCute").addEventListener("click", (e) => {
-        e.preventDefault();
-        const img = document.getElementById("cuteImg");
-        img.src = CUTE_GIFS[Math.floor(Math.random() * CUTE_GIFS.length)];
-        popup.style.display = "block";
-        setTimeout(() => (popup.style.display = "none"), 5000);
-      });
-
-      /* ---------- Neopets iframe fallback (frame-busting guard) ---------- */
-      setTimeout(() => {
-        try {
-          const f = document.getElementById("neopetsFrame");
-          // If cross-origin blocks, accessing contentWindow may throw; show fallback anyway after timeout.
-          document.getElementById("neopetsFallback").style.display = "block";
-        } catch (e) {
-          document.getElementById("neopetsFallback").style.display = "block";
-        }
-      }, 2500);
-
-      /* ---------- Mini Miku walkers (simple random wanderers) ----------
-   How to use:
-   1) Put a 48x48 (or larger) transparent PNG at /assets/miku.png in your repo
-   2) Set MIKU_SPRITE to that path. They’ll wander & bounce on screen edges.
-*/
-      const MIKU_SPRITE = "./assets/miku.png"; // <- replace with your sprite path
-      const MIKU_COUNT = 3;
-
-      function spawnMiku(i) {
-        const m = document.createElement("div");
-        m.className = "miku";
-        m.style.backgroundImage = `url('${MIKU_SPRITE}')`;
-        const vw = Math.max(
-          document.documentElement.clientWidth || 0,
-          window.innerWidth || 0
-        );
-        const vh = Math.max(
-          document.documentElement.clientHeight || 0,
-          window.innerHeight || 0
-        );
-        let x = Math.random() * (vw - 60) + 10;
-        let y = Math.random() * (vh - 120) + 10;
-        let vx = (Math.random() * 0.6 + 0.3) * (Math.random() < 0.5 ? -1 : 1);
-        let vy = (Math.random() * 0.6 + 0.3) * (Math.random() < 0.5 ? -1 : 1);
-
-        function tick() {
-          const w = Math.max(
-            document.documentElement.clientWidth || 0,
-            window.innerWidth || 0
-          );
-          const h = Math.max(
-            document.documentElement.clientHeight || 0,
-            window.innerHeight || 0
-          );
-          x += vx;
-          y += vy;
-          // bounce
-          if (x < 0) {
-            x = 0;
-            vx *= -1;
-          }
-          if (y < 0) {
-            y = 0;
-            vy *= -1;
-          }
-          if (x > w - 48) {
-            x = w - 48;
-            vx *= -1;
-          }
-          if (y > h - 48) {
-            y = h - 48;
-            vy *= -1;
-          }
-          // slight gravity-ish climb bias to mimic "climb sides"
-          if (x < 12 || x > w - 60) vy = -Math.abs(vy); // nudge upward near edges
-          m.style.transform = `translate(${x}px, ${y}px)`;
-          requestAnimationFrame(tick);
-        }
-        m.addEventListener("click", () => {
-          // tiny giggle effect
-          m.animate(
-            [
-              { transform: `translate(${x}px, ${y}px) scale(1)` },
-              { transform: `translate(${x}px, ${y}px) scale(1.2)` },
-              { transform: `translate(${x}px, ${y}px) scale(1)` },
-            ],
-            { duration: 400 }
-          );
-          const a = new AudioContext();
-          const o = a.createOscillator();
-          const g = a.createGain();
-          o.type = "triangle";
-          o.frequency.setValueAtTime(880, a.currentTime);
-          g.gain.setValueAtTime(0.05, a.currentTime);
-          o.connect(g).connect(a.destination);
-          o.start();
-          o.stop(a.currentTime + 0.15);
-        });
-        document.body.appendChild(m);
-        tick();
-      }
-
-      (function initMikus() {
-        // Preload image; if it fails, skip to avoid broken boxes
-        const img = new Image();
-        img.onload = () => {
-          for (let i = 0; i < MIKU_COUNT; i++) spawnMiku(i);
-        };
-        img.onerror = () => {
-          /* no sprite yet; skip silently */
-        };
-        img.src = MIKU_SPRITE;
-      })();
-
-      /* ---------- Smooth scroll for hash links ---------- */
-      document.querySelectorAll('a[href^="#"]').forEach((a) => {
-        a.addEventListener("click", (e) => {
-          const id = a.getAttribute("href").slice(1);
-          const el = document.getElementById(id);
-          if (el) {
-            e.preventDefault();
-            el.scrollIntoView({ behavior: "smooth" });
-            history.pushState(null, "", "#" + id);
-          }
-        });
-      });
-    </script>
   </body>
 </html>
