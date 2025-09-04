@@ -1,0 +1,1 @@
+the sound effects that haven't been renamed are like that just because i wasnt sure/couldn't exactly remember what they were used for, sorry. other than that, this should be everything! ripped by onlinesaipa. credit is NOT mandatory at all, but is definitely appreciated! enjoy!

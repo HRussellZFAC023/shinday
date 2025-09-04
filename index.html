@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Baby Belle — Pixel Miku Garden ✨</title>
+    <title>Baby Belle - Pixel Miku Garden ✨</title>
     <meta
       name="description"
-      content="A cozy pastel web home for Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) — links, music, games, study corner, and interactive Miku companions!"
+      content="A cozy pastel web home for Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) - links, music, games, study corner, and interactive Miku companions!"
     />
-    <meta property="og:title" content="Baby Belle — Pastel Miku Garden" />
+    <meta property="og:title" content="Baby Belle - Pastel Miku Garden" />
     <meta
       property="og:description"
       content="A magical retro website with interactive Miku friends and kawaii vibes"
@@ -39,7 +39,7 @@
           Baby Belle's Pixel Garden
         </h1>
         <p class="typing-text">Initializing kawaii protocols...</p>
-        <button id="enterSite" class="enter-btn">Enter the Garden 🌳</button>
+        <button id="enterSite" class="enter-btn">enter the garden °❀⋆.ೃ࿔*:･</button>
       </div>
     </div>
 
@@ -50,17 +50,15 @@
         <div id="cursorTrail"></div>
 
         <!-- Header with animated background -->
-        <header id="header">
+          <header id="header">
           <div class="header-content">
             <h1 id="siteTitle">Baby Belle's Pixel Garden</h1>
-            <p id="siteSub">
+            <p id="siteSub" class="handwriting">
               where sweet dreams come to life ♡ • べべベルのデジタル庭
             </p>
           </div>
-          <div id="floatingMikusContainer" class="floating-mikus"></div>
-        </header>
-
-        <!-- Status bar with integrated navigation -->
+          <div id="floatingMikusContainer" class="floating-mikus person"></div>
+        </header>        <!-- Status bar with integrated navigation -->
         <div id="statusBar" class="status-bar">
           <div class="status-left">
             <div class="status-item">
@@ -143,17 +141,7 @@
             <div class="widget">
               <h3>🌸 Site Stats</h3>
               <div class="stats">
-                <div class="stat-item">
-                  <img src="" alt="Computer" class="badge" id="statBadge1" />
-                </div>
-                <div class="stat-item">
-                  <img
-                    src=""
-                    alt="Made with love"
-                    class="badge"
-                    id="statBadge2"
-                  />
-                </div>
+                <!-- Badges moved to Web Badges section -->
                 <div class="visitor-counter">
                   <span class="counter-label">Visitors:</span>
                   <span id="visitorCount" class="counter-number"
@@ -206,7 +194,7 @@
               <div class="games-grid">
                 <div class="game-widget">
                   <h3>🧩 Miku Memory Game</h3>
-                  <div id="memoryGame" class="memory-grid">
+                  <div id="memoryGame" class="memory-grid precision">
                     <!-- Will be populated by JS -->
                   </div>
                   <button id="resetMemory" class="pixel-btn">Reset Game</button>
@@ -215,7 +203,7 @@
                 <div class="game-widget">
                   <h3>💖 Heart Collector</h3>
                   <div class="heart-game">
-                    <div id="heartZone" class="heart-zone">
+                    <div id="heartZone" class="heart-zone precision">
                       Click to collect hearts! 💖
                     </div>
                     <p>
@@ -227,7 +215,7 @@
 
                 <div class="game-widget">
                   <h3>🎰 Miku Gacha</h3>
-                  <div class="gacha" id="mikuGacha">
+                  <div class="gacha precision" id="mikuGacha">
                     <div class="gacha-header">
                       <div class="gacha-tokens">
                         🎟️ Tickets: <span id="gachaTokens">0</span>
@@ -254,6 +242,13 @@
                       </button>
                     </div>
                     <div id="mikuDex" class="gacha-collection hidden"></div>
+                  </div>
+                </div>
+
+                <div class="game-widget">
+                  <h3>🧩 Jigsaw Puzzle</h3>
+                  <div class="social-embed" style="margin-top:10px; border-radius:12px; overflow:hidden; height: 480px;">
+                    <iframe src="https://www.jigsawplanet.com/?rc=play&pid=3516308d564d" style="border:0;width:100%;height:100%" loading="lazy" referrerpolicy="no-referrer"></iframe>
                   </div>
                 </div>
               </div>
@@ -311,6 +306,25 @@
               <div class="jp-hud-widget">
                 <div class="hud-line"><strong>💖 Hearts:</strong> <span id="hudHearts">0</span></div>
                 <div class="hud-line"><strong>❤️ Lives:</strong> <span id="hudLives">3</span>/<span id="hudMaxLives">5</span></div>
+                <!-- Moved Level bar into Diva HUD -->
+                <div class="hud-line" id="hudLevelWrap">
+                  <strong>⭐ Level:</strong>
+                  <span id="hudLevelText">Level 1 • 0%</span>
+                  <div class="progress-bar" id="hudLevelBar">
+                    <div class="progress" id="hudLevelProgress" style="width: 0%"></div>
+                  </div>
+                </div>
+                <!-- Difficulty control that actually affects gameplay -->
+                <div class="hud-controls" id="hudDifficultyWrap">
+                  <label class="hud-label" for="hudDifficulty">Difficulty:</label>
+                  <input type="range" min="1" max="9" step="1" value="3" id="hudDifficulty" />
+                  <span id="hudDifficultyLabel">3</span>
+                </div>
+                <!-- Small singing Miku slot -->
+                <div class="hud-controls" id="hudSinger" style="align-items:center;gap:8px">
+                  <span class="hud-label">Singer:</span>
+                  <img id="hudSingerImg" alt="Miku" style="width:64px;height:64px;object-fit:cover;border-radius:10px;border:2px solid var(--border);background:#fff" />
+                </div>
                 <div class="hud-controls">
                   <label class="hud-label">Game:</label>
                   <select id="hudGame" class="pixel-btn">
@@ -326,10 +340,6 @@
                     <option value="reading">Kanji→Reading</option>
                   </select>
                   <button id="hudTimed" class="pixel-btn" data-on="0">Timed: OFF</button>
-                </div>
-                <div class="hud-actions">
-                  <button id="hudStart" class="pixel-btn">▶️ Start Song</button>
-                  <button id="hudEnd" class="pixel-btn">⏹️ End Song</button>
                 </div>
               </div>
             </div>
@@ -363,18 +373,7 @@
             Hand-crafted for Baby Belle • ✨ This site is always under
             construction! ✨ • Cinnamoroll Approved
           </p>
-          <div class="footer-badges">
-            <img
-              src="https://cyber.dabamos.de/88x31/under_construction.gif"
-              alt="Under construction"
-              class="badge"
-            />
-            <img
-              src="https://cyber.dabamos.de/88x31/powered_by_coffee.gif"
-              alt="Powered by coffee"
-              class="badge"
-            />
-          </div>
+          <div class="footer-badges"></div>
         </footer>
       </div>
 

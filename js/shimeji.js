@@ -268,7 +268,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ORIGINAL_ACTIONS: ['walk', 'walk', 'walk', 'walk', 'walk', 'walk', 'sit', 'sit', 
                       'dance', 'spin', 'climb', 'jump', 'multiply'],
     mouseReactionDistance: 80,
-    multiplyChance: 0.2,
+    multiplyChance: 0.3,
     maxCreatures: 6
   };
 
@@ -298,7 +298,7 @@ window.addEventListener('DOMContentLoaded', () => {
       // Create image
       this.img = document.createElement('img');
       this.img.src = spriteConfig.walk.frames[0];
-      this.img.alt = `${type} companion`;
+      this.img.alt = /*html*/`${type} companion`;
       this.container.appendChild(this.img);
 
       // Physics properties
@@ -327,6 +327,13 @@ window.addEventListener('DOMContentLoaded', () => {
       this.climbTarget = null;
       this.jumpCooldown = 0;
       this.speechBubble = null;
+
+      // Footstep SFX rate limiting
+      this._lastStepAt = 0; // ms
+      this._stepCooldownWalk = 200; // ms between steps while walking
+      this._stepCooldownClimb = 260; // ms between steps while climbing
+      this._lastLandAt = 0; // ms
+      this._landCooldown = 200; // minimal gap for landing thump
 
       // Get container dimensions
       const containerStyle = window.getComputedStyle(this.container);
@@ -502,7 +509,35 @@ window.addEventListener('DOMContentLoaded', () => {
           }
         }
         this.img.src = frames[this.currentFrame];
+
+        // Footstep hooks on frame advance
+        try {
+          // Walk/forced-walk: step on alternating frames
+          if ((this.state === 'walk' || this.state === 'forced-walk') && this.isGrounded) {
+            if (this.currentFrame % 2 === 0) this._tryFootstep('walk');
+          }
+          // Climb: step a bit slower, on first frame
+          else if (this.state === 'climb') {
+            if (this.currentFrame === 0) this._tryFootstep('climb');
+          }
+          // Jump: initial takeoff is handled in triggerJump; landing handled in updatePhysics
+        } catch (_) {}
       }, interval);
+    }
+
+    _tryFootstep(kind) {
+      const now = Date.now();
+      const cd = kind === 'climb' ? this._stepCooldownClimb : this._stepCooldownWalk;
+      if (now - this._lastStepAt < cd) return;
+      // Avoid churn when many creatures or tab hidden
+      try {
+        if (typeof document !== 'undefined' && document.hidden) return;
+      } catch (_) {}
+      try {
+        if (Array.isArray(creatures) && creatures.length > 3) return;
+      } catch (_) {}
+      this._lastStepAt = now;
+      try { if (window.SFX) window.SFX.play('foot.step'); } catch (_) {}
     }
 
     // NEW FEATURE: Climbing sides
@@ -541,6 +576,8 @@ window.addEventListener('DOMContentLoaded', () => {
       this.velocity.y = -this.spriteConfig.jumpForce;
       this.isGrounded = false;
       this.jumpCooldown = 120; // 2 second cooldown at 60fps
+      // Takeoff footstep
+      try { if (window.SFX) window.SFX.play('foot.step'); } catch (_) {}
       
       const config = this.spriteConfig.jump;
       this.playAnimation(config.frames, config.interval, config.loops, () => {
@@ -583,7 +620,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     createOffspring() {
-      const newId = `${this.type}-offspring-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const newId = /*html*/`${this.type}-offspring-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       const offspring = new EnhancedCreature(newId, this.spriteConfig, this.type);
       
       // Position near parent
@@ -657,7 +694,7 @@ window.addEventListener('DOMContentLoaded', () => {
       this.speechBubble = document.createElement('div');
       this.speechBubble.className = 'shimeji-speech';
       this.speechBubble.textContent = message;
-      this.speechBubble.style.cssText = `
+      this.speechBubble.style.cssText = /*html*/`
         position: fixed;
         bottom: ${window.innerHeight - this.position.y + 10}px;
         left: ${this.position.x + this.containerWidth / 2}px;
@@ -682,7 +719,7 @@ window.addEventListener('DOMContentLoaded', () => {
       
       // Add speech bubble tail
       const tail = document.createElement('div');
-      tail.style.cssText = `
+      tail.style.cssText = /*html*/`
         position: absolute;
         top: 100%;
         left: 50%;
@@ -709,8 +746,8 @@ window.addEventListener('DOMContentLoaded', () => {
     
     updateSpeechBubblePosition() {
       if (this.speechBubble) {
-        this.speechBubble.style.bottom = `${window.innerHeight - this.position.y + 10}px`;
-        this.speechBubble.style.left = `${this.position.x + this.containerWidth / 2}px`;
+        this.speechBubble.style.bottom = /*html*/`${window.innerHeight - this.position.y + 10}px`;
+        this.speechBubble.style.left = /*html*/`${this.position.x + this.containerWidth / 2}px`;
       }
     }
     
@@ -728,6 +765,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Enhanced physics simulation
     updatePhysics(deltaTime) {
+      const wasGrounded = this.isGrounded;
       // Apply gravity if not grounded and not climbing
       if (!this.isGrounded && !this.isClimbing) {
         this.velocity.y += this.spriteConfig.gravity;
@@ -754,6 +792,14 @@ window.addEventListener('DOMContentLoaded', () => {
         this.position.y = this.maxPosY;
         this.velocity.y = 0;
         this.isGrounded = true;
+        // Landing thump
+        if (!wasGrounded) {
+          const now = Date.now();
+          if (now - this._lastLandAt > this._landCooldown) {
+            this._lastLandAt = now;
+            try { if (window.SFX) window.SFX.play('foot.step'); } catch (_) {}
+          }
+        }
         
         if (this.state === 'fall') {
           // Land from fall

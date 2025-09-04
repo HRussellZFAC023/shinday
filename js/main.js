@@ -14,85 +14,358 @@ document.addEventListener("DOMContentLoaded", () => {
   // Make mikuIcon globally available
   window.mikuIcon = mikuIcon;
 
+  // Lightweight DOM helpers
+  const $ = (id) => document.getElementById(id);
+  const byId = $;
+
+  // ====== SFX AUDIO ENGINE (asset-based) ======
+  // Loads and plays high-quality SFX from assets/SFX. Minimal, lazy-loaded, and shared.
+  (function initSfxEngine() {
+    const BASE = "./assets/SFX";
+    const p = (sub) => `${BASE}/${sub}`;
+    const MAP = {
+      // UI and navigation
+      "ui.move": [
+        p("menu sounds/menu cursor move.wav"),
+        p("menu sounds/menu cursor move (except this time there's three of them and it's slightly louder).wav"),
+        p("menu sounds/se_sy_00.wav")
+      ],
+      "ui.select": [p("menu sounds/menu option select.wav")],
+      "ui.back": [p("menu sounds/pop-up close.wav"), p("menu sounds/menu change.wav")],
+      "ui.change": [p("menu sounds/module change 1.wav"), p("menu sounds/module change 2.wav")],
+      "ui.unavailable": [p("menu sounds/unavailable.wav")],
+      "ui.teleport": [p("menu sounds/song selection teleport.wav")],
+      "ui.scoreTally": [p("menu sounds/score tally.wav")],
+      "ui.se_sy_24": [p("menu sounds/se_sy_24.wav")],
+
+      // Hearts and love
+      "hearts.click": [p("other sounds/click.wav"), p("other sounds/se_sy_09.wav")],
+      "hearts.add": [p("other sounds/se_sy_15.wav"), p("other sounds/se_sy_18.wav"), p("menu sounds/score tally.wav")],
+      "hearts.milestone": [p("misc other voice clips/(miku) yay.wav"), p("other sounds/clap.wav")],
+
+      // Gacha
+      "gacha.roll": [p("menu sounds/song selection teleport.wav")],
+      "gacha.reveal": [p("menu sounds/module change 1.wav"), p("menu sounds/module change 2.wav")],
+      "gacha.pop": [
+        // use varied percussion set for reveal pops
+        p("button sounds+percussion/1.wav"), p("button sounds+percussion/2.wav"), p("button sounds+percussion/3.wav"),
+        p("button sounds+percussion/4.wav"), p("button sounds+percussion/5.wav"), p("button sounds+percussion/6.wav"),
+        p("button sounds+percussion/7.wav"), p("button sounds+percussion/8.wav"), p("button sounds+percussion/9.wav"),
+        p("button sounds+percussion/10.wav"), p("button sounds+percussion/11.wav"), p("button sounds+percussion/12.wav"),
+        p("button sounds+percussion/13.wav"), p("button sounds+percussion/14.wav"), p("button sounds+percussion/15.wav"),
+        p("button sounds+percussion/16.wav"), p("button sounds+percussion/17.wav"), p("button sounds+percussion/18.wav"),
+        p("button sounds+percussion/19.wav"), p("button sounds+percussion/20.wav"), p("button sounds+percussion/21.wav"),
+        p("button sounds+percussion/22.wav"), p("button sounds+percussion/23.wav"), p("button sounds+percussion/24.wav"),
+        p("button sounds+percussion/25.wav"), p("button sounds+percussion/26.wav"), p("button sounds+percussion/27.wav"),
+        p("button sounds+percussion/28.wav"), p("button sounds+percussion/29.wav"), p("button sounds+percussion/30.wav"),
+        p("button sounds+percussion/31.wav"), p("button sounds+percussion/32.wav"), p("button sounds+percussion/33.wav"),
+        p("button sounds+percussion/34.wav"), p("button sounds+percussion/35.wav")
+      ],
+      "gacha.high": [p("menu sounds/result (clear).wav"), p("result voice clips/miku/perfect.wav")],
+      "gacha.mid": [p("result voice clips/miku/great.wav")],
+      "gacha.low": [p("menu sounds/result (not clear).wav"), p("result voice clips/miku/standard.wav")],
+      "gacha.fail": [p("result voice clips/miku/missXtake.wav")],
+
+      // Memory game
+      "memory.flip": [p("menu sounds/menu cursor move.wav")],
+      "memory.match": [p("menu sounds/menu option select.wav")],
+      "memory.win": [p("menu sounds/result (clear).wav")],
+      "memory.miss": [p("menu sounds/unavailable.wav")],
+      "memory.tick": [p("other sounds/sonar beeps 1.wav"), p("other sounds/sonar beeps 2.wav")],
+
+      // JP games
+      "quiz.ok": [p("menu sounds/menu option select.wav"), p("misc other voice clips/(miku) yay.wav")],
+      "quiz.bad": [p("menu sounds/unavailable.wav"), p("misc other voice clips/(miku) sad.wav")],
+      "quiz.tick": [p("other sounds/sonar beeps 1.wav"), p("other sounds/sonar beeps 2.wav")],
+      "quiz.timeup": [p("other sounds/se_ev_20.wav")],
+      "result.perfect": [p("result voice clips/miku/perfect.wav"), p("result voice clips/len/perfect.wav"), p("result voice clips/rin/perfect.wav")],
+      "result.great": [p("result voice clips/miku/great.wav"), p("result voice clips/len/great.wav"), p("result voice clips/rin/great.wav")],
+      "result.standard": [p("result voice clips/miku/standard.wav"), p("result voice clips/len/standard.wav"), p("result voice clips/rin/standard.wav")],
+      "result.cheap": [p("result voice clips/miku/cheap.wav"), p("result voice clips/len/cheap.wav"), p("result voice clips/rin/cheap.wav")],
+      "result.miss": [p("result voice clips/miku/missXtake.wav"), p("result voice clips/len/missXtake.wav"), p("result voice clips/rin/missXtake.wav")],
+
+      // Fun/extra
+      "extra.camera": [p("other sounds/camera.wav")],
+      "extra.clap": [p("other sounds/clap.wav")],
+      "extra.kick": [p("other sounds/kick.wav")],
+      "extra.coin": [p("other sounds/mr_0100000.wav")],
+      "extra.fx1": [p("other sounds/se_ev_01.wav")],
+      "extra.fx2": [p("other sounds/se_ev_17.wav")],
+      "extra.sona": [p("misc other voice clips/(miku) sona.wav")],
+      "extra.yo": [p("misc other voice clips/(miku) yo.wav"), p("misc other voice clips/(rin) yo.wav")],
+      "extra.wan": [p("misc other voice clips/(rin) wan.wav")],
+      "extra.thanks": [p("misc other voice clips/(miku) thank you for playing!.wav")],
+      "sega.tag": [p("sega voice clips/sega (solo).wav"), p("sega voice clips/sega (chorus).wav"), p("sega voice clips/sega (shout).wav")],
+
+      // Footsteps pool (available for future shimeji hooks)
+      "foot.step": [
+        p("footstep sounds/se_ev_05_01.wav"), p("footstep sounds/se_ev_05_02.wav"),
+        p("footstep sounds/se_ev_06_01.wav"), p("footstep sounds/se_ev_06_02.wav"),
+        p("footstep sounds/se_ev_07_01.wav"), p("footstep sounds/se_ev_07_02.wav"),
+        p("footstep sounds/se_ev_08_01.wav"), p("footstep sounds/se_ev_08_02.wav"),
+        p("footstep sounds/se_ev_14.wav")
+      ]
+    };
+
+    const ctxState = { ctx: null, master: null, enabled: true, volume: 0.6 };
+    const buffers = new Map(); // path -> Promise<AudioBuffer>
+    const lastPlayAt = Object.create(null); // key -> timestamp
+    const minInterval = {
+      'foot.step': 300, // slower global cadence to reduce churn
+      'ui.move': 60,
+    };
+
+    function ensureCtx() {
+      if (!ctxState.ctx) {
+        try {
+          ctxState.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          ctxState.master = ctxState.ctx.createGain();
+          ctxState.master.gain.value = ctxState.volume;
+          ctxState.master.connect(ctxState.ctx.destination);
+          // unlock on first gesture
+          const unlock = () => {
+            if (!ctxState.ctx) return;
+            if (ctxState.ctx.state === "suspended") ctxState.ctx.resume();
+            window.removeEventListener("pointerdown", unlock);
+          };
+          window.addEventListener("pointerdown", unlock);
+        } catch (e) {
+          // no audio
+        }
+      }
+      return ctxState.ctx;
+    }
+    function loadBuffer(path) {
+      if (buffers.has(path)) return buffers.get(path);
+      const ctx = ensureCtx();
+      if (!ctx) return Promise.resolve(null);
+      const prom = fetch(path)
+        .then((r) => r.arrayBuffer())
+        .then((ab) => new Promise((res, rej) => ctx.decodeAudioData(ab, res, rej)))
+        .catch(() => null);
+      buffers.set(path, prom);
+      return prom;
+    }
+    async function playPath(path, { volume = 1, rate = 1, detune = 0, pan = 0 } = {}) {
+      if (!ctxState.enabled) return;
+      const ctx = ensureCtx();
+      if (!ctx) return;
+      const buf = await loadBuffer(path);
+      if (!buf) return;
+      const src = ctx.createBufferSource();
+      const g = ctx.createGain();
+      const p = (ctx.createStereoPanner ? ctx.createStereoPanner() : null);
+      src.buffer = buf;
+      if (src.detune) src.detune.value = detune;
+      src.playbackRate.value = rate;
+      g.gain.value = volume;
+      if (p) {
+        p.pan.value = pan;
+        src.connect(g).connect(p).connect(ctxState.master);
+      } else {
+        src.connect(g).connect(ctxState.master);
+      }
+      try { src.start(); } catch (_) {}
+    }
+    function pick(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+    async function playKey(key, opts = {}) {
+      const arr = MAP[key];
+      if (!arr || arr.length === 0) return;
+      // simple global throttle per key
+      const now = performance.now();
+      const gap = minInterval[key] || 0;
+      if (gap && lastPlayAt[key] && now - lastPlayAt[key] < gap) return;
+      lastPlayAt[key] = now;
+      const path = pick(arr);
+      return playPath(path, opts);
+    }
+    function setEnabled(on) {
+      ctxState.enabled = !!on;
+      localStorage.setItem("pixelbelle-sfx-enabled", ctxState.enabled ? "1" : "0");
+    }
+    function setVolume(v) {
+      ctxState.volume = Math.min(1, Math.max(0, v));
+      if (ctxState.master) ctxState.master.gain.value = ctxState.volume;
+      localStorage.setItem("pixelbelle-sfx-volume", String(ctxState.volume));
+    }
+    // restore prefs
+    try {
+      const en = localStorage.getItem("pixelbelle-sfx-enabled");
+      if (en != null) ctxState.enabled = en === "1";
+      const vol = parseFloat(localStorage.getItem("pixelbelle-sfx-volume") || "");
+      if (isFinite(vol)) ctxState.volume = vol;
+    } catch (_) {}
+
+    // Preload first source for keys gradually to avoid decode hitches
+    function preloadFirst(keys = [], { perTick = 2, delay = 150 } = {}) {
+      const paths = [];
+      const seen = new Set();
+      keys.forEach((k) => {
+        const arr = MAP[k];
+        if (arr && arr.length) {
+          const p0 = arr[0];
+          if (!seen.has(p0)) {
+            seen.add(p0);
+            paths.push(p0);
+          }
+        }
+      });
+      let i = 0;
+      function step() {
+        const end = Math.min(paths.length, i + perTick);
+        for (; i < end; i++) loadBuffer(paths[i]);
+        if (i < paths.length) {
+          if (window.requestIdleCallback) requestIdleCallback(() => setTimeout(step, delay));
+          else setTimeout(step, delay);
+        }
+      }
+      step();
+    }
+    window.SFX = { play: playKey, playPath, setEnabled, setVolume, ensureCtx, MAP, preloadFirst };
+  })();
+
+  // ====== MEMORY AND PERFORMANCE OPTIMIZATION ======
+  // Global timer tracking for cleanup
+  const GLOBAL_TIMERS = {
+    intervals: new Set(),
+    timeouts: new Set(),
+    
+    addInterval(id) { this.intervals.add(id); return id; },
+    addTimeout(id) { this.timeouts.add(id); return id; },
+    
+    clearAll() {
+      this.intervals.forEach(id => clearInterval(id));
+      this.timeouts.forEach(id => clearTimeout(id));
+      this.intervals.clear();
+      this.timeouts.clear();
+    }
+  };
+
+  // Enhanced timer functions with tracking
+  window.setIntervalTracked = (fn, delay) => GLOBAL_TIMERS.addInterval(setInterval(fn, delay));
+  window.setTimeoutTracked = (fn, delay) => GLOBAL_TIMERS.addTimeout(setTimeout(fn, delay));
+  
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => GLOBAL_TIMERS.clearAll());
+
+  // (Removed duplicate byId; using the lightweight `$`/`byId` declared above)
+
+  // ====== OPTIMIZED IMAGE LOADING ======
+  const MIKU_IMAGES = [];
+  let resolveMiku;
+  window.MIKU_IMAGES_READY = new Promise((res) => (resolveMiku = res));
+
+  // Non-blocking, batched image loading with worker-like approach
+  (function loadImages() {
+    const roots = [
+      "./assets/Pixel Hatsune Miku by Cutebunni (68581)/Hatsune Miku @illufinch ",
+      "./assets/pixel-miku/Hatsune Miku @illufinch ",
+    ];
+    
+    // Add user-specified extra Miku images first (no validation needed)
+    if (Array.isArray(C.images?.extraMikus)) {
+      MIKU_IMAGES.push(...C.images.extraMikus.filter(url => typeof url === "string" && url));
+    }
+
+    // Optimized parallel loading with batching
+    async function loadBatch(root, startIdx = 1, batchSize = 10) {
+      const promises = [];
+      for (let i = startIdx; i < startIdx + batchSize; i++) {
+        const path = `${root}${i.toString().padStart(2, "0")}.png`;
+        promises.push(
+          new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(path);
+            img.onerror = () => resolve(null);
+            img.src = path;
+          })
+        );
+      }
+      return Promise.all(promises);
+    }
+
+    async function loadRoot(root) {
+      let currentIdx = 1;
+      let consecutiveFailures = 0;
+      const MAX_TOTAL = 80; // soft cap to avoid excessive memory
+      
+      while (consecutiveFailures < 3 && MIKU_IMAGES.length < MAX_TOTAL) { // Stop after 3 consecutive failures or soft cap
+        const batch = await loadBatch(root, currentIdx, 5); // Smaller batches
+        const validPaths = batch.filter(path => path !== null);
+        
+        if (validPaths.length === 0) {
+          consecutiveFailures++;
+        } else {
+          consecutiveFailures = 0;
+          for (const p of validPaths) {
+            if (MIKU_IMAGES.length >= MAX_TOTAL) break;
+            MIKU_IMAGES.push(p);
+          }
+        }
+        
+        currentIdx += 5;
+        
+        // Yield control to prevent blocking
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+    }
+
+    // Load from first available root only
+    (async () => {
+      for (const root of roots) {
+        const testPath = `${root}01.png`;
+        const testResult = await new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false);
+          img.src = testPath;
+        });
+        
+        if (testResult) {
+          await loadRoot(root);
+          break;
+        }
+      }
+      
+      // Resolve readiness
+      if (typeof resolveMiku === "function") resolveMiku(MIKU_IMAGES.slice());
+      document.dispatchEvent(new CustomEvent("miku-images-ready", { detail: { images: MIKU_IMAGES.slice() } }));
+    })();
+  })();
+
   // ====== DATA CONFIGURATION ======
   const SOCIALS = (C.socials && C.socials.items) || [];
   const FRIENDS = (C.friends && C.friends.items) || [];
   const PLAYLIST_SONGS = (C.music && C.music.songs) || [];
   const LOVE_TOASTS = (C.love && C.love.toasts) || ["ありがとう！💖"];
   const LOVE_MILESTONES = (C.love && C.love.milestones) || [];
-  const MIKU_IMAGES = [];
-  // Expose a promise that resolves when we've finished probing available Miku images
-  let resolveMiku;
-  window.MIKU_IMAGES_READY = new Promise((res) => (resolveMiku = res));
-
-  (async function loadImages() {
-    // Try actual folder name from assets: "Pixel Hatsune Miku by Cutebunni (68581)"
-    const roots = [
-      "./assets/Pixel Hatsune Miku by Cutebunni (68581)/Hatsune Miku @illufinch ",
-      "./assets/pixel-miku/Hatsune Miku @illufinch ",
-    ];
-    let foundAny = false;
-    // Include user-specified extra Miku images (singing assets)
-    if (Array.isArray(C.images?.extraMikus)) {
-      for (const url of C.images.extraMikus) {
-        if (typeof url === "string" && url) MIKU_IMAGES.push(url);
-      }
-    }
-    for (const root of roots) {
-      let i = 1;
-      while (true) {
-        const indexStr = i.toString().padStart(2, "0");
-        const path = `${root}${indexStr}.png`;
-        const img = new Image();
-        img.src = path;
-        try {
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-          });
-          MIKU_IMAGES.push(path);
-          foundAny = true;
-          i++;
-        } catch (e) {
-          break; // stop this root
-        }
-      }
-      if (foundAny) break; // use the first root that works
-    }
-    // Resolve readiness and notify listeners
-    if (typeof resolveMiku === "function") resolveMiku(MIKU_IMAGES.slice());
-    document.dispatchEvent(
-      new CustomEvent("miku-images-ready", {
-        detail: { images: MIKU_IMAGES.slice() },
-      })
-    );
-  })();
 
   // ====== SITE INITIALIZATION ======
   let currentSection = "home";
   let heartCount = parseInt(localStorage.getItem("pixelbelle-hearts")) || 0;
-  let gameHeartCount =
-    parseInt(localStorage.getItem("pixelbelle-game-hearts")) || 0;
-  let visitorCount =
-    parseInt(localStorage.getItem("pixelbelle-visitors")) ||
-    Math.floor(Math.random() * 1000) + 100;
-  let lastMilestone =
-    parseInt(localStorage.getItem("pixelbelle-last-milestone")) || 0;
+  let gameHeartCount = parseInt(localStorage.getItem("pixelbelle-game-hearts")) || 0;
+  let visitorCount = parseInt(localStorage.getItem("pixelbelle-visitors")) || Math.floor(Math.random() * 1000) + 100;
+  let lastMilestone = parseInt(localStorage.getItem("pixelbelle-last-milestone")) || 0;
 
   // Increment visitor count
   visitorCount++;
   localStorage.setItem("pixelbelle-visitors", visitorCount);
 
-  // ====== SPLASH SCREEN ======
+  // ====== OPTIMIZED SPLASH SCREEN ======
   function initSplash() {
-    const splash = document.getElementById("splash");
-    const enterBtn = document.getElementById("enterSite");
-    const mainSite = document.getElementById("mainSite");
+  const splash = byId("splash");
+  const enterBtn = byId("enterSite");
+  const mainSite = byId("mainSite");
     let isEntering = false;
 
-    enterBtn.addEventListener("click", () => {
+    if (!splash || !enterBtn || !mainSite) return;
+
+    const handleEnter = () => {
       if (isEntering) return;
       isEntering = true;
+      try { SFX.play('ui.teleport'); } catch (_) {}
       splash.style.animation = "fadeOut 0.8s ease-out forwards";
       setTimeout(() => {
         splash.style.display = "none";
@@ -100,40 +373,183 @@ document.addEventListener("DOMContentLoaded", () => {
         initSite();
         isEntering = false;
       }, 800);
-    });
+    };
 
-    // Auto-enter after 5 seconds
-    setTimeout(() => {
-      if (!splash.style.display || splash.style.display !== "none") {
-        enterBtn.click();
+    enterBtn.addEventListener("click", handleEnter, { once: true });
+
+    // Auto-enter with cleanup
+    const autoEnterTimeout = setTimeout(() => {
+      if (splash.style.display !== "none") {
+        handleEnter();
       }
     }, 5000);
+
+    // Store timeout for potential cleanup
+    window._splashTimeout = autoEnterTimeout;
   }
 
-  // ====== GACHA (upgraded random Miku) ======
-  function initMikuGacha() {
-    const poolReady = () =>
-      Array.isArray(MIKU_IMAGES) && MIKU_IMAGES.length > 0;
+  // ====== ANI CURSORS (animated Windows .ani files) ======
+  async function initAniCursors() {
+    try {
+      // Skip under constrained conditions for performance
+      const smallScreen = Math.min(window.innerWidth, window.innerHeight) < 500;
+      const prefersReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const saveData = navigator.connection && navigator.connection.saveData;
+      if (smallScreen || prefersReduce || saveData) return;
+      // Map logical roles to filenames from assets/ani file-animation WxS
+      const roleToFile = {
+        normal: "Normal.ani",
+        link: "Link.ani",
+        text: "Text.ani",
+        help: "Help.ani",
+        busy: "Busy.ani",
+        working: "Working.ani",
+        precision: "Precision.ani",
+        move: "Move.ani",
+        person: "Person.ani",
+        unavailable: "Unavailable.ani",
+        vertical: "Vertical.ani",
+        horizontal: "Horizontal.ani",
+        diagonal1: "Diagonal1.ani",
+        diagonal2: "Diagonal2.ani",
+        handwriting: "Handwriting.ani",
+        pin: "Pin.ani",
+  alternate: "Alternate.ani",
+      };
 
-    // Elements
-    const tokensEl = document.getElementById("gachaTokens");
-    const pull1Btn = document.getElementById("gachaPull1");
-    const pull10Btn = document.getElementById("gachaPull10");
-    const dailyBtn = document.getElementById("gachaDaily");
-    const convertBtn = document.getElementById("gachaConvert");
-    const resultsEl = document.getElementById("gachaResults");
-    const dexBtn = document.getElementById("gachaCollectionBtn");
-    const dexEl = document.getElementById("mikuDex");
-    if (
-      !tokensEl ||
-      !pull1Btn ||
-      !pull10Btn ||
-      !dailyBtn ||
-      !resultsEl ||
-      !dexBtn ||
-      !dexEl
-    )
-      return;
+      // Defer heavy import and application until idle
+      const boot = async () => {
+        const mod = await import("https://cdn.skypack.dev/ani-cursor");
+      const style = document.createElement("style");
+      style.id = "ani-cursor-styles";
+      document.head.appendChild(style);
+
+      // Helper to fetch a file and build CSS for a selector
+      const base = encodeURI("./assets/ani file-animation WxS/");
+      const aniCssCache = new Map();
+      const aniApplied = new Set(); // `${selector}::${fileName}`
+      async function getAniCss(selector, fileName) {
+        const key = `${selector}::${fileName}`;
+        if (aniCssCache.has(key)) return aniCssCache.get(key);
+        try {
+          const res = await fetch(`${base}${encodeURIComponent(fileName)}`);
+          const buf = await res.arrayBuffer();
+          const convert = mod.convertAniBinaryToCSS || (mod.default && mod.default.convertAniBinaryToCSS);
+          if (!convert) throw new Error('ani-cursor convert not available');
+          const css = convert(selector, new Uint8Array(buf));
+          aniCssCache.set(key, css);
+          return css;
+        } catch (_) {
+          return "";
+        }
+      }
+      async function applyAni(selector, fileName) {
+        const appliedKey = `${selector}::${fileName}`;
+        if (aniApplied.has(appliedKey)) return;
+        try {
+          const css = await getAniCss(selector, fileName);
+          if (css) {
+            style.appendChild(document.createTextNode(css));
+            aniApplied.add(appliedKey);
+          }
+        } catch (_) {
+          // Ignore if not supported
+        }
+      }
+
+      // Apply minimal set first; defer the rest to idle
+      await Promise.all([
+        applyAni("html, body", roleToFile.normal),
+        applyAni("a, button, .pixel-btn, .heart-btn, .radio-btn, .enter-btn, .quick-links a", roleToFile.link),
+        applyAni("input, textarea, [contenteditable=\"true\"], .editable", roleToFile.text),
+        applyAni(".memory-card, .gacha-card, .dex-card, .memory-grid, canvas, svg", roleToFile.precision)
+      ]);
+      const applyLater = () => Promise.all([
+        applyAni(".hero-miku, .splash-miku, .float-miku, .shrine-image, #shrineMiku, #heroMiku, #splashMiku, .avatar, .friend-avatar", roleToFile.person),
+        applyAni(".help, [title], .widget h3, .status-item, .hud-line", roleToFile.help),
+        applyAni("[draggable=\"true\"], .draggable, .movable, .gacha-card.matched", roleToFile.move),
+        applyAni("button:disabled, .pixel-btn:disabled, [aria-disabled=\"true\"], .disabled, .unavailable", roleToFile.unavailable),
+        applyAni(".badge, .pin, .pinned, .candle, .blink, #statusDot", roleToFile.pin)
+      ]).catch(() => {});
+      if (window.requestIdleCallback) requestIdleCallback(() => applyLater());
+      else setTimeout(applyLater, 1500);
+
+      // Expose cursor control API
+      window.setBusyCursor = (on) => {
+        const id = "ani-busy-toggle";
+        let busyStyle = document.getElementById(id);
+        if (on) {
+          if (!busyStyle) {
+            busyStyle = document.createElement("style");
+            busyStyle.id = id;
+            document.head.appendChild(busyStyle);
+          }
+          busyStyle.textContent = `html, body, * { cursor: auto !important; }`;
+          applyAni("html, body, *", roleToFile.busy);
+        } else if (busyStyle) {
+          busyStyle.remove();
+        }
+      };
+
+      window.setWorkingCursor = (on) => {
+        const id = "ani-working-toggle";
+        let w = document.getElementById(id);
+        if (on) {
+          if (!w) {
+            w = document.createElement("style");
+            w.id = id;
+            document.head.appendChild(w);
+          }
+          w.textContent = `html, body, * { cursor: auto !important; }`;
+          applyAni("html, body, *", roleToFile.working);
+        } else if (w) {
+          w.remove();
+        }
+      };
+
+      // Dynamic cursor switching for different contexts
+      window.setGameCursor = (mode) => {
+        const id = "ani-game-cursor";
+        let gameStyle = document.getElementById(id);
+        if (mode && roleToFile[mode]) {
+          if (!gameStyle) {
+            gameStyle = document.createElement("style");
+            gameStyle.id = id;
+            document.head.appendChild(gameStyle);
+          }
+          gameStyle.textContent = `.memory-card, .gacha-card, .heart-zone { cursor: auto !important; }`;
+          applyAni(".memory-card, .gacha-card, .heart-zone", roleToFile[mode]);
+        } else if (gameStyle) {
+          gameStyle.remove();
+        }
+      };
+      };
+
+      if (window.requestIdleCallback) requestIdleCallback(() => boot());
+      else setTimeout(() => boot(), 1500);
+    } catch (_) {
+      // If anything fails (e.g., no module), do nothing; site still works.
+    }
+  }
+
+  // ====== OPTIMIZED GACHA SYSTEM ======
+  function initMikuGacha() {
+    const poolReady = () => Array.isArray(MIKU_IMAGES) && MIKU_IMAGES.length > 0;
+
+    // Cached DOM elements
+    const elements = {
+  tokens: byId("gachaTokens"),
+  pull1: byId("gachaPull1"),
+  pull10: byId("gachaPull10"),
+  daily: byId("gachaDaily"),
+  convert: byId("gachaConvert"),
+  results: byId("gachaResults"),
+  dexBtn: byId("gachaCollectionBtn"),
+  dex: byId("mikuDex")
+    };
+
+    // Early return if elements missing
+    if (!Object.values(elements).every(el => el)) return;
 
     const LS_TOKENS = "gacha.tokens";
     const LS_DAILY = "gacha.lastDaily";
@@ -150,7 +566,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateTokens(n = tokens) {
       tokens = n;
       localStorage.setItem(LS_TOKENS, String(tokens));
-      tokensEl.textContent = String(tokens);
+      elements.tokens.textContent = String(tokens);
     }
     updateTokens(tokens);
 
@@ -216,24 +632,54 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderResults(cards) {
-      resultsEl.innerHTML = cards
-        .map((c) => {
-          const isNew = addToCollection(c);
-          const newBadge = isNew ? '<div class="gacha-new">NEW!</div>' : "";
+      // initially render placeholders for a staged reveal
+      elements.results.innerHTML = cards
+        .map((c, i) => {
           return `
-          <div class="gacha-card rarity-${c.rarity}">
+          <div class="gacha-card placeholder rarity-${c.rarity}" data-index="${i}">
             <div class="gacha-stars">${stars(c.rarity)}</div>
-            ${newBadge}
-            <img src="${c.url}" alt="Miku card" />
+            <div class="gacha-placeholder">?</div>
           </div>
         `;
         })
         .join("");
-      resultsEl.animate(
-        [{ transform: "scale(0.98)" }, { transform: "scale(1)" }],
-        { duration: 200, easing: "ease-out" }
-      );
-      renderDex();
+
+      // play roll SFX
+      try {
+        SFX.play('gacha.roll');
+      } catch (e) {}
+
+      // stagger reveal with pop sounds; reveal image and NEW badge
+      cards.forEach((c, i) => {
+        setTimeout(() => {
+          const cardEl = elements.results.querySelector(`.gacha-card[data-index="${i}"]`);
+          if (!cardEl) return;
+          const isNew = addToCollection(c);
+          const newBadge = isNew ? '<div class="gacha-new">NEW!</div>' : "";
+          cardEl.classList.remove("placeholder");
+          cardEl.innerHTML = `\n            <div class="gacha-stars">${stars(c.rarity)}</div>\n            ${newBadge}\n            <img src="${c.url}" alt="Miku card" loading="lazy" />\n          `;
+          // pop SFX and reveal change
+          try { SFX.play('gacha.pop'); } catch (e) {}
+          // special fanfare for high rarity
+          if (c.rarity >= 4) {
+            try { SFX.play('gacha.high'); } catch (e) {}
+            // lightweight glow using transform + brightness (avoid box-shadow anim)
+            cardEl.animate(
+              [ { transform: 'scale(1)', filter: 'brightness(1.0)' }, { transform: 'scale(1.03)', filter: 'brightness(1.12)' } ],
+              { duration: 500, easing: 'ease-out' }
+            );
+          }
+        }, 180 * i + 200);
+      });
+
+      // small pop when all revealed
+      setTimeout(() => {
+        elements.results.animate(
+          [{ transform: "scale(0.98)" }, { transform: "scale(1)" }],
+          { duration: 220, easing: "ease-out" }
+        );
+        renderDex();
+      }, 200 + cards.length * 180);
     }
 
     function renderDex() {
@@ -243,17 +689,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const r = rarityFor(url);
         const ownClass = owned ? "owned rarity-" + r : "";
         const count = owned
-          ? `<span class=\"dex-count\">x${entry.count}</span>`
+          ? `<span class="dex-count">x${entry.count}</span>`
           : "";
         return `
           <div class="dex-card ${ownClass}">
             <div class="dex-stars">${stars(r)}</div>
             ${count}
-            <img src="${url}" alt="Miku dex" />
+            <img src="${url}" alt="Miku dex" loading="lazy" />
           </div>
         `;
       }).join("");
-      dexEl.innerHTML = `<div class="dex-grid">${tiles}</div>`;
+      elements.dex.innerHTML = `<div class="dex-grid">${tiles}</div>`;
     }
 
     function pull(n) {
@@ -263,31 +709,40 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (tokens < n) {
         loveToast("チケットが足りないよ！");
+        try { SFX.play("ui.unavailable"); } catch (_) {}
         return;
       }
+      try { window.setBusyCursor && window.setBusyCursor(true); } catch (_) {}
       updateTokens(tokens - n);
       const cards = Array.from({ length: n }, () => pickRandom());
       if (n >= 10) guaranteeAtLeast(3, cards);
       renderResults(cards);
+      // remove busy cursor after reveals finish
+      setTimeout(() => {
+        try { window.setBusyCursor && window.setBusyCursor(false); } catch (_) {}
+      }, 300 + n * 200);
     }
 
-    pull1Btn.addEventListener("click", () => ensurePool(() => pull(1)));
-    pull10Btn.addEventListener("click", () => ensurePool(() => pull(10)));
-    dailyBtn.addEventListener("click", () => {
+    elements.pull1.addEventListener("click", () => ensurePool(() => pull(1)));
+    elements.pull10.addEventListener("click", () => ensurePool(() => pull(10)));
+    elements.daily.addEventListener("click", () => {
       const last = localStorage.getItem(LS_DAILY);
       const today = new Date().toDateString();
       if (last === today) {
         loveToast("今日はもう受け取ったよ！");
+        try { SFX.play("ui.unavailable"); } catch (_) {}
         return;
       }
       localStorage.setItem(LS_DAILY, today);
       updateTokens(tokens + 1);
       loveToast("デイリーチケット＋1！");
+      try { SFX.play("ui.select"); } catch (_) {}
     });
-    convertBtn.addEventListener("click", () => {
+    elements.convert.addEventListener("click", () => {
       const convertCost = 100;
       if (heartCount < convertCost) {
         loveToast(`💖が足りないよ！(${convertCost}必要)`);
+        try { SFX.play("ui.unavailable"); } catch (_) {}
         return;
       }
       heartCount -= convertCost;
@@ -295,13 +750,15 @@ document.addEventListener("DOMContentLoaded", () => {
       updateCounters();
       updateTokens(tokens + 1);
       loveToast("💖→チケット +1");
+      try { SFX.play("ui.scoreTally"); } catch (_) {}
     });
-    dexBtn.addEventListener("click", () => {
-      dexEl.classList.toggle("hidden");
+    elements.dexBtn.addEventListener("click", () => {
+      elements.dex.classList.toggle("hidden");
       renderDex();
-      dexBtn.textContent = dexEl.classList.contains("hidden")
+      elements.dexBtn.textContent = elements.dex.classList.contains("hidden")
         ? "Open MikuDex"
         : "Close MikuDex";
+      try { SFX.play("ui.change"); if (Math.random() < 0.3) SFX.play('extra.fx1'); } catch (_) {}
     });
 
     ensurePool(() => renderDex());
@@ -311,6 +768,8 @@ document.addEventListener("DOMContentLoaded", () => {
     applyContent();
     initNavigation();
     initStatusBar();
+    // Start BGM first; radio will override if user plays it
+    initBgm();
     initRadio();
     initSocials();
     initJpGames();
@@ -322,8 +781,118 @@ document.addEventListener("DOMContentLoaded", () => {
     initFloatingHearts();
     updateCounters();
     loadSavedData();
+    initAniCursors();
+    initEnhancedCursors();    console.log("PixelBelle's Garden initialized! 🌸");
+    // Preload a minimal set of critical SFX buffers in the background
+    try {
+      if (window.SFX && typeof window.SFX.preloadFirst === 'function') {
+        const keys = ['ui.move','hearts.click','gacha.roll','gacha.pop','foot.step'];
+        if (window.requestIdleCallback) requestIdleCallback(() => window.SFX.preloadFirst(keys, { perTick: 1, delay: 300 }));
+        else setTimeout(() => window.SFX.preloadFirst(keys, { perTick: 1, delay: 300 }), 2000);
+      }
+    } catch (_) {}
+  }
 
-    console.log("PixelBelle's Garden initialized! 🌸");
+  // ====== BGM (Autoplay on load, stops when radio starts) ======
+  function initBgm() {
+    try {
+      // Preference: set localStorage 'pixelbelle-auto-music' = '0' to disable
+      const AUTO_KEY = "pixelbelle-auto-music";
+      const autoPref = localStorage.getItem(AUTO_KEY);
+      const autoOn = autoPref == null ? true : autoPref === "1";
+      if (!autoOn) return;
+
+      // If already initialized in this session, skip
+      if (window.__bgmAudio) return;
+
+      const bgm = new Audio("./assets/bgm.ogg");
+      bgm.loop = true;
+      bgm.preload = "auto";
+      bgm.volume = 0.35;
+      window.__bgmAudio = bgm;
+      window.__bgmKilled = false; // set to true once radio starts or bgm is permanently stopped
+
+      function tryPlay() {
+        if (window.__bgmKilled) return;
+        bgm.play().catch(() => {
+          // Autoplay may be blocked; wait for first gesture
+        });
+      }
+
+      // Attempt immediately after site enter
+      tryPlay();
+
+      // Fallback: resume on first user interaction if blocked
+      const resumeOnInteract = () => {
+        if (window.__bgmKilled) {
+          cleanupResume();
+          return;
+        }
+        if (bgm.paused) {
+          bgm.play().catch(() => {});
+        }
+        cleanupResume();
+      };
+      function cleanupResume() {
+        document.removeEventListener("click", resumeOnInteract);
+        document.removeEventListener("keydown", resumeOnInteract);
+        document.removeEventListener("touchstart", resumeOnInteract);
+      }
+      document.addEventListener("click", resumeOnInteract, { passive: true });
+      document.addEventListener("keydown", resumeOnInteract, { passive: true });
+      document.addEventListener("touchstart", resumeOnInteract, { passive: true });
+
+      // Expose a stopper for radio to call
+      window.__stopBgm = (permanent = true) => {
+        try { bgm.pause(); } catch (_) {}
+        try { bgm.currentTime = 0; } catch (_) {}
+        if (permanent) window.__bgmKilled = true;
+      };
+    } catch (_) {}
+  }
+
+  // ====== ENHANCED CURSOR INTERACTIONS ======
+  function initEnhancedCursors() {
+    // Optimized memory game cursor switching with delegation
+    let lastHoverTime = 0;
+    document.addEventListener("mouseover", (e) => {
+      const now = Date.now();
+      if (now - lastHoverTime > 50) { // Throttle hover events
+        if (e.target.classList.contains("memory-card")) {
+          try { window.setGameCursor && window.setGameCursor("precision"); } catch(_){}
+        }
+        lastHoverTime = now;
+      }
+    }, { passive: true });
+    
+  // Note: removed global fetch override (was toggling working cursor on every fetch)
+  // to avoid recursion with ANI loader and excessive style churn.
+
+    // Optimized dynamic cursor with passive listeners and delegation
+    let lastClickTime = 0;
+    document.addEventListener("click", (e) => {
+      const now = Date.now();
+      if (now - lastClickTime > 50) { // Throttle clicks
+        const target = e.target;
+        
+        // Heart zone gets special cursor
+        if (target.id === "heartZone") {
+          try { window.setGameCursor && window.setGameCursor("alternate"); } catch(_){}
+          setTimeout(() => {
+            try { window.setGameCursor && window.setGameCursor(null); } catch(_){}
+          }, 300);
+        }
+        
+        // Memory cards get precision
+        if (target.classList.contains("memory-card")) {
+          try { window.setGameCursor && window.setGameCursor("precision"); } catch(_){}
+          setTimeout(() => {
+            try { window.setGameCursor && window.setGameCursor(null); } catch(_){}
+          }, 500);
+        }
+        lastClickTime = now;
+      }
+    }, { passive: true });
   }
 
   // ====== JP GAMES (Project Diva style) ======
@@ -336,33 +905,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const studyHeading = document.querySelector("#study h2");
     if (studyHeading) studyHeading.style.display = "none";
 
-    container.innerHTML = `
-      <div class="study-card" id="levelCard">
-        <div class="progress-bar"><div class="progress" style="width: 0%"></div></div>
-        <p id="levelText"></p>
-      </div>
-      <div class="study-card" id="wodCard">
-        <div class="word-of-day">
-          <span class="japanese"></span>
-          <span class="romaji"></span>
-          <span class="meaning"></span>
-        </div>
-        <div class="social-embed" style="margin-top:10px; border-radius:12px; overflow:hidden; height: 600px;">
-          <iframe id="wodIframe" src="${
-            C.study && C.study.wordOfDay && C.study.wordOfDay.externalIframe
-              ? C.study.wordOfDay.externalIframe
-              : "https://kanjiday.com/kanji/"
-          }" style="border:0;width:100%;height:100%" loading="lazy" referrerpolicy="no-referrer"></iframe>
-        </div>
-      </div>
+    container.innerHTML = /*html*/`
       <div class="study-card" id="startCard" style="position:relative;min-height:240px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
         <div id="jpMikus" class="floating-mikus" style="position:absolute;right:10px;top:10px;pointer-events:none"></div>
-        <div id="pressStart" class="press-start">PRESS START</div>
-        <div id="startMenu" class="start-menu hidden">
-          <div class="menu-grid">
-            <button id="startVocab" class="pixel-btn menu-tile">📝 Vocab Quiz</button>
-            <button id="startKanji" class="pixel-btn menu-tile">漢字 Kanji Quiz</button>
-            <button id="startKotoba" class="pixel-btn menu-tile">🤖 Miku Meets Kotoba</button>
+        <div id="startMenu" class="start-menu">
+          <div class="menu-grid" id="jpMenuGrid" tabindex="0" aria-label="Game Select">
+            <button id="startVocab" class="pixel-btn menu-tile" data-idx="0">📝 Vocab Quiz</button>
+            <button id="startKanji" class="pixel-btn menu-tile" data-idx="1">漢字 Kanji Quiz</button>
+            <button id="startKotoba" class="pixel-btn menu-tile" data-idx="2">🤖 Miku Meets Kotoba</button>
           </div>
         </div>
       </div>
@@ -370,10 +920,10 @@ document.addEventListener("DOMContentLoaded", () => {
         <div id="vocabMeta" style="display:flex;gap:10px;align-items:center;color:#596286;font-size:12px;margin-bottom:4px">
           <button id="vocabModeBtn" class="pixel-btn" style="padding:4px 10px;border-radius:999px;font-size:12px">Mode</button>
           <div>Streak: <span id="vocabStreak">0</span> (Best: <span id="vocabBestStreak">0</span>)</div>
-          <div id="vocabTimerWrap" style="display:none">⏱️ <span id="vocabTimer">15</span>s • Best: <span id="vocabBestTime">—</span></div>
+          <div id="vocabTimerWrap" style="display:none">⏱️ <span id="vocabTimer">15</span>s • Best: <span id="vocabBestTime">-</span></div>
         </div>
         <div id="vocabQuestion">Pick a mode to start…</div>
-        <div id="vocabChoices" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px"></div>
+        <div id="vocabChoices" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:8px"></div>
         <div id="vocabFeedback" style="min-height:22px;margin-top:6px;color:#596286"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="font-weight:800">Score: <span id="vocabScore">0</span></div><button id="vocabBack" class="pixel-btn">⟵ Menu</button></div>
         <div id="vocabOverlay" class="mode-overlay">
@@ -394,10 +944,10 @@ document.addEventListener("DOMContentLoaded", () => {
         <div id="kanjiMeta" style="display:flex;gap:10px;align-items:center;color:#596286;font-size:12px;margin-bottom:4px">
           <button id="kanjiModeBtn" class="pixel-btn" style="padding:4px 10px;border-radius:999px;font-size:12px">Mode</button>
           <div>Streak: <span id="kanjiStreak">0</span> (Best: <span id="kanjiBestStreak">0</span>)</div>
-          <div id="kanjiTimerWrap" style="display:none">⏱️ <span id="kanjiTimer">15</span>s • Best: <span id="kanjiBestTime">—</span></div>
+          <div id="kanjiTimerWrap" style="display:none">⏱️ <span id="kanjiTimer">15</span>s • Best: <span id="kanjiBestTime">-</span></div>
         </div>
         <div id="kanjiQuestion">Pick a mode to start…</div>
-        <div id="kanjiChoices" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px"></div>
+        <div id="kanjiChoices" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:8px"></div>
         <div id="kanjiFeedback" style="min-height:22px;margin-top:6px;color:#596286"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="font-weight:800">Score: <span id="kanjiScore">0</span></div><button id="kanjiBack" class="pixel-btn">⟵ Menu</button></div>
         <div id="kanjiOverlay" class="mode-overlay">
@@ -423,20 +973,33 @@ document.addEventListener("DOMContentLoaded", () => {
           <button id="kotobaBack" class="pixel-btn">⟵ Menu</button>
         </div>
       </div>
+      <div class="study-card">
+       <div class="word-of-day">
+          <span class="japanese"></span>
+          <span class="romaji"></span>
+          <span class="meaning"></span>
+        </div>
+      </div>
+
+      <div class="study-card" id="wodCard">
+        <div class="social-embed" style="margin-top:10px; border-radius:12px; overflow:hidden; height: 600px;">
+          <iframe id="wodIframe" src="${
+            C.study && C.study.wordOfDay && C.study.wordOfDay.externalIframe
+              ? C.study.wordOfDay.externalIframe
+              : "https://kanjiday.com/kanji/"
+          }" style="border:0;width:100%;height:100%" loading="lazy" referrerpolicy="no-referrer"></iframe>
+        </div>
+      </div>
     `;
 
     // Populate static study info & WOD from API
     try {
-      const lc = document.getElementById("levelCard");
-      if (lc && C.study) {
-        const p = lc.querySelector("#levelText");
-        if (p && C.study.levelText) p.textContent = C.study.levelText;
-      }
-      const wc = document.getElementById("wodCard");
-      if (wc) {
-        const jp = wc.querySelector(".japanese");
-        const ro = wc.querySelector(".romaji");
-        const me = wc.querySelector(".meaning");
+      // Word-of-day fields live in a separate card with class .word-of-day
+      const wod = document.querySelector('.word-of-day');
+      if (wod) {
+        const jp = wod.querySelector(".japanese");
+        const ro = wod.querySelector(".romaji");
+        const me = wod.querySelector(".meaning");
         (async function loadWod() {
           try {
             const page = Math.floor(Math.random() * 50) + 1;
@@ -506,7 +1069,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const startCard = document.getElementById("startCard");
-    const pressStart = document.getElementById("pressStart");
     const startMenu = document.getElementById("startMenu");
     const vocabCard = document.getElementById("vocabCard");
     const kanjiCard = document.getElementById("kanjiCard");
@@ -522,29 +1084,72 @@ document.addEventListener("DOMContentLoaded", () => {
       kanjiCard.style.display = "none";
       kotobaCard.style.display = "none";
       spawnJpMikus();
+      try { SFX.play('ui.select'); } catch (_) {}
     }
     function showGame(which) {
       startCard.style.display = "none";
       vocabCard.style.display = which === "vocab" ? "block" : "none";
       kanjiCard.style.display = which === "kanji" ? "block" : "none";
       kotobaCard.style.display = which === "kotoba" ? "block" : "none";
+      // Auto-start with last settings or open mode overlay for convenience
+      setTimeout(() => {
+        if (which === 'vocab') {
+          const lastDir = localStorage.getItem('vocab.direction');
+          const lastTimed = localStorage.getItem('vocab.timed') === '1';
+          const overlay = document.getElementById('vocabOverlay');
+          if (lastDir) {
+            document.dispatchEvent(new CustomEvent('vocab-start', { detail: { direction: lastDir, timed: lastTimed } }));
+          } else if (overlay) {
+            overlay.style.display = 'flex';
+          }
+        } else if (which === 'kanji') {
+          const lastMode = localStorage.getItem('kanji.mode');
+          const lastTimed = localStorage.getItem('kanji.timed') === '1';
+          const overlay = document.getElementById('kanjiOverlay');
+          if (lastMode) {
+            document.dispatchEvent(new CustomEvent('kanji-start', { detail: { mode: lastMode, timed: lastTimed } }));
+          } else if (overlay) {
+            overlay.style.display = 'flex';
+          }
+        } else if (which === 'kotoba') {
+          const start = document.getElementById('kotobaStart');
+          if (start) start.click();
+        }
+      }, 50);
     }
-    if (pressStart) {
-      pressStart.addEventListener("click", () => {
-        pressStart.style.display = "none";
-        startMenu.classList.remove("hidden");
-        spawnJpMikus();
+    // DS/PlayStation-style keyboard navigation on the game grid
+    (function initMenuNav(){
+      const grid = document.getElementById("jpMenuGrid");
+      if (!grid) return;
+      const tiles = Array.from(grid.querySelectorAll('.menu-tile'));
+      let focus = 0;
+      const setFocus = (i) => {
+        focus = (i + tiles.length) % tiles.length;
+        tiles.forEach((t, idx) => {
+          if (idx === focus) t.classList.add('active'); else t.classList.remove('active');
+        });
+        try { SFX.play('ui.move'); } catch (_) {}
+      };
+      setFocus(parseInt(localStorage.getItem('jp.menu.focus') || '0', 10) || 0);
+      grid.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'd') { setFocus(focus + 1); e.preventDefault(); }
+        else if (e.key === 'ArrowLeft' || e.key === 'a') { setFocus(focus - 1); e.preventDefault(); }
+        else if (e.key === 'ArrowDown' || e.key === 's') { setFocus(focus + 2); e.preventDefault(); }
+        else if (e.key === 'ArrowUp' || e.key === 'w') { setFocus(focus - 2); e.preventDefault(); }
+        else if (e.key === 'Enter' || e.key === ' ') { tiles[focus]?.click(); e.preventDefault(); }
       });
-    }
+      tiles.forEach((t, idx) => t.addEventListener('focus', () => setFocus(idx)));
+      window.addEventListener('beforeunload', () => localStorage.setItem('jp.menu.focus', String(focus)));
+    })();
     const startVocab = document.getElementById("startVocab");
     const startKanji = document.getElementById("startKanji");
     const startKotoba = document.getElementById("startKotoba");
     if (startVocab)
-      startVocab.addEventListener("click", () => showGame("vocab"));
+      startVocab.addEventListener("click", () => { showGame("vocab"); try { SFX.play('ui.select'); } catch (_) {} });
     if (startKanji)
-      startKanji.addEventListener("click", () => showGame("kanji"));
+      startKanji.addEventListener("click", () => { showGame("kanji"); try { SFX.play('ui.select'); } catch (_) {} });
     if (startKotoba)
-      startKotoba.addEventListener("click", () => showGame("kotoba"));
+      startKotoba.addEventListener("click", () => { showGame("kotoba"); try { SFX.play('ui.select'); } catch (_) {} });
     if (vocabBack()) vocabBack().addEventListener("click", showMenu);
     if (kanjiBack()) kanjiBack().addEventListener("click", showMenu);
     if (kotobaBack()) kotobaBack().addEventListener("click", showMenu);
@@ -553,9 +1158,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let level = parseInt(localStorage.getItem("study.level") || "1", 10);
     let xp = parseInt(localStorage.getItem("study.xp") || "0", 10);
     const XP_PER_LEVEL = 100;
-    const levelCard = document.getElementById("levelCard");
-    const levelBar = levelCard ? levelCard.querySelector(".progress") : null;
-    const levelTextP = levelCard ? levelCard.querySelector("p") : null;
+    // Level UI now lives in Diva HUD
+    const levelBar = document.getElementById("hudLevelProgress");
+    const levelTextP = document.getElementById("hudLevelText");
     const HUD = {
       combo: 0,
       maxCombo: 0,
@@ -577,7 +1182,7 @@ document.addEventListener("DOMContentLoaded", () => {
         Math.min(100, Math.floor(((xp % XP_PER_LEVEL) / XP_PER_LEVEL) * 100))
       );
       if (levelBar) levelBar.style.width = pct + "%";
-      if (levelTextP) levelTextP.textContent = `Level ${level} • ${pct}%`;
+      if (levelTextP) levelTextP.textContent = /*html*/`Level ${level} • ${pct}%`;
     }
     function addXP(amount) {
       xp += amount;
@@ -588,6 +1193,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (leveled) {
         loveToast("レベルアップ！Level " + level + " ✨");
+        try { SFX.play('ui.scoreTally'); SFX.play('extra.clap'); } catch (_) {}
         try {
           addHearts(1);
         } catch (_) {}
@@ -598,6 +1204,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     updateLevelUi();
 
+    // Difficulty control (1-9) affects game behavior. Persist to LS.
+    const DIFF_LS = "jp.difficulty";
+    const diffInput = document.getElementById("hudDifficulty");
+    const diffLabel = document.getElementById("hudDifficultyLabel");
+    let JP_DIFFICULTY = parseInt(localStorage.getItem(DIFF_LS) || "3", 10);
+    if (!Number.isFinite(JP_DIFFICULTY)) JP_DIFFICULTY = 3;
+    function applyDiff(v) {
+      JP_DIFFICULTY = Math.min(9, Math.max(1, v|0));
+      if (diffInput) diffInput.value = String(JP_DIFFICULTY);
+      if (diffLabel) diffLabel.textContent = String(JP_DIFFICULTY);
+      localStorage.setItem(DIFF_LS, String(JP_DIFFICULTY));
+    }
+    if (diffInput) {
+      const saved = JP_DIFFICULTY;
+      applyDiff(saved);
+      diffInput.addEventListener('input', () => applyDiff(parseInt(diffInput.value||'3',10)));
+    } else {
+      applyDiff(JP_DIFFICULTY);
+    }
+    window.getJpDifficulty = () => JP_DIFFICULTY;
+    // Utility: difficulty parameters
+    function diffParams() {
+      const d = JP_DIFFICULTY;
+      // options: 4 at easy, 5 at mid, 6 at hard
+      const options = d >= 7 ? 6 : d >= 4 ? 5 : 4;
+      // base time: 18 down to 10
+      const baseTime = Math.max(10, 20 - d);
+      // xp/score multiplier
+      const mult = 1 + (d - 3) * 0.15; // 1x at 3, ~2x at 9
+      return { options, baseTime, mult };
+    }
+
     // HUD widget init
     (function initHudWidget() {
       const hearts = document.getElementById("hudHearts");
@@ -606,8 +1244,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const selGame = document.getElementById("hudGame");
       const selMode = document.getElementById("hudMode");
       const timedBtn = document.getElementById("hudTimed");
-      const startBtn = document.getElementById("hudStart");
-      const endBtn = document.getElementById("hudEnd");
+      const singerImg = document.getElementById("hudSingerImg");
       const sync = () => {
         if (hearts) hearts.textContent = String(heartCount);
         if (lives) lives.textContent = String(HUD.lives);
@@ -622,23 +1259,27 @@ document.addEventListener("DOMContentLoaded", () => {
           timedBtn.setAttribute("data-on", on ? "1" : "0");
           timedBtn.textContent = on ? "Timed: ON" : "Timed: OFF";
           localStorage.setItem("jp.widget.timed", on ? "1" : "0");
+          try { SFX.play('ui.change'); } catch (_) {}
         });
         const saved = localStorage.getItem("jp.widget.timed") === "1";
         timedBtn.setAttribute("data-on", saved ? "1" : "0");
         timedBtn.textContent = saved ? "Timed: ON" : "Timed: OFF";
       }
-      if (startBtn) {
-        startBtn.addEventListener("click", () => {
-          const g = selGame ? selGame.value : "vocab";
-          const m = selMode ? selMode.value : "jp-en";
-          startSong(g, m, timedBtn && timedBtn.getAttribute("data-on") === "1");
-        });
-      }
-      if (endBtn) {
-        endBtn.addEventListener("click", () => {
-          endSong("Manual Stop");
-        });
-      }
+      // Rotate a singing Miku in the HUD
+      (function initSinger(){
+        function pickSinger(){
+          if (!singerImg) return;
+          const ready = Array.isArray(MIKU_IMAGES) && MIKU_IMAGES.length > 0;
+          const setRand = () => {
+            const url = MIKU_IMAGES[Math.floor(Math.random()*MIKU_IMAGES.length)];
+            if (url) singerImg.src = url;
+          };
+          if (ready) setRand(); else document.addEventListener('miku-images-ready', setRand, { once: true });
+          const id = setInterval(() => setRand(), 6000);
+          GLOBAL_TIMERS.addInterval(id);
+        }
+        pickSinger();
+      })();
     })();
 
     function startSong(game, mode, timed) {
@@ -700,14 +1341,23 @@ document.addEventListener("DOMContentLoaded", () => {
       ov.querySelector("#resReason").textContent = reason || "Song Clear";
       ov.querySelector("#resScore").textContent = String(HUD.score);
       ov.querySelector("#resMaxCombo").textContent = String(HUD.maxCombo);
-      ov.querySelector("#resTime").textContent = `${dur}s`;
+      ov.querySelector("#resTime").textContent = /*html*/`${dur}s`;
       ov.querySelector("#resCool").textContent = String(HUD.counts.COOL);
       ov.querySelector("#resGreat").textContent = String(HUD.counts.GREAT);
       ov.querySelector("#resFine").textContent = String(HUD.counts.FINE);
       ov.querySelector("#resSad").textContent = String(
         HUD.counts.SAD + HUD.counts.MISS
       );
-      ov.querySelector("#resRank").textContent = gradeFromStats();
+      const rank = gradeFromStats();
+      ov.querySelector("#resRank").textContent = rank;
+      // Result voice line based on performance
+      try {
+        if (rank === 'S') SFX.play('result.perfect');
+        else if (rank === 'A') SFX.play('result.great');
+        else if (rank === 'B') SFX.play('result.standard');
+        else if (rank === 'C') SFX.play('result.cheap');
+        else SFX.play('result.miss');
+      } catch (_) {}
       ov.style.display = "flex";
     }
     function ensureResultOverlay() {
@@ -716,7 +1366,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ov = document.createElement("div");
       ov.id = "resultOverlay";
       ov.className = "result-overlay";
-      ov.innerHTML = `
+      ov.innerHTML = /*html*/`
         <div class="result-panel">
           <div class="result-rings">
             <div class="ring" style="width:120px;height:120px;left:calc(50% - 60px);top:-20px"></div>
@@ -745,7 +1395,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (card.querySelector(".diva-hud")) return;
       const wrap = document.createElement("div");
       wrap.className = "diva-hud";
-      wrap.innerHTML = `
+      wrap.innerHTML = /*html*/`
         <div class="diva-voltage"><div class="fill" id="${cardId}-voltage"></div></div>
         <div class="diva-judge" id="${cardId}-judge"></div>
         <div class="diva-lives" id="${cardId}-lives"></div>
@@ -769,12 +1419,12 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateVoltage(cardId) {
       const el = document.getElementById(`${cardId}-voltage`);
       if (!el) return;
-      el.style.width = `${clamp(HUD.voltage, 0, 100)}%`;
+      el.style.width = /*html*/`${clamp(HUD.voltage, 0, 100)}%`;
     }
     function flashJudge(cardId, label) {
       const el = document.getElementById(`${cardId}-judge`);
       if (!el) return;
-      el.className = `diva-judge judge-${label}`;
+      el.className = /*html*/`diva-judge judge-${label}`;
       el.textContent = label;
     }
     function party(cardId) {
@@ -836,7 +1486,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (r.ok) return await r.json();
       } catch (_) {}
       try {
-        const prox = `https://api.allorigins.win/raw?url=${encodeURIComponent(
+        const prox = /*html*/`https://api.allorigins.win/raw?url=${encodeURIComponent(
           url
         )}`;
         const r2 = await fetch(prox, { cache: "no-store" });
@@ -846,7 +1496,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function primeVocabPage(page) {
-      const url = `https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`;
+      const url = /*html*/`https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`;
       const j = await fetchJsonWithProxy(url);
       const arr = Array.isArray(j?.data) ? j.data : [];
       if (!arr.length) return [];
@@ -910,6 +1560,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function getVocabQuestion(direction) {
+      const { options } = diffParams();
+      const decoyCount = Math.max(3, Math.min(6, options - 1));
       if (vocabCache.pages.length === 0) await primeVocabPage(rnd(50) + 1);
       if (vocabCache.enDefs.size < 12 || vocabCache.jpSurfaces.size < 12)
         await primeVocabPage(rnd(50) + 1);
@@ -930,11 +1582,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (direction === "jp-en") {
           const correct = en.trim();
           const decoys = Array.from(
-            new Set(pickN(vocabCache.enDefs, 6, new Set([correct])))
+            new Set(pickN(vocabCache.enDefs, decoyCount * 2, new Set([correct])))
           )
             .filter((x) => x !== correct)
-            .slice(0, 3);
-          if (decoys.length < 3) {
+            .slice(0, decoyCount);
+          if (decoys.length < decoyCount) {
             await primeVocabPage(rnd(50) + 1);
             continue;
           }
@@ -950,11 +1602,11 @@ document.addEventListener("DOMContentLoaded", () => {
           const surface = (jp || reading).trim();
           const correct = surface;
           const decoys = Array.from(
-            new Set(pickN(vocabCache.jpSurfaces, 6, new Set([correct])))
+            new Set(pickN(vocabCache.jpSurfaces, decoyCount * 2, new Set([correct])))
           )
             .filter((x) => x !== correct)
-            .slice(0, 3);
-          if (decoys.length < 3) {
+            .slice(0, decoyCount);
+          if (decoys.length < decoyCount) {
             await primeVocabPage(rnd(50) + 1);
             continue;
           }
@@ -998,6 +1650,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function getKanjiQuestion(mode) {
+      const { options } = diffParams();
+      const decoyCount = Math.max(3, Math.min(6, options - 1));
       const grade = rnd(6) + 1;
       const list = await getGradeList(grade);
       for (let guard = 0; guard < 12; guard++) {
@@ -1009,8 +1663,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (mode === "meaning") {
           const correct = k;
           const pool = list.filter((x) => x !== k);
-          const decoys = pickN(pool, 6, new Set([correct])).slice(0, 3);
-          if (decoys.length < 3) continue;
+          const decoys = pickN(pool, decoyCount * 2, new Set([correct])).slice(0, decoyCount);
+          if (decoys.length < decoyCount) continue;
           pushRecent(recentKanji, k);
           return {
             promptHtml: `<div style=\"opacity:.8\">Meaning:</div><div style=\"font-size:22px;font-weight:900\">${meaning}</div>`,
@@ -1025,7 +1679,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const correct = readings[rnd(readings.length)];
           const decoyReadings = new Set();
           let tries = 0;
-          while (decoyReadings.size < 3 && tries++ < 20) {
+          while (decoyReadings.size < decoyCount && tries++ < 40) {
             const dk = list[rnd(list.length)];
             if (dk === k) continue;
             const dd = await getKanjiDetail(dk);
@@ -1035,14 +1689,14 @@ document.addEventListener("DOMContentLoaded", () => {
               if (rpick && rpick !== correct) decoyReadings.add(rpick);
             }
           }
-          if (decoyReadings.size < 3) continue;
+          if (decoyReadings.size < decoyCount) continue;
           pushRecent(recentKanji, k);
           return {
             promptHtml: `<div style=\"font-size:22px;font-weight:900\">${k}</div>`,
             correct,
             options: shuffle([
               correct,
-              ...Array.from(decoyReadings).slice(0, 3),
+              ...Array.from(decoyReadings).slice(0, decoyCount),
             ]),
           };
         }
@@ -1050,40 +1704,22 @@ document.addEventListener("DOMContentLoaded", () => {
       throw new Error("Could not build kanji question");
     }
 
-    // Tiny SFX (aligned with memory game)
-    let sfxCtx = null;
-    function sfxGet() {
-      if (!sfxCtx) {
-        try {
-          sfxCtx = new (window.AudioContext || window.webkitAudioContext)();
-        } catch (_) {}
-      }
-      return sfxCtx;
+    // SFX wrappers using asset library
+    function sfxOk() { try { SFX.play("quiz.ok"); } catch (_) {} }
+    function sfxBad() { try { SFX.play("quiz.bad"); } catch (_) {} }
+    function sfxTime() { try { SFX.play("quiz.tick"); } catch (_) {} }
+    function sfxHeartClick() { try { SFX.play("hearts.click"); } catch (_) {} }
+    function sfxHeartAdd(amount = 1) {
+      try { SFX.play("hearts.add"); } catch (_) {}
     }
-    function sfxBeep(freq = 800, dur = 0.06, type = "triangle", gain = 0.05) {
-      const ctx = sfxGet();
-      if (!ctx) return;
-      const t0 = ctx.currentTime;
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = type;
-      o.frequency.setValueAtTime(freq, t0);
-      g.gain.setValueAtTime(gain, t0);
-      o.connect(g).connect(ctx.destination);
-      o.start();
-      o.stop(t0 + dur);
-    }
-    function sfxOk() {
-      sfxBeep(600, 0.07, "sine", 0.05);
-      setTimeout(() => sfxBeep(900, 0.07, "sine", 0.05), 60);
-    }
-    function sfxBad() {
-      sfxBeep(220, 0.08, "sawtooth", 0.045);
-    }
-    function sfxTime() {
-      [320, 260, 200].forEach((f, i) =>
-        setTimeout(() => sfxBeep(f, 0.05, "triangle", 0.05), i * 90)
-      );
+    function sfxRoll() { try { SFX.play("gacha.roll"); } catch (_) {} }
+    function sfxPop() { try { SFX.play("gacha.pop"); } catch (_) {} }
+    function sfxFanfare(rarity = 4) {
+      try {
+        if (rarity >= 5) SFX.play("gacha.high");
+        else if (rarity >= 4) SFX.play("gacha.mid");
+        else SFX.play("gacha.low");
+      } catch (_) {}
     }
 
     // Utilities
@@ -1169,7 +1805,7 @@ document.addEventListener("DOMContentLoaded", () => {
       bestStreakEl.textContent = String(bestStreak);
       bestTimeEl.textContent = bestTime
         ? `${(bestTime / 1000).toFixed(1)}s`
-        : "—";
+        : "-";
       attachDivaHud("vocabCard");
 
       async function load() {
@@ -1183,7 +1819,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const correct = q.correct;
           qEl.innerHTML = q.promptHtml;
           if (timed) {
-            countdown = 15;
+            const { baseTime } = diffParams();
+            countdown = baseTime;
             timerEl.textContent = String(countdown);
             startAt = Date.now();
             if (tId) clearInterval(tId);
@@ -1194,7 +1831,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 clearInterval(tId);
                 tId = null;
                 lock = true;
-                fb.textContent = `⏰ Time! Correct: ${correct}`;
+                fb.textContent = /*html*/`⏰ Time! Correct: ${correct}`;
                 fb.style.color = "#c00";
                 sfxTime();
                 streak = 0;
@@ -1230,8 +1867,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 streak++;
                 streakEl.textContent = String(streak);
                 if (streak > 1) loveToast(`コンボ x${streak}!`);
-                const gain = 12 + Math.min(15, (streak - 1) * 2);
-                addXP(gain);
+                const { mult } = diffParams();
+                const gain = (12 + Math.min(15, (streak - 1) * 2)) * mult;
+                addXP(Math.round(gain));
                 if (streak > 0 && streak % 5 === 0) addHearts(1);
                 const dt = Date.now() - startAt;
                 let judge = "FINE",
@@ -1254,9 +1892,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 flashJudge("vocabCard", judge);
                 addVoltage(v, "vocabCard");
                 addCombo("vocabCard");
-                HUD.score += sc;
+                HUD.score += Math.round(sc * mult);
               } else {
-                fb.textContent = `❌ ${correct}`;
+                fb.textContent = /*html*/`❌ ${correct}`;
                 fb.style.color = "#c00";
                 sfxBad();
                 streak = 0;
@@ -1272,7 +1910,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!bestTime || elapsed < bestTime) {
                   bestTime = elapsed;
                   localStorage.setItem("vocab.bestTime", String(bestTime));
-                  bestTimeEl.textContent = `${(bestTime / 1000).toFixed(1)}s`;
+                  bestTimeEl.textContent = /*html*/`${(bestTime / 1000).toFixed(1)}s`;
                 }
               }
               setTimeout(load, 900);
@@ -1361,7 +1999,7 @@ document.addEventListener("DOMContentLoaded", () => {
       bestStreakEl.textContent = String(bestStreak);
       bestTimeEl.textContent = bestTime
         ? `${(bestTime / 1000).toFixed(1)}s`
-        : "—";
+        : "-";
       attachDivaHud("kanjiCard");
 
       async function load() {
@@ -1375,7 +2013,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const correct = q.correct;
           qEl.innerHTML = q.promptHtml;
           if (timed) {
-            countdown = 15;
+            const { baseTime } = diffParams();
+            countdown = baseTime;
             timerEl.textContent = String(countdown);
             startAt = Date.now();
             if (tId) clearInterval(tId);
@@ -1386,7 +2025,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 clearInterval(tId);
                 tId = null;
                 lock = true;
-                fb.textContent = `⏰ Time! Correct: ${correct}`;
+                fb.textContent = /*html*/`⏰ Time! Correct: ${correct}`;
                 fb.style.color = "#c00";
                 sfxTime();
                 streak = 0;
@@ -1426,14 +2065,16 @@ document.addEventListener("DOMContentLoaded", () => {
                   localStorage.setItem("kanji.bestStreak", String(bestStreak));
                   bestStreakEl.textContent = String(bestStreak);
                 }
-                const gain = mode === "reading" ? 16 : 12;
-                addXP(gain + Math.min(15, (streak - 1) * 2));
+                const { mult } = diffParams();
+                const gainBase = mode === "reading" ? 16 : 12;
+                const gain = (gainBase + Math.min(15, (streak - 1) * 2)) * mult;
+                addXP(Math.round(gain));
                 if (timed) {
                   const elapsed = Date.now() - startAt;
                   if (!bestTime || elapsed < bestTime) {
                     bestTime = elapsed;
                     localStorage.setItem("kanji.bestTime", String(bestTime));
-                    bestTimeEl.textContent = `${(bestTime / 1000).toFixed(1)}s`;
+                    bestTimeEl.textContent = /*html*/`${(bestTime / 1000).toFixed(1)}s`;
                   }
                 }
                 if (streak > 0 && streak % 5 === 0) addHearts(1);
@@ -1458,9 +2099,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 flashJudge("kanjiCard", judge);
                 addVoltage(v, "kanjiCard");
                 addCombo("kanjiCard");
-                HUD.score += sc;
+                const { mult: km } = diffParams();
+                HUD.score += Math.round(sc * km);
               } else {
-                fb.textContent = `❌ ${correct}`;
+                fb.textContent = /*html*/`❌ ${correct}`;
                 fb.style.color = "#c00";
                 sfxBad();
                 streak = 0;
@@ -1495,7 +2137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       function say(text, from = "miku") {
         const b = document.createElement("div");
-        b.style.cssText = `padding:8px 12px; border-radius:12px; max-width:88%; box-shadow: var(--shadow);`;
+        b.style.cssText = /*html*/`padding:8px 12px; border-radius:12px; max-width:88%; box-shadow: var(--shadow);`;
         if (from === "miku") {
           b.style.background = "linear-gradient(45deg, #BDE3FF, #CFF6E6)";
           b.style.alignSelf = "flex-start";
@@ -1580,7 +2222,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (C.images?.headerBg) {
         const header = document.getElementById("header");
         if (header)
-          header.style.backgroundImage = `linear-gradient(135deg, rgba(189,227,255,.9), rgba(255,209,236,.9)), url('${C.images.headerBg}')`;
+          header.style.backgroundImage = /*html*/`linear-gradient(135deg, rgba(189,227,255,.9), rgba(255,209,236,.9)), url('${C.images.headerBg}')`;
       }
 
       // Splash/hero/shrine images
@@ -1664,7 +2306,7 @@ document.addEventListener("DOMContentLoaded", () => {
               ? mikuIcon(n.mikuIcon, n.emoji || "")
               : n.emoji || "";
             // displayIcon variable was introduced in socials only; use local icon here
-            a.innerHTML = `${icon} ${n.label}`;
+            a.innerHTML = /*html*/`${icon} ${n.label}`;
           }
         });
       }
@@ -1682,7 +2324,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const onlineStatus = document.getElementById("onlineStatus");
       if (onlineStatus && C.status?.onlineLabel) {
         const statusIcon = C.status.statusIcon ? mikuIcon(C.status.statusIcon, "") : "";
-        onlineStatus.innerHTML = `${statusIcon}${C.status.onlineLabel}`;
+        onlineStatus.innerHTML = /*html*/`${statusIcon}${C.status.onlineLabel}`;
       }
       const heartCountLbl = document.querySelector(".status-item:nth-child(3)");
       if (heartCountLbl && C.status?.heartsLabel) {
@@ -1692,7 +2334,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ? mikuIcon(C.status.heartIcon, "💖")
             : "💖";
           span.previousSibling &&
-            (span.previousSibling.innerHTML = ` ${heartIcon} ${C.status.heartsLabel} `);
+            (span.previousSibling.innerHTML = /*html*/` ${heartIcon} ${C.status.heartsLabel} `);
         }
       }
 
@@ -1718,7 +2360,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const heartIcon = C.home.heartButtonIcon
             ? mikuIcon(C.home.heartButtonIcon, "💖")
             : "💖";
-          heartBtn.innerHTML = `${heartIcon} ${C.home.heartButton}`;
+          heartBtn.innerHTML = /*html*/`${heartIcon} ${C.home.heartButton}`;
         }
 
         // Rebuild the grid with unified presentation system
@@ -1752,7 +2394,7 @@ document.addEventListener("DOMContentLoaded", () => {
               `;
             }).join("");
             
-            grid.innerHTML = `
+            grid.innerHTML = /*html*/`
               <div class="belle-presentation">
                 <div class="presentation-header">
                   <h2>${presentationIcon}${presentationTitle}</h2>
@@ -1830,7 +2472,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const aboutTitleIcon = C.home.aboutIcon
               ? mikuIcon(C.home.aboutIcon, "")
               : "";
-            const aboutTitle = `${aboutTitleIcon}${
+            const aboutTitle = /*html*/`${aboutTitleIcon}${
               C.home.aboutTitle || "About Me"
             }`;
             
@@ -1897,7 +2539,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Dreams card with pagination
             if (C.home.dreamsPages && C.home.dreamsPages.length > 0) {
               const dreamsTitleIcon = C.home.dreamsIcon ? mikuIcon(C.home.dreamsIcon, "") : "";
-              const dreamsTitle = `${dreamsTitleIcon}${C.home.dreamsTitle || "Dreams"}`;
+              const dreamsTitle = /*html*/`${dreamsTitleIcon}${C.home.dreamsTitle || "Dreams"}`;
               pieces.push(`
                 <div class="card paginated-card" data-card="dreams">
                   <div class="card-header">
@@ -1917,7 +2559,7 @@ document.addEventListener("DOMContentLoaded", () => {
               `);
             } else if (dreams) {
               const dreamsTitleIcon = C.home.dreamsIcon ? mikuIcon(C.home.dreamsIcon, "") : "";
-              const dreamsTitle = `${dreamsTitleIcon}${C.home.dreamsTitle || "Dreams"}`;
+              const dreamsTitle = /*html*/`${dreamsTitleIcon}${C.home.dreamsTitle || "Dreams"}`;
               pieces.push(`
                 <div class="card">
                   <h3>${dreamsTitle}</h3>
@@ -1940,7 +2582,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const titleIcon = C.socials.titleIcon
           ? mikuIcon(C.socials.titleIcon, "🔗")
           : "🔗";
-        if (h2) h2.innerHTML = `${titleIcon} ${C.socials.title}`;
+        if (h2) h2.innerHTML = /*html*/`${titleIcon} ${C.socials.title}`;
       }
 
       // Quick Links in left sidebar
@@ -1964,28 +2606,27 @@ document.addEventListener("DOMContentLoaded", () => {
       if (C.study) {
         const h2 = document.querySelector("#study h2");
         const studyIcon = C.study.titleIcon ? mikuIcon(C.study.titleIcon, "🎌") : "🎌";
-        if (h2) h2.innerHTML = `${studyIcon} ${C.study.title}`;
-        const levelCard = document.getElementById("levelCard");
-        if (levelCard) {
-          const h3 = levelCard.querySelector("h3");
-          const progress = levelCard.querySelector(".progress");
-          const p = levelCard.querySelector("p");
-          if (h3 && C.study.levelTitle) {
-            const levelIcon = C.study.levelIcon ? mikuIcon(C.study.levelIcon, "🌸") : "🌸";
-            h3.innerHTML = `${levelIcon} ${C.study.levelTitle}`;
-          }
-          if (progress && Number.isFinite(C.study.progressPercent))
-            progress.style.width = `${C.study.progressPercent}%`;
-          if (p && C.study.levelText) p.textContent = C.study.levelText;
-        }
+        if (h2) h2.innerHTML = /*html*/`${studyIcon} ${C.study.title}`;
+        // Update HUD Level text/progress if provided by content
+        const hudProg = document.getElementById("hudLevelProgress");
+        const hudText = document.getElementById("hudLevelText");
+        if (hudProg && Number.isFinite(C.study.progressPercent))
+          hudProg.style.width = /*html*/`${C.study.progressPercent}%`;
+        if (hudText && C.study.levelText) hudText.textContent = C.study.levelText;
         const wodCard = document.getElementById("wodCard");
-        if (wodCard && C.study.wordOfDay) {
-          const jp = wodCard.querySelector(".japanese");
-          const romaji = wodCard.querySelector(".romaji");
-          const meaning = wodCard.querySelector(".meaning");
-          if (jp) jp.textContent = C.study.wordOfDay.japanese || "";
-          if (romaji) romaji.textContent = C.study.wordOfDay.romaji || "";
-          if (meaning) meaning.textContent = C.study.wordOfDay.meaning || "";
+        const wodInline = document.querySelector('.word-of-day');
+        if (C.study.wordOfDay) {
+          const setWod = (root) => {
+            if (!root) return;
+            const jp = root.querySelector(".japanese");
+            const romaji = root.querySelector(".romaji");
+            const meaning = root.querySelector(".meaning");
+            if (jp) jp.textContent = C.study.wordOfDay.japanese || "";
+            if (romaji) romaji.textContent = C.study.wordOfDay.romaji || "";
+            if (meaning) meaning.textContent = C.study.wordOfDay.meaning || "";
+          };
+          setWod(wodCard);
+          setWod(wodInline);
         }
         const goalsCard = document.getElementById("goalsCard");
         if (goalsCard) {
@@ -1993,7 +2634,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const ul = goalsCard.querySelector("ul");
           if (h3 && C.study.goalsTitle) {
             const goalsIcon = C.study.goalsIcon ? mikuIcon(C.study.goalsIcon, "") : "";
-            h3.innerHTML = `${goalsIcon}${C.study.goalsTitle}`;
+            h3.innerHTML = /*html*/`${goalsIcon}${C.study.goalsTitle}`;
           }
           if (ul && Array.isArray(C.study.goals))
             ul.innerHTML = C.study.goals.map((g, idx) => {
@@ -2017,7 +2658,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const memoryIcon = C.games.memoryIcon
               ? mikuIcon(C.games.memoryIcon, "🧩")
               : "🧩";
-            h3.innerHTML = `${memoryIcon} ${C.games.memoryTitle}`;
+            h3.innerHTML = /*html*/`${memoryIcon} ${C.games.memoryTitle}`;
           }
           const reset = document.getElementById("resetMemory");
           if (reset && C.games.memoryReset)
@@ -2029,14 +2670,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const heartsIcon = C.games.heartsIcon
               ? mikuIcon(C.games.heartsIcon, "💖")
               : "💖";
-            h3.innerHTML = `${heartsIcon} ${C.games.heartsTitle}`;
+            h3.innerHTML = /*html*/`${heartsIcon} ${C.games.heartsTitle}`;
           }
           const zone = document.getElementById("heartZone");
           if (zone && C.games.heartsZone) {
             const zoneIcon = C.games.heartsZoneIcon
               ? mikuIcon(C.games.heartsZoneIcon, "💖")
               : "💖";
-            zone.innerHTML = `Click to collect hearts! ${zoneIcon}`;
+            zone.innerHTML = /*html*/`Click to collect hearts! ${zoneIcon}`;
           }
           const btn = document.getElementById("resetHearts");
           if (btn && C.games.heartsReset) btn.textContent = C.games.heartsReset;
@@ -2047,7 +2688,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const gachaIcon = C.games.gachaIcon
               ? mikuIcon(C.games.gachaIcon, "🎰")
               : "🎰";
-            h3.innerHTML = `${gachaIcon} ${C.games.gachaTitle}`;
+            h3.innerHTML = /*html*/`${gachaIcon} ${C.games.gachaTitle}`;
           }
           const dexBtn = document.getElementById("gachaCollectionBtn");
           if (dexBtn && C.games.gachaOpenDex)
@@ -2062,14 +2703,14 @@ document.addEventListener("DOMContentLoaded", () => {
           const titleIcon = C.shrine.titleIcon
             ? mikuIcon(C.shrine.titleIcon, "⛩️")
             : "⛩️";
-          h2.innerHTML = `${titleIcon} ${C.shrine.title}`;
+          h2.innerHTML = /*html*/`${titleIcon} ${C.shrine.title}`;
         }
         const aboutTitle = document.querySelector("#shrine .shrine-info h3");
         if (aboutTitle && C.shrine.aboutTitle) {
           const aboutIcon = C.shrine.aboutIcon
             ? mikuIcon(C.shrine.aboutIcon, "💙")
             : "💙";
-          aboutTitle.innerHTML = `${aboutIcon} ${C.shrine.aboutTitle}`;
+          aboutTitle.innerHTML = /*html*/`${aboutIcon} ${C.shrine.aboutTitle}`;
         }
         const aboutP = document.querySelector("#shrine .shrine-info p");
         if (aboutP && C.shrine.aboutText)
@@ -2096,7 +2737,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const widget = friendsListEl.closest(".widget");
           const h3 = widget ? widget.querySelector("h3") : null;
           const friendsIcon = C.friends.titleIcon ? mikuIcon(C.friends.titleIcon, "👥") : "👥";
-          if (h3) h3.innerHTML = `${friendsIcon} ${C.friends.title}`;
+          if (h3) h3.innerHTML = /*html*/`${friendsIcon} ${C.friends.title}`;
         }
       }
 
@@ -2111,7 +2752,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const w = radioWidget.closest('.widget');
           const h = w ? w.querySelector('h3') : null;
           const radioIcon = C.radio.titleIcon ? mikuIcon(C.radio.titleIcon, "📻") : "📻";
-          if (h) h.innerHTML = `${radioIcon} ${C.radio.title}`;
+          if (h) h.innerHTML = /*html*/`${radioIcon} ${C.radio.title}`;
         }
 
         // Pet heading
@@ -2120,7 +2761,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const w = petIframe.closest(".widget");
           const h = w ? w.querySelector("h3") : null;
           const petIcon = left.petIcon ? mikuIcon(left.petIcon, "🐾") : "🐾";
-          if (h) h.innerHTML = `${petIcon} ${left.pet}`;
+          if (h) h.innerHTML = /*html*/`${petIcon} ${left.pet}`;
         }
 
         // Friends heading handled above
@@ -2131,13 +2772,13 @@ document.addEventListener("DOMContentLoaded", () => {
           const w = statBadge1.closest(".widget");
           const h = w ? w.querySelector("h3") : null;
           const statsIcon = left.statsIcon ? mikuIcon(left.statsIcon, "🌸") : "🌸";
-          if (h) h.innerHTML = `${statsIcon} ${left.stats}`;
+          if (h) h.innerHTML = /*html*/`${statsIcon} ${left.stats}`;
           
           // Also update visitor counter label with icon
           const visitorLabel = w ? w.querySelector(".counter-label") : null;
           if (visitorLabel && C.status?.visitorIcon) {
             const visitorIcon = mikuIcon(C.status.visitorIcon, "");
-            visitorLabel.innerHTML = `${visitorIcon}Visitors:`;
+            visitorLabel.innerHTML = /*html*/`${visitorIcon}Visitors:`;
           }
         }
 
@@ -2145,7 +2786,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const quickLinksTitle = document.getElementById("quickLinksTitle");
         if (quickLinksTitle && right.quickLinks) {
           const quickLinksIcon = right.quickLinksIcon ? mikuIcon(right.quickLinksIcon, "🌟") : "🌟";
-          quickLinksTitle.innerHTML = `${quickLinksIcon} ${right.quickLinks}`;
+          quickLinksTitle.innerHTML = /*html*/`${quickLinksIcon} ${right.quickLinks}`;
         }
 
         // Badges title
@@ -2154,7 +2795,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const w = webBadges.closest(".widget");
           const h = w ? w.querySelector("h3") : null;
           const badgesIcon = right.badgesIcon ? mikuIcon(right.badgesIcon, "💫") : "💫";
-          if (h) h.innerHTML = `${badgesIcon} ${right.badges}`;
+          if (h) h.innerHTML = /*html*/`${badgesIcon} ${right.badges}`;
         }
 
         // Vibe title
@@ -2163,7 +2804,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const w = vibeMeter.closest(".widget");
           const h = w ? w.querySelector("h3") : null;
           const vibeIcon = right.vibeIcon ? mikuIcon(right.vibeIcon, "📊") : "📊";
-          if (h) h.innerHTML = `${vibeIcon} ${right.vibe}`;
+          if (h) h.innerHTML = /*html*/`${vibeIcon} ${right.vibe}`;
         }
       }
 
@@ -2214,6 +2855,21 @@ document.addEventListener("DOMContentLoaded", () => {
       // Add entrance animation
       if (targetSection)
         targetSection.style.animation = "fadeInUp 0.5s ease-out";
+
+      // UI change SFX
+      try {
+        SFX.play("ui.change");
+        if (Math.random() < 0.15) SFX.play("extra.fx2");
+      } catch (_) {}
+
+      // Pause/resume presentation autoplay and fix layout
+      try {
+        if (sectionId === 'study') {
+          window._presentationControl && window._presentationControl.onShow && window._presentationControl.onShow();
+        } else {
+          window._presentationControl && window._presentationControl.onHide && window._presentationControl.onHide();
+        }
+      } catch (_) {}
     }
     function spawnFloatingMikus() {
       const container = document.getElementById("floatingMikusContainer");
@@ -2273,7 +2929,7 @@ document.addEventListener("DOMContentLoaded", () => {
       saveMoodBtn.addEventListener("click", () => {
         const mood = moodInput.value.trim();
         if (mood) {
-          moodDisplay.textContent = `💭 ${mood}`;
+          moodDisplay.textContent = /*html*/`💭 ${mood}`;
           localStorage.setItem("pixelbelle-mood", mood);
           moodInput.value = "";
 
@@ -2501,6 +3157,8 @@ document.addEventListener("DOMContentLoaded", () => {
       radioStatus.textContent = status;
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
       if (onlineStatus) onlineStatus.textContent = "Playing";
+      // Stop any background music permanently once radio starts
+      try { if (window.__stopBgm) window.__stopBgm(true); } catch(_) {}
       audio.play().catch(() => {});
       startEqualizer();
       if (statusDot) statusDot.style.color = "#00ff00"; // green when playing
@@ -2578,7 +3236,7 @@ document.addEventListener("DOMContentLoaded", () => {
       statsEl = document.createElement("div");
       statsEl.id = "memoryStats";
       statsEl.className = "memory-stats";
-      statsEl.innerHTML = `
+      statsEl.innerHTML = /*html*/`
         <div class="memory-controls" style="margin-bottom:6px; display:flex; gap:8px; justify-content:center; align-items:center;">
           <label for="memoryDifficulty" style="font-weight:700">Difficulty:</label>
           <select id="memoryDifficulty" class="pixel-btn" style="padding:6px 10px; border-radius:8px; border:2px solid var(--border); background:#fff;">
@@ -2586,7 +3244,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <option value="6x6">6×6</option>
           </select>
         </div>
-        Moves: <span id="memoryMoves">0</span> • Pairs: <span id="memoryPairs">0</span>/<span id="memoryTotal">${totalPairs}</span> • Time: <span id="memoryTime">0.0s</span> • Best: <span id="memoryBest">—</span>
+        Moves: <span id="memoryMoves">0</span> • Pairs: <span id="memoryPairs">0</span>/<span id="memoryTotal">${totalPairs}</span> • Time: <span id="memoryTime">0.0s</span> • Best: <span id="memoryBest">-</span>
       `;
       memoryGrid.parentElement.insertBefore(statsEl, memoryGrid);
     }
@@ -2604,7 +3262,7 @@ document.addEventListener("DOMContentLoaded", () => {
         difficulty = diffSel.value;
         localStorage.setItem("memory.difficulty", difficulty);
         totalPairs = difficulty === "6x6" ? 18 : 8;
-        memoryGrid.style.gridTemplateColumns = `repeat(${
+        memoryGrid.style.gridTemplateColumns = /*html*/`repeat(${
           difficulty === "6x6" ? 6 : 4
         }, 1fr)`;
         renderBest();
@@ -2612,7 +3270,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       // Apply initial grid width
       totalPairs = difficulty === "6x6" ? 18 : 8;
-      memoryGrid.style.gridTemplateColumns = `repeat(${
+      memoryGrid.style.gridTemplateColumns = /*html*/`repeat(${
         difficulty === "6x6" ? 6 : 4
       }, 1fr)`;
     }
@@ -2629,7 +3287,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const urlSafeId = String(id).replace(/"/g, "&quot;");
       const backInner =
         type === "image"
-          ? `<img src="${value}" alt="Miku ${index}" />`
+          ? `<img src="${value}" alt="Miku ${index}" loading="lazy" />`
           : `<span class="symbol">${value}</span>`;
       return `
         <div class="memory-card" data-id="${urlSafeId}" data-type="${type}" data-index="${index}">
@@ -2708,6 +3366,7 @@ document.addEventListener("DOMContentLoaded", () => {
         [firstCard, secondCard].forEach((c) => c.classList.remove("flipped"));
         resetTurn();
       }, 700);
+      try { SFX.play('memory.miss'); } catch (_) {}
     }
 
     function resetTurn() {
@@ -2865,46 +3524,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const key = bestKey();
       const prev = parseFloat(localStorage.getItem(key) || "");
       if (bestEl())
-        bestEl().textContent = isFinite(prev) ? formatTime(prev) : "—";
+        bestEl().textContent = isFinite(prev) ? formatTime(prev) : "-";
     }
     renderBest();
 
-    // ------- Sound helpers -------
-    let audioCtx = null;
-    function getCtx() {
-      if (!audioCtx) {
-        try {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        } catch (e) {}
-      }
-      return audioCtx;
-    }
-    function beep(freq = 800, duration = 0.06, type = "triangle", gain = 0.05) {
-      const ctx = getCtx();
-      if (!ctx) return;
-      const t0 = ctx.currentTime;
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = type;
-      o.frequency.setValueAtTime(freq, t0);
-      g.gain.setValueAtTime(gain, t0);
-      o.connect(g).connect(ctx.destination);
-      o.start();
-      o.stop(t0 + duration);
-    }
-    function playFlip() {
-      beep(900, 0.05, "triangle", 0.035);
-    }
-    function playMatch() {
-      beep(600, 0.07, "sine", 0.05);
-      setTimeout(() => beep(900, 0.07, "sine", 0.05), 60);
-    }
-    function playWin() {
-      const notes = [660, 880, 990, 1320];
-      notes.forEach((f, i) =>
-        setTimeout(() => beep(f, 0.07, "sine", 0.06), i * 90)
-      );
-    }
+    // ------- Sound helpers (asset SFX) -------
+    function playFlip() { try { SFX.play("memory.flip"); } catch (_) {} }
+    function playMatch() { try { SFX.play("memory.match"); } catch (_) {} }
+    function playWin() { try { SFX.play("memory.win"); } catch (_) {} }
   }
 
   function initHeartCollector() {
@@ -2917,17 +3544,15 @@ document.addEventListener("DOMContentLoaded", () => {
   gameHeartCountEl.textContent = gameHeartCount;
 
   heartZone.addEventListener("click", (e) => {
+      try { SFX.play('hearts.click'); } catch (_) {}
+      // Always link clicks to global hearts
+      addHearts(1);
       gameHeartCount++;
       gameHeartCountEl.textContent = gameHeartCount;
       localStorage.setItem("pixelbelle-game-hearts", gameHeartCount);
 
       // Create floating heart animation
       createFloatingHeart(e.clientX, e.clientY);
-
-      // Add to main heart counter occasionally
-      if (gameHeartCount % 10 === 0) {
-        addHearts(1);
-      }
     });
 
   // Attach reset only if the button still exists (kept for dev/testing)
@@ -2950,6 +3575,7 @@ document.addEventListener("DOMContentLoaded", () => {
       randomMikuImg.src = randomImage;
 
       // Add bounce effect
+      try { SFX.play("ui.change"); } catch (_) {}
       randomMikuImg.style.animation = "bounce 0.6s ease-out";
       setTimeout(() => {
         randomMikuImg.style.animation = "";
@@ -2965,11 +3591,26 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderGallery() {
       mikuGallery.innerHTML = MIKU_IMAGES.map(
         (img, index) => `
-        <img src="${img}" alt="Miku ${
-          index + 1
-        }" class="gallery-image" onclick="openImageModal('${img}')">
+        <img data-src="${img}" alt="Miku ${index + 1}" class="gallery-image lazy" loading="lazy" decoding="async" onclick="openImageModal('${img}')">
       `
       ).join("");
+
+      const lazyImgs = mikuGallery.querySelectorAll('img.lazy');
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const el = entry.target;
+              el.src = el.getAttribute('data-src');
+              el.classList.remove('lazy');
+              io.unobserve(el);
+            }
+          });
+        }, { rootMargin: '200px 0px' });
+        lazyImgs.forEach((img) => io.observe(img));
+      } else {
+        lazyImgs.forEach((el) => { el.src = el.getAttribute('data-src'); el.classList.remove('lazy'); });
+      }
     }
 
     if (MIKU_IMAGES.length) renderGallery();
@@ -2982,7 +3623,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function openImageModal(imageSrc) {
     const modal = document.createElement("div");
     modal.className = "image-modal";
-    modal.style.cssText = `
+    modal.style.cssText = /*html*/`
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.8); display: flex; align-items: center;
       justify-content: center; z-index: 10000; cursor: pointer;
@@ -2990,13 +3631,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const img = document.createElement("img");
     img.src = imageSrc;
-    img.style.cssText = `
+    img.style.cssText = /*html*/`
       max-width: 90%; max-height: 90%; border-radius: 10px;
       box-shadow: 0 0 30px rgba(255,255,255,0.3);
     `;
 
     modal.appendChild(img);
     document.body.appendChild(modal);
+    try { SFX.play('extra.camera'); } catch (_) {}
 
     modal.addEventListener("click", () => {
       document.body.removeChild(modal);
@@ -3021,30 +3663,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ====== CURSOR EFFECTS ======
   function initCursorEffects() {
-    const cursorTrail = document.getElementById("cursorTrail");
+  const cursorTrail = document.getElementById("cursorTrail");
     let lastTrailTime = 0;
+    let rafId = null;
 
+    // Optimized mousemove with RAF throttling for better performance
     document.addEventListener("mousemove", (e) => {
       const now = Date.now();
-      if (now - lastTrailTime > 100) {
-        // Throttle trail creation
-        createCursorTrail(e.clientX, e.clientY);
-        lastTrailTime = now;
+      if (now - lastTrailTime > 160 && !rafId) {
+        rafId = requestAnimationFrame(() => {
+          createCursorTrail(e.clientX, e.clientY);
+          lastTrailTime = now;
+          rafId = null;
+        });
       }
-    });
+    }, { passive: true });
 
     function createCursorTrail(x, y) {
-      const heart = document.createElement("div");
-      heart.className = "heart-trail";
-      heart.textContent = "💖";
-      heart.style.left = x + "px";
-      heart.style.top = y + "px";
-
+      // Performance optimization: reuse elements from a pool
+      if (!window._heartPool) window._heartPool = [];
+      
+      let heart = window._heartPool.pop();
+      if (!heart) {
+        heart = document.createElement("div");
+        heart.className = "heart-trail";
+        heart.textContent = "💖";
+      }
+      
+      // Reset position efficiently
+      heart.style.cssText = `left: ${x}px; top: ${y}px; opacity: 1; transform: translateZ(0);`;
+      
       cursorTrail.appendChild(heart);
 
-      setTimeout(() => {
+      // Optimized cleanup with object pooling
+      setTimeoutTracked(() => {
         if (heart.parentNode) {
           heart.parentNode.removeChild(heart);
+          // Return to pool instead of destroying
+          if (window._heartPool.length < 20) {
+            window._heartPool.push(heart);
+          }
         }
       }, 2000);
     }
@@ -3071,7 +3729,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         
         if (indicator) {
-          indicator.textContent = `${currentPage + 1}/${pages.length}`;
+          indicator.textContent = /*html*/`${currentPage + 1}/${pages.length}`;
         }
         
         // Add sparkle effect when changing pages
@@ -3083,18 +3741,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCard();
         
         // Play a cute sound
-        try {
-          const ctx = new (window.AudioContext || window.webkitAudioContext)();
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.frequency.setValueAtTime(800, ctx.currentTime);
-          gain.gain.setValueAtTime(0.1, ctx.currentTime);
-          osc.connect(gain).connect(ctx.destination);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.1);
-        } catch (e) {
-          // Silent fail for audio
-        }
+        try { SFX.play("ui.move"); } catch (_) {}
       }
       
       function prevPage() {
@@ -3102,26 +3749,15 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCard();
         
         // Play a cute sound
-        try {
-          const ctx = new (window.AudioContext || window.webkitAudioContext)();
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.frequency.setValueAtTime(600, ctx.currentTime);
-          gain.gain.setValueAtTime(0.1, ctx.currentTime);
-          osc.connect(gain).connect(ctx.destination);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.1);
-        } catch (e) {
-          // Silent fail for audio
-        }
+        try { SFX.play("ui.move"); } catch (_) {}
       }
       
       if (nextBtn) nextBtn.addEventListener('click', nextPage);
       if (prevBtn) prevBtn.addEventListener('click', prevPage);
       
-      // Auto-advance every 10 seconds for about cards
+      // Auto-advance every 10 seconds for about cards (with memory cleanup)
       if (cardType === 'about') {
-        setInterval(() => {
+        setIntervalTracked(() => {
           nextPage();
         }, 10000);
       }
@@ -3136,6 +3772,12 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       if (typeof window.__updateHudHearts === "function")
         window.__updateHudHearts();
+    } catch (_) {}
+
+    // Play a pleasant chime for adding hearts
+    try {
+      SFX.play('hearts.add');
+      if (amount >= 5) SFX.play('extra.coin');
     } catch (_) {}
 
     // Milestone banner: show a special toast when we've hit a NEW milestone step
@@ -3158,8 +3800,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const milestoneIcon = highestMilestone.icon
             ? mikuIcon(highestMilestone.icon, "✨")
             : "✨";
-          const milestoneMsg = `${milestoneIcon} ${highestMilestone.msg}`;
+          const milestoneMsg = /*html*/`${milestoneIcon} ${highestMilestone.msg}`;
           loveToast(milestoneMsg);
+          try { SFX.play("hearts.milestone"); } catch (_) {}
 
           console.info(
             `New milestone reached: ${highestMilestone.step} -> ${highestMilestone.msg}`
@@ -3187,10 +3830,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const iconName = toastIcons[randomIndex];
     const icon = iconName ? mikuIcon(iconName, "💖") : "💖";
 
-    const msg = `${text} ${toastText} ${icon}`;
+    const msg = /*html*/`${text} ${toastText} ${icon}`;
     const toast = document.createElement("div");
     toast.innerHTML = msg;
-    toast.style.cssText = `
+    toast.style.cssText = /*html*/`
       position: fixed; left: 50%; top: 14%; transform: translateX(-50%);
       background: rgba(255,255,255,0.9); border: 2px solid var(--border);
       border-radius: 12px; padding: 8px 14px; font-weight: 800; color: var(--ink);
@@ -3217,7 +3860,7 @@ document.addEventListener("DOMContentLoaded", () => {
         Math.random() < 0.6 ? "💖" : Math.random() < 0.5 ? "✨" : "⭐";
       const el = document.createElement("div");
       el.textContent = which;
-      el.style.cssText = `
+      el.style.cssText = /*html*/`
         position: fixed; left: ${x}px; top: ${y}px; font-size: ${
         which === "💖" ? "22px" : "18px"
       };
@@ -3235,6 +3878,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (heartCount % 5 === 0) s.triggerMassJump();
     else s.triggerMassHappy();
     if (heartCount % 25 === 0 && s.triggerMassDance) s.triggerMassDance();
+    try {
+      if (heartCount % 25 === 0) SFX.play('extra.clap');
+      else if (Math.random() < 0.5) SFX.play('extra.yo');
+      else SFX.play('hearts.add');
+    } catch (_) {}
   }
 
   // Make shimejis say love messages
@@ -3254,7 +3902,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function createFloatingHeart(x, y) {
     const heart = document.createElement("div");
     heart.textContent = "💖";
-    heart.style.cssText = `
+    heart.style.cssText = /*html*/`
       position: fixed; left: ${x}px; top: ${y}px; font-size: 1.5rem;
       pointer-events: none; z-index: 9999; animation: heartFloat 2s ease-out forwards;
     `;
@@ -3273,7 +3921,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         const sparkle = document.createElement("div");
         sparkle.textContent = "✨";
-        sparkle.style.cssText = `
+        sparkle.style.cssText = /*html*/`
           position: absolute; font-size: 1rem; pointer-events: none;
           left: ${Math.random() * 50 - 25}px; top: ${Math.random() * 50 - 25}px;
           animation: sparkle 1s ease-out forwards;
@@ -3303,7 +3951,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedMood = localStorage.getItem("pixelbelle-mood");
     if (savedMood) {
       const moodDisplayEl = document.getElementById("moodDisplay");
-      if (moodDisplayEl) moodDisplayEl.textContent = `💭 ${savedMood}`;
+      if (moodDisplayEl) moodDisplayEl.textContent = /*html*/`💭 ${savedMood}`;
     }
 
     // Load saved now playing
@@ -3320,6 +3968,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const heartBtn = document.getElementById("heartBtn");
     if (heartBtn) {
       heartBtn.addEventListener("click", () => {
+        try { SFX.play('hearts.click'); } catch (_) {}
         addHearts(1);
         createFloatingHeart(
           heartBtn.getBoundingClientRect().left + heartBtn.offsetWidth / 2,
@@ -3330,15 +3979,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Random updates every 30 seconds
-    setInterval(() => {
+    // Random updates every 30 seconds (with memory cleanup)
+    setIntervalTracked(() => {
       const updates = (C.love && C.love.periodicUpdates) || [];
 
       const randomUpdate = updates[Math.floor(Math.random() * updates.length)];
 
       // Update the updates list occasionally
       if (Math.random() < 0.3) {
-        const updatesList = document.getElementById("updates");
+  const updatesList = document.getElementById("updates");
         if (updatesList) {
           const li = document.createElement("li");
           li.textContent = randomUpdate;
@@ -3352,20 +4001,20 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }, 30000);
 
-    // Vibe meter animation
-    setInterval(() => {
-      const vibeFill = document.querySelector(".vibe-fill");
+    // Vibe meter animation (with memory cleanup)
+    setIntervalTracked(() => {
+  const vibeFill = document.getElementById("vibe-fill") || document.querySelector(".vibe-fill");
       if (vibeFill) {
         const randomVibe = Math.floor(Math.random() * 20) + 80; // 80-100%
         vibeFill.style.width = randomVibe + "%";
-        vibeFill.parentNode.nextElementSibling.textContent = `${randomVibe}% Kawaii Energy! ✨`;
+        vibeFill.parentNode.nextElementSibling.textContent = /*html*/`${randomVibe}% Kawaii Energy! ✨`;
       }
     }, 5000);
   }
 
   // Add sparkle animation keyframes
   const sparkleStyles = document.createElement("style");
-  sparkleStyles.textContent = `
+  sparkleStyles.textContent = /*html*/`
     @keyframes sparkle {
       0% { opacity: 1; transform: scale(0) rotate(0deg); }
       50% { opacity: 1; transform: scale(1) rotate(180deg); }
@@ -3392,14 +4041,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.querySelector(".floating-hearts");
 
     if (!container) return;
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return; // respect reduced motion for performance/accessibility
+      }
+    } catch (_) {}
 
     // Clear existing hearts
     container.innerHTML = "";
 
     // Inject styles for heart particles and swallow
-    const style = document.createElement("style");
-    style.textContent = `
-      .heart-particle { position: fixed; bottom: -24px; font-size: 22px; pointer-events:none; z-index: 2; animation: heartRise 8s linear forwards; }
+    let style = document.getElementById("hearts-style");
+    if (!style) {
+      style = document.createElement("style");
+      style.id = "hearts-style";
+      style.textContent = /*html*/`
+      .heart-particle { position: fixed; bottom: -24px; font-size: 22px; pointer-events:none; z-index: 2; animation: heartRise 8s linear forwards; will-change: transform, opacity; }
       @keyframes heartRise {
         0%   { transform: translateX(0) translateY(0); opacity: .8; }
         50%  { transform: translateX(var(--drift, 0)) translateY(-50vh); opacity: .9; }
@@ -3409,7 +4066,8 @@ document.addEventListener("DOMContentLoaded", () => {
       @keyframes heartEaten { from { transform: scale(1); opacity:1 } to { transform: scale(0); opacity:0 } }
       .swallow { position: fixed; bottom: 8vh; left: -120px; width: 80px; height:auto; image-rendering: pixelated; z-index: 3; pointer-events:none; }
     `;
-    document.head.appendChild(style);
+      document.head.appendChild(style);
+    }
 
     function createHeart() {
       const heart = document.createElement("div");
@@ -3430,8 +4088,24 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 8000);
     }
 
-    // Create hearts periodically
-    setInterval(createHeart, 2000);
+    // Create hearts periodically with visibility and count guard
+    let heartsTimer = null;
+    const MAX_HEARTS = 12;
+    function scheduleHearts() {
+      if (heartsTimer) clearTimeout(heartsTimer);
+      heartsTimer = setTimeout(() => {
+        if (!document.hidden && container.childElementCount < MAX_HEARTS) createHeart();
+        scheduleHearts();
+      }, 2000);
+    }
+    scheduleHearts();
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (heartsTimer) clearTimeout(heartsTimer);
+      } else {
+        scheduleHearts();
+      }
+    }, { passive: true });
 
     // Create initial hearts
     for (let i = 0; i < 5; i++) {
@@ -3460,40 +4134,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const progressFill = document.querySelector('.progress-fill');
     const floatingDecorations = document.querySelector('.floating-decorations');
     
-    // Kawaii sounds for interactions
+    // Kawaii sounds for interactions (asset-based)
     const playKawaiiSound = (type = 'click') => {
       try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        switch(type) {
-          case 'next':
-            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
-            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
-            break;
-          case 'prev':
-            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime); // E5
-            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.1); // C5
-            break;
-          case 'auto':
-            oscillator.frequency.setValueAtTime(698.46, audioContext.currentTime); // F5
-            break;
-          default:
-            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
-        }
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-        
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.2);
-      } catch (e) {
-        // Fallback: no sound
-      }
+        if (type === 'prev') SFX.play('ui.back');
+        else if (type === 'next') SFX.play('ui.move');
+        else if (type === 'auto') SFX.play('ui.se_sy_24');
+        else SFX.play('ui.move');
+      } catch (_) {}
     };
     
     // Create floating sparkles and icons
@@ -3509,9 +4157,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const iconName = decorativeIcons[Math.floor(Math.random() * decorativeIcons.length)];
         element.innerHTML = mikuIcon(iconName, '✨');
         
-        element.style.left = `${Math.random() * 100}%`;
-        element.style.animationDelay = `${Math.random() * 5}s`;
-        element.style.animationDuration = `${3 + Math.random() * 4}s`;
+        element.style.left = /*html*/`${Math.random() * 100}%`;
+        element.style.animationDelay = /*html*/`${Math.random() * 5}s`;
+        element.style.animationDuration = /*html*/`${3 + Math.random() * 4}s`;
         
         floatingDecorations.appendChild(element);
       }
@@ -3527,6 +4175,20 @@ document.addEventListener("DOMContentLoaded", () => {
       // Show new slide
       currentSlide = newSlide;
       slides[currentSlide].classList.add('active');
+
+      // Sync container height to active slide for zero-scroll experience
+      const container = document.querySelector('.presentation-content');
+      if (container) {
+        // measure active after paint
+        requestAnimationFrame(() => {
+          const active = slides[currentSlide];
+          if (active) {
+            const targetH = active.offsetHeight;
+            // Lock height to avoid layout jump during transition
+            container.style.height = targetH + 'px';
+          }
+        });
+      }
       
       // Update indicators
       if (currentSlideIndicator) {
@@ -3536,7 +4198,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Update progress bar
       if (progressFill) {
         const progress = ((currentSlide + 1) / totalSlides) * 100;
-        progressFill.style.width = `${progress}%`;
+        progressFill.style.width = /*html*/`${progress}%`;
       }
       
       // Add sparkle effect to current slide
@@ -3602,8 +4264,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
   // Removed auto/shuffle/restart UI per design; auto starts on load and stops on manual nav
     
-    // Keyboard navigation
+    // Optimized keyboard navigation with passive listeners
     document.addEventListener('keydown', (e) => {
+      // Only process if focused on presentation
       if (document.querySelector('.belle-presentation:hover') || 
           document.activeElement.closest('.belle-presentation')) {
         switch(e.key) {
@@ -3632,7 +4295,7 @@ document.addEventListener("DOMContentLoaded", () => {
             break;
         }
       }
-    });
+    }, { passive: false }); // Need preventDefault
     
     // Touch/swipe support
     let touchStartX = 0;
@@ -3642,7 +4305,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (presentationEl) {
       presentationEl.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
-      });
+      }, { passive: true });
       
       presentationEl.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
@@ -3659,11 +4322,16 @@ document.addEventListener("DOMContentLoaded", () => {
             updateSlide(currentSlide - 1);
           }
         }
-      });
+      }, { passive: true });
     }
     
     // Initialize
     createFloatingElements();
+    // Pre-set container height to first slide
+    const firstContainer = document.querySelector('.presentation-content');
+    if (firstContainer && slides[0]) {
+      firstContainer.style.height = slides[0].offsetHeight + 'px';
+    }
     updateSlide(0, false);
     
     // Auto-start presentation after 1.5 seconds
@@ -3674,6 +4342,32 @@ document.addEventListener("DOMContentLoaded", () => {
         playKawaiiSound('auto');
       }
     }, 1500);
+
+    // Pause autoplay if tab is hidden
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stopAutoPlay();
+      } else if (isAutoPlaying && !autoPlayInterval) {
+        startAutoPlay();
+      }
+    }, { passive: true });
+
+    // Expose controls for navigation hide/show
+    window._presentationControl = {
+      onShow: () => {
+        // Ensure container height syncs after being hidden
+        const container = document.querySelector('.presentation-content');
+        if (container && slides[currentSlide]) {
+          container.style.height = slides[currentSlide].offsetHeight + 'px';
+        }
+        if (isAutoPlaying && !autoPlayInterval) startAutoPlay();
+      },
+      onHide: () => {
+        stopAutoPlay();
+        const container = document.querySelector('.presentation-content');
+        if (container) container.style.height = 'auto';
+      }
+    };
   }
 
   // ====== SYNC HEART COLLECTOR WITH FLOATING HEARTS ======
@@ -3709,6 +4403,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Add bonus hearts for eating floating hearts
       if (heartsEaten > 0) {
+        try { SFX.play("hearts.click"); } catch (_) {}
         addHearts(heartsEaten);
       }
     });
@@ -3747,7 +4442,7 @@ document.addEventListener("DOMContentLoaded", () => {
           x = -120;
           y = window.innerHeight * (0.12 + Math.random() * 0.5);
         }
-        img.style.transform = `translate(${x}px, ${y}px)`;
+        img.style.transform = /*html*/`translate(${x}px, ${y}px)`;
 
         // Eat nearby hearts
         const hearts = document.querySelectorAll(".heart-particle");
@@ -3762,6 +4457,7 @@ document.addEventListener("DOMContentLoaded", () => {
           );
           if (overlap) {
             h.classList.add("heart-eaten");
+            try { SFX.play('hearts.click'); } catch (_) {}
             setTimeout(() => h.remove(), 350);
           }
         });
@@ -3774,6 +4470,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.pixelBelleGarden = {
     addHearts: addHearts,
+    sfx: {
+      play: (key) => { try { SFX.play(key); } catch (_) {} },
+      sega: () => { try { SFX.play('sega.tag'); } catch (_) {} },
+      setEnabled: (on) => { try { SFX.setEnabled(!!on); } catch (_) {} },
+      setVolume: (v) => { try { SFX.setVolume(v); } catch (_) {} },
+    },
     showSection: (section) => {
       const link = document.querySelector(`[data-section="${section}"]`);
       if (link) link.click();

@@ -1,5 +1,5 @@
 /**
- * SITE CONTENT — Edit-friendly copy and links
+ * SITE CONTENT - Edit-friendly copy and links
  *
  * How to update:
  * - Open this file on GitHub (web UI) and click the pencil icon.
@@ -8,7 +8,7 @@
  */
 
 /**
- * SITE CONTENT — Edit-friendly copy and links
+ * SITE CONTENT - Edit-friendly copy and links
  *
  * How to update:
  * - Open this file on GitHub (web UI) and click the pencil icon.
@@ -43,8 +43,14 @@ window.SITE_CONTENT = {
     headerBg: "./assets/pt_top.png",
     // Optional: add extra Miku image URLs (singing/idle sprites) to show in floating Mikus
     extraMikus: [
-        // "https://example.com/miku1.png",
-        // "https://example.com/miku2.png"
+        // Local high-res and gifs already in repo
+        "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png",
+        "./assets/hatsune_miku_render_by_jimmyisaac_d68ibgy-pre.png",
+        "./assets/hatsune-miku-happy-birthday-xa3kasez005ghjih.webp",
+        "./assets/miku beam.gif",
+        "./assets/Song-Over.full.2116602.gif"
+        // To add: drop more PNG/GIFs into ./assets and append their paths here
+        // Remote suggestions with permissive licenses are listed in README (see "Art Sources")
     ],
     // Miku emoji/icon replacements
     mikuIcons: {
@@ -70,12 +76,10 @@ window.SITE_CONTENT = {
     },
     // Optional swallow gif path for the swallow mascot
     swallowGif: "./assets/swallow.gif",
-    statsBadges: [
-      "https://stuff.charm.lu/88x31/compu.gif",
-      "https://anlucas.neocities.org/88x31Buttons/notepad.gif",
-    ],
+    // All badges appear only in the Web Badges sidebar
+    statsBadges: [],
     webBadges: [
-      // Our own badge comes first!
+      // Our own badge first (cropped banner in 88×31)
       {
         src: "./assets/discordServerBanner.png",
         alt: "Baby Belle's Pixel Garden",
@@ -83,18 +87,64 @@ window.SITE_CONTENT = {
         isOurBadge: true,
         style: "width: 88px; height: 31px; object-fit: cover; object-position: center; border-radius: 6px; box-shadow: 0 2px 6px rgba(43,43,68,0.15);"
       },
-      "https://cyber.dabamos.de/88x31/best_viewed_with_eyes.gif",
-      "https://cyber.dabamos.de/88x31/get_firefox.gif",
-      "https://cyber.dabamos.de/88x31/made_with_windows_notepad.gif",
-      "https://cyber.dabamos.de/88x31/gay_rights.gif",
-      "https://cyber.dabamos.de/88x31/kawaii.gif",
-      "https://cyber.dabamos.de/88x31/transnow2.gif",
+      // Hosted on Neocities (cute pink variant)
+      {
+        src: "https://cyber.dabamos.de/88x31/neocities-pink.gif",
+        alt: "Hosted on Neocities",
+        link: "https://neocities.org/"
+      },
+      // Cute Neocities creators/sites (on-theme pastels/kawaii)
+      {
+        src: "https://cementgarden.neocities.org/images/button/cementgarden7.gif",
+        alt: "Cement Garden",
+        link: "https://cementgarden.neocities.org/"
+      },
+      {
+        src: "https://melokaji.neocities.org/images/melobutton.gif",
+        alt: "melokaji",
+        link: "https://melokaji.neocities.org/"
+      },
+      {
+        src: "https://cloverbell.neocities.org/buttons/2cherrishbutton.gif",
+        alt: "2Cherrish",
+        link: "https://2cherrish.neocities.org/"
+      },
+      {
+        src: "https://cloverbell.neocities.org/buttons/cherrylotusbutton.png",
+        alt: "CherryLotus",
+        link: "https://cherrylotus.neocities.org/"
+      },
+      {
+        src: "https://cabbagesorter.neocities.org/buttons/cabbagesorter.gif",
+        alt: "cabbagesorter",
+        link: "https://cabbagesorter.neocities.org/"
+      },
+      {
+        src: "https://cloverbell.neocities.org/buttons/vivarism_01.gif",
+        alt: "Vivarism",
+        link: "https://vivarism.neocities.org/"
+      },
+      {
+        src: "https://cloverbell.neocities.org/buttons/tomboyish.gif",
+        alt: "tomboyish",
+        link: "https://tomboyish.neocities.org/"
+      },
+      {
+        src: "https://cloverbell.neocities.org/buttons/mn1ca.gif",
+        alt: "mn1ca",
+        link: "https://mn1ca.neocities.org/"
+      },
+      {
+        src: "https://cloverbell.neocities.org/buttons/amivicky-5.gif",
+        alt: "amivicky",
+        link: "https://amivicky.neocities.org/"
+      }
     ],
   },
   site: {
     title: "Baby Belle's Pixel Garden",
     subtitle: "where sweet dreams come to life ♡ • べべベルのデジタル庭",
-    htmlTitle: "Baby Belle — Pixel Miku Garden ✨",
+    htmlTitle: "Baby Belle - Pixel Miku Garden ✨",
     birthYear: birthYear,
     birthdayMonth: birthdayMonth,
     birthdayDay: birthdayDay,
@@ -103,7 +153,7 @@ window.SITE_CONTENT = {
   splash: {
     title: "Baby Belle's Pixel Garden",
     subtitle: "Initializing kawaii protocols...",
-    button: "Enter the Garden 🌳",
+    button: "enter the garden °❀⋆.ೃ࿔*:･",
   },
 
   nav: [
@@ -151,13 +201,12 @@ window.SITE_CONTENT = {
     presentationIcon: "sparkle",
     presentationSlides: [
       {
-        title: "About Me & Lore",
+        title: "Lore",
         titleIcon: "innocent",
         theme: "bio",
         content: [
           "🇫🇮 Finland 🇸🇪 Sweden → Japan 🇯🇵",
           "꒰ঌ Internet angel ໒꒱ • Professional NEET • Super cute! 💖",
-          "",
           "Baby Belle used to be an e-girl and YouTube content creator with their cat maid persona called Shin.",
           "Baby Belle is of Finnish and Swedish descent but is currently living in Japan.",
           "Baby Belle spends most of her days online as she has no friends irl."
@@ -183,7 +232,7 @@ window.SITE_CONTENT = {
         titleIcon: "love",
         theme: "feelings",
         content: [
-          "I love collecting Hatsune Miku figures, kawaii aesthetics and gaming.",
+          "I love collecting Hatsune Miku figures, being cute and gaming.",
           "Sometimes I get sad... so if it's all right with you, can you cheer me up too?",
           "I dont want to feel lonely or be bullied.",
           "",
@@ -249,103 +298,6 @@ window.SITE_CONTENT = {
       }
     ],
     
-    // Legacy support for old structure
-    aboutTitle: "About Me & Lore",
-    aboutIcon: "innocent",
-    aboutPages: [
-      [
-        "�🇫🇮 Finland 🇸🇪 Sweden → Japan 🇯🇵",
-        "꒰ঌ Internet angel ໒꒱ • Professional NEET • Super cute! 💖",
-        "",
-        "Baby Belle used to be an e-girl and YouTube content creator with their cat maid persona called Shin.",
-        "Baby Belle is of Finnish and Swedish descent but is currently living in Japan.",
-      ],
-      [
-        "Baby Belle spends most of her days online as she has no friends irl.",
-        "",
-        "Age: Her frontal lobes have stopped growing " + yearsAgo + " years ago",
-        "Height: 169 cm",
-        "Birthday: September 22nd",
-        "Jobby: No",
-      ],
-      [
-        "I love collecting Hatsune Miku figures, kawaii aesthetics and gaming.",
-        "Sometimes I get sad... so if it's all right with you, can you cheer me up too?",
-        "I dont want to feel lonely or be bullied.",
-        "",
-        "Thank you for visiting my garden! 💙",
-      ],
-    ],
-    likesTitle: "Likes",
-    likesIcon: "love",
-    likes: [
-      "Hatsune Miku 💙",
-      "Monster energy drink (not sponsored)",
-      "Coffee ☕",
-      "Sweets 🍰",
-      "Cats 🐱",
-      "Sanrio (Cinnamoroll!)",
-      "Japanese fashion 👘",
-      "Tomato ketchup 🍝",
-    ],
-    dislikesTitle: "Dislikes",
-    dislikesIcon: "wallHide",
-    dislikesPages: [
-      [
-        "Loud jump scares 🙀",
-        "Spicy level 🔥🔥🔥",
-        "Eating bugs 🐛🚫",
-      ],
-      [
-        "Rude behavior ❌",
-        "Being ignored 😔",
-        "Broken technology 💻💔",
-      ],
-      [
-        "Messy spaces 🗂️",
-        "Long loading times ⏳",
-        "Empty fridges 🥺",
-      ],
-    ],
-    dislikes: [
-      "Loud jump scares 🙀",
-      "Spicy level 🔥🔥🔥",
-      "Eating bugs 🐛🚫",
-      "Rude behavior ❌",
-    ],
-    dreamsTitle: "Dreams",
-    dreamsIcon: "jumpingStars",
-    dreamsPages: [
-      [
-        "Be able to eat spicy food! 🌶️",
-        "Play a scary game!",
-        "Stream on Twitch! 📺",
-      ],
-      [
-        "Get a gaming PC 🖥️",
-        "Stream Content 🎥",
-        "Trying Japanese food/drinks! 🍜",
-      ],
-      [
-        "Drinking games! 🍻",
-        "Play games on my Mac! 🖥️",
-        "Cosplay! 👗",
-      ],
-    ],
-    dreams: [
-      "Be able to eat spicy food! 🌶️",
-      "Play a scary game!",
-      "Stream on Twitch! 📺", 
-      "Get a gaming PC 🖥️",
-      "Stream Content 🎥",
-      "Trying Japanese food/drinks! 🍜",
-      "Drinking games! 🍻",
-      "Play games on my Mac! 🖥️",
-      "Cosplay! 👗",
-    ],
-    dreamItemIcons: {
-      1: "vibing", // Play a scary game
-    },
   },
 
   socials: {
