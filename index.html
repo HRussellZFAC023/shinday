@@ -58,7 +58,7 @@
         <div id="statusBar" class="status-bar">
           <div class="status-left">
             <div class="status-item">
-              <span class="blink">●</span> <span id="onlineStatus">Online</span>
+              <span class="blink" id="statusDot">●</span> <span id="onlineStatus">Online</span>
             </div>
             <div class="status-item">
               🎵 <span id="radioStatus">Kawaii FM 📻</span>
@@ -103,12 +103,7 @@
               </div>
             </div>
 
-            <div class="widget">
-                <h3 id="quickLinksTitle">🌟 Quick Links</h3>
-              <ul class="quick-links" id="quickLinksList">
-                <!-- Will be populated by JS -->
-              </ul>
-            </div>
+            
 
             <div class="widget">
               <h3>🐾 Your e-pet</h3>
@@ -122,6 +117,13 @@
                   >gifypet</a
                 ></small
               >
+            </div>
+
+            <div class="widget">
+              <h3>👥 Friends</h3>
+              <div class="friends-list" id="friendsList">
+                <!-- Will be populated by JS -->
+              </div>
             </div>
 
             <div class="widget">
@@ -152,51 +154,14 @@
                 <div class="hero-text">
                   <h2>Welcome to my garden! 🌸</h2>
                   <p>
-                    Hi there! I'm Baby Belle, but you can call me BB. Welcome to
-                    my cozy corner of the internet where kawaii meets retro
-                    vibes. <br />Come, explore and make yourself at home! <br />
-                    Let's be good friends! 💌
+                    <!-- Will be populated by JS (heroParagraphs) -->
                   </p>
                   <button id="heartBtn" class="heart-btn">💖 Send Love</button>
                 </div>
               </div>
 
-              <div class="content-grid">
-                <div class="card">
-                  <h3>🎀 About Me</h3>
-                  <p>
-                    🇫🇮 Finland → Japan 🇯🇵 <br />
-                    ꒰ঌ Internet angel ໒꒱ • Professional NEET • Super cute! 💖
-                  </p>
-                  <p>
-                    I love collecting Hatsune Miku figures, kawaii aesthetics
-                    and gaming. Sometimes I get sad... so if its all right with
-                    you, can you cheer me up too? <br />I dont want to feel lonely or be bullied.
-                  </p>
-                  <h4>Likes</h4>
-                  <ul>
-                    <li>Hatsune Miku 💙</li>
-                    <li>Sanrio (Cinnamoroll!)</li>
-                    <li>J-Fashion 👗</li>
-                    <li>Tomato ketchup 🍝</li>
-                    <li>Cozy games & starbies hopping ☕</li>
-                  </ul>
-                  <h4>Dislikes</h4>
-                  <ul>
-                    <li>Loud jump scares 🙀</li>
-                    <li>Spicy level 🔥🔥🔥</li>
-                    <li>Eating bugs 🐛🚫</li>
-                    <li>Rude behavior ❌</li>
-                  </ul>
-                </div>
-                <div class="card">
-                  <h3>✨ What's New</h3>
-                  <ul id="updates">
-                    <li>Added interactive Miku companions! 🎵</li>
-                    <li>New pastel theme launched 🌸</li>
-                    <li>Virtual pet adopted! 🐾</li>
-                  </ul>
-                </div>
+              <div class="content-grid" id="homeGrid">
+                <!-- Will be rebuilt by JS (about, likes, dislikes, dreams) -->
               </div>
             </section>
 
@@ -208,34 +173,11 @@
               </div>
             </section>
 
-            <!-- Study section -->
+            <!-- Japanese games (via Kotoba API) -->
             <section id="study" class="content-section">
-              <h2>📚 日本語 Learning Journey</h2>
-              <div class="study-grid">
-                <div class="study-card">
-                  <h3>🌸 Current Level</h3>
-                  <div class="progress-bar">
-                    <div class="progress" style="width: 35%"></div>
-                  </div>
-                  <p>Beginner - Working on Hiragana & basic vocab!</p>
-                </div>
-                <div class="study-card">
-                  <h3>📝 Today's Word</h3>
-                  <div class="word-of-day">
-                    <span class="japanese">かわいい</span>
-                    <span class="romaji">kawaii</span>
-                    <span class="meaning">cute, adorable</span>
-                  </div>
-                </div>
-                <div class="study-card">
-                  <h3>🎯 Goals</h3>
-                  <ul>
-                    <li>Master Hiragana ✅</li>
-                    <li>Learn basic Katakana 📚</li>
-                    <li>100 vocabulary words 🎯</li>
-                    <li>Read simple manga 🌟</li>
-                  </ul>
-                </div>
+              <h2>🎌 Japanese Games</h2>
+              <div class="study-grid" id="jpGames">
+                <!-- Populated by JS -->
               </div>
             </section>
 
@@ -257,7 +199,7 @@
                     <div id="heartZone" class="heart-zone">
                       Click to collect hearts! 💖
                     </div>
-                    <p>Hearts collected: <span id="gameHeartCount">0</span></p>
+                    <p>💖 Hearts collected: <span id="gameHeartCount">0</span></p>
                     <button id="resetHearts" class="pixel-btn">Reset</button>
                   </div>
                 </div>
@@ -339,10 +281,10 @@
           <!-- Right sidebar -->
           <aside id="rightSidebar">
             <div class="widget">
-              <h3>👥 Friends</h3>
-              <div class="friends-list" id="friendsList">
+                <h3 id="quickLinksTitle">🌟 Quick Links</h3>
+              <ul class="quick-links" id="quickLinksList">
                 <!-- Will be populated by JS -->
-              </div>
+              </ul>
             </div>
 
             <div class="widget">

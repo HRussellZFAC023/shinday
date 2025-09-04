@@ -227,7 +227,7 @@ body {
 
 .blink {
   animation: blink 1s infinite;
-  color: #00ff00;
+  color: #ffbf00; /* amber by default */
 }
 
 .editable {
@@ -1585,6 +1585,5 @@ main {
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(45deg, var(--pastel-pink), var(--pastel-purple));
 }
-
 
 

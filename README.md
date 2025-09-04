@@ -108,14 +108,9 @@ npx http-server
 
 ## 🎨 Customization
 
-### Non-technical editing (like WordPress)
-- Open `js/content.js` on GitHub and click the pencil icon to edit.
-- Change copy, links, lists, and titles in plain text.
-- Click “Commit changes” — your site updates automatically on next deploy.
-
 ### Adding New Miku Images
 1. Add images to `assets/pixel-miku/`
-2. No code change needed — images auto-load if named like `Hatsune Miku @illufinch 01.png` etc.
+2. Update `MIKU_IMAGES` array in `js/main.js`
 
 ### Customizing Shimeji Behavior
 Edit configurations in `js/shimeji.js`:

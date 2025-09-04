@@ -290,6 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initStatusBar();
     initRadio();
     initSocials();
+    initJpGames();
     initGames();
     initShrine();
     initFriends();
@@ -300,6 +301,324 @@ document.addEventListener("DOMContentLoaded", () => {
     loadSavedData();
 
     console.log("PixelBelle's Garden initialized! 🌸");
+  }
+
+  // ====== JP GAMES (Kotoba API integration with fallbacks) ======
+  function initJpGames() {
+    const host = (C.jpGames && C.jpGames.api) || {};
+    const container = document.getElementById('jpGames');
+    if (!container) return;
+
+    // Build study cards: Level, Word of the Day (iframe), Goals, plus Vocab and Kanji quizzes
+    container.innerHTML = `
+      <div class="study-card" id="levelCard">
+        <h3>🌸 Current Level</h3>
+        <div class="progress-bar"><div class="progress" style="width: 0%"></div></div>
+        <p></p>
+      </div>
+      <div class="study-card" id="wodCard">
+        <h3>📖 Word of the Day</h3>
+        <div class="word-of-day">
+          <span class="japanese"></span>
+          <span class="romaji"></span>
+          <span class="meaning"></span>
+        </div>
+        <div class="social-embed" style="margin-top:10px; border-radius:12px; overflow:hidden; height: 400px;">
+          <iframe id="wodIframe" src="${(C.study && C.study.wordOfDay && C.study.wordOfDay.externalIframe) ? C.study.wordOfDay.externalIframe : 'https://kanjiday.com/kanji/'}" style="border:0;width:100%;height:100%" loading="lazy" referrerpolicy="no-referrer"></iframe>
+        </div>
+      </div>
+      <div class="study-card" id="goalsCard">
+        <h3>🎯 Goals</h3>
+        <ul></ul>
+      </div>
+      <div class="study-card" id="vocabCard">
+        <h3>📝 Vocab Quiz</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+          <label style="font-weight:800">Direction:</label>
+          <select id="vocabDirection" class="pixel-btn" style="padding:6px 10px;border-radius:8px;border:2px solid var(--border);background:#fff">
+            <option value="jp-en">JP → EN</option>
+            <option value="en-jp">EN → JP</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:6px;margin-left:auto">
+            <input type="checkbox" id="vocabTimed" /> <span style="font-weight:800">Timed (15s)</span>
+          </label>
+        </div>
+        <div id="vocabMeta" style="display:flex;gap:10px;align-items:center;color:#596286;font-size:12px;margin-bottom:4px">
+          <div>Streak: <span id="vocabStreak">0</span> (Best: <span id="vocabBestStreak">0</span>)</div>
+          <div id="vocabTimerWrap" style="display:none">⏱️ <span id="vocabTimer">15</span>s • Best: <span id="vocabBestTime">—</span></div>
+        </div>
+        <div id="vocabQuestion">Loading word…</div>
+        <div id="vocabChoices" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px"></div>
+        <div id="vocabFeedback" style="min-height:22px;margin-top:6px;color:#596286"></div>
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center;justify-content:space-between">
+          <button id="vocabNext" class="pixel-btn">Next</button>
+          <div style="font-weight:800">Score: <span id="vocabScore">0</span></div>
+        </div>
+      </div>
+      <div class="study-card" id="kanjiCard">
+        <h3>漢字 Kanji Quiz</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+          <label style="font-weight:800">Mode:</label>
+          <select id="kanjiMode" class="pixel-btn" style="padding:6px 10px;border-radius:8px;border:2px solid var(--border);background:#fff">
+            <option value="meaning">Meaning → Kanji</option>
+            <option value="reading">Kanji → Reading</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:6px;margin-left:auto">
+            <input type="checkbox" id="kanjiTimed" /> <span style="font-weight:800">Timed (15s)</span>
+          </label>
+        </div>
+        <div id="kanjiMeta" style="display:flex;gap:10px;align-items:center;color:#596286;font-size:12px;margin-bottom:4px">
+          <div>Streak: <span id="kanjiStreak">0</span> (Best: <span id="kanjiBestStreak">0</span>)</div>
+          <div id="kanjiTimerWrap" style="display:none">⏱️ <span id="kanjiTimer">15</span>s • Best: <span id="kanjiBestTime">—</span></div>
+        </div>
+        <div id="kanjiQuestion">Loading kanji…</div>
+        <div id="kanjiChoices" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px"></div>
+        <div id="kanjiFeedback" style="min-height:22px;margin-top:6px;color:#596286"></div>
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center;justify-content:space-between">
+          <button id="kanjiNext" class="pixel-btn">Next</button>
+          <div style="font-weight:800">Score: <span id="kanjiScore">0</span></div>
+        </div>
+      </div>
+    `;
+
+    // In-memory caches and session state (online-only)
+    const vocabCache = { pages: [], enDefs: new Set(), jpSurfaces: new Set() };
+    const kanjiCache = { gradeLists: new Map(), details: new Map() };
+    const recentVocab = [];
+    const recentKanji = [];
+    const RECENT_LIMIT = 10;
+
+    function pushRecent(list, val){ list.push(val); while(list.length>RECENT_LIMIT) list.shift(); }
+
+    async function fetchJsonWithProxy(url){
+      try { const r = await fetch(url, { cache:'no-store' }); if (r.ok) return await r.json(); } catch(_){}
+      try { const prox = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`; const r2 = await fetch(prox, { cache:'no-store' }); if (r2.ok) return await r2.json(); } catch(_){}
+      throw new Error('Network error');
+    }
+
+    async function primeVocabPage(page){
+      const url = `https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`;
+      const j = await fetchJsonWithProxy(url);
+      const arr = Array.isArray(j?.data) ? j.data : [];
+      if (!arr.length) return [];
+      vocabCache.pages.push(arr);
+      for (const e of arr){
+        const jp = (e.japanese && (e.japanese[0].word || e.japanese[0].reading)) || '';
+        const reading = (e.japanese && e.japanese[0].reading) || '';
+        const en = (e.senses && e.senses[0]?.english_definitions?.[0]) || '';
+        if (en) vocabCache.enDefs.add(en.trim());
+        if (jp) vocabCache.jpSurfaces.add(jp.trim()); else if (reading) vocabCache.jpSurfaces.add(reading.trim());
+      }
+      if (vocabCache.pages.length>6) vocabCache.pages.shift();
+      if (vocabCache.enDefs.size>200){ const nd=new Set(); for(const p of vocabCache.pages){ for(const e of p){ const en=(e.senses&&e.senses[0]?.english_definitions?.[0])||''; if(en) nd.add(en.trim()); } } vocabCache.enDefs=nd; }
+      if (vocabCache.jpSurfaces.size>200){ const ns=new Set(); for(const p of vocabCache.pages){ for(const e of p){ const jp=(e.japanese&&(e.japanese[0].word||e.japanese[0].reading))||''; const rd=(e.japanese&&e.japanese[0].reading)||''; if(jp) ns.add(jp.trim()); else if (rd) ns.add(rd.trim()); } } vocabCache.jpSurfaces=ns; }
+      return arr;
+    }
+
+    function rnd(n){ return Math.floor(Math.random()*n); }
+    function pickN(setLike, n, avoid=new Set()){
+      const arr = Array.isArray(setLike)? setLike.slice() : Array.from(setLike);
+      const out=[]; const used=new Set(avoid);
+      while(out.length<n && arr.length){ const i=rnd(arr.length); const v=arr.splice(i,1)[0]; if(!used.has(v)){ used.add(v); out.push(v); } }
+      return out;
+    }
+
+    async function getVocabQuestion(direction){
+      if (vocabCache.pages.length===0) await primeVocabPage(rnd(50)+1);
+      if (vocabCache.enDefs.size<12 || vocabCache.jpSurfaces.size<12) await primeVocabPage(rnd(50)+1);
+      const page = vocabCache.pages[rnd(vocabCache.pages.length)];
+      if (!page || !page.length) throw new Error('No vocab data');
+      for (let guard=0; guard<12; guard++){
+        const pick = page[rnd(page.length)];
+        const jp = (pick.japanese && (pick.japanese[0].word || pick.japanese[0].reading)) || '';
+        const reading = (pick.japanese && pick.japanese[0].reading) || '';
+        const enList = (pick.senses && pick.senses[0]?.english_definitions) || [];
+        const en = enList[0];
+        if (!jp || !en) continue;
+        if (recentVocab.includes(jp)) continue;
+        if (direction === 'jp-en'){
+          const correct = en.trim();
+          const decoys = Array.from(new Set(pickN(vocabCache.enDefs, 6, new Set([correct])))).filter(x=>x!==correct).slice(0,3);
+          if (decoys.length<3) { await primeVocabPage(rnd(50)+1); continue; }
+          pushRecent(recentVocab, jp);
+          return { promptHtml: `<div style=\"font-size:22px;font-weight:900\">${jp}</div><div style=\"opacity:.8\">${reading||''}</div>`, correct, options: shuffle([correct, ...decoys]) };
+        } else {
+          const surface = (jp || reading).trim();
+          const correct = surface;
+          const decoys = Array.from(new Set(pickN(vocabCache.jpSurfaces, 6, new Set([correct])))).filter(x=>x!==correct).slice(0,3);
+          if (decoys.length<3) { await primeVocabPage(rnd(50)+1); continue; }
+          pushRecent(recentVocab, jp);
+          return { promptHtml: `<div style=\"font-size:16px;opacity:.8\">Meaning:</div><div style=\"font-size:22px;font-weight:900\">${en}</div>`, correct, options: shuffle([correct, ...decoys]) };
+        }
+      }
+      throw new Error('Could not build vocab question');
+    }
+
+    async function getGradeList(grade){
+      if (kanjiCache.gradeLists.has(grade)) return kanjiCache.gradeLists.get(grade);
+      const list = await fetchJsonWithProxy(`https://kanjiapi.dev/v1/kanji/grade-${grade}`);
+      if (!Array.isArray(list) || !list.length) throw new Error('No kanji list');
+      kanjiCache.gradeLists.set(grade, list);
+      if (kanjiCache.gradeLists.size>4){ const firstKey = kanjiCache.gradeLists.keys().next().value; kanjiCache.gradeLists.delete(firstKey); }
+      return list;
+    }
+    async function getKanjiDetail(ch){
+      if (kanjiCache.details.has(ch)) return kanjiCache.details.get(ch);
+      const d = await fetchJsonWithProxy(`https://kanjiapi.dev/v1/kanji/${encodeURIComponent(ch)}`);
+      kanjiCache.details.set(ch, d);
+      if (kanjiCache.details.size>60){ const it = kanjiCache.details.keys(); kanjiCache.details.delete(it.next().value); }
+      return d;
+    }
+
+    async function getKanjiQuestion(mode){
+      const grade = rnd(6)+1;
+      const list = await getGradeList(grade);
+      for (let guard=0; guard<12; guard++){
+        const k = list[rnd(list.length)];
+        if (recentKanji.includes(k)) continue;
+        const d = await getKanjiDetail(k);
+        const meaning = d?.meanings?.[0];
+        if (!meaning) continue;
+        if (mode === 'meaning'){
+          const correct = k; const pool = list.filter(x=>x!==k);
+          const decoys = pickN(pool, 6, new Set([correct])).slice(0,3);
+          if (decoys.length<3) continue;
+          pushRecent(recentKanji, k);
+          return { promptHtml: `<div style=\"opacity:.8\">Meaning:</div><div style=\"font-size:22px;font-weight:900\">${meaning}</div>`, correct, options: shuffle([correct, ...decoys]) };
+        } else {
+          const readings = [...(d.kun_readings||[]), ...(d.on_readings||[])].map(String).filter(Boolean);
+          if (!readings.length) continue;
+          const correct = readings[rnd(readings.length)];
+          const decoyReadings = new Set(); let tries=0;
+          while(decoyReadings.size<3 && tries++<20){ const dk = list[rnd(list.length)]; if (dk===k) continue; const dd = await getKanjiDetail(dk); const rs=[...(dd.kun_readings||[]), ...(dd.on_readings||[])]; if (rs.length){ const rpick = rs[rnd(rs.length)]; if (rpick && rpick!==correct) decoyReadings.add(rpick); } }
+          if (decoyReadings.size<3) continue;
+          pushRecent(recentKanji, k);
+          return { promptHtml: `<div style=\"font-size:22px;font-weight:900\">${k}</div>`, correct, options: shuffle([correct, ...Array.from(decoyReadings).slice(0,3)]) };
+        }
+      }
+      throw new Error('Could not build kanji question');
+    }
+
+    // Utilities
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+
+    // Vocab Quiz (online-only Jisho)
+    (function vocabQuiz(){
+      const qEl = document.getElementById('vocabQuestion');
+      const cEl = document.getElementById('vocabChoices');
+      const fb = document.getElementById('vocabFeedback');
+      const next = document.getElementById('vocabNext');
+      const scoreEl = document.getElementById('vocabScore');
+      const dirSel = document.getElementById('vocabDirection');
+      const timedChk = document.getElementById('vocabTimed');
+      const timerWrap = document.getElementById('vocabTimerWrap');
+      const timerEl = document.getElementById('vocabTimer');
+      const streakEl = document.getElementById('vocabStreak');
+      const bestStreakEl = document.getElementById('vocabBestStreak');
+      const bestTimeEl = document.getElementById('vocabBestTime');
+      let score=0, lock=false;
+      let direction = localStorage.getItem('vocab.direction') || 'jp-en';
+      let timed = localStorage.getItem('vocab.timed') === '1';
+      let streak = 0;
+      let bestStreak = parseInt(localStorage.getItem('vocab.bestStreak')||'0',10);
+      let bestTime = parseInt(localStorage.getItem('vocab.bestTime')||'0',10) || null;
+      let countdown = 15, tId = null, startAt = 0;
+
+      if (dirSel) { dirSel.value = direction; dirSel.addEventListener('change', ()=>{ direction = dirSel.value; localStorage.setItem('vocab.direction', direction); }); }
+      if (timedChk) { timedChk.checked = timed; timedChk.addEventListener('change', ()=>{ timed = timedChk.checked; localStorage.setItem('vocab.timed', timed? '1':'0'); timerWrap.style.display = timed? 'inline-flex':'none'; }); timerWrap.style.display = timed? 'inline-flex':'none'; }
+      bestStreakEl.textContent = String(bestStreak);
+      bestTimeEl.textContent = bestTime? `${(bestTime/1000).toFixed(1)}s` : '—';
+
+      async function load() {
+        lock=false; fb.textContent=''; cEl.innerHTML=''; qEl.textContent = 'Loading…';
+        try {
+          const q = await getVocabQuestion(direction);
+          const correct = q.correct;
+          qEl.innerHTML = q.promptHtml;
+          if (timed){ countdown=15; timerEl.textContent = String(countdown); startAt = Date.now(); if (tId) clearInterval(tId); tId = setInterval(()=>{ countdown--; timerEl.textContent = String(Math.max(0,countdown)); if (countdown<=0){ clearInterval(tId); tId=null; lock=true; fb.textContent = `⏰ Time! Correct: ${correct}`; fb.style.color='#c00'; streak=0; streakEl.textContent=String(streak); } },1000); }
+          q.options.forEach(opt => {
+            const b=document.createElement('button'); b.className='pixel-btn'; b.textContent=opt; b.style.padding='8px';
+            b.addEventListener('click',()=>{
+              if (lock) return; lock=true; if (tId){ clearInterval(tId); tId=null; }
+              if (opt===correct){
+                fb.textContent='✅ Correct!'; fb.style.color='#2b2b44'; score++; scoreEl.textContent=String(score); addHearts(1);
+                streak++; streakEl.textContent = String(streak);
+                if (streak>1) loveToast(`コンボ x${streak}!`);
+                if (streak>bestStreak){ bestStreak=streak; localStorage.setItem('vocab.bestStreak', String(bestStreak)); bestStreakEl.textContent=String(bestStreak); }
+                if (timed){ const elapsed = Date.now()-startAt; if (!bestTime || elapsed<bestTime){ bestTime=elapsed; localStorage.setItem('vocab.bestTime', String(bestTime)); bestTimeEl.textContent = `${(bestTime/1000).toFixed(1)}s`; } }
+                if (streak>0 && streak%5===0) addHearts(1);
+              } else {
+                fb.textContent=`❌ ${correct}`; fb.style.color='#c00'; streak=0; streakEl.textContent=String(streak);
+              }
+            });
+            cEl.appendChild(b);
+          });
+        } catch(e){
+          friendlyError(cEl, load);
+          qEl.textContent = '';
+        }
+      }
+      next.addEventListener('click', load);
+      load();
+    })();
+
+    // Kanji Quiz (online-only KanjiAPI)
+    (function kanjiQuiz(){
+      const qEl = document.getElementById('kanjiQuestion');
+      const cEl = document.getElementById('kanjiChoices');
+      const fb = document.getElementById('kanjiFeedback');
+      const next = document.getElementById('kanjiNext');
+      const scoreEl = document.getElementById('kanjiScore');
+      const modeSel = document.getElementById('kanjiMode');
+      const timedChk = document.getElementById('kanjiTimed');
+      const timerWrap = document.getElementById('kanjiTimerWrap');
+      const timerEl = document.getElementById('kanjiTimer');
+      const streakEl = document.getElementById('kanjiStreak');
+      const bestStreakEl = document.getElementById('kanjiBestStreak');
+      const bestTimeEl = document.getElementById('kanjiBestTime');
+      let score=0, lock=false;
+      let mode = localStorage.getItem('kanji.mode') || 'meaning';
+      let timed = localStorage.getItem('kanji.timed') === '1';
+      let streak = 0;
+      let bestStreak = parseInt(localStorage.getItem('kanji.bestStreak')||'0',10);
+      let bestTime = parseInt(localStorage.getItem('kanji.bestTime')||'0',10) || null;
+      let countdown = 15, tId = null, startAt = 0;
+
+      if (modeSel){ modeSel.value = mode; modeSel.addEventListener('change', ()=>{ mode = modeSel.value; localStorage.setItem('kanji.mode', mode); }); }
+      if (timedChk){ timedChk.checked = timed; timedChk.addEventListener('change', ()=>{ timed = timedChk.checked; localStorage.setItem('kanji.timed', timed? '1':'0'); timerWrap.style.display = timed? 'inline-flex':'none'; }); timerWrap.style.display = timed? 'inline-flex':'none'; }
+      bestStreakEl.textContent = String(bestStreak);
+      bestTimeEl.textContent = bestTime? `${(bestTime/1000).toFixed(1)}s` : '—';
+
+      async function load() {
+        lock=false; fb.textContent=''; cEl.innerHTML=''; qEl.textContent='Loading…';
+        try {
+          const q = await getKanjiQuestion(mode);
+          const correct = q.correct;
+          qEl.innerHTML = q.promptHtml;
+          if (timed){ countdown=15; timerEl.textContent = String(countdown); startAt = Date.now(); if (tId) clearInterval(tId); tId = setInterval(()=>{ countdown--; timerEl.textContent = String(Math.max(0,countdown)); if (countdown<=0){ clearInterval(tId); tId=null; lock=true; fb.textContent = `⏰ Time! Correct: ${correct}`; fb.style.color='#c00'; streak=0; streakEl.textContent=String(streak); } },1000); }
+          q.options.forEach(opt => {
+            const b=document.createElement('button'); b.className='pixel-btn'; b.textContent=opt; b.style.padding='8px';
+            b.addEventListener('click',()=>{
+              if (lock) return; lock=true; if (tId){ clearInterval(tId); tId=null; }
+              if (opt===correct){ fb.textContent='✅ 正解!'; fb.style.color='#2b2b44'; score++; scoreEl.textContent=String(score); addHearts(1);
+                streak++; streakEl.textContent = String(streak);
+                if (streak>1) loveToast(`コンボ x${streak}!`);
+                if (streak>bestStreak){ bestStreak=streak; localStorage.setItem('kanji.bestStreak', String(bestStreak)); bestStreakEl.textContent=String(bestStreak); }
+                if (timed){ const elapsed = Date.now()-startAt; if (!bestTime || elapsed<bestTime){ bestTime=elapsed; localStorage.setItem('kanji.bestTime', String(bestTime)); bestTimeEl.textContent = `${(bestTime/1000).toFixed(1)}s`; } }
+                if (streak>0 && streak%5===0) addHearts(1);
+              }
+              else { fb.textContent=`❌ ${correct}`; fb.style.color='#c00'; streak=0; streakEl.textContent=String(streak); }
+            });
+            cEl.appendChild(b);
+          });
+        } catch(e){
+          friendlyError(cEl, load);
+          qEl.textContent='';
+        }
+      }
+      next.addEventListener('click', load);
+      load();
+    })();
   }
 
   // ====== APPLY CONTENT (copy from SITE_CONTENT) ======
@@ -417,14 +736,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const heartBtn = document.getElementById("heartBtn");
         if (heartBtn && C.home.heartButton) heartBtn.textContent = C.home.heartButton;
 
-        // Rebuild the grid with smaller logical containers
+        // Rebuild the grid with smaller logical containers (no What's New)
         const grid = document.querySelector("#home .content-grid");
         if (grid) {
           const likes = (C.home.likes || []).map((li) => `<li>${li}</li>`).join("");
           const dislikes = (C.home.dislikes || []).map((li) => `<li>${li}</li>`).join("");
           const dreams = (C.home.dreams || []).map((li) => `<li>${li}</li>`).join("");
           const aboutPs = (C.home.aboutParagraphs || []).map((txt) => `<p>${txt}</p>`).join("");
-          const updates = (C.home.updates || []).map((u) => `<li>${u}</li>`).join("");
 
           const pieces = [];
           pieces.push(`
@@ -451,12 +769,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <ul>${dreams}</ul>
             </div>
           `);
-          pieces.push(`
-            <div class="card">
-              <h3>${C.home.updatesTitle || "What's New"}</h3>
-              <ul id="updates">${updates}</ul>
-            </div>
-          `);
+          // What's New section removed per request
 
           grid.innerHTML = pieces.join("");
         }
@@ -487,9 +800,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (C.study) {
         const h2 = document.querySelector("#study h2");
         if (h2) h2.textContent = C.study.title;
-        const levelCard = document.querySelector(
-          "#study .study-card:nth-child(1)"
-        );
+        const levelCard = document.getElementById('levelCard');
         if (levelCard) {
           const h3 = levelCard.querySelector("h3");
           const progress = levelCard.querySelector(".progress");
@@ -499,9 +810,7 @@ document.addEventListener("DOMContentLoaded", () => {
             progress.style.width = `${C.study.progressPercent}%`;
           if (p && C.study.levelText) p.textContent = C.study.levelText;
         }
-        const wodCard = document.querySelector(
-          "#study .study-card:nth-child(2)"
-        );
+        const wodCard = document.getElementById('wodCard');
         if (wodCard && C.study.wordOfDay) {
           const jp = wodCard.querySelector(".japanese");
           const romaji = wodCard.querySelector(".romaji");
@@ -510,9 +819,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (romaji) romaji.textContent = C.study.wordOfDay.romaji || "";
           if (meaning) meaning.textContent = C.study.wordOfDay.meaning || "";
         }
-        const goalsCard = document.querySelector(
-          "#study .study-card:nth-child(3)"
-        );
+        const goalsCard = document.getElementById('goalsCard');
         if (goalsCard) {
           const h3 = goalsCard.querySelector("h3");
           const ul = goalsCard.querySelector("ul");
@@ -579,34 +886,58 @@ document.addEventListener("DOMContentLoaded", () => {
           galTitle.textContent = C.shrine.galleryTitle;
       }
 
-      // Friends title
+      // Friends title (by widget containing #friendsList)
       if (C.friends?.title) {
-        const h3 = document.querySelector("#rightSidebar .widget h3");
-        if (h3) h3.textContent = C.friends.title;
+        const friendsListEl = document.getElementById('friendsList');
+        if (friendsListEl) {
+          const widget = friendsListEl.closest('.widget');
+          const h3 = widget ? widget.querySelector('h3') : null;
+          if (h3) h3.textContent = C.friends.title;
+        }
       }
 
-      // Sidebar widget titles
+      // Sidebar widget titles (programmatically by element anchors)
       if (C.sidebarTitles) {
         const left = C.sidebarTitles.left || {};
         const right = C.sidebarTitles.right || {};
-        const leftWidgets = document.querySelectorAll(
-          "#leftSidebar .widget h3"
-        );
-        if (leftWidgets[0] && left.mood) leftWidgets[0].textContent = left.mood;
-        if (leftWidgets[1] && left.quickLinks)
-          leftWidgets[1].textContent = left.quickLinks; // may be overridden by quickLinks.title
-        if (leftWidgets[3] && left.stats)
-          leftWidgets[3].textContent = left.stats; // depending on iframe block presence
 
-        const rightWidgets = document.querySelectorAll(
-          "#rightSidebar .widget h3"
-        );
-        if (rightWidgets[0] && (C.friends?.title || right.friends))
-          rightWidgets[0].textContent = C.friends?.title || right.friends;
-        if (rightWidgets[1] && right.badges)
-          rightWidgets[1].textContent = right.badges;
-        if (rightWidgets[2] && right.vibe)
-          rightWidgets[2].textContent = right.vibe;
+        // Pet heading
+        const petIframe = document.getElementById('petIframe');
+        if (petIframe && left.pet) {
+          const w = petIframe.closest('.widget');
+          const h = w ? w.querySelector('h3') : null;
+          if (h) h.textContent = left.pet;
+        }
+
+        // Friends heading handled above
+
+        // Stats heading
+        const statBadge1 = document.getElementById('statBadge1');
+        if (statBadge1 && left.stats) {
+          const w = statBadge1.closest('.widget');
+          const h = w ? w.querySelector('h3') : null;
+          if (h) h.textContent = left.stats;
+        }
+
+        // Quick Links title (now on right)
+        const quickLinksTitle = document.getElementById('quickLinksTitle');
+        if (quickLinksTitle && right.quickLinks) quickLinksTitle.textContent = right.quickLinks;
+
+        // Badges title
+        const webBadges = document.getElementById('webBadges');
+        if (webBadges && right.badges) {
+          const w = webBadges.closest('.widget');
+          const h = w ? w.querySelector('h3') : null;
+          if (h) h.textContent = right.badges;
+        }
+
+        // Vibe title
+        const vibeMeter = document.querySelector('#rightSidebar .vibe-meter');
+        if (vibeMeter && right.vibe) {
+          const w = vibeMeter.closest('.widget');
+          const h = w ? w.querySelector('h3') : null;
+          if (h) h.textContent = right.vibe;
+        }
       }
 
       // Footer
@@ -824,6 +1155,32 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
+      // Discord invite (render a faux invite card using local assets)
+      if (domain.includes('discord.gg') || domain.includes('discord.com')) {
+        const banner = './assets/discordServerBanner.png';
+        const logo = './assets/discordServerLogo.png';
+        return `
+          <div class="social-item" style="--accent:${color}">
+            <div class="social-title"><span class="icon">${icon}</span> ${label}</div>
+            <div class="social-embed" style="border-radius:12px; overflow:hidden;">
+              <div style="background:#2b2d31;color:#fff;border-radius:12px;display:flex;flex-direction:column;gap:0;overflow:hidden;border:2px solid var(--border)">
+                <div style="position:relative;height:140px;background:#202225">
+                  <img src="${banner}" alt="Discord banner" style="width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.05)" />
+                  <img src="${logo}" alt="Server logo" style="position:absolute;left:16px;bottom:-28px;width:64px;height:64px;border-radius:12px;border:4px solid #2b2d31;background:#2b2d31" />
+                </div>
+                <div style="padding:40px 16px 16px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+                  <div>
+                    <div style="font-weight:900;font-size:1.05rem;line-height:1.2">Join Baby Belle's Server</div>
+                    <div style="color:#b5bac1;font-size:.9rem;margin-top:2px">Community • 1,2k Members</div>
+                  </div>
+                  <a href="${url}" target="_blank" rel="noopener" class="pixel-btn" style="background:#5865F2;color:#fff;font-weight:900;border:2px solid #4752C4;border-radius:10px;padding:10px 14px;white-space:nowrap">Join</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
       // Twitch (if provided in SOCIALS)
       if (domain.includes("twitch.tv")) {
         const ch = (() => {
@@ -882,6 +1239,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const radioStatus = document.getElementById("radioStatus");
     const radioDisplayStatus = document.getElementById("radioDisplayStatus");
     const onlineStatus = document.getElementById("onlineStatus");
+    const statusDot = document.getElementById('statusDot');
 
   let isPlaying = false;
 
@@ -897,6 +1255,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (onlineStatus) onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
   if (radioStatus) radioStatus.textContent = C.radio?.defaultStatus || "Kawaii FM 📻";
   if (radioDisplayStatus) radioDisplayStatus.textContent = C.radio?.defaultStatus || "Kawaii FM 📻";
+  if (statusDot) statusDot.style.color = '#ffbf00'; // amber on load
 
   // Radio controls
     playBtn.addEventListener("click", () => {
@@ -907,6 +1266,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (onlineStatus) onlineStatus.textContent = "Playing";
       audio.play().catch(()=>{});
       startEqualizer();
+      if (statusDot) statusDot.style.color = '#00ff00'; // green when playing
     });
 
     pauseBtn.addEventListener("click", () => {
@@ -917,11 +1277,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
       if (onlineStatus) onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
       stopEqualizer();
+      if (statusDot) statusDot.style.color = '#ff4d4d'; // red when stopped
     });
 
     audio.addEventListener("error", ()=>{
       radioStatus.textContent = "⚠️ Stream error";
       if (radioDisplayStatus) radioDisplayStatus.textContent = "⚠️ Stream error";
+      if (statusDot) statusDot.style.color = '#ff4d4d';
     });
     
     audio.addEventListener("playing", ()=>{
