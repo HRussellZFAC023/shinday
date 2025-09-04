@@ -173,8 +173,10 @@ body {
 
 .floating-mikus {
   position: absolute;
-  top: 20px;
+  top: 12px; /* lift a bit so they don't touch the title */
   right: 20px;
+  pointer-events: none;
+  z-index: 3; /* above header content */
 }
 
 .float-miku {
@@ -969,6 +971,9 @@ main {
 .mode-option.active {
   outline: 3px solid var(--accent);
 }
+.mode-options .pixel-btn { padding: 6px 10px; border-radius: 999px; font-size: 12px; }
+.mode-toggle { padding: 6px 10px; border-radius: 999px; font-size: 12px; }
+.mode-start { padding: 6px 12px; }
 .mode-toggles {
   display: flex;
   gap: 10px;
@@ -1012,12 +1017,73 @@ main {
   border: 2px solid var(--border);
   box-shadow: var(--shadow);
   transition: transform .12s ease, box-shadow .12s ease, outline .12s ease;
+  position: relative;
+  overflow: hidden;
 }
 .menu-tile.active,
 .menu-tile:focus-visible {
   outline: 3px solid var(--accent);
   transform: translateY(-2px);
   box-shadow: 0 8px 16px rgba(43,43,68,0.2);
+}
+.menu-tile.has-cover::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.45)), var(--tile-cover);
+  background-size: cover; background-position: center;
+}
+.menu-tile.has-cover::after {
+  content: attr(data-label);
+  position: relative; z-index: 1; display: inline-block;
+  background: rgba(255,255,255,0.85);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: 800;
+}
+
+.menu-tile .corner-badge {
+  position: absolute; left: 8px; top: 8px; z-index: 2;
+  background: rgba(255,255,255,0.9);
+  border: 2px solid var(--border);
+  border-radius: 999px; font-weight: 900; padding: 2px 8px; font-size: 12px;
+}
+
+/* MikuDex filters */
+.dex-controls { display: flex; gap: 8px; align-items: center; margin: 6px 0 10px; flex-wrap: wrap; }
+.dex-controls label { font-weight: 800; color: #596286; }
+.dex-controls select, .dex-controls input[type="search"], .dex-controls input[type="text"] {
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 8px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 700;
+}
+.dex-controls .spacer { flex: 1; }
+
+
+/* Bigger, readable quiz text for kanji visibility */
+#vocabQuestion, #kanjiQuestion { 
+  font-size: 28px; 
+  line-height: 1.4; 
+  font-weight: 700;
+  text-align: center;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.8);
+  margin: 8px 0;
+}
+#vocabChoices .pixel-btn, #kanjiChoices .pixel-btn { 
+  font-size: 18px; 
+  padding: 12px;
+  min-height: 48px;
+}
+
+/* Special kanji emphasis */
+#kanjiQuestion {
+  font-size: 36px;
+  font-family: "Noto Sans CJK JP", "Yu Gothic", "Hiragino Sans", sans-serif;
 }
 
 /* Diva HUD (in-card overlay) */
@@ -1036,6 +1102,7 @@ main {
   position: relative;
   overflow: hidden;
 }
+.diva-hud .singer-badge { box-shadow: 0 2px 6px rgba(43,43,68,0.2); }
 .diva-voltage .fill {
   position: absolute;
   left: 0;
@@ -1138,7 +1205,11 @@ main {
   box-shadow: var(--shadow);
   text-align: center;
   position: relative;
+  overflow: hidden;
 }
+.result-panel.win { background-image: url('../assets/win.jpg'); background-size: cover; background-position: center; }
+.result-panel.gamer { background-image: url('../assets/Gamer.png'); background-size: cover; background-position: center; }
+.result-panel.win, .result-panel.gamer { color: #2b2b44; }
 .result-rings {
   position: absolute;
   inset: 0;
@@ -1185,6 +1256,8 @@ main {
   align-items: center;
   margin: 6px 0;
 }
+.jp-hud-widget .hud-controls:not(#hudDifficultyWrap) select,
+.jp-hud-widget .hud-controls:not(#hudDifficultyWrap) .hud-label { display: none; }
 .jp-hud-widget #hudDifficulty {
   width: 140px;
 }
@@ -1211,6 +1284,66 @@ main {
   height: 100%;
   transition: width 1s ease;
 }
+
+/* Dex / Pokedex styles */
+.dex-pokedex { 
+  padding: 12px; 
+  border: 3px solid var(--accent-2); 
+  border-radius: 16px; 
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(189,227,255,0.8)); 
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.8); 
+  position: relative;
+  overflow: hidden;
+}
+
+.dex-pokedex::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--pastel-pink), var(--pastel-blue), var(--pastel-mint));
+  border-radius: 16px 16px 0 0;
+}
+
+.dex-open {
+  animation: dexOpen 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes dexOpen {
+  0% { 
+    transform: rotateY(-90deg) scale(0.8); 
+    opacity: 0; 
+  }
+  60% { 
+    transform: rotateY(10deg) scale(1.05); 
+    opacity: 0.8; 
+  }
+  100% { 
+    transform: rotateY(0) scale(1); 
+    opacity: 1; 
+  }
+}
+.dex-header { font-weight: 900; margin-bottom: 8px; }
+.dex-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(90px,1fr)); gap: 8px; }
+.dex-card { position: relative; border: 2px solid var(--border); border-radius: 10px; overflow: hidden; background: #fff; cursor: pointer; }
+.dex-card.locked { filter: grayscale(0.9) brightness(0.9); }
+.dex-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dex-stars { position: absolute; left: 6px; top: 4px; font-size: 12px; text-shadow: 0 1px 0 #fff; }
+.dex-count, .dex-locked { position: absolute; right: 6px; top: 4px; background: rgba(255,255,255,0.9); border: 1px solid var(--border); border-radius: 8px; padding: 0 6px; font-weight: 800; }
+.dex-open { animation: dexOpen 0.5s ease-out; }
+@keyframes dexOpen { from { transform: scale(0.98) rotate(-1deg); opacity: 0.5; } to { transform: scale(1) rotate(0); opacity: 1; } }
+
+/* Image modal */
+.image-modal { position: fixed; inset: 0; background: rgba(255,255,255,0.9); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; z-index: 10000; }
+.image-modal.open { display: flex; }
+.image-panel { background: #fff; border: 3px solid var(--border); border-radius: 16px; width: min(720px, 95vw); box-shadow: var(--shadow); overflow: hidden; }
+.image-panel .top { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; }
+.image-panel img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+.image-panel .meta { padding: 10px; }
+.image-panel .meta h3 { margin: 0 0 6px; font-size: 18px; }
+.image-panel .actions { display: flex; gap: 8px; padding: 10px; }
 
 .word-of-day {
   text-align: center;
@@ -1489,7 +1622,6 @@ main {
 .dex-count {
   position: absolute;
   right: 6px;
-  bottom: 6px;
   font-size: 11px;
   background: #0008;
   color: #fff;
@@ -1600,7 +1732,8 @@ main {
 .gallery-image {
   width: 100%;
   height: 120px;
-  object-fit: cover;
+  object-fit: contain; /* fit pixel Miku inside box */
+  image-rendering: pixelated;
   border: 2px solid var(--border);
   border-radius: 10px;
   cursor: pointer;
@@ -1610,6 +1743,59 @@ main {
 .gallery-image:hover {
   transform: scale(1.05);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Gallery item wrappers for mystery covers */
+.gallery-item {
+  position: relative;
+}
+
+/* Avoid double border: remove base image border when rarity ring is present */
+.gallery-item .gallery-image {
+  border: none;
+}
+
+/* Rarity ring overlay for gallery images */
+.gallery-item .rarity-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 12px;
+  pointer-events: none;
+  border: 3px solid transparent;
+  box-shadow: 0 0 0 0 rgba(0,0,0,0);
+  animation: ringGlow 2.4s ease-in-out infinite;
+}
+.gallery-item.rarity-1 .rarity-ring { border-color: #bfc7d5; box-shadow: 0 0 0 3px rgba(191,199,213,0.15) inset; }
+.gallery-item.rarity-2 .rarity-ring { border-color: #6bc3ff; box-shadow: 0 0 0 3px rgba(107,195,255,0.18) inset; }
+.gallery-item.rarity-3 .rarity-ring { border-color: #a594f9; box-shadow: 0 0 0 3px rgba(165,148,249,0.18) inset; }
+.gallery-item.rarity-4 .rarity-ring { border-color: #ffb347; box-shadow: 0 0 0 3px rgba(255,179,71,0.22) inset; }
+.gallery-item.rarity-5 .rarity-ring { border-color: #ffd700; box-shadow: 0 0 0 3px rgba(255,215,0,0.25) inset; }
+
+@keyframes ringGlow {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 0.6; }
+}
+
+.gallery-item.mystery-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(43, 43, 68, 0.8);
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+}
+
+.mystery-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  pointer-events: none;
 }
 
 /* Friends and badges */

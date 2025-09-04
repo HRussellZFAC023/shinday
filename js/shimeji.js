@@ -1,6 +1,5 @@
 /* Enhanced Webmeji/Shimeji with new features */
-window.addEventListener('DOMContentLoaded', () => {
-  
+window.addEventListener("DOMContentLoaded", () => {
   // Configuration for different character types
   const MIKU_CONFIG = {
     speed: 3,
@@ -8,67 +7,105 @@ window.addEventListener('DOMContentLoaded', () => {
     fallSpeed: 8,
     jumpForce: 15,
     gravity: 0.5,
-    walk: { 
-      frames: ["./webmeji-main/miku/shime1.png", "./webmeji-main/miku/shime2.png", "./webmeji-main/miku/shime3.png", "./webmeji-main/miku/shime2.png"], 
-      interval: 200, 
-      loops: 6 
+    walk: {
+      frames: [
+        "./webmeji-main/miku/shime1.png",
+        "./webmeji-main/miku/shime2.png",
+        "./webmeji-main/miku/shime3.png",
+        "./webmeji-main/miku/shime2.png",
+      ],
+      interval: 200,
+      loops: 6,
     },
     climb: {
-      frames: ["./webmeji-main/miku/shime7.png", "./webmeji-main/miku/shime8.png"],
+      frames: [
+        "./webmeji-main/miku/shime7.png",
+        "./webmeji-main/miku/shime8.png",
+      ],
       interval: 300,
-      loops: 8
+      loops: 8,
     },
-    fall: { 
-      frames: ["./webmeji-main/miku/shime18.png", "./webmeji-main/miku/shime19.png"], 
-      interval: 150, 
-      loops: 1 
+    fall: {
+      frames: [
+        "./webmeji-main/miku/shime18.png",
+        "./webmeji-main/miku/shime19.png",
+      ],
+      interval: 150,
+      loops: 1,
     },
     jump: {
       frames: ["./webmeji-main/miku/shime4.png"],
       interval: 100,
-      loops: 1
+      loops: 1,
     },
-    sit: { 
-      frames: ["./webmeji-main/miku/shime11.png"], 
-      interval: 1000, 
-      loops: 1, 
-      randomizeDuration: true, 
-      min: 3000, 
-      max: 8000 
+    sit: {
+      frames: ["./webmeji-main/miku/shime11.png"],
+      interval: 1000,
+      loops: 1,
+      randomizeDuration: true,
+      min: 3000,
+      max: 8000,
     },
-    spin: { 
-      frames: ["./webmeji-main/miku/shime1.png"], 
-      interval: 150, 
-      loops: 3 
+    spin: {
+      frames: ["./webmeji-main/miku/shime1.png"],
+      interval: 150,
+      loops: 3,
     },
-    dance: { 
-      frames: ["./webmeji-main/miku/shime5.png", "./webmeji-main/miku/shime6.png", "./webmeji-main/miku/shime1.png"], 
-      interval: 250, 
-      loops: 4 
+    dance: {
+      frames: [
+        "./webmeji-main/miku/shime5.png",
+        "./webmeji-main/miku/shime6.png",
+        "./webmeji-main/miku/shime1.png",
+      ],
+      interval: 250,
+      loops: 4,
     },
     scared: {
       frames: ["./webmeji-main/miku/shime20.png"],
       interval: 500,
-      loops: 2
+      loops: 2,
     },
     happy: {
-      frames: ["./webmeji-main/miku/shime5.png", "./webmeji-main/miku/shime6.png"],
+      frames: [
+        "./webmeji-main/miku/shime5.png",
+        "./webmeji-main/miku/shime6.png",
+      ],
       interval: 200,
-      loops: 3
+      loops: 3,
     },
     multiply: {
-      frames: ["./webmeji-main/miku/shime30.png", "./webmeji-main/miku/shime31.png"],
+      frames: [
+        "./webmeji-main/miku/shime30.png",
+        "./webmeji-main/miku/shime31.png",
+      ],
       interval: 300,
-      loops: 2
+      loops: 2,
     },
     forcewalk: 4,
     // Action frequencies
-    ORIGINAL_ACTIONS: ['walk', 'walk', 'walk', 'walk', 'walk', 'walk', 'walk', 'walk', 
-                      'sit', 'sit', 'dance', 'dance', 'spin', 'spin', 'climb', 'jump', 'multiply'],
+    ORIGINAL_ACTIONS: [
+      "walk",
+      "walk",
+      "walk",
+      "walk",
+      "walk",
+      "walk",
+      "walk",
+      "walk",
+      "sit",
+      "sit",
+      "dance",
+      "dance",
+      "spin",
+      "spin",
+      "climb",
+      "jump",
+      "multiply",
+    ],
     // Interaction settings
     mouseReactionDistance: 100,
     multiplyChance: 0.3, // 3% chance to multiply on certain actions
-    maxCreatures: 8
+    maxCreatures: 8,
   };
 
   // Alternate Miku: uses alternative art set
@@ -78,64 +115,99 @@ window.addEventListener('DOMContentLoaded', () => {
     fallSpeed: 8,
     jumpForce: 15,
     gravity: 0.5,
-    walk: { 
-      frames: ["./webmeji-main/Miku_alternitive/shime1.png", "./webmeji-main/Miku_alternitive/shime2.png", "./webmeji-main/Miku_alternitive/shime3.png", "./webmeji-main/Miku_alternitive/shime2.png"], 
-      interval: 200, 
-      loops: 6 
+    walk: {
+      frames: [
+        "./webmeji-main/Miku_alternitive/shime1.png",
+        "./webmeji-main/Miku_alternitive/shime2.png",
+        "./webmeji-main/Miku_alternitive/shime3.png",
+        "./webmeji-main/Miku_alternitive/shime2.png",
+      ],
+      interval: 200,
+      loops: 6,
     },
     climb: {
-      frames: ["./webmeji-main/Miku_alternitive/shime7.png", "./webmeji-main/Miku_alternitive/shime8.png"],
+      frames: [
+        "./webmeji-main/Miku_alternitive/shime7.png",
+        "./webmeji-main/Miku_alternitive/shime8.png",
+      ],
       interval: 300,
-      loops: 8
+      loops: 8,
     },
-    fall: { 
-      frames: ["./webmeji-main/Miku_alternitive/shime18.png", "./webmeji-main/Miku_alternitive/shime19.png"], 
-      interval: 150, 
-      loops: 1 
+    fall: {
+      frames: [
+        "./webmeji-main/Miku_alternitive/shime18.png",
+        "./webmeji-main/Miku_alternitive/shime19.png",
+      ],
+      interval: 150,
+      loops: 1,
     },
     jump: {
       frames: ["./webmeji-main/Miku_alternitive/shime4.png"],
       interval: 100,
-      loops: 1
+      loops: 1,
     },
-    sit: { 
-      frames: ["./webmeji-main/Miku_alternitive/shime11.png"], 
-      interval: 1000, 
-      loops: 1, 
-      randomizeDuration: true, 
-      min: 3000, 
-      max: 8000 
+    sit: {
+      frames: ["./webmeji-main/Miku_alternitive/shime11.png"],
+      interval: 1000,
+      loops: 1,
+      randomizeDuration: true,
+      min: 3000,
+      max: 8000,
     },
-    spin: { 
-      frames: ["./webmeji-main/Miku_alternitive/shime1.png"], 
-      interval: 150, 
-      loops: 3 
+    spin: {
+      frames: ["./webmeji-main/Miku_alternitive/shime1.png"],
+      interval: 150,
+      loops: 3,
     },
-    dance: { 
-      frames: ["./webmeji-main/Miku_alternitive/shime5.png", "./webmeji-main/Miku_alternitive/shime6.png", "./webmeji-main/Miku_alternitive/shime1.png"], 
-      interval: 250, 
-      loops: 4 
+    dance: {
+      frames: [
+        "./webmeji-main/Miku_alternitive/shime5.png",
+        "./webmeji-main/Miku_alternitive/shime6.png",
+        "./webmeji-main/Miku_alternitive/shime1.png",
+      ],
+      interval: 250,
+      loops: 4,
     },
     scared: {
       frames: ["./webmeji-main/Miku_alternitive/shime20.png"],
       interval: 500,
-      loops: 2
+      loops: 2,
     },
     happy: {
-      frames: ["./webmeji-main/Miku_alternitive/shime5.png", "./webmeji-main/Miku_alternitive/shime6.png"],
+      frames: [
+        "./webmeji-main/Miku_alternitive/shime5.png",
+        "./webmeji-main/Miku_alternitive/shime6.png",
+      ],
       interval: 200,
-      loops: 3
+      loops: 3,
     },
     multiply: {
-      frames: ["./webmeji-main/Miku_alternitive/shime30.png", "./webmeji-main/Miku_alternitive/shime31.png"],
+      frames: [
+        "./webmeji-main/Miku_alternitive/shime30.png",
+        "./webmeji-main/Miku_alternitive/shime31.png",
+      ],
       interval: 300,
-      loops: 2
+      loops: 2,
     },
     forcewalk: 4,
-    ORIGINAL_ACTIONS: ['walk','walk','walk','walk','sit','sit','dance','dance','spin','spin','climb','jump','multiply'],
+    ORIGINAL_ACTIONS: [
+      "walk",
+      "walk",
+      "walk",
+      "walk",
+      "sit",
+      "sit",
+      "dance",
+      "dance",
+      "spin",
+      "spin",
+      "climb",
+      "jump",
+      "multiply",
+    ],
     mouseReactionDistance: 100,
     multiplyChance: 0.3,
-    maxCreatures: 8
+    maxCreatures: 8,
   };
 
   // Sketch Miku: uses sketch art set
@@ -145,64 +217,99 @@ window.addEventListener('DOMContentLoaded', () => {
     fallSpeed: 8,
     jumpForce: 15,
     gravity: 0.5,
-    walk: { 
-      frames: ["./webmeji-main/Miku_sketch/shime1.png", "./webmeji-main/Miku_sketch/shime2.png", "./webmeji-main/Miku_sketch/shime3.png", "./webmeji-main/Miku_sketch/shime2.png"], 
-      interval: 200, 
-      loops: 6 
+    walk: {
+      frames: [
+        "./webmeji-main/Miku_sketch/shime1.png",
+        "./webmeji-main/Miku_sketch/shime2.png",
+        "./webmeji-main/Miku_sketch/shime3.png",
+        "./webmeji-main/Miku_sketch/shime2.png",
+      ],
+      interval: 200,
+      loops: 6,
     },
     climb: {
-      frames: ["./webmeji-main/Miku_sketch/shime7.png", "./webmeji-main/Miku_sketch/shime8.png"],
+      frames: [
+        "./webmeji-main/Miku_sketch/shime7.png",
+        "./webmeji-main/Miku_sketch/shime8.png",
+      ],
       interval: 300,
-      loops: 8
+      loops: 8,
     },
-    fall: { 
-      frames: ["./webmeji-main/Miku_sketch/shime18.png", "./webmeji-main/Miku_sketch/shime19.png"], 
-      interval: 150, 
-      loops: 1 
+    fall: {
+      frames: [
+        "./webmeji-main/Miku_sketch/shime18.png",
+        "./webmeji-main/Miku_sketch/shime19.png",
+      ],
+      interval: 150,
+      loops: 1,
     },
     jump: {
       frames: ["./webmeji-main/Miku_sketch/shime4.png"],
       interval: 100,
-      loops: 1
+      loops: 1,
     },
-    sit: { 
-      frames: ["./webmeji-main/Miku_sketch/shime11.png"], 
-      interval: 1000, 
-      loops: 1, 
-      randomizeDuration: true, 
-      min: 3000, 
-      max: 8000 
+    sit: {
+      frames: ["./webmeji-main/Miku_sketch/shime11.png"],
+      interval: 1000,
+      loops: 1,
+      randomizeDuration: true,
+      min: 3000,
+      max: 8000,
     },
-    spin: { 
-      frames: ["./webmeji-main/Miku_sketch/shime1.png"], 
-      interval: 150, 
-      loops: 3 
+    spin: {
+      frames: ["./webmeji-main/Miku_sketch/shime1.png"],
+      interval: 150,
+      loops: 3,
     },
-    dance: { 
-      frames: ["./webmeji-main/Miku_sketch/shime5.png", "./webmeji-main/Miku_sketch/shime6.png", "./webmeji-main/Miku_sketch/shime1.png"], 
-      interval: 250, 
-      loops: 4 
+    dance: {
+      frames: [
+        "./webmeji-main/Miku_sketch/shime5.png",
+        "./webmeji-main/Miku_sketch/shime6.png",
+        "./webmeji-main/Miku_sketch/shime1.png",
+      ],
+      interval: 250,
+      loops: 4,
     },
     scared: {
       frames: ["./webmeji-main/Miku_sketch/shime20.png"],
       interval: 500,
-      loops: 2
+      loops: 2,
     },
     happy: {
-      frames: ["./webmeji-main/Miku_sketch/shime5.png", "./webmeji-main/Miku_sketch/shime6.png"],
+      frames: [
+        "./webmeji-main/Miku_sketch/shime5.png",
+        "./webmeji-main/Miku_sketch/shime6.png",
+      ],
       interval: 200,
-      loops: 3
+      loops: 3,
     },
     multiply: {
-      frames: ["./webmeji-main/Miku_sketch/shime30.png", "./webmeji-main/Miku_sketch/shime31.png"],
+      frames: [
+        "./webmeji-main/Miku_sketch/shime30.png",
+        "./webmeji-main/Miku_sketch/shime31.png",
+      ],
       interval: 300,
-      loops: 2
+      loops: 2,
     },
     forcewalk: 4,
-    ORIGINAL_ACTIONS: ['walk','walk','walk','walk','sit','sit','dance','dance','spin','spin','climb','jump','multiply'],
+    ORIGINAL_ACTIONS: [
+      "walk",
+      "walk",
+      "walk",
+      "walk",
+      "sit",
+      "sit",
+      "dance",
+      "dance",
+      "spin",
+      "spin",
+      "climb",
+      "jump",
+      "multiply",
+    ],
     mouseReactionDistance: 100,
     multiplyChance: 0.3,
-    maxCreatures: 8
+    maxCreatures: 8,
   };
 
   const CLASSIC_CONFIG = {
@@ -211,65 +318,99 @@ window.addEventListener('DOMContentLoaded', () => {
     fallSpeed: 6,
     jumpForce: 12,
     gravity: 0.4,
-    walk: { 
-      frames: ["./webmeji-main/shimeji/shime1.png", "./webmeji-main/shimeji/shime2.png", "./webmeji-main/shimeji/shime3.png", "./webmeji-main/shimeji/shime2.png"], 
-      interval: 250, 
-      loops: 6 
+    walk: {
+      frames: [
+        "./webmeji-main/shimeji/shime1.png",
+        "./webmeji-main/shimeji/shime2.png",
+        "./webmeji-main/shimeji/shime3.png",
+        "./webmeji-main/shimeji/shime2.png",
+      ],
+      interval: 250,
+      loops: 6,
     },
     climb: {
-      frames: ["./webmeji-main/shimeji/shime7.png", "./webmeji-main/shimeji/shime8.png"],
+      frames: [
+        "./webmeji-main/shimeji/shime7.png",
+        "./webmeji-main/shimeji/shime8.png",
+      ],
       interval: 400,
-      loops: 6
+      loops: 6,
     },
-    fall: { 
-      frames: ["./webmeji-main/shimeji/shime20.png", "./webmeji-main/shimeji/shime21.png"], 
-      interval: 200, 
-      loops: 1 
+    fall: {
+      frames: [
+        "./webmeji-main/shimeji/shime20.png",
+        "./webmeji-main/shimeji/shime21.png",
+      ],
+      interval: 200,
+      loops: 1,
     },
     jump: {
       frames: ["./webmeji-main/shimeji/shime4.png"],
       interval: 120,
-      loops: 1
+      loops: 1,
     },
-    sit: { 
-      frames: ["./webmeji-main/shimeji/shime11.png"], 
-      interval: 1000, 
-      loops: 1, 
-      randomizeDuration: true, 
-      min: 2000, 
-      max: 6000 
+    sit: {
+      frames: ["./webmeji-main/shimeji/shime11.png"],
+      interval: 1000,
+      loops: 1,
+      randomizeDuration: true,
+      min: 2000,
+      max: 6000,
     },
-    spin: { 
-      frames: ["./webmeji-main/shimeji/shime1.png"], 
-      interval: 180, 
-      loops: 3 
+    spin: {
+      frames: ["./webmeji-main/shimeji/shime1.png"],
+      interval: 180,
+      loops: 3,
     },
-    dance: { 
-      frames: ["./webmeji-main/shimeji/shime5.png", "./webmeji-main/shimeji/shime6.png", "./webmeji-main/shimeji/shime1.png"], 
-      interval: 300, 
-      loops: 3 
+    dance: {
+      frames: [
+        "./webmeji-main/shimeji/shime5.png",
+        "./webmeji-main/shimeji/shime6.png",
+        "./webmeji-main/shimeji/shime1.png",
+      ],
+      interval: 300,
+      loops: 3,
     },
     scared: {
       frames: ["./webmeji-main/shimeji/shime20.png"],
       interval: 600,
-      loops: 2
+      loops: 2,
     },
     happy: {
-      frames: ["./webmeji-main/shimeji/shime5.png", "./webmeji-main/shimeji/shime6.png"],
+      frames: [
+        "./webmeji-main/shimeji/shime5.png",
+        "./webmeji-main/shimeji/shime6.png",
+      ],
       interval: 250,
-      loops: 2
+      loops: 2,
     },
     multiply: {
-      frames: ["./webmeji-main/shimeji/shime30.png", "./webmeji-main/shimeji/shime31.png"],
+      frames: [
+        "./webmeji-main/shimeji/shime30.png",
+        "./webmeji-main/shimeji/shime31.png",
+      ],
       interval: 400,
-      loops: 2
+      loops: 2,
     },
     forcewalk: 3,
-    ORIGINAL_ACTIONS: ['walk', 'walk', 'walk', 'walk', 'walk', 'walk', 'sit', 'sit', 
-                      'dance', 'spin', 'climb', 'jump', 'multiply'],
+    ORIGINAL_ACTIONS: [
+      "walk",
+      "walk",
+      "walk",
+      "walk",
+      "walk",
+      "walk",
+      "sit",
+      "sit",
+      "dance",
+      "spin",
+      "climb",
+      "jump",
+      "multiply",
+    ],
     mouseReactionDistance: 80,
     multiplyChance: 0.3,
-    maxCreatures: 6
+    maxCreatures: 6,
   };
 
   // Global creatures array
@@ -277,43 +418,45 @@ window.addEventListener('DOMContentLoaded', () => {
   let mousePos = { x: 0, y: 0 };
 
   // Track mouse position
-  document.addEventListener('mousemove', (e) => {
+  document.addEventListener("mousemove", (e) => {
     mousePos.x = e.clientX;
     mousePos.y = e.clientY;
   });
 
   class EnhancedCreature {
-    constructor(containerId, spriteConfig, type = 'miku') {
+    constructor(containerId, spriteConfig, type = "miku") {
       this.id = containerId;
       this.type = type;
       this.spriteConfig = spriteConfig;
-      
+
       // Create container
-      this.container = document.createElement('div');
-      this.container.className = 'webmeji-container';
+      this.container = document.createElement("div");
+      this.container.className = "webmeji-container";
       this.container.id = containerId;
-      this.container.style.overflow = 'visible'; // Allow speech bubbles to show outside
+      this.container.style.overflow = "visible"; // Allow speech bubbles to show outside
       document.body.appendChild(this.container);
 
       // Create image
-      this.img = document.createElement('img');
+      this.img = document.createElement("img");
       this.img.src = spriteConfig.walk.frames[0];
-      this.img.alt = /*html*/`${type} companion`;
+      this.img.alt = /*html*/ `${type} companion`;
       this.container.appendChild(this.img);
 
       // Physics properties
-      this.position = { 
-        x: Math.random() * (window.innerWidth - 64), 
-        y: window.innerHeight - 64 
+      this.position = {
+        x: Math.random() * (window.innerWidth - 64),
+        y: window.innerHeight - 64,
       };
       this.velocity = { x: 0, y: 0 };
       this.direction = Math.random() > 0.5 ? 1 : -1;
       this.isGrounded = true;
       this.isClimbing = false;
-      this.state = 'walk';
-      
+      this.state = "walk";
+
       // Animation properties
-      this.actionSequence = this.shuffle([...this.spriteConfig.ORIGINAL_ACTIONS]);
+      this.actionSequence = this.shuffle([
+        ...this.spriteConfig.ORIGINAL_ACTIONS,
+      ]);
       this.currentActionIndex = 0;
       this.currentFrame = 0;
       this.frameTimer = null;
@@ -330,8 +473,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
       // Footstep SFX rate limiting
       this._lastStepAt = 0; // ms
-      this._stepCooldownWalk = 200; // ms between steps while walking
-      this._stepCooldownClimb = 260; // ms between steps while climbing
+      this._stepCooldownWalk = 200; // ms between steps while walking (back off to be calmer)
+      this._stepCooldownClimb = 220; // ms between steps while climbing
       this._lastLandAt = 0; // ms
       this._landCooldown = 200; // minimal gap for landing thump
 
@@ -361,7 +504,7 @@ window.addEventListener('DOMContentLoaded', () => {
         this.position.y = Math.min(this.position.y, this.maxPosY);
         this.updatePosition();
       };
-      window.addEventListener('resize', this.resizeHandler);
+      window.addEventListener("resize", this.resizeHandler);
 
       console.log(`Enhanced ${type} companion spawned:`, this.id);
     }
@@ -376,15 +519,16 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     updatePosition() {
-      this.container.style.left = this.position.x + 'px';
-      this.container.style.bottom = (window.innerHeight - this.position.y - this.containerHeight) + 'px';
-      
+      this.container.style.left = this.position.x + "px";
+      this.container.style.bottom =
+        window.innerHeight - this.position.y - this.containerHeight + "px";
+
       // Update speech bubble position if it exists
       this.updateSpeechBubblePosition();
     }
 
     updateImageDirection() {
-      const scaleX = this.direction === -1 ? 'scaleX(-1)' : 'scaleX(1)';
+      const scaleX = this.direction === -1 ? "scaleX(-1)" : "scaleX(1)";
       this.img.style.transform = scaleX;
     }
 
@@ -394,9 +538,17 @@ window.addEventListener('DOMContentLoaded', () => {
       this.currentFrame = 0;
       this.frameTimer = null;
       this.actionCompletionTimer = null;
-      
+
       // Remove animation classes
-      this.container.classList.remove('walking', 'climbing', 'falling', 'jumping', 'scared', 'happy', 'multiplying');
+      this.container.classList.remove(
+        "walking",
+        "climbing",
+        "falling",
+        "jumping",
+        "scared",
+        "happy",
+        "multiplying"
+      );
     }
 
     setNextAction() {
@@ -411,7 +563,9 @@ window.addEventListener('DOMContentLoaded', () => {
       this.currentActionIndex++;
       if (this.currentActionIndex >= this.actionSequence.length) {
         this.currentActionIndex = 0;
-        this.actionSequence = this.shuffle([...this.spriteConfig.ORIGINAL_ACTIONS]);
+        this.actionSequence = this.shuffle([
+          ...this.spriteConfig.ORIGINAL_ACTIONS,
+        ]);
       }
 
       this.currentAction = this.actionSequence[this.currentActionIndex];
@@ -421,10 +575,12 @@ window.addEventListener('DOMContentLoaded', () => {
     startForcedWalk() {
       const { frames, interval } = this.spriteConfig.walk;
       const walkCycles = this.spriteConfig.forcewalk;
-      this.currentAction = 'forced-walk';
-      this.state = 'walk';
-      this.container.classList.add('walking');
-      this.playAnimation(frames, interval, walkCycles, () => this.setNextAction());
+      this.currentAction = "forced-walk";
+      this.state = "walk";
+      this.container.classList.add("walking");
+      this.playAnimation(frames, interval, walkCycles, () =>
+        this.setNextAction()
+      );
     }
 
     startAction(action) {
@@ -432,7 +588,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const config = this.spriteConfig[action];
       if (!config) {
         console.warn(`Action ${action} not found, defaulting to walk`);
-        this.startAction('walk');
+        this.startAction("walk");
         return;
       }
 
@@ -440,24 +596,24 @@ window.addEventListener('DOMContentLoaded', () => {
       const { frames, interval, loops = 1 } = config;
 
       // Add appropriate CSS class
-      if (action === 'walk' || action === 'forced-walk') {
-        this.container.classList.add('walking');
-      } else if (action === 'climb') {
-        this.container.classList.add('climbing');
+      if (action === "walk" || action === "forced-walk") {
+        this.container.classList.add("walking");
+      } else if (action === "climb") {
+        this.container.classList.add("climbing");
         this.isClimbing = true;
-      } else if (action === 'fall') {
-        this.container.classList.add('falling');
+      } else if (action === "fall") {
+        this.container.classList.add("falling");
         this.triggerFall();
-      } else if (action === 'jump') {
-        this.container.classList.add('jumping');
+      } else if (action === "jump") {
+        this.container.classList.add("jumping");
         this.triggerJump();
-      } else if (action === 'multiply') {
-        this.container.classList.add('multiplying');
+      } else if (action === "multiply") {
+        this.container.classList.add("multiplying");
         this.triggerMultiply();
       }
 
       // Handle special actions
-      if (action === 'sit') {
+      if (action === "sit") {
         const duration = config.randomizeDuration
           ? Math.random() * (config.max - config.min) + config.min
           : interval * loops;
@@ -469,22 +625,22 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (action === 'climb') {
+      if (action === "climb") {
         this.startClimbing();
         return;
       }
 
       // Play normal animation
       this.playAnimation(frames, interval, loops, () => {
-        if (action === 'spin') {
+        if (action === "spin") {
           this.direction *= -1;
           this.updateImageDirection();
         }
-        
-        if (['dance', 'spin', 'jump', 'multiply'].includes(action)) {
+
+        if (["dance", "spin", "jump", "multiply"].includes(action)) {
           this.forceWalkAfter = true;
         }
-        
+
         this.setNextAction();
       });
     }
@@ -513,12 +669,15 @@ window.addEventListener('DOMContentLoaded', () => {
         // Footstep hooks on frame advance
         try {
           // Walk/forced-walk: step on alternating frames
-          if ((this.state === 'walk' || this.state === 'forced-walk') && this.isGrounded) {
-            if (this.currentFrame % 2 === 0) this._tryFootstep('walk');
+          if (
+            (this.state === "walk" || this.state === "forced-walk") &&
+            this.isGrounded
+          ) {
+            if (this.currentFrame % 2 === 0) this._tryFootstep("walk");
           }
           // Climb: step a bit slower, on first frame
-          else if (this.state === 'climb') {
-            if (this.currentFrame === 0) this._tryFootstep('climb');
+          else if (this.state === "climb") {
+            if (this.currentFrame === 0) this._tryFootstep("climb");
           }
           // Jump: initial takeoff is handled in triggerJump; landing handled in updatePhysics
         } catch (_) {}
@@ -527,40 +686,40 @@ window.addEventListener('DOMContentLoaded', () => {
 
     _tryFootstep(kind) {
       const now = Date.now();
-      const cd = kind === 'climb' ? this._stepCooldownClimb : this._stepCooldownWalk;
+      const cd =
+        kind === "climb" ? this._stepCooldownClimb : this._stepCooldownWalk;
       if (now - this._lastStepAt < cd) return;
       // Avoid churn when many creatures or tab hidden
       try {
-        if (typeof document !== 'undefined' && document.hidden) return;
-      } catch (_) {}
-      try {
-        if (Array.isArray(creatures) && creatures.length > 3) return;
+        if (typeof document !== "undefined" && document.hidden) return;
       } catch (_) {}
       this._lastStepAt = now;
-      try { if (window.SFX) window.SFX.play('foot.step'); } catch (_) {}
+      try {
+        if (window.SFX) window.SFX.play("foot.step");
+      } catch (_) {}
     }
 
     // NEW FEATURE: Climbing sides
     startClimbing() {
-      const side = Math.random() > 0.5 ? 'left' : 'right';
+      const side = Math.random() > 0.5 ? "left" : "right";
       this.climbTarget = {
         side: side,
         targetY: Math.random() * (window.innerHeight * 0.6),
-        startY: this.position.y
+        startY: this.position.y,
       };
-      
+
       // Move to edge
-      if (side === 'left') {
+      if (side === "left") {
         this.position.x = 0;
         this.direction = 1;
       } else {
         this.position.x = this.maxPosX;
         this.direction = -1;
       }
-      
+
       this.updatePosition();
       this.updateImageDirection();
-      
+
       const config = this.spriteConfig.climb;
       this.playAnimation(config.frames, config.interval, config.loops, () => {
         this.isClimbing = false;
@@ -572,13 +731,15 @@ window.addEventListener('DOMContentLoaded', () => {
     // NEW FEATURE: Jumping
     triggerJump() {
       if (this.jumpCooldown > 0) return;
-      
+
       this.velocity.y = -this.spriteConfig.jumpForce;
       this.isGrounded = false;
       this.jumpCooldown = 120; // 2 second cooldown at 60fps
       // Takeoff footstep
-      try { if (window.SFX) window.SFX.play('foot.step'); } catch (_) {}
-      
+      try {
+        if (window.SFX) window.SFX.play("foot.step");
+      } catch (_) {}
+
       const config = this.spriteConfig.jump;
       this.playAnimation(config.frames, config.interval, config.loops, () => {
         // Jump animation complete, but physics continues
@@ -591,7 +752,7 @@ window.addEventListener('DOMContentLoaded', () => {
       this.velocity.y = 0;
       this.isGrounded = false;
       this.updatePosition();
-      
+
       const config = this.spriteConfig.fall;
       this.playAnimation(config.frames, config.interval, 1, () => {
         // Fall animation plays while physics handles the movement
@@ -602,7 +763,7 @@ window.addEventListener('DOMContentLoaded', () => {
     triggerMultiply() {
       if (creatures.length >= this.spriteConfig.maxCreatures) {
         // Too many creatures, just dance instead
-        this.startAction('dance');
+        this.startAction("dance");
         return;
       }
 
@@ -611,7 +772,7 @@ window.addEventListener('DOMContentLoaded', () => {
           this.createOffspring();
         }, 500);
       }
-      
+
       const config = this.spriteConfig.multiply;
       this.playAnimation(config.frames, config.interval, config.loops, () => {
         this.forceWalkAfter = true;
@@ -620,16 +781,25 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     createOffspring() {
-      const newId = /*html*/`${this.type}-offspring-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      const offspring = new EnhancedCreature(newId, this.spriteConfig, this.type);
-      
+      const newId = /*html*/ `${
+        this.type
+      }-offspring-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const offspring = new EnhancedCreature(
+        newId,
+        this.spriteConfig,
+        this.type
+      );
+
       // Position near parent
-      offspring.position.x = Math.max(0, Math.min(this.maxPosX, this.position.x + (Math.random() - 0.5) * 100));
+      offspring.position.x = Math.max(
+        0,
+        Math.min(this.maxPosX, this.position.x + (Math.random() - 0.5) * 100)
+      );
       offspring.position.y = this.position.y;
       offspring.direction = -this.direction;
       offspring.updatePosition();
       offspring.updateImageDirection();
-      
+
       creatures.push(offspring);
       console.log(`New ${this.type} offspring created:`, newId);
     }
@@ -643,18 +813,18 @@ window.addEventListener('DOMContentLoaded', () => {
 
       const distance = Math.sqrt(
         Math.pow(mousePos.x - (this.position.x + this.containerWidth / 2), 2) +
-        Math.pow(mousePos.y - (this.position.y + this.containerHeight / 2), 2)
+          Math.pow(mousePos.y - (this.position.y + this.containerHeight / 2), 2)
       );
 
       if (distance < this.spriteConfig.mouseReactionDistance) {
         this.interactionCooldown = 180; // 3 second cooldown
-        
+
         if (Math.random() > 0.5) {
           // Happy reaction
-          this.reactToMouse('happy');
+          this.reactToMouse("happy");
         } else {
           // Scared reaction - run away
-          this.reactToMouse('scared');
+          this.reactToMouse("scared");
           this.direction = mousePos.x > this.position.x ? -1 : 1;
           this.updateImageDirection();
         }
@@ -664,23 +834,26 @@ window.addEventListener('DOMContentLoaded', () => {
     reactToMouse(reaction) {
       const currentAction = this.currentAction;
       this.resetAnimation();
-      
+
       this.container.classList.add(reaction);
-      
+
       const config = this.spriteConfig[reaction];
       this.playAnimation(config.frames, config.interval, config.loops, () => {
         this.container.classList.remove(reaction);
         // Resume previous action or start new one
-        if (currentAction === 'walk' || currentAction === 'forced-walk') {
-          this.startAction('walk');
+        if (currentAction === "walk" || currentAction === "forced-walk") {
+          this.startAction("walk");
         } else {
           this.setNextAction();
         }
       });
-      
+
       // Sometimes say something when reacting to mouse
       if (Math.random() < 0.3 && window.LOVE_TOASTS) {
-        const message = window.LOVE_TOASTS[Math.floor(Math.random() * window.LOVE_TOASTS.length)];
+        const message =
+          window.LOVE_TOASTS[
+            Math.floor(Math.random() * window.LOVE_TOASTS.length)
+          ];
         this.speak(message, 2000);
       }
     }
@@ -689,12 +862,12 @@ window.addEventListener('DOMContentLoaded', () => {
     speak(message, duration = 3000) {
       // Remove existing speech bubble
       this.removeSpeechBubble();
-      
+
       // Create speech bubble
-      this.speechBubble = document.createElement('div');
-      this.speechBubble.className = 'shimeji-speech';
+      this.speechBubble = document.createElement("div");
+      this.speechBubble.className = "shimeji-speech";
       this.speechBubble.textContent = message;
-      this.speechBubble.style.cssText = /*html*/`
+      this.speechBubble.style.cssText = /*html*/ `
         position: fixed;
         bottom: ${window.innerHeight - this.position.y + 10}px;
         left: ${this.position.x + this.containerWidth / 2}px;
@@ -716,10 +889,10 @@ window.addEventListener('DOMContentLoaded', () => {
         white-space: normal;
         text-align: center;
       `;
-      
+
       // Add speech bubble tail
-      const tail = document.createElement('div');
-      tail.style.cssText = /*html*/`
+      const tail = document.createElement("div");
+      tail.style.cssText = /*html*/ `
         position: absolute;
         top: 100%;
         left: 50%;
@@ -731,29 +904,34 @@ window.addEventListener('DOMContentLoaded', () => {
         border-top: 6px solid #b7d7ff;
       `;
       this.speechBubble.appendChild(tail);
-      
+
       // Add directly to body so it's not clipped
       document.body.appendChild(this.speechBubble);
-      
+
       // Update position when shimeji moves
       this.updateSpeechBubblePosition();
-      
+
       // Auto-remove after duration
       setTimeout(() => {
         this.removeSpeechBubble();
       }, duration);
     }
-    
+
     updateSpeechBubblePosition() {
       if (this.speechBubble) {
-        this.speechBubble.style.bottom = /*html*/`${window.innerHeight - this.position.y + 10}px`;
-        this.speechBubble.style.left = /*html*/`${this.position.x + this.containerWidth / 2}px`;
+        this.speechBubble.style.bottom = /*html*/ `${
+          window.innerHeight - this.position.y + 10
+        }px`;
+        this.speechBubble.style.left = /*html*/ `${
+          this.position.x + this.containerWidth / 2
+        }px`;
       }
     }
-    
+
     removeSpeechBubble() {
       if (this.speechBubble && this.speechBubble.parentNode) {
-        this.speechBubble.style.animation = 'speechBubbleOut 0.2s ease-in forwards';
+        this.speechBubble.style.animation =
+          "speechBubbleOut 0.2s ease-in forwards";
         setTimeout(() => {
           if (this.speechBubble && this.speechBubble.parentNode) {
             this.speechBubble.parentNode.removeChild(this.speechBubble);
@@ -773,9 +951,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
       // Update climbing physics
       if (this.isClimbing && this.climbTarget) {
-        const climbDirection = this.climbTarget.targetY > this.position.y ? 1 : -1;
+        const climbDirection =
+          this.climbTarget.targetY > this.position.y ? 1 : -1;
         this.velocity.y = climbDirection * this.spriteConfig.climbSpeed;
-        
+
         if (Math.abs(this.position.y - this.climbTarget.targetY) < 5) {
           this.isClimbing = false;
           this.velocity.y = 0;
@@ -797,13 +976,15 @@ window.addEventListener('DOMContentLoaded', () => {
           const now = Date.now();
           if (now - this._lastLandAt > this._landCooldown) {
             this._lastLandAt = now;
-            try { if (window.SFX) window.SFX.play('foot.step'); } catch (_) {}
+            try {
+              if (window.SFX) window.SFX.play("foot.step");
+            } catch (_) {}
           }
         }
-        
-        if (this.state === 'fall') {
+
+        if (this.state === "fall") {
           // Land from fall
-          this.container.classList.remove('falling');
+          this.container.classList.remove("falling");
           this.forceWalkAfter = true;
           this.setNextAction();
         }
@@ -814,13 +995,13 @@ window.addEventListener('DOMContentLoaded', () => {
       // Handle wall collisions
       if (this.position.x <= 0) {
         this.position.x = 0;
-        if (!this.isClimbing && this.state === 'walk') {
+        if (!this.isClimbing && this.state === "walk") {
           this.direction = 1;
           this.updateImageDirection();
         }
       } else if (this.position.x >= this.maxPosX) {
         this.position.x = this.maxPosX;
-        if (!this.isClimbing && this.state === 'walk') {
+        if (!this.isClimbing && this.state === "walk") {
           this.direction = -1;
           this.updateImageDirection();
         }
@@ -846,9 +1027,12 @@ window.addEventListener('DOMContentLoaded', () => {
       this.checkMouseInteraction();
 
       // Handle walking movement
-      if ((this.state === 'walk' || this.state === 'forced-walk') && this.isGrounded) {
+      if (
+        (this.state === "walk" || this.state === "forced-walk") &&
+        this.isGrounded
+      ) {
         this.velocity.x = this.direction * this.spriteConfig.speed;
-      } else if (this.state !== 'climb') {
+      } else if (this.state !== "climb") {
         this.velocity.x *= 0.9; // Friction when not walking
       }
 
@@ -861,11 +1045,11 @@ window.addEventListener('DOMContentLoaded', () => {
       if (this.animationFrameId) {
         cancelAnimationFrame(this.animationFrameId);
       }
-      window.removeEventListener('resize', this.resizeHandler);
+      window.removeEventListener("resize", this.resizeHandler);
       if (this.container && this.container.parentNode) {
         this.container.parentNode.removeChild(this.container);
       }
-      
+
       // Remove from creatures array
       const index = creatures.indexOf(this);
       if (index > -1) {
@@ -874,133 +1058,204 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-// Spawn initial creatures (use window functions to create one of each)
-function spawnCreatures() {
+  // Spawn initial creatures (use window functions to create one of each)
+  function spawnCreatures() {
     const w = window.shimejiFunctions || {};
 
-    const miku = w.spawnMiku ? w.spawnMiku() : (() => {
-        const c = new EnhancedCreature('miku-0', MIKU_CONFIG, 'miku');
-        creatures.push(c);
-        return c;
-    })();
+    const miku = w.spawnMiku
+      ? w.spawnMiku()
+      : (() => {
+          const c = new EnhancedCreature("miku-0", MIKU_CONFIG, "miku");
+          creatures.push(c);
+          return c;
+        })();
 
-    const mikuAlt = w.spawnMikuAlt ? w.spawnMikuAlt() : (() => {
-        const c = new EnhancedCreature('miku-alt-0', MIKU_ALT_CONFIG, 'miku-alt');
-        creatures.push(c);
-        return c;
-    })();
+    const mikuAlt = w.spawnMikuAlt
+      ? w.spawnMikuAlt()
+      : (() => {
+          const c = new EnhancedCreature(
+            "miku-alt-0",
+            MIKU_ALT_CONFIG,
+            "miku-alt"
+          );
+          creatures.push(c);
+          return c;
+        })();
 
-    const mikuSketch = w.spawnMikuSketch ? w.spawnMikuSketch() : (() => {
-        const c = new EnhancedCreature('miku-sketch-0', MIKU_SKETCH_CONFIG, 'miku-sketch');
-        creatures.push(c);
-        return c;
-    })();
+    const mikuSketch = w.spawnMikuSketch
+      ? w.spawnMikuSketch()
+      : (() => {
+          const c = new EnhancedCreature(
+            "miku-sketch-0",
+            MIKU_SKETCH_CONFIG,
+            "miku-sketch"
+          );
+          creatures.push(c);
+          return c;
+        })();
 
-    const classic = w.spawnClassic ? w.spawnClassic() : (() => {
-        const c = new EnhancedCreature('classic-0', CLASSIC_CONFIG, 'classic');
-        creatures.push(c);
-        return c;
-    })();
+    const classic = w.spawnClassic
+      ? w.spawnClassic()
+      : (() => {
+          const c = new EnhancedCreature(
+            "classic-0",
+            CLASSIC_CONFIG,
+            "classic"
+          );
+          creatures.push(c);
+          return c;
+        })();
 
-    console.log(`Spawned ${creatures.length} enhanced companions`, { miku, mikuAlt, mikuSketch, classic });
-}
+    console.log(`Spawned ${creatures.length} enhanced companions`, {
+      miku,
+      mikuAlt,
+      mikuSketch,
+      classic,
+    });
+  }
 
-// Global functions for interaction
-window.shimejiFunctions = {
+  // Global functions for interaction
+  window.shimejiFunctions = {
     spawnMiku: () => {
-        if (creatures.length < MIKU_CONFIG.maxCreatures) {
-            const miku = new EnhancedCreature(`miku-${Date.now()}`, MIKU_CONFIG, 'miku');
-            creatures.push(miku);
-            return miku;
-        }
-        return null;
+      if (creatures.length < MIKU_CONFIG.maxCreatures) {
+        const miku = new EnhancedCreature(
+          `miku-${Date.now()}`,
+          MIKU_CONFIG,
+          "miku"
+        );
+        creatures.push(miku);
+
+        // Reward hearts for new companion!
+        try {
+          if (window.pixelBelleGarden && window.pixelBelleGarden.addHearts) {
+            window.pixelBelleGarden.addHearts(3);
+            if (window.loveToast) window.loveToast("New companion! +3💖");
+          }
+        } catch (_) {}
+
+        return miku;
+      }
+      return null;
     },
     spawnMikuAlt: () => {
-        if (creatures.length < MIKU_ALT_CONFIG.maxCreatures) {
-            const miku = new EnhancedCreature(`miku-alt-${Date.now()}`, MIKU_ALT_CONFIG, 'miku-alt');
-            creatures.push(miku);
-            return miku;
-        }
-        return null;
+      if (creatures.length < MIKU_ALT_CONFIG.maxCreatures) {
+        const miku = new EnhancedCreature(
+          `miku-alt-${Date.now()}`,
+          MIKU_ALT_CONFIG,
+          "miku-alt"
+        );
+        creatures.push(miku);
+        return miku;
+      }
+      return null;
     },
     spawnMikuSketch: () => {
-        if (creatures.length < MIKU_SKETCH_CONFIG.maxCreatures) {
-            const miku = new EnhancedCreature(`miku-sketch-${Date.now()}`, MIKU_SKETCH_CONFIG, 'miku-sketch');
-            creatures.push(miku);
-            return miku;
-        }
-        return null;
+      if (creatures.length < MIKU_SKETCH_CONFIG.maxCreatures) {
+        const miku = new EnhancedCreature(
+          `miku-sketch-${Date.now()}`,
+          MIKU_SKETCH_CONFIG,
+          "miku-sketch"
+        );
+        creatures.push(miku);
+        return miku;
+      }
+      return null;
     },
-    
+
     spawnClassic: () => {
-        if (creatures.length < CLASSIC_CONFIG.maxCreatures) {
-            const classic = new EnhancedCreature(`classic-${Date.now()}`, CLASSIC_CONFIG, 'classic');
-            creatures.push(classic);
-            return classic;
-        }
-        return null;
+      if (creatures.length < CLASSIC_CONFIG.maxCreatures) {
+        const classic = new EnhancedCreature(
+          `classic-${Date.now()}`,
+          CLASSIC_CONFIG,
+          "classic"
+        );
+        creatures.push(classic);
+        return classic;
+      }
+      return null;
     },
-    
+
     removeAll: () => {
-      creatures.forEach(creature => creature.destroy());
+      creatures.forEach((creature) => creature.destroy());
       creatures.length = 0;
     },
-    
+
     getCreatureCount: () => creatures.length,
-    
+
     triggerMassJump: () => {
-      creatures.forEach(creature => {
+      creatures.forEach((creature) => {
         if (creature.isGrounded) {
           creature.triggerJump();
         }
       });
     },
     triggerMassHappy: () => {
-      creatures.forEach(creature => {
-        creature.reactToMouse('happy');
+      creatures.forEach((creature) => {
+        creature.reactToMouse("happy");
       });
     },
     triggerMassDance: () => {
-      creatures.forEach(creature => {
-        creature.startAction('dance');
+      creatures.forEach((creature) => {
+        creature.startAction("dance");
       });
     },
-    
+
     triggerMassFall: () => {
-      creatures.forEach(creature => {
+      creatures.forEach((creature) => {
         creature.triggerFall();
       });
     },
-    
+
     makeAllSpeak: (message, duration = 3000) => {
-      creatures.forEach(creature => {
+      creatures.forEach((creature) => {
         // Stagger speech bubbles slightly to avoid overlap
         setTimeout(() => {
           creature.speak(message, duration);
         }, Math.random() * 500);
       });
     },
-    
+
     makeRandomSpeak: (message, duration = 3000) => {
       if (creatures.length > 0) {
-        const randomCreature = creatures[Math.floor(Math.random() * creatures.length)];
+        const randomCreature =
+          creatures[Math.floor(Math.random() * creatures.length)];
         randomCreature.speak(message, duration);
       }
-    }
+    },
   };
 
   // Initialize companions
   spawnCreatures();
 
+  // Economy tie-in: earn small hearts over time when companions are active
+  (function shimejiEconomy() {
+    let grantAt = Date.now() + 180000; // 3 minutes
+    setInterval(() => {
+      try {
+        if (creatures.length > 0 && Date.now() >= grantAt) {
+          if (
+            window.pixelBelleGarden &&
+            typeof window.pixelBelleGarden.addHearts === "function"
+          ) {
+            window.pixelBelleGarden.addHearts(1);
+          }
+          grantAt = Date.now() + 180000;
+        }
+      } catch (_) {}
+    }, 15000);
+  })();
+
   // Random events
   setInterval(() => {
-    if (Math.random() < 0.1) { // 10% chance every 10 seconds
-      const randomCreature = creatures[Math.floor(Math.random() * creatures.length)];
+    if (Math.random() < 0.1) {
+      // 10% chance every 10 seconds
+      const randomCreature =
+        creatures[Math.floor(Math.random() * creatures.length)];
       if (randomCreature && Math.random() > 0.7) {
         randomCreature.triggerFall();
       }
     }
   }, 10000);
 
-  console.log('Enhanced Shimeji system initialized!');
+  console.log("Enhanced Shimeji system initialized!");
 });

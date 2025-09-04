@@ -7,15 +7,6 @@
  * - Click “Commit changes”. Your site will update on the next deploy.
  */
 
-/**
- * SITE CONTENT - Edit-friendly copy and links
- *
- * How to update:
- * - Open this file on GitHub (web UI) and click the pencil icon.
- * - Change text, links, or lists below. Keep the same structure (keys) but feel free to add/remove items in arrays.
- * - Click “Commit changes”. Your site will update on the next deploy.
- */
-
 // Calculate dynamic age based on birthday
 const birthYear = 1999;
 const birthdayMonth = 9; // September
@@ -39,18 +30,10 @@ window.SITE_CONTENT = {
     ogImage: "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png",
     splashMiku: "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png",
     heroMiku: "./assets/hatsune_miku_render_by_jimmyisaac_d68ibgy-pre.png",
-    shrineMiku: "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png",
+    shrineMiku: "./assets/hatsune-miku-happy-birthday-xa3kasez005ghjih.webp",
     headerBg: "./assets/pt_top.png",
     // Optional: add extra Miku image URLs (singing/idle sprites) to show in floating Mikus
     extraMikus: [
-        // Local high-res and gifs already in repo
-        "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png",
-        "./assets/hatsune_miku_render_by_jimmyisaac_d68ibgy-pre.png",
-        "./assets/hatsune-miku-happy-birthday-xa3kasez005ghjih.webp",
-        "./assets/miku beam.gif",
-        "./assets/Song-Over.full.2116602.gif"
-        // To add: drop more PNG/GIFs into ./assets and append their paths here
-        // Remote suggestions with permissive licenses are listed in README (see "Art Sources")
     ],
     // Miku emoji/icon replacements
     mikuIcons: {
@@ -76,6 +59,12 @@ window.SITE_CONTENT = {
     },
     // Optional swallow gif path for the swallow mascot
     swallowGif: "./assets/swallow.gif",
+    // Game selector tile covers
+    menuCovers: {
+      vocab: "./assets/Gamer.png",
+      kanji: "./assets/win.jpg",
+      kotoba: "./assets/miku beam.gif"
+    },
     // All badges appear only in the Web Badges sidebar
     statsBadges: [],
     webBadges: [
@@ -157,11 +146,11 @@ window.SITE_CONTENT = {
   },
 
   nav: [
-    { id: "home", label: "Home", mikuIcon: "innocent" },
-    { id: "socials", label: "Socials", mikuIcon: "cheering" },
-    { id: "study", label: "日本語", mikuIcon: "thumbsUp" },
-    { id: "games", label: "Games", mikuIcon: "vibing" },
-    { id: "shrine", label: "Miku Shrine", mikuIcon: "stage" },
+    { id: "home", label: "🏠 Garden", mikuIcon: "innocent" },
+    { id: "socials", label: "💫 Links", mikuIcon: "cheering" },
+    { id: "study", label: "🎌 日本語", mikuIcon: "thumbsUp" },
+    { id: "games", label: "🎮 Games", mikuIcon: "vibing" },
+    { id: "shrine", label: "⛩️ Shrine", mikuIcon: "stage" },
   ],
 
   status: {
@@ -359,7 +348,7 @@ window.SITE_CONTENT = {
   },
 
   study: {
-    title: "Japanese Games",
+    title: "🎤 Miku's Language Dojo",
     titleIcon: "thumbsUp",
     levelTitle: "Current Level",
     levelIcon: "starUwu",
@@ -385,19 +374,19 @@ window.SITE_CONTENT = {
   },
 
   games: {
-    title: "Interactive Toys",
+    title: "✨ Kawaii Mini-Games ✨",
     titleIcon: "vibing",
-    memoryTitle: "Miku Memory Game",
+    memoryTitle: "🧠 Miku Memory Match",
     memoryIcon: "innocent",
-    memoryReset: "Reset Game",
-    heartsTitle: "Heart Collector",
+    memoryReset: "New Game ♪",
+    heartsTitle: "💖 Heart Garden",
     heartsIcon: "love",
-    heartsZone: "Click to collect hearts!",
+    heartsZone: "Tap to grow more hearts! (੭ˊ꒳ˋ)੭",
     heartsZoneIcon: "chuuu",
     heartsReset: "Reset",
-    gachaTitle: "Miku Gacha",
+    gachaTitle: "🎰 Miku Collection Gacha",
     gachaIcon: "starUwu", 
-    gachaOpenDex: "Open MikuDex",
+    gachaOpenDex: "📱 Open MikuDex",
   },
 
   shrine: {
@@ -409,6 +398,17 @@ window.SITE_CONTENT = {
       "Miku has been my inspiration for creativity, music, and digital art. This shrine celebrates the magic of vocaloid music and the amazing community around it!",
     favoriteSongsTitle: "Favorite Songs",
     favoriteSongsIcon: "jumpingMusic",
+    // Maximum number of favorites to show (configurable)
+    favoriteSongsMax: 8,
+    // Optional rich data for favorites. If provided, click-to-play uses
+    // these entries; otherwise it falls back to the plain strings below.
+    // youtubeId is preferred when known; otherwise search is used.
+    favoriteSongsData: [
+      { title: "World is Mine", artist: "ryo (supercell)", youtubeId: "jhl5afLEKdo", search: "Hatsune Miku World is Mine ryo official" },
+      { title: "Senbonzakura", artist: "Kurousa-P (WhiteFlame)", youtubeId: "shs0rAiwsGQ", search: "Hatsune Miku Senbonzakura official Kurousa-P" },
+      { title: "Tell Your World", artist: "kz (livetune)", youtubeId: "PqJNc9KVIZE", search: "livetune Tell Your World official" },
+      { title: "Love is War", artist: "ryo (supercell)", youtubeId: "jDop41Bxq2A", search: "Hatsune Miku Love is War ryo official" }
+    ],
     favoriteSongs: [
       "World is Mine - ryo",
       "Senbonzakura - Kurousa-P",

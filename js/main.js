@@ -27,43 +27,93 @@ document.addEventListener("DOMContentLoaded", () => {
       // UI and navigation
       "ui.move": [
         p("menu sounds/menu cursor move.wav"),
-        p("menu sounds/menu cursor move (except this time there's three of them and it's slightly louder).wav"),
-        p("menu sounds/se_sy_00.wav")
+        p(
+          "menu sounds/menu cursor move (except this time there's three of them and it's slightly louder).wav"
+        ),
+        p("menu sounds/se_sy_00.wav"),
       ],
       "ui.select": [p("menu sounds/menu option select.wav")],
-      "ui.back": [p("menu sounds/pop-up close.wav"), p("menu sounds/menu change.wav")],
-      "ui.change": [p("menu sounds/module change 1.wav"), p("menu sounds/module change 2.wav")],
+      "ui.back": [
+        p("menu sounds/pop-up close.wav"),
+        p("menu sounds/menu change.wav"),
+      ],
+      "ui.change": [
+        p("menu sounds/module change 1.wav"),
+        p("menu sounds/module change 2.wav"),
+      ],
       "ui.unavailable": [p("menu sounds/unavailable.wav")],
       "ui.teleport": [p("menu sounds/song selection teleport.wav")],
       "ui.scoreTally": [p("menu sounds/score tally.wav")],
       "ui.se_sy_24": [p("menu sounds/se_sy_24.wav")],
 
       // Hearts and love
-      "hearts.click": [p("other sounds/click.wav"), p("other sounds/se_sy_09.wav")],
-      "hearts.add": [p("other sounds/se_sy_15.wav"), p("other sounds/se_sy_18.wav"), p("menu sounds/score tally.wav")],
-      "hearts.milestone": [p("misc other voice clips/(miku) yay.wav"), p("other sounds/clap.wav")],
+      "hearts.click": [
+        p("other sounds/click.wav"),
+        p("other sounds/se_sy_09.wav"),
+      ],
+      "hearts.add": [
+        p("other sounds/se_sy_15.wav"),
+        p("other sounds/se_sy_18.wav"),
+        p("menu sounds/score tally.wav"),
+      ],
+      "hearts.milestone": [
+        p("misc other voice clips/(miku) yay.wav"),
+        p("other sounds/clap.wav"),
+      ],
 
       // Gacha
       "gacha.roll": [p("menu sounds/song selection teleport.wav")],
-      "gacha.reveal": [p("menu sounds/module change 1.wav"), p("menu sounds/module change 2.wav")],
+      "gacha.reveal": [
+        p("menu sounds/module change 1.wav"),
+        p("menu sounds/module change 2.wav"),
+      ],
       "gacha.pop": [
         // use varied percussion set for reveal pops
-        p("button sounds+percussion/1.wav"), p("button sounds+percussion/2.wav"), p("button sounds+percussion/3.wav"),
-        p("button sounds+percussion/4.wav"), p("button sounds+percussion/5.wav"), p("button sounds+percussion/6.wav"),
-        p("button sounds+percussion/7.wav"), p("button sounds+percussion/8.wav"), p("button sounds+percussion/9.wav"),
-        p("button sounds+percussion/10.wav"), p("button sounds+percussion/11.wav"), p("button sounds+percussion/12.wav"),
-        p("button sounds+percussion/13.wav"), p("button sounds+percussion/14.wav"), p("button sounds+percussion/15.wav"),
-        p("button sounds+percussion/16.wav"), p("button sounds+percussion/17.wav"), p("button sounds+percussion/18.wav"),
-        p("button sounds+percussion/19.wav"), p("button sounds+percussion/20.wav"), p("button sounds+percussion/21.wav"),
-        p("button sounds+percussion/22.wav"), p("button sounds+percussion/23.wav"), p("button sounds+percussion/24.wav"),
-        p("button sounds+percussion/25.wav"), p("button sounds+percussion/26.wav"), p("button sounds+percussion/27.wav"),
-        p("button sounds+percussion/28.wav"), p("button sounds+percussion/29.wav"), p("button sounds+percussion/30.wav"),
-        p("button sounds+percussion/31.wav"), p("button sounds+percussion/32.wav"), p("button sounds+percussion/33.wav"),
-        p("button sounds+percussion/34.wav"), p("button sounds+percussion/35.wav")
+        p("button sounds+percussion/1.wav"),
+        p("button sounds+percussion/2.wav"),
+        p("button sounds+percussion/3.wav"),
+        p("button sounds+percussion/4.wav"),
+        p("button sounds+percussion/5.wav"),
+        p("button sounds+percussion/6.wav"),
+        p("button sounds+percussion/7.wav"),
+        p("button sounds+percussion/8.wav"),
+        p("button sounds+percussion/9.wav"),
+        p("button sounds+percussion/10.wav"),
+        p("button sounds+percussion/11.wav"),
+        p("button sounds+percussion/12.wav"),
+        p("button sounds+percussion/13.wav"),
+        p("button sounds+percussion/14.wav"),
+        p("button sounds+percussion/15.wav"),
+        p("button sounds+percussion/16.wav"),
+        p("button sounds+percussion/17.wav"),
+        p("button sounds+percussion/18.wav"),
+        p("button sounds+percussion/19.wav"),
+        p("button sounds+percussion/20.wav"),
+        p("button sounds+percussion/21.wav"),
+        p("button sounds+percussion/22.wav"),
+        p("button sounds+percussion/23.wav"),
+        p("button sounds+percussion/24.wav"),
+        p("button sounds+percussion/25.wav"),
+        p("button sounds+percussion/26.wav"),
+        p("button sounds+percussion/27.wav"),
+        p("button sounds+percussion/28.wav"),
+        p("button sounds+percussion/29.wav"),
+        p("button sounds+percussion/30.wav"),
+        p("button sounds+percussion/31.wav"),
+        p("button sounds+percussion/32.wav"),
+        p("button sounds+percussion/33.wav"),
+        p("button sounds+percussion/34.wav"),
+        p("button sounds+percussion/35.wav"),
       ],
-      "gacha.high": [p("menu sounds/result (clear).wav"), p("result voice clips/miku/perfect.wav")],
+      "gacha.high": [
+        p("menu sounds/result (clear).wav"),
+        p("result voice clips/miku/perfect.wav"),
+      ],
       "gacha.mid": [p("result voice clips/miku/great.wav")],
-      "gacha.low": [p("menu sounds/result (not clear).wav"), p("result voice clips/miku/standard.wav")],
+      "gacha.low": [
+        p("menu sounds/result (not clear).wav"),
+        p("result voice clips/miku/standard.wav"),
+      ],
       "gacha.fail": [p("result voice clips/miku/missXtake.wav")],
 
       // Memory game
@@ -71,18 +121,50 @@ document.addEventListener("DOMContentLoaded", () => {
       "memory.match": [p("menu sounds/menu option select.wav")],
       "memory.win": [p("menu sounds/result (clear).wav")],
       "memory.miss": [p("menu sounds/unavailable.wav")],
-      "memory.tick": [p("other sounds/sonar beeps 1.wav"), p("other sounds/sonar beeps 2.wav")],
+      "memory.tick": [
+        p("other sounds/sonar beeps 1.wav"),
+        p("other sounds/sonar beeps 2.wav"),
+      ],
 
       // JP games
-      "quiz.ok": [p("menu sounds/menu option select.wav"), p("misc other voice clips/(miku) yay.wav")],
-      "quiz.bad": [p("menu sounds/unavailable.wav"), p("misc other voice clips/(miku) sad.wav")],
-      "quiz.tick": [p("other sounds/sonar beeps 1.wav"), p("other sounds/sonar beeps 2.wav")],
+      "quiz.ok": [
+        p("menu sounds/menu option select.wav"),
+        p("misc other voice clips/(miku) yay.wav"),
+      ],
+      "quiz.bad": [
+        p("menu sounds/unavailable.wav"),
+        p("misc other voice clips/(miku) sad.wav"),
+      ],
+      "quiz.tick": [
+        p("other sounds/sonar beeps 1.wav"),
+        p("other sounds/sonar beeps 2.wav"),
+      ],
       "quiz.timeup": [p("other sounds/se_ev_20.wav")],
-      "result.perfect": [p("result voice clips/miku/perfect.wav"), p("result voice clips/len/perfect.wav"), p("result voice clips/rin/perfect.wav")],
-      "result.great": [p("result voice clips/miku/great.wav"), p("result voice clips/len/great.wav"), p("result voice clips/rin/great.wav")],
-      "result.standard": [p("result voice clips/miku/standard.wav"), p("result voice clips/len/standard.wav"), p("result voice clips/rin/standard.wav")],
-      "result.cheap": [p("result voice clips/miku/cheap.wav"), p("result voice clips/len/cheap.wav"), p("result voice clips/rin/cheap.wav")],
-      "result.miss": [p("result voice clips/miku/missXtake.wav"), p("result voice clips/len/missXtake.wav"), p("result voice clips/rin/missXtake.wav")],
+      "result.perfect": [
+        p("result voice clips/miku/perfect.wav"),
+        p("result voice clips/len/perfect.wav"),
+        p("result voice clips/rin/perfect.wav"),
+      ],
+      "result.great": [
+        p("result voice clips/miku/great.wav"),
+        p("result voice clips/len/great.wav"),
+        p("result voice clips/rin/great.wav"),
+      ],
+      "result.standard": [
+        p("result voice clips/miku/standard.wav"),
+        p("result voice clips/len/standard.wav"),
+        p("result voice clips/rin/standard.wav"),
+      ],
+      "result.cheap": [
+        p("result voice clips/miku/cheap.wav"),
+        p("result voice clips/len/cheap.wav"),
+        p("result voice clips/rin/cheap.wav"),
+      ],
+      "result.miss": [
+        p("result voice clips/miku/missXtake.wav"),
+        p("result voice clips/len/missXtake.wav"),
+        p("result voice clips/rin/missXtake.wav"),
+      ],
 
       // Fun/extra
       "extra.camera": [p("other sounds/camera.wav")],
@@ -92,33 +174,59 @@ document.addEventListener("DOMContentLoaded", () => {
       "extra.fx1": [p("other sounds/se_ev_01.wav")],
       "extra.fx2": [p("other sounds/se_ev_17.wav")],
       "extra.sona": [p("misc other voice clips/(miku) sona.wav")],
-      "extra.yo": [p("misc other voice clips/(miku) yo.wav"), p("misc other voice clips/(rin) yo.wav")],
+      "extra.yo": [
+        p("misc other voice clips/(miku) yo.wav"),
+        p("misc other voice clips/(rin) yo.wav"),
+      ],
       "extra.wan": [p("misc other voice clips/(rin) wan.wav")],
-      "extra.thanks": [p("misc other voice clips/(miku) thank you for playing!.wav")],
-      "sega.tag": [p("sega voice clips/sega (solo).wav"), p("sega voice clips/sega (chorus).wav"), p("sega voice clips/sega (shout).wav")],
+      "extra.thanks": [
+        p("misc other voice clips/(miku) thank you for playing!.wav"),
+      ],
+      "sega.tag": [
+        p("sega voice clips/sega (solo).wav"),
+        p("sega voice clips/sega (chorus).wav"),
+        p("sega voice clips/sega (shout).wav"),
+      ],
 
       // Footsteps pool (available for future shimeji hooks)
       "foot.step": [
-        p("footstep sounds/se_ev_05_01.wav"), p("footstep sounds/se_ev_05_02.wav"),
-        p("footstep sounds/se_ev_06_01.wav"), p("footstep sounds/se_ev_06_02.wav"),
-        p("footstep sounds/se_ev_07_01.wav"), p("footstep sounds/se_ev_07_02.wav"),
-        p("footstep sounds/se_ev_08_01.wav"), p("footstep sounds/se_ev_08_02.wav"),
-        p("footstep sounds/se_ev_14.wav")
-      ]
+        p("footstep sounds/se_ev_05_01.wav"),
+        p("footstep sounds/se_ev_05_02.wav"),
+        p("footstep sounds/se_ev_06_01.wav"),
+        p("footstep sounds/se_ev_06_02.wav"),
+        p("footstep sounds/se_ev_07_01.wav"),
+        p("footstep sounds/se_ev_07_02.wav"),
+        p("footstep sounds/se_ev_08_01.wav"),
+        p("footstep sounds/se_ev_08_02.wav"),
+        p("footstep sounds/se_ev_14.wav"),
+      ],
+
+      // Swallow mascot cues
+      "swallow.swoop": [
+        p("other sounds/se_ev_17.wav"),
+        p("menu sounds/song selection teleport.wav"),
+      ],
+      "swallow.chomp": [
+        p("other sounds/se_sy_09.wav"),
+        p("other sounds/click.wav"),
+      ],
     };
 
     const ctxState = { ctx: null, master: null, enabled: true, volume: 0.6 };
     const buffers = new Map(); // path -> Promise<AudioBuffer>
     const lastPlayAt = Object.create(null); // key -> timestamp
     const minInterval = {
-      'foot.step': 300, // slower global cadence to reduce churn
-      'ui.move': 60,
+      "foot.step": 260, // calmer cadence to avoid overplaying footsteps
+      "ui.move": 60,
+      "swallow.swoop": 900,
+      "swallow.chomp": 180,
     };
 
     function ensureCtx() {
       if (!ctxState.ctx) {
         try {
-          ctxState.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          ctxState.ctx = new (window.AudioContext ||
+            window.webkitAudioContext)();
           ctxState.master = ctxState.ctx.createGain();
           ctxState.master.gain.value = ctxState.volume;
           ctxState.master.connect(ctxState.ctx.destination);
@@ -141,12 +249,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!ctx) return Promise.resolve(null);
       const prom = fetch(path)
         .then((r) => r.arrayBuffer())
-        .then((ab) => new Promise((res, rej) => ctx.decodeAudioData(ab, res, rej)))
+        .then(
+          (ab) => new Promise((res, rej) => ctx.decodeAudioData(ab, res, rej))
+        )
         .catch(() => null);
       buffers.set(path, prom);
       return prom;
     }
-    async function playPath(path, { volume = 1, rate = 1, detune = 0, pan = 0 } = {}) {
+    async function playPath(
+      path,
+      { volume = 1, rate = 1, detune = 0, pan = 0 } = {}
+    ) {
       if (!ctxState.enabled) return;
       const ctx = ensureCtx();
       if (!ctx) return;
@@ -154,7 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!buf) return;
       const src = ctx.createBufferSource();
       const g = ctx.createGain();
-      const p = (ctx.createStereoPanner ? ctx.createStereoPanner() : null);
+      const p = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
       src.buffer = buf;
       if (src.detune) src.detune.value = detune;
       src.playbackRate.value = rate;
@@ -165,7 +278,9 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         src.connect(g).connect(ctxState.master);
       }
-      try { src.start(); } catch (_) {}
+      try {
+        src.start();
+      } catch (_) {}
     }
     function pick(arr) {
       return arr[Math.floor(Math.random() * arr.length)];
@@ -183,7 +298,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     function setEnabled(on) {
       ctxState.enabled = !!on;
-      localStorage.setItem("pixelbelle-sfx-enabled", ctxState.enabled ? "1" : "0");
+      localStorage.setItem(
+        "pixelbelle-sfx-enabled",
+        ctxState.enabled ? "1" : "0"
+      );
     }
     function setVolume(v) {
       ctxState.volume = Math.min(1, Math.max(0, v));
@@ -194,7 +312,9 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const en = localStorage.getItem("pixelbelle-sfx-enabled");
       if (en != null) ctxState.enabled = en === "1";
-      const vol = parseFloat(localStorage.getItem("pixelbelle-sfx-volume") || "");
+      const vol = parseFloat(
+        localStorage.getItem("pixelbelle-sfx-volume") || ""
+      );
       if (isFinite(vol)) ctxState.volume = vol;
     } catch (_) {}
 
@@ -217,13 +337,22 @@ document.addEventListener("DOMContentLoaded", () => {
         const end = Math.min(paths.length, i + perTick);
         for (; i < end; i++) loadBuffer(paths[i]);
         if (i < paths.length) {
-          if (window.requestIdleCallback) requestIdleCallback(() => setTimeout(step, delay));
+          if (window.requestIdleCallback)
+            requestIdleCallback(() => setTimeout(step, delay));
           else setTimeout(step, delay);
         }
       }
       step();
     }
-    window.SFX = { play: playKey, playPath, setEnabled, setVolume, ensureCtx, MAP, preloadFirst };
+    window.SFX = {
+      play: playKey,
+      playPath,
+      setEnabled,
+      setVolume,
+      ensureCtx,
+      MAP,
+      preloadFirst,
+    };
   })();
 
   // ====== MEMORY AND PERFORMANCE OPTIMIZATION ======
@@ -231,24 +360,36 @@ document.addEventListener("DOMContentLoaded", () => {
   const GLOBAL_TIMERS = {
     intervals: new Set(),
     timeouts: new Set(),
-    
-    addInterval(id) { this.intervals.add(id); return id; },
-    addTimeout(id) { this.timeouts.add(id); return id; },
-    
+
+    addInterval(id) {
+      this.intervals.add(id);
+      return id;
+    },
+    addTimeout(id) {
+      this.timeouts.add(id);
+      return id;
+    },
+
     clearAll() {
-      this.intervals.forEach(id => clearInterval(id));
-      this.timeouts.forEach(id => clearTimeout(id));
+      this.intervals.forEach((id) => clearInterval(id));
+      this.timeouts.forEach((id) => clearTimeout(id));
       this.intervals.clear();
       this.timeouts.clear();
-    }
+    },
   };
+  // Also expose globally to avoid scope issues when referenced outside
+  try {
+    window.GLOBAL_TIMERS = GLOBAL_TIMERS;
+  } catch (_) {}
 
   // Enhanced timer functions with tracking
-  window.setIntervalTracked = (fn, delay) => GLOBAL_TIMERS.addInterval(setInterval(fn, delay));
-  window.setTimeoutTracked = (fn, delay) => GLOBAL_TIMERS.addTimeout(setTimeout(fn, delay));
-  
+  window.setIntervalTracked = (fn, delay) =>
+    GLOBAL_TIMERS.addInterval(setInterval(fn, delay));
+  window.setTimeoutTracked = (fn, delay) =>
+    GLOBAL_TIMERS.addTimeout(setTimeout(fn, delay));
+
   // Cleanup on page unload
-  window.addEventListener('beforeunload', () => GLOBAL_TIMERS.clearAll());
+  window.addEventListener("beforeunload", () => GLOBAL_TIMERS.clearAll());
 
   // (Removed duplicate byId; using the lightweight `$`/`byId` declared above)
 
@@ -259,14 +400,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Non-blocking, batched image loading with worker-like approach
   (function loadImages() {
-    const roots = [
-      "./assets/Pixel Hatsune Miku by Cutebunni (68581)/Hatsune Miku @illufinch ",
-      "./assets/pixel-miku/Hatsune Miku @illufinch ",
-    ];
-    
+    const roots = ["./assets/pixel-miku/Hatsune Miku @illufinch "];
+
     // Add user-specified extra Miku images first (no validation needed)
     if (Array.isArray(C.images?.extraMikus)) {
-      MIKU_IMAGES.push(...C.images.extraMikus.filter(url => typeof url === "string" && url));
+      MIKU_IMAGES.push(
+        ...C.images.extraMikus.filter((url) => typeof url === "string" && url)
+      );
     }
 
     // Optimized parallel loading with batching
@@ -290,11 +430,12 @@ document.addEventListener("DOMContentLoaded", () => {
       let currentIdx = 1;
       let consecutiveFailures = 0;
       const MAX_TOTAL = 80; // soft cap to avoid excessive memory
-      
-      while (consecutiveFailures < 3 && MIKU_IMAGES.length < MAX_TOTAL) { // Stop after 3 consecutive failures or soft cap
+
+      while (consecutiveFailures < 3 && MIKU_IMAGES.length < MAX_TOTAL) {
+        // Stop after 3 consecutive failures or soft cap
         const batch = await loadBatch(root, currentIdx, 5); // Smaller batches
-        const validPaths = batch.filter(path => path !== null);
-        
+        const validPaths = batch.filter((path) => path !== null);
+
         if (validPaths.length === 0) {
           consecutiveFailures++;
         } else {
@@ -304,11 +445,11 @@ document.addEventListener("DOMContentLoaded", () => {
             MIKU_IMAGES.push(p);
           }
         }
-        
+
         currentIdx += 5;
-        
+
         // Yield control to prevent blocking
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       }
     }
 
@@ -322,17 +463,52 @@ document.addEventListener("DOMContentLoaded", () => {
           img.onerror = () => resolve(false);
           img.src = testPath;
         });
-        
+
         if (testResult) {
           await loadRoot(root);
           break;
         }
       }
-      
+      // Try to include PixieBel if asset exists
+      try {
+        const pix = "./assets/pixiebel.gif";
+        const ok = await new Promise((res) => {
+          const i = new Image();
+          i.onload = () => res(true);
+          i.onerror = () => res(false);
+          i.src = pix;
+        });
+        if (ok) {
+          window.__PIXIEBEL_ASSET = true;
+          if (!MIKU_IMAGES.includes(pix)) MIKU_IMAGES.push(pix);
+        }
+      } catch (_) {}
+
       // Resolve readiness
       if (typeof resolveMiku === "function") resolveMiku(MIKU_IMAGES.slice());
-      document.dispatchEvent(new CustomEvent("miku-images-ready", { detail: { images: MIKU_IMAGES.slice() } }));
+      document.dispatchEvent(
+        new CustomEvent("miku-images-ready", {
+          detail: { images: MIKU_IMAGES.slice() },
+        })
+      );
     })();
+  })();
+
+  // Probe presence of PixieBel asset so gacha can safely include it
+  (function probePixieBel() {
+    const PIX = "./assets/pixiebel.gif";
+    try {
+      const img = new Image();
+      img.onload = () => {
+        window.__PIXIEBEL_ASSET = true;
+      };
+      img.onerror = () => {
+        window.__PIXIEBEL_ASSET = false;
+      };
+      img.src = PIX;
+    } catch (_) {
+      window.__PIXIEBEL_ASSET = false;
+    }
   })();
 
   // ====== DATA CONFIGURATION ======
@@ -345,9 +521,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // ====== SITE INITIALIZATION ======
   let currentSection = "home";
   let heartCount = parseInt(localStorage.getItem("pixelbelle-hearts")) || 0;
-  let gameHeartCount = parseInt(localStorage.getItem("pixelbelle-game-hearts")) || 0;
-  let visitorCount = parseInt(localStorage.getItem("pixelbelle-visitors")) || Math.floor(Math.random() * 1000) + 100;
-  let lastMilestone = parseInt(localStorage.getItem("pixelbelle-last-milestone")) || 0;
+  let gameHeartCount =
+    parseInt(localStorage.getItem("pixelbelle-game-hearts")) || 0;
+  let visitorCount =
+    parseInt(localStorage.getItem("pixelbelle-visitors")) ||
+    Math.floor(Math.random() * 1000) + 100;
+  let lastMilestone =
+    parseInt(localStorage.getItem("pixelbelle-last-milestone")) || 0;
 
   // Increment visitor count
   visitorCount++;
@@ -355,17 +535,108 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ====== OPTIMIZED SPLASH SCREEN ======
   function initSplash() {
-  const splash = byId("splash");
-  const enterBtn = byId("enterSite");
-  const mainSite = byId("mainSite");
+    const splash = byId("splash");
+    const enterBtn = byId("enterSite");
+    const mainSite = byId("mainSite");
     let isEntering = false;
 
     if (!splash || !enterBtn || !mainSite) return;
 
+    // Start preloading critical assets while splash is showing
+    (function preloadSplashAssets() {
+      try {
+        const imgs = [];
+        const seen = new Set();
+        const pushImg = (url) => {
+          if (!url || seen.has(url)) return;
+          seen.add(url);
+          imgs.push(url);
+        };
+
+        // Preload hero/shrine/header/images from content
+        pushImg(C?.images?.heroMiku);
+        pushImg(C?.images?.shrineMiku);
+        pushImg(C?.images?.headerBg);
+        pushImg(C?.images?.ogImage);
+        pushImg(C?.images?.favicon);
+
+        // Preload the nav/status icon sprites actually used
+        const iconMap = C?.images?.mikuIcons || {};
+        const iconKeys = new Set();
+        try {
+          (Array.isArray(C?.nav) ? C.nav : []).forEach((n) => {
+            if (n?.mikuIcon) iconKeys.add(n.mikuIcon);
+          });
+          if (C?.status?.heartIcon) iconKeys.add(C.status.heartIcon);
+          if (C?.status?.visitorIcon) iconKeys.add(C.status.visitorIcon);
+          if (C?.status?.statusIcon) iconKeys.add(C.status.statusIcon);
+          if (C?.sidebarTitles?.left?.petIcon)
+            iconKeys.add(C.sidebarTitles.left.petIcon);
+          if (C?.sidebarTitles?.left?.friendsIcon)
+            iconKeys.add(C.sidebarTitles.left.friendsIcon);
+          if (C?.sidebarTitles?.left?.statsIcon)
+            iconKeys.add(C.sidebarTitles.left.statsIcon);
+          if (C?.sidebarTitles?.right?.quickLinksIcon)
+            iconKeys.add(C.sidebarTitles.right.quickLinksIcon);
+          if (C?.sidebarTitles?.right?.badgesIcon)
+            iconKeys.add(C.sidebarTitles.right.badgesIcon);
+          if (C?.sidebarTitles?.right?.vibeIcon)
+            iconKeys.add(C.sidebarTitles.right.vibeIcon);
+        } catch (_) {}
+        iconKeys.forEach((k) => pushImg(iconMap[k]));
+
+        // Kick off actual image preloads
+        imgs.forEach((src) => {
+          try {
+            const i = new Image();
+            i.decoding = "async";
+            i.loading = "eager";
+            i.src = src;
+          } catch (_) {}
+        });
+
+        // Pet iframe can start loading in the background (hidden)
+        try {
+          const pet = document.getElementById("petIframe");
+          if (pet && !pet.src && C?.embeds?.petIframeSrc)
+            pet.src = C.embeds.petIframeSrc;
+        } catch (_) {}
+
+        // Prewarm SFX decode for a tiny set of keys
+        try {
+          if (window.SFX?.preloadFirst) {
+            const keys = [
+              "ui.move",
+              "hearts.click",
+              "gacha.roll",
+              "gacha.pop",
+              "foot.step",
+            ];
+            // small trickle to avoid main thread spikes during splash
+            window.SFX.preloadFirst(keys, { perTick: 1, delay: 200 });
+          }
+        } catch (_) {}
+
+        // Hint the browser to preload bgm audio bytes
+        try {
+          if (!document.getElementById("preload-bgm")) {
+            const l = document.createElement("link");
+            l.id = "preload-bgm";
+            l.rel = "preload";
+            l.as = "audio";
+            l.href = "./assets/bgm.ogg";
+            document.head.appendChild(l);
+          }
+        } catch (_) {}
+      } catch (_) {}
+    })();
+
     const handleEnter = () => {
       if (isEntering) return;
       isEntering = true;
-      try { SFX.play('ui.teleport'); } catch (_) {}
+      try {
+        SFX.play("ui.teleport");
+      } catch (_) {}
       splash.style.animation = "fadeOut 0.8s ease-out forwards";
       setTimeout(() => {
         splash.style.display = "none";
@@ -393,7 +664,9 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       // Skip under constrained conditions for performance
       const smallScreen = Math.min(window.innerWidth, window.innerHeight) < 500;
-      const prefersReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const prefersReduce =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const saveData = navigator.connection && navigator.connection.saveData;
       if (smallScreen || prefersReduce || saveData) return;
       // Map logical roles to filenames from assets/ani file-animation WxS
@@ -414,115 +687,145 @@ document.addEventListener("DOMContentLoaded", () => {
         diagonal2: "Diagonal2.ani",
         handwriting: "Handwriting.ani",
         pin: "Pin.ani",
-  alternate: "Alternate.ani",
+        alternate: "Alternate.ani",
       };
 
       // Defer heavy import and application until idle
       const boot = async () => {
         const mod = await import("https://cdn.skypack.dev/ani-cursor");
-      const style = document.createElement("style");
-      style.id = "ani-cursor-styles";
-      document.head.appendChild(style);
+        const style = document.createElement("style");
+        style.id = "ani-cursor-styles";
+        document.head.appendChild(style);
 
-      // Helper to fetch a file and build CSS for a selector
-      const base = encodeURI("./assets/ani file-animation WxS/");
-      const aniCssCache = new Map();
-      const aniApplied = new Set(); // `${selector}::${fileName}`
-      async function getAniCss(selector, fileName) {
-        const key = `${selector}::${fileName}`;
-        if (aniCssCache.has(key)) return aniCssCache.get(key);
-        try {
-          const res = await fetch(`${base}${encodeURIComponent(fileName)}`);
-          const buf = await res.arrayBuffer();
-          const convert = mod.convertAniBinaryToCSS || (mod.default && mod.default.convertAniBinaryToCSS);
-          if (!convert) throw new Error('ani-cursor convert not available');
-          const css = convert(selector, new Uint8Array(buf));
-          aniCssCache.set(key, css);
-          return css;
-        } catch (_) {
-          return "";
-        }
-      }
-      async function applyAni(selector, fileName) {
-        const appliedKey = `${selector}::${fileName}`;
-        if (aniApplied.has(appliedKey)) return;
-        try {
-          const css = await getAniCss(selector, fileName);
-          if (css) {
-            style.appendChild(document.createTextNode(css));
-            aniApplied.add(appliedKey);
+        // Helper to fetch a file and build CSS for a selector
+        const base = encodeURI("./assets/ani file-animation WxS/");
+        const aniCssCache = new Map();
+        const aniApplied = new Set(); // `${selector}::${fileName}`
+        async function getAniCss(selector, fileName) {
+          const key = `${selector}::${fileName}`;
+          if (aniCssCache.has(key)) return aniCssCache.get(key);
+          try {
+            const res = await fetch(`${base}${encodeURIComponent(fileName)}`);
+            const buf = await res.arrayBuffer();
+            const convert =
+              mod.convertAniBinaryToCSS ||
+              (mod.default && mod.default.convertAniBinaryToCSS);
+            if (!convert) throw new Error("ani-cursor convert not available");
+            const css = convert(selector, new Uint8Array(buf));
+            aniCssCache.set(key, css);
+            return css;
+          } catch (_) {
+            return "";
           }
-        } catch (_) {
-          // Ignore if not supported
         }
-      }
-
-      // Apply minimal set first; defer the rest to idle
-      await Promise.all([
-        applyAni("html, body", roleToFile.normal),
-        applyAni("a, button, .pixel-btn, .heart-btn, .radio-btn, .enter-btn, .quick-links a", roleToFile.link),
-        applyAni("input, textarea, [contenteditable=\"true\"], .editable", roleToFile.text),
-        applyAni(".memory-card, .gacha-card, .dex-card, .memory-grid, canvas, svg", roleToFile.precision)
-      ]);
-      const applyLater = () => Promise.all([
-        applyAni(".hero-miku, .splash-miku, .float-miku, .shrine-image, #shrineMiku, #heroMiku, #splashMiku, .avatar, .friend-avatar", roleToFile.person),
-        applyAni(".help, [title], .widget h3, .status-item, .hud-line", roleToFile.help),
-        applyAni("[draggable=\"true\"], .draggable, .movable, .gacha-card.matched", roleToFile.move),
-        applyAni("button:disabled, .pixel-btn:disabled, [aria-disabled=\"true\"], .disabled, .unavailable", roleToFile.unavailable),
-        applyAni(".badge, .pin, .pinned, .candle, .blink, #statusDot", roleToFile.pin)
-      ]).catch(() => {});
-      if (window.requestIdleCallback) requestIdleCallback(() => applyLater());
-      else setTimeout(applyLater, 1500);
-
-      // Expose cursor control API
-      window.setBusyCursor = (on) => {
-        const id = "ani-busy-toggle";
-        let busyStyle = document.getElementById(id);
-        if (on) {
-          if (!busyStyle) {
-            busyStyle = document.createElement("style");
-            busyStyle.id = id;
-            document.head.appendChild(busyStyle);
+        async function applyAni(selector, fileName) {
+          const appliedKey = `${selector}::${fileName}`;
+          if (aniApplied.has(appliedKey)) return;
+          try {
+            const css = await getAniCss(selector, fileName);
+            if (css) {
+              style.appendChild(document.createTextNode(css));
+              aniApplied.add(appliedKey);
+            }
+          } catch (_) {
+            // Ignore if not supported
           }
-          busyStyle.textContent = `html, body, * { cursor: auto !important; }`;
-          applyAni("html, body, *", roleToFile.busy);
-        } else if (busyStyle) {
-          busyStyle.remove();
         }
-      };
 
-      window.setWorkingCursor = (on) => {
-        const id = "ani-working-toggle";
-        let w = document.getElementById(id);
-        if (on) {
-          if (!w) {
-            w = document.createElement("style");
-            w.id = id;
-            document.head.appendChild(w);
-          }
-          w.textContent = `html, body, * { cursor: auto !important; }`;
-          applyAni("html, body, *", roleToFile.working);
-        } else if (w) {
-          w.remove();
-        }
-      };
+        // Apply minimal set first; defer the rest to idle
+        await Promise.all([
+          applyAni("html, body", roleToFile.normal),
+          applyAni(
+            "a, button, .pixel-btn, .heart-btn, .radio-btn, .enter-btn, .quick-links a",
+            roleToFile.link
+          ),
+          applyAni(
+            'input, textarea, [contenteditable="true"], .editable',
+            roleToFile.text
+          ),
+          applyAni(
+            ".memory-card, .gacha-card, .dex-card, .memory-grid, canvas, svg",
+            roleToFile.precision
+          ),
+        ]);
+        const applyLater = () =>
+          Promise.all([
+            applyAni(
+              ".hero-miku, .splash-miku, .float-miku, .shrine-image, #shrineMiku, #heroMiku, #splashMiku, .avatar, .friend-avatar",
+              roleToFile.person
+            ),
+            applyAni(
+              ".help, [title], .widget h3, .status-item, .hud-line",
+              roleToFile.help
+            ),
+            applyAni(
+              '[draggable="true"], .draggable, .movable, .gacha-card.matched',
+              roleToFile.move
+            ),
+            applyAni(
+              'button:disabled, .pixel-btn:disabled, [aria-disabled="true"], .disabled, .unavailable',
+              roleToFile.unavailable
+            ),
+            applyAni(
+              ".badge, .pin, .pinned, .candle, .blink, #statusDot",
+              roleToFile.pin
+            ),
+          ]).catch(() => {});
+        if (window.requestIdleCallback) requestIdleCallback(() => applyLater());
+        else setTimeout(applyLater, 1500);
 
-      // Dynamic cursor switching for different contexts
-      window.setGameCursor = (mode) => {
-        const id = "ani-game-cursor";
-        let gameStyle = document.getElementById(id);
-        if (mode && roleToFile[mode]) {
-          if (!gameStyle) {
-            gameStyle = document.createElement("style");
-            gameStyle.id = id;
-            document.head.appendChild(gameStyle);
+        // Expose cursor control API
+        window.setBusyCursor = (on) => {
+          const id = "ani-busy-toggle";
+          let busyStyle = document.getElementById(id);
+          if (on) {
+            if (!busyStyle) {
+              busyStyle = document.createElement("style");
+              busyStyle.id = id;
+              document.head.appendChild(busyStyle);
+            }
+            busyStyle.textContent = `html, body, * { cursor: auto !important; }`;
+            applyAni("html, body, *", roleToFile.busy);
+          } else if (busyStyle) {
+            busyStyle.remove();
           }
-          gameStyle.textContent = `.memory-card, .gacha-card, .heart-zone { cursor: auto !important; }`;
-          applyAni(".memory-card, .gacha-card, .heart-zone", roleToFile[mode]);
-        } else if (gameStyle) {
-          gameStyle.remove();
-        }
-      };
+        };
+
+        window.setWorkingCursor = (on) => {
+          const id = "ani-working-toggle";
+          let w = document.getElementById(id);
+          if (on) {
+            if (!w) {
+              w = document.createElement("style");
+              w.id = id;
+              document.head.appendChild(w);
+            }
+            w.textContent = `html, body, * { cursor: auto !important; }`;
+            applyAni("html, body, *", roleToFile.working);
+          } else if (w) {
+            w.remove();
+          }
+        };
+
+        // Dynamic cursor switching for different contexts
+        window.setGameCursor = (mode) => {
+          const id = "ani-game-cursor";
+          let gameStyle = document.getElementById(id);
+          if (mode && roleToFile[mode]) {
+            if (!gameStyle) {
+              gameStyle = document.createElement("style");
+              gameStyle.id = id;
+              document.head.appendChild(gameStyle);
+            }
+            gameStyle.textContent = `.memory-card, .gacha-card, .heart-zone { cursor: auto !important; }`;
+            applyAni(
+              ".memory-card, .gacha-card, .heart-zone",
+              roleToFile[mode]
+            );
+          } else if (gameStyle) {
+            gameStyle.remove();
+          }
+        };
       };
 
       if (window.requestIdleCallback) requestIdleCallback(() => boot());
@@ -534,22 +837,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ====== OPTIMIZED GACHA SYSTEM ======
   function initMikuGacha() {
-    const poolReady = () => Array.isArray(MIKU_IMAGES) && MIKU_IMAGES.length > 0;
+    const poolReady = () =>
+      Array.isArray(MIKU_IMAGES) && MIKU_IMAGES.length > 0;
 
     // Cached DOM elements
     const elements = {
-  tokens: byId("gachaTokens"),
-  pull1: byId("gachaPull1"),
-  pull10: byId("gachaPull10"),
-  daily: byId("gachaDaily"),
-  convert: byId("gachaConvert"),
-  results: byId("gachaResults"),
-  dexBtn: byId("gachaCollectionBtn"),
-  dex: byId("mikuDex")
+      tokens: byId("gachaTokens"),
+      pull1: byId("gachaPull1"),
+      pull10: byId("gachaPull10"),
+      daily: byId("gachaDaily"),
+      convert: byId("gachaConvert"),
+      results: byId("gachaResults"),
+      dexBtn: byId("gachaCollectionBtn"),
+      dex: byId("mikuDex"),
     };
 
     // Early return if elements missing
-    if (!Object.values(elements).every(el => el)) return;
+    if (!Object.values(elements).every((el) => el)) return;
 
     const LS_TOKENS = "gacha.tokens";
     const LS_DAILY = "gacha.lastDaily";
@@ -570,6 +874,40 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     updateTokens(tokens);
 
+    // Improve Daily Ticket UX: disable/label when claimed, show time until next
+    function msUntilMidnight() {
+      const now = new Date();
+      const next = new Date(now);
+      next.setHours(24, 0, 0, 0);
+      return Math.max(0, next - now);
+    }
+    function fmtHhMm(ms) {
+      const m = Math.ceil(ms / 60000);
+      const hh = Math.floor(m / 60);
+      const mm = m % 60;
+      return (hh > 0 ? `${hh}h ` : "") + `${mm}m`;
+    }
+    function updateDailyBtn() {
+      const btn = elements.daily;
+      if (!btn) return;
+      const last = localStorage.getItem(LS_DAILY);
+      const today = new Date().toDateString();
+      if (last === today) {
+        btn.disabled = true;
+        const left = msUntilMidnight();
+        btn.textContent = `Claimed ✓ (${fmtHhMm(left)})`;
+      } else {
+        btn.disabled = false;
+        btn.textContent = C.games?.gachaDailyLabel || "Daily Ticket";
+      }
+    }
+    // Update label every minute so countdown stays fresh
+    updateDailyBtn();
+    try {
+      if (window.setIntervalTracked) setIntervalTracked(updateDailyBtn, 60000);
+      else setInterval(updateDailyBtn, 60000);
+    } catch (_) {}
+
     function hashCode(s) {
       let h = 0;
       for (let i = 0; i < s.length; i++) {
@@ -579,12 +917,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return h >>> 0;
     }
     function rarityFor(url) {
+      // Special handling for PixieBel - rarest card
+      if (url.includes("pixiebel.gif")) return 5;
+      // Keep deterministic rarity per URL for consistent UI filtering
       const r = hashCode(url) % 100;
-      if (r < 55) return 1;
-      if (r < 85) return 2;
-      if (r < 95) return 3;
-      if (r < 99) return 4;
-      return 5;
+      // More exciting curve: fewer 1★/2★, more 3★/4★/5★
+      if (r < 35) return 1; // 35%
+      if (r < 65) return 2; // 30%
+      if (r < 85) return 3; // 20%
+      if (r < 95) return 4; // 10%
+      return 5; // 5%
     }
     function stars(n) {
       return "★".repeat(n);
@@ -615,7 +957,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function pickRandom() {
-      const url = MIKU_IMAGES[Math.floor(Math.random() * MIKU_IMAGES.length)];
+      // ~0.5% chance to get PixieBel (super rare) if asset exists
+      const pixieUrl = "./assets/pixiebel.gif";
+      if (window.__PIXIEBEL_ASSET && Math.random() < 0.005) {
+        return { id: pixieUrl, url: pixieUrl, rarity: 5 };
+      }
+      // Weight by rarity: 1★ common, 2★ uncommon, 3★ rare, 4★ very rare, 5★ ultra
+      // Base weights are proportional to inverse rarity
+      const weights = { 1: 30, 2: 26, 3: 24, 4: 14, 5: 6 };
+      const buckets = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+      for (const url of MIKU_IMAGES) {
+        buckets[rarityFor(url)].push(url);
+      }
+      // Compute total weight across non-empty buckets
+      let total = 0;
+      for (const k of [1, 2, 3, 4, 5]) {
+        if (buckets[k].length) total += weights[k];
+      }
+      let r = Math.random() * total;
+      let pickedR = 1;
+      for (const k of [1, 2, 3, 4, 5]) {
+        const w = buckets[k].length ? weights[k] : 0;
+        if (r < w) {
+          pickedR = k;
+          break;
+        }
+        r -= w;
+      }
+      const pool = buckets[pickedR].length ? buckets[pickedR] : MIKU_IMAGES;
+      const url = pool[Math.floor(Math.random() * pool.length)];
       return { id: url, url, rarity: rarityFor(url) };
     }
 
@@ -636,7 +1006,9 @@ document.addEventListener("DOMContentLoaded", () => {
       elements.results.innerHTML = cards
         .map((c, i) => {
           return `
-          <div class="gacha-card placeholder rarity-${c.rarity}" data-index="${i}">
+          <div class="gacha-card placeholder rarity-${
+            c.rarity
+          }" data-index="${i}">
             <div class="gacha-stars">${stars(c.rarity)}</div>
             <div class="gacha-placeholder">?</div>
           </div>
@@ -646,27 +1018,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // play roll SFX
       try {
-        SFX.play('gacha.roll');
+        SFX.play("gacha.roll");
       } catch (e) {}
 
       // stagger reveal with pop sounds; reveal image and NEW badge
       cards.forEach((c, i) => {
         setTimeout(() => {
-          const cardEl = elements.results.querySelector(`.gacha-card[data-index="${i}"]`);
+          const cardEl = elements.results.querySelector(
+            `.gacha-card[data-index="${i}"]`
+          );
           if (!cardEl) return;
           const isNew = addToCollection(c);
           const newBadge = isNew ? '<div class="gacha-new">NEW!</div>' : "";
           cardEl.classList.remove("placeholder");
-          cardEl.innerHTML = `\n            <div class="gacha-stars">${stars(c.rarity)}</div>\n            ${newBadge}\n            <img src="${c.url}" alt="Miku card" loading="lazy" />\n          `;
+          cardEl.innerHTML = `\n            <div class="gacha-stars">${stars(
+            c.rarity
+          )}</div>\n            ${newBadge}\n            <img src="${
+            c.url
+          }" alt="Miku card" loading="lazy" />\n          `;
+          // reveal and pop SFX
+          try {
+            if (i === 0) SFX.play("gacha.reveal");
+          } catch (e) {}
           // pop SFX and reveal change
-          try { SFX.play('gacha.pop'); } catch (e) {}
+          try {
+            SFX.play("gacha.pop");
+          } catch (e) {}
           // special fanfare for high rarity
           if (c.rarity >= 4) {
-            try { SFX.play('gacha.high'); } catch (e) {}
+            try {
+              SFX.play("gacha.high");
+            } catch (e) {}
             // lightweight glow using transform + brightness (avoid box-shadow anim)
             cardEl.animate(
-              [ { transform: 'scale(1)', filter: 'brightness(1.0)' }, { transform: 'scale(1.03)', filter: 'brightness(1.12)' } ],
-              { duration: 500, easing: 'ease-out' }
+              [
+                { transform: "scale(1)", filter: "brightness(1.0)" },
+                { transform: "scale(1.03)", filter: "brightness(1.12)" },
+              ],
+              { duration: 500, easing: "ease-out" }
             );
           }
         }, 180 * i + 200);
@@ -679,27 +1068,136 @@ document.addEventListener("DOMContentLoaded", () => {
           { duration: 220, easing: "ease-out" }
         );
         renderDex();
+        // If pull was super weak (no ★★★ or higher), play fail sting
+        try {
+          const maxR = Math.max.apply(
+            null,
+            cards.map((x) => x.rarity || 1)
+          );
+          if (!isFinite(maxR) || maxR <= 2) SFX.play("gacha.fail");
+        } catch (_) {}
       }, 200 + cards.length * 180);
     }
 
     function renderDex() {
-      const tiles = MIKU_IMAGES.map((url) => {
-        const entry = collection[url];
-        const owned = !!entry;
+      const LS_FILTER = "gacha.dexFilter";
+      let filters = { scope: "all", rarity: "all", search: "" };
+      try {
+        const f = JSON.parse(localStorage.getItem(LS_FILTER) || "{}");
+        if (f && typeof f === "object") filters = { ...filters, ...f };
+      } catch (_) {}
+
+      const applySearch = (url) => {
+        if (!filters.search) return true;
+        const base = (url.split("/").pop() || url).toLowerCase();
+        return base.includes(filters.search.toLowerCase());
+      };
+      const minR = filters.rarity === "all" ? 0 : parseInt(filters.rarity, 10);
+      const pix = "./assets/pixiebel.gif";
+      const pixOwned = !!collection[pix];
+      const pool = MIKU_IMAGES.filter((url) => {
+        // Hide PixieBel entirely from Dex until owned
+        if (!pixOwned && (url === pix || /pixiebel\.gif$/i.test(url)))
+          return false;
+        const own = !!collection[url];
+        if (filters.scope === "owned" && !own) return false;
         const r = rarityFor(url);
-        const ownClass = owned ? "owned rarity-" + r : "";
-        const count = owned
-          ? `<span class="dex-count">x${entry.count}</span>`
-          : "";
-        return `
-          <div class="dex-card ${ownClass}">
+        if (minR && r < minR) return false;
+        if (!applySearch(url)) return false;
+        return true;
+      });
+
+      const tiles = pool
+        .map((url) => {
+          const entry = collection[url];
+          const owned = !!entry;
+          const r = rarityFor(url);
+          const ownClass = owned ? `owned rarity-${r}` : "locked";
+          const count = owned
+            ? `<span class="dex-count">x${entry.count}</span>`
+            : `<span class="dex-locked">?</span>`;
+          return `
+          <div class="dex-card ${ownClass}" onclick="openImageModal('${url}')">
             <div class="dex-stars">${stars(r)}</div>
             ${count}
             <img src="${url}" alt="Miku dex" loading="lazy" />
           </div>
         `;
-      }).join("");
-      elements.dex.innerHTML = `<div class="dex-grid">${tiles}</div>`;
+        })
+        .join("");
+
+      const ownedCount = Object.keys(collection).length;
+      const showing = pool.length;
+      elements.dex.innerHTML = `
+        <div class="dex-pokedex">
+          <div class="dex-header">MikuDex • Owned: ${ownedCount} / ${
+        MIKU_IMAGES.length
+      }</div>
+          <div class="dex-controls">
+            <label for="dexScope">Scope</label>
+            <select id="dexScope">
+              <option value="all" ${
+                filters.scope === "all" ? "selected" : ""
+              }>All</option>
+              <option value="owned" ${
+                filters.scope === "owned" ? "selected" : ""
+              }>Owned</option>
+            </select>
+            <label for="dexRarity">Rarity</label>
+            <select id="dexRarity">
+              <option value="all" ${
+                filters.rarity === "all" ? "selected" : ""
+              }>All</option>
+              <option value="5" ${
+                filters.rarity === "5" ? "selected" : ""
+              }>★★★★★+</option>
+              <option value="4" ${
+                filters.rarity === "4" ? "selected" : ""
+              }>★★★★+</option>
+              <option value="3" ${
+                filters.rarity === "3" ? "selected" : ""
+              }>★★★+</option>
+              <option value="2" ${
+                filters.rarity === "2" ? "selected" : ""
+              }>★★+</option>
+              <option value="1" ${
+                filters.rarity === "1" ? "selected" : ""
+              }>★+</option>
+            </select>
+            <label for="dexSearch">Search</label>
+            <input id="dexSearch" type="search" placeholder="name..." value="${(
+              filters.search || ""
+            ).replaceAll('"', "&quot;")}" />
+            <div class="spacer"></div>
+            <div style="font-weight:800;color:#596286">Showing: ${showing}</div>
+          </div>
+          <div class="dex-grid">${tiles}</div>
+        </div>`;
+
+      // Bind control events
+      const scopeSel = elements.dex.querySelector("#dexScope");
+      const raritySel = elements.dex.querySelector("#dexRarity");
+      const searchInp = elements.dex.querySelector("#dexSearch");
+      const save = () =>
+        localStorage.setItem(LS_FILTER, JSON.stringify(filters));
+      if (scopeSel)
+        scopeSel.addEventListener("change", () => {
+          filters.scope = scopeSel.value;
+          save();
+          renderDex();
+        });
+      if (raritySel)
+        raritySel.addEventListener("change", () => {
+          filters.rarity = raritySel.value;
+          save();
+          renderDex();
+        });
+      if (searchInp)
+        searchInp.addEventListener("input", () => {
+          filters.search = searchInp.value || "";
+          save();
+          setTimeout(renderDex, 0);
+        });
     }
 
     function pull(n) {
@@ -709,17 +1207,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (tokens < n) {
         loveToast("チケットが足りないよ！");
-        try { SFX.play("ui.unavailable"); } catch (_) {}
+        try {
+          SFX.play("gacha.fail");
+        } catch (_) {}
         return;
       }
-      try { window.setBusyCursor && window.setBusyCursor(true); } catch (_) {}
+      try {
+        window.setBusyCursor && window.setBusyCursor(true);
+      } catch (_) {}
       updateTokens(tokens - n);
       const cards = Array.from({ length: n }, () => pickRandom());
       if (n >= 10) guaranteeAtLeast(3, cards);
       renderResults(cards);
       // remove busy cursor after reveals finish
       setTimeout(() => {
-        try { window.setBusyCursor && window.setBusyCursor(false); } catch (_) {}
+        try {
+          window.setBusyCursor && window.setBusyCursor(false);
+        } catch (_) {}
       }, 300 + n * 200);
     }
 
@@ -730,19 +1234,26 @@ document.addEventListener("DOMContentLoaded", () => {
       const today = new Date().toDateString();
       if (last === today) {
         loveToast("今日はもう受け取ったよ！");
-        try { SFX.play("ui.unavailable"); } catch (_) {}
+        try {
+          SFX.play("ui.unavailable");
+        } catch (_) {}
         return;
       }
       localStorage.setItem(LS_DAILY, today);
       updateTokens(tokens + 1);
       loveToast("デイリーチケット＋1！");
-      try { SFX.play("ui.select"); } catch (_) {}
+      try {
+        SFX.play("ui.select");
+      } catch (_) {}
+      updateDailyBtn();
     });
     elements.convert.addEventListener("click", () => {
       const convertCost = 100;
       if (heartCount < convertCost) {
         loveToast(`💖が足りないよ！(${convertCost}必要)`);
-        try { SFX.play("ui.unavailable"); } catch (_) {}
+        try {
+          SFX.play("ui.unavailable");
+        } catch (_) {}
         return;
       }
       heartCount -= convertCost;
@@ -750,7 +1261,10 @@ document.addEventListener("DOMContentLoaded", () => {
       updateCounters();
       updateTokens(tokens + 1);
       loveToast("💖→チケット +1");
-      try { SFX.play("ui.scoreTally"); } catch (_) {}
+      try {
+        SFX.play("ui.scoreTally");
+        SFX.play("extra.kick", { volume: 0.4 });
+      } catch (_) {}
     });
     elements.dexBtn.addEventListener("click", () => {
       elements.dex.classList.toggle("hidden");
@@ -758,7 +1272,17 @@ document.addEventListener("DOMContentLoaded", () => {
       elements.dexBtn.textContent = elements.dex.classList.contains("hidden")
         ? "Open MikuDex"
         : "Close MikuDex";
-      try { SFX.play("ui.change"); if (Math.random() < 0.3) SFX.play('extra.fx1'); } catch (_) {}
+      if (!elements.dex.classList.contains("hidden")) {
+        elements.dex.classList.add("dex-open");
+        setTimeout(
+          () => elements.dex && elements.dex.classList.remove("dex-open"),
+          500
+        );
+      }
+      try {
+        SFX.play("ui.change");
+        if (Math.random() < 0.3) SFX.play("extra.fx1");
+      } catch (_) {}
     });
 
     ensurePool(() => renderDex());
@@ -782,13 +1306,30 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCounters();
     loadSavedData();
     initAniCursors();
-    initEnhancedCursors();    console.log("PixelBelle's Garden initialized! 🌸");
+    initEnhancedCursors();
+    try {
+      applySinger();
+    } catch (_) {}
+    console.log("PixelBelle's Garden initialized! 🌸");
     // Preload a minimal set of critical SFX buffers in the background
     try {
-      if (window.SFX && typeof window.SFX.preloadFirst === 'function') {
-        const keys = ['ui.move','hearts.click','gacha.roll','gacha.pop','foot.step'];
-        if (window.requestIdleCallback) requestIdleCallback(() => window.SFX.preloadFirst(keys, { perTick: 1, delay: 300 }));
-        else setTimeout(() => window.SFX.preloadFirst(keys, { perTick: 1, delay: 300 }), 2000);
+      if (window.SFX && typeof window.SFX.preloadFirst === "function") {
+        const keys = [
+          "ui.move",
+          "hearts.click",
+          "gacha.roll",
+          "gacha.pop",
+          "foot.step",
+        ];
+        if (window.requestIdleCallback)
+          requestIdleCallback(() =>
+            window.SFX.preloadFirst(keys, { perTick: 1, delay: 300 })
+          );
+        else
+          setTimeout(
+            () => window.SFX.preloadFirst(keys, { perTick: 1, delay: 300 }),
+            2000
+          );
       }
     } catch (_) {}
   }
@@ -840,12 +1381,18 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       document.addEventListener("click", resumeOnInteract, { passive: true });
       document.addEventListener("keydown", resumeOnInteract, { passive: true });
-      document.addEventListener("touchstart", resumeOnInteract, { passive: true });
+      document.addEventListener("touchstart", resumeOnInteract, {
+        passive: true,
+      });
 
       // Expose a stopper for radio to call
       window.__stopBgm = (permanent = true) => {
-        try { bgm.pause(); } catch (_) {}
-        try { bgm.currentTime = 0; } catch (_) {}
+        try {
+          bgm.pause();
+        } catch (_) {}
+        try {
+          bgm.currentTime = 0;
+        } catch (_) {}
         if (permanent) window.__bgmKilled = true;
       };
     } catch (_) {}
@@ -855,44 +1402,64 @@ document.addEventListener("DOMContentLoaded", () => {
   function initEnhancedCursors() {
     // Optimized memory game cursor switching with delegation
     let lastHoverTime = 0;
-    document.addEventListener("mouseover", (e) => {
-      const now = Date.now();
-      if (now - lastHoverTime > 50) { // Throttle hover events
-        if (e.target.classList.contains("memory-card")) {
-          try { window.setGameCursor && window.setGameCursor("precision"); } catch(_){}
+    document.addEventListener(
+      "mouseover",
+      (e) => {
+        const now = Date.now();
+        if (now - lastHoverTime > 50) {
+          // Throttle hover events
+          if (e.target.classList.contains("memory-card")) {
+            try {
+              window.setGameCursor && window.setGameCursor("precision");
+            } catch (_) {}
+          }
+          lastHoverTime = now;
         }
-        lastHoverTime = now;
-      }
-    }, { passive: true });
-    
-  // Note: removed global fetch override (was toggling working cursor on every fetch)
-  // to avoid recursion with ANI loader and excessive style churn.
+      },
+      { passive: true }
+    );
+
+    // Note: removed global fetch override (was toggling working cursor on every fetch)
+    // to avoid recursion with ANI loader and excessive style churn.
 
     // Optimized dynamic cursor with passive listeners and delegation
     let lastClickTime = 0;
-    document.addEventListener("click", (e) => {
-      const now = Date.now();
-      if (now - lastClickTime > 50) { // Throttle clicks
-        const target = e.target;
-        
-        // Heart zone gets special cursor
-        if (target.id === "heartZone") {
-          try { window.setGameCursor && window.setGameCursor("alternate"); } catch(_){}
-          setTimeout(() => {
-            try { window.setGameCursor && window.setGameCursor(null); } catch(_){}
-          }, 300);
+    document.addEventListener(
+      "click",
+      (e) => {
+        const now = Date.now();
+        if (now - lastClickTime > 50) {
+          // Throttle clicks
+          const target = e.target;
+
+          // Heart zone gets special cursor
+          if (target.id === "heartZone") {
+            try {
+              window.setGameCursor && window.setGameCursor("alternate");
+            } catch (_) {}
+            setTimeout(() => {
+              try {
+                window.setGameCursor && window.setGameCursor(null);
+              } catch (_) {}
+            }, 300);
+          }
+
+          // Memory cards get precision
+          if (target.classList.contains("memory-card")) {
+            try {
+              window.setGameCursor && window.setGameCursor("precision");
+            } catch (_) {}
+            setTimeout(() => {
+              try {
+                window.setGameCursor && window.setGameCursor(null);
+              } catch (_) {}
+            }, 500);
+          }
+          lastClickTime = now;
         }
-        
-        // Memory cards get precision
-        if (target.classList.contains("memory-card")) {
-          try { window.setGameCursor && window.setGameCursor("precision"); } catch(_){}
-          setTimeout(() => {
-            try { window.setGameCursor && window.setGameCursor(null); } catch(_){}
-          }, 500);
-        }
-        lastClickTime = now;
-      }
-    }, { passive: true });
+      },
+      { passive: true }
+    );
   }
 
   // ====== JP GAMES (Project Diva style) ======
@@ -905,64 +1472,46 @@ document.addEventListener("DOMContentLoaded", () => {
     const studyHeading = document.querySelector("#study h2");
     if (studyHeading) studyHeading.style.display = "none";
 
-    container.innerHTML = /*html*/`
+    container.innerHTML = /*html*/ `
       <div class="study-card" id="startCard" style="position:relative;min-height:240px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
         <div id="jpMikus" class="floating-mikus" style="position:absolute;right:10px;top:10px;pointer-events:none"></div>
         <div id="startMenu" class="start-menu">
           <div class="menu-grid" id="jpMenuGrid" tabindex="0" aria-label="Game Select">
-            <button id="startVocab" class="pixel-btn menu-tile" data-idx="0">📝 Vocab Quiz</button>
-            <button id="startKanji" class="pixel-btn menu-tile" data-idx="1">漢字 Kanji Quiz</button>
-            <button id="startKotoba" class="pixel-btn menu-tile" data-idx="2">🤖 Miku Meets Kotoba</button>
+            <button id="startVocab" class="pixel-btn menu-tile" data-idx="0" data-label="📝 Vocabulary Pop!">📝 Vocabulary Pop!</button>
+            <button id="startKanji" class="pixel-btn menu-tile" data-idx="1" data-label="漢字 Master!">漢字 Master!</button>
+            <button id="startKotoba" class="pixel-btn menu-tile" data-idx="2" data-label="💬 Miku × Kotoba Chat">💬 Miku × Kotoba Chat</button>
           </div>
         </div>
       </div>
       <div class="study-card" id="vocabCard" style="display:none">
-        <div id="vocabMeta" style="display:flex;gap:10px;align-items:center;color:#596286;font-size:12px;margin-bottom:4px">
-          <button id="vocabModeBtn" class="pixel-btn" style="padding:4px 10px;border-radius:999px;font-size:12px">Mode</button>
-          <div>Streak: <span id="vocabStreak">0</span> (Best: <span id="vocabBestStreak">0</span>)</div>
+        <div id="vocabMeta" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:#596286;font-size:12px;margin-bottom:6px">
+          <div class="mode-options">
+            <button class="pixel-btn mode-option" data-mode="jp-en">JP → EN</button>
+            <button class="pixel-btn mode-option" data-mode="en-jp">EN → JP</button>
+          </div>
+          <button id="vocabTimedToggle" class="pixel-btn mode-toggle" data-on="0">Timed: OFF</button>
+          <div style="margin-left:auto">Streak: <span id="vocabStreak">0</span> (Best: <span id="vocabBestStreak">0</span>)</div>
           <div id="vocabTimerWrap" style="display:none">⏱️ <span id="vocabTimer">15</span>s • Best: <span id="vocabBestTime">-</span></div>
         </div>
         <div id="vocabQuestion">Pick a mode to start…</div>
         <div id="vocabChoices" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:8px"></div>
         <div id="vocabFeedback" style="min-height:22px;margin-top:6px;color:#596286"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="font-weight:800">Score: <span id="vocabScore">0</span></div><button id="vocabBack" class="pixel-btn">⟵ Menu</button></div>
-        <div id="vocabOverlay" class="mode-overlay">
-          <div class="mode-panel">
-            <div class="mode-title">Vocab Mode</div>
-            <div class="mode-options">
-              <button class="pixel-btn mode-option" data-mode="jp-en">JP → EN</button>
-              <button class="pixel-btn mode-option" data-mode="en-jp">EN → JP</button>
-            </div>
-            <div class="mode-toggles">
-              <button id="vocabTimedToggle" class="pixel-btn mode-toggle" data-on="0">Timed: OFF</button>
-            </div>
-            <button id="vocabStart" class="pixel-btn mode-start">Start</button>
-          </div>
-        </div>
       </div>
       <div class="study-card" id="kanjiCard" style="display:none">
-        <div id="kanjiMeta" style="display:flex;gap:10px;align-items:center;color:#596286;font-size:12px;margin-bottom:4px">
-          <button id="kanjiModeBtn" class="pixel-btn" style="padding:4px 10px;border-radius:999px;font-size:12px">Mode</button>
-          <div>Streak: <span id="kanjiStreak">0</span> (Best: <span id="kanjiBestStreak">0</span>)</div>
+        <div id="kanjiMeta" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:#596286;font-size:12px;margin-bottom:6px">
+          <div class="mode-options">
+            <button class="pixel-btn mode-option" data-mode="meaning">Meaning → Kanji</button>
+            <button class="pixel-btn mode-option" data-mode="reading">Kanji → Reading</button>
+          </div>
+          <button id="kanjiTimedToggle" class="pixel-btn mode-toggle" data-on="0">Timed: OFF</button>
+          <div style="margin-left:auto">Streak: <span id="kanjiStreak">0</span> (Best: <span id="kanjiBestStreak">0</span>)</div>
           <div id="kanjiTimerWrap" style="display:none">⏱️ <span id="kanjiTimer">15</span>s • Best: <span id="kanjiBestTime">-</span></div>
         </div>
         <div id="kanjiQuestion">Pick a mode to start…</div>
         <div id="kanjiChoices" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:8px"></div>
         <div id="kanjiFeedback" style="min-height:22px;margin-top:6px;color:#596286"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="font-weight:800">Score: <span id="kanjiScore">0</span></div><button id="kanjiBack" class="pixel-btn">⟵ Menu</button></div>
-        <div id="kanjiOverlay" class="mode-overlay">
-          <div class="mode-panel">
-            <div class="mode-title">Kanji Mode</div>
-            <div class="mode-options">
-              <button class="pixel-btn mode-option" data-mode="meaning">Meaning → Kanji</button>
-              <button class="pixel-btn mode-option" data-mode="reading">Kanji → Reading</button>
-            </div>
-            <div class="mode-toggles">
-              <button id="kanjiTimedToggle" class="pixel-btn mode-toggle" data-on="0">Timed: OFF</button>
-            </div>
-            <button id="kanjiStart" class="pixel-btn mode-start">Start</button>
-          </div>
-        </div>
       </div>
       <div class="study-card" id="kotobaCard" style="display:none">
         <div id="kotobaChat" style="display:flex;flex-direction:column;gap:8px;min-height:90px"></div>
@@ -995,10 +1544,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // Populate static study info & WOD from API
     try {
       // Word-of-day fields live in a separate card with class .word-of-day
-      const wod = document.querySelector('.word-of-day');
+      const wod = document.querySelector(".word-of-day");
       if (wod) {
         const jp = wod.querySelector(".japanese");
-        const ro = wod.querySelector(".romaji");
+        try {
+          img.style.filter =
+            "drop-shadow(0 0 6px rgba(255,0,0,0.6)) " +
+            (img.classList.contains("evil") ? "hue-rotate(200deg)" : "");
+        } catch (_) {}
+        try {
+          SFX.play("swallow.swoop", { volume: 0.5 });
+        } catch (_) {}
         const me = wod.querySelector(".meaning");
         (async function loadWod() {
           try {
@@ -1060,6 +1616,13 @@ document.addEventListener("DOMContentLoaded", () => {
           img.className = "float-miku";
           img.alt = "Miku";
           img.style.width = "48px";
+          // Stagger animation to avoid sync
+          img.style.animationName = "float";
+          img.style.animationIterationCount = "infinite";
+          img.style.animationTimingFunction = "ease-in-out";
+          img.style.animationDuration =
+            (3.5 + Math.random() * 2).toFixed(2) + "s";
+          img.style.animationDelay = (Math.random() * 1.5).toFixed(2) + "s";
           wrap.appendChild(img);
         }
       };
@@ -1084,72 +1647,154 @@ document.addEventListener("DOMContentLoaded", () => {
       kanjiCard.style.display = "none";
       kotobaCard.style.display = "none";
       spawnJpMikus();
-      try { SFX.play('ui.select'); } catch (_) {}
+      try {
+        SFX.play("ui.select");
+      } catch (_) {}
     }
     function showGame(which) {
       startCard.style.display = "none";
       vocabCard.style.display = which === "vocab" ? "block" : "none";
       kanjiCard.style.display = which === "kanji" ? "block" : "none";
       kotobaCard.style.display = which === "kotoba" ? "block" : "none";
+      setGameTheme(which);
       // Auto-start with last settings or open mode overlay for convenience
       setTimeout(() => {
-        if (which === 'vocab') {
-          const lastDir = localStorage.getItem('vocab.direction');
-          const lastTimed = localStorage.getItem('vocab.timed') === '1';
-          const overlay = document.getElementById('vocabOverlay');
+        if (which === "vocab") {
+          const lastDir = localStorage.getItem("vocab.direction");
+          const lastTimed = localStorage.getItem("vocab.timed") === "1";
+          const overlay = document.getElementById("vocabOverlay");
           if (lastDir) {
-            document.dispatchEvent(new CustomEvent('vocab-start', { detail: { direction: lastDir, timed: lastTimed } }));
+            document.dispatchEvent(
+              new CustomEvent("vocab-start", {
+                detail: { direction: lastDir, timed: lastTimed },
+              })
+            );
           } else if (overlay) {
-            overlay.style.display = 'flex';
+            overlay.style.display = "flex";
           }
-        } else if (which === 'kanji') {
-          const lastMode = localStorage.getItem('kanji.mode');
-          const lastTimed = localStorage.getItem('kanji.timed') === '1';
-          const overlay = document.getElementById('kanjiOverlay');
+        } else if (which === "kanji") {
+          const lastMode = localStorage.getItem("kanji.mode");
+          const lastTimed = localStorage.getItem("kanji.timed") === "1";
+          const overlay = document.getElementById("kanjiOverlay");
           if (lastMode) {
-            document.dispatchEvent(new CustomEvent('kanji-start', { detail: { mode: lastMode, timed: lastTimed } }));
+            document.dispatchEvent(
+              new CustomEvent("kanji-start", {
+                detail: { mode: lastMode, timed: lastTimed },
+              })
+            );
           } else if (overlay) {
-            overlay.style.display = 'flex';
+            overlay.style.display = "flex";
           }
-        } else if (which === 'kotoba') {
-          const start = document.getElementById('kotobaStart');
+        } else if (which === "kotoba") {
+          const start = document.getElementById("kotobaStart");
           if (start) start.click();
         }
       }, 50);
     }
     // DS/PlayStation-style keyboard navigation on the game grid
-    (function initMenuNav(){
+    (function initMenuNav() {
       const grid = document.getElementById("jpMenuGrid");
       if (!grid) return;
-      const tiles = Array.from(grid.querySelectorAll('.menu-tile'));
+      const tiles = Array.from(grid.querySelectorAll(".menu-tile"));
+      // Apply cover art from SITE_CONTENT.images.menuCovers
+      try {
+        const covers = (C.images && C.images.menuCovers) || {};
+        // Ensure URLs resolve correctly when used inside CSS variables (which resolve relative to the stylesheet)
+        const toAbs = (p) => {
+          try {
+            if (!p) return p;
+            // If already absolute (http/https/data), return as-is
+            if (/^(?:https?:|data:)/i.test(p)) return p;
+            // Normalize leading "./" to "/" and build an absolute URL against the site origin
+            const norm = p.replace(/^\.\//, "/");
+            return new URL(norm, window.location.origin).href;
+          } catch (_) {
+            return p;
+          }
+        };
+        const map = {
+          startVocab: toAbs(covers.vocab),
+          startKanji: toAbs(covers.kanji),
+          startKotoba: toAbs(covers.kotoba),
+        };
+        tiles.forEach((t) => {
+          const id = t.id;
+          if (map[id]) {
+            t.classList.add("has-cover");
+            t.style.setProperty("--tile-cover", `url('${map[id]}')`);
+            t.style.minHeight = "140px";
+            t.style.display = "grid";
+            t.style.placeContent = "center";
+            t.style.textAlign = "center";
+            const badge = document.createElement("span");
+            badge.className = "corner-badge";
+            badge.textContent =
+              id === "startKanji" ? "漢" : id === "startKotoba" ? "💬" : "Pop";
+            t.appendChild(badge);
+          }
+        });
+      } catch (_) {}
       let focus = 0;
       const setFocus = (i) => {
         focus = (i + tiles.length) % tiles.length;
         tiles.forEach((t, idx) => {
-          if (idx === focus) t.classList.add('active'); else t.classList.remove('active');
+          if (idx === focus) t.classList.add("active");
+          else t.classList.remove("active");
         });
-        try { SFX.play('ui.move'); } catch (_) {}
+        try {
+          SFX.play("ui.move");
+        } catch (_) {}
       };
-      setFocus(parseInt(localStorage.getItem('jp.menu.focus') || '0', 10) || 0);
-      grid.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight' || e.key === 'd') { setFocus(focus + 1); e.preventDefault(); }
-        else if (e.key === 'ArrowLeft' || e.key === 'a') { setFocus(focus - 1); e.preventDefault(); }
-        else if (e.key === 'ArrowDown' || e.key === 's') { setFocus(focus + 2); e.preventDefault(); }
-        else if (e.key === 'ArrowUp' || e.key === 'w') { setFocus(focus - 2); e.preventDefault(); }
-        else if (e.key === 'Enter' || e.key === ' ') { tiles[focus]?.click(); e.preventDefault(); }
+      setFocus(parseInt(localStorage.getItem("jp.menu.focus") || "0", 10) || 0);
+      grid.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "d") {
+          setFocus(focus + 1);
+          e.preventDefault();
+        } else if (e.key === "ArrowLeft" || e.key === "a") {
+          setFocus(focus - 1);
+          e.preventDefault();
+        } else if (e.key === "ArrowDown" || e.key === "s") {
+          setFocus(focus + 2);
+          e.preventDefault();
+        } else if (e.key === "ArrowUp" || e.key === "w") {
+          setFocus(focus - 2);
+          e.preventDefault();
+        } else if (e.key === "Enter" || e.key === " ") {
+          tiles[focus]?.click();
+          e.preventDefault();
+        }
       });
-      tiles.forEach((t, idx) => t.addEventListener('focus', () => setFocus(idx)));
-      window.addEventListener('beforeunload', () => localStorage.setItem('jp.menu.focus', String(focus)));
+      tiles.forEach((t, idx) =>
+        t.addEventListener("focus", () => setFocus(idx))
+      );
+      window.addEventListener("beforeunload", () =>
+        localStorage.setItem("jp.menu.focus", String(focus))
+      );
     })();
     const startVocab = document.getElementById("startVocab");
     const startKanji = document.getElementById("startKanji");
     const startKotoba = document.getElementById("startKotoba");
     if (startVocab)
-      startVocab.addEventListener("click", () => { showGame("vocab"); try { SFX.play('ui.select'); } catch (_) {} });
+      startVocab.addEventListener("click", () => {
+        showGame("vocab");
+        try {
+          SFX.play("ui.select");
+        } catch (_) {}
+      });
     if (startKanji)
-      startKanji.addEventListener("click", () => { showGame("kanji"); try { SFX.play('ui.select'); } catch (_) {} });
+      startKanji.addEventListener("click", () => {
+        showGame("kanji");
+        try {
+          SFX.play("ui.select");
+        } catch (_) {}
+      });
     if (startKotoba)
-      startKotoba.addEventListener("click", () => { showGame("kotoba"); try { SFX.play('ui.select'); } catch (_) {} });
+      startKotoba.addEventListener("click", () => {
+        showGame("kotoba");
+        try {
+          SFX.play("ui.select");
+        } catch (_) {}
+      });
     if (vocabBack()) vocabBack().addEventListener("click", showMenu);
     if (kanjiBack()) kanjiBack().addEventListener("click", showMenu);
     if (kotobaBack()) kotobaBack().addEventListener("click", showMenu);
@@ -1182,7 +1827,8 @@ document.addEventListener("DOMContentLoaded", () => {
         Math.min(100, Math.floor(((xp % XP_PER_LEVEL) / XP_PER_LEVEL) * 100))
       );
       if (levelBar) levelBar.style.width = pct + "%";
-      if (levelTextP) levelTextP.textContent = /*html*/`Level ${level} • ${pct}%`;
+      if (levelTextP)
+        levelTextP.textContent = /*html*/ `Level ${level} • ${pct}%`;
     }
     function addXP(amount) {
       xp += amount;
@@ -1193,7 +1839,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (leveled) {
         loveToast("レベルアップ！Level " + level + " ✨");
-        try { SFX.play('ui.scoreTally'); SFX.play('extra.clap'); } catch (_) {}
+        try {
+          SFX.play("ui.scoreTally");
+          SFX.play("extra.clap");
+        } catch (_) {}
         try {
           addHearts(1);
         } catch (_) {}
@@ -1211,7 +1860,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let JP_DIFFICULTY = parseInt(localStorage.getItem(DIFF_LS) || "3", 10);
     if (!Number.isFinite(JP_DIFFICULTY)) JP_DIFFICULTY = 3;
     function applyDiff(v) {
-      JP_DIFFICULTY = Math.min(9, Math.max(1, v|0));
+      JP_DIFFICULTY = Math.min(9, Math.max(1, v | 0));
       if (diffInput) diffInput.value = String(JP_DIFFICULTY);
       if (diffLabel) diffLabel.textContent = String(JP_DIFFICULTY);
       localStorage.setItem(DIFF_LS, String(JP_DIFFICULTY));
@@ -1219,7 +1868,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (diffInput) {
       const saved = JP_DIFFICULTY;
       applyDiff(saved);
-      diffInput.addEventListener('input', () => applyDiff(parseInt(diffInput.value||'3',10)));
+      diffInput.addEventListener("input", () =>
+        applyDiff(parseInt(diffInput.value || "3", 10))
+      );
     } else {
       applyDiff(JP_DIFFICULTY);
     }
@@ -1245,6 +1896,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const selMode = document.getElementById("hudMode");
       const timedBtn = document.getElementById("hudTimed");
       const singerImg = document.getElementById("hudSingerImg");
+      const bpmInput = document.getElementById("hudBpm");
+      const bpmLabel = document.getElementById("hudBpmLabel");
+      const metBtn = document.getElementById("hudMetronome");
       const sync = () => {
         if (hearts) hearts.textContent = String(heartCount);
         if (lives) lives.textContent = String(HUD.lives);
@@ -1253,32 +1907,64 @@ document.addEventListener("DOMContentLoaded", () => {
       sync();
       // Expose updater
       window.__updateHudHearts = sync;
+      if (bpmInput) {
+        const savedBpm = parseInt(
+          localStorage.getItem("rhythm.bpm") || "100",
+          10
+        );
+        bpmInput.value = String(isFinite(savedBpm) ? savedBpm : 100);
+        bpmLabel.textContent = `${bpmInput.value} BPM`;
+        window.__rhythmBpm = parseInt(bpmInput.value, 10);
+        bpmInput.addEventListener("input", () => {
+          window.__rhythmBpm = parseInt(bpmInput.value, 10);
+          bpmLabel.textContent = `${bpmInput.value} BPM`;
+          localStorage.setItem("rhythm.bpm", String(window.__rhythmBpm));
+        });
+      }
+      if (metBtn) {
+        const saved = localStorage.getItem("rhythm.met") === "1";
+        window.__rhythmMet = saved;
+        metBtn.setAttribute("data-on", saved ? "1" : "0");
+        metBtn.textContent = `Metronome: ${saved ? "ON" : "OFF"}`;
+        metBtn.addEventListener("click", () => {
+          window.__rhythmMet = !window.__rhythmMet;
+          localStorage.setItem("rhythm.met", window.__rhythmMet ? "1" : "0");
+          metBtn.setAttribute("data-on", window.__rhythmMet ? "1" : "0");
+          metBtn.textContent = `Metronome: ${
+            window.__rhythmMet ? "ON" : "OFF"
+          }`;
+          try {
+            SFX.play("ui.change");
+          } catch (_) {}
+        });
+      }
       if (timedBtn) {
         timedBtn.addEventListener("click", () => {
           const on = timedBtn.getAttribute("data-on") !== "1";
           timedBtn.setAttribute("data-on", on ? "1" : "0");
           timedBtn.textContent = on ? "Timed: ON" : "Timed: OFF";
           localStorage.setItem("jp.widget.timed", on ? "1" : "0");
-          try { SFX.play('ui.change'); } catch (_) {}
+          try {
+            SFX.play("ui.change");
+          } catch (_) {}
         });
         const saved = localStorage.getItem("jp.widget.timed") === "1";
         timedBtn.setAttribute("data-on", saved ? "1" : "0");
         timedBtn.textContent = saved ? "Timed: ON" : "Timed: OFF";
       }
-      // Rotate a singing Miku in the HUD
-      (function initSinger(){
-        function pickSinger(){
-          if (!singerImg) return;
-          const ready = Array.isArray(MIKU_IMAGES) && MIKU_IMAGES.length > 0;
-          const setRand = () => {
-            const url = MIKU_IMAGES[Math.floor(Math.random()*MIKU_IMAGES.length)];
-            if (url) singerImg.src = url;
-          };
-          if (ready) setRand(); else document.addEventListener('miku-images-ready', setRand, { once: true });
-          const id = setInterval(() => setRand(), 6000);
-          GLOBAL_TIMERS.addInterval(id);
-        }
-        pickSinger();
+      // HUD singer image reflects selected singer from MikuDex (no rotation)
+      (function initSinger() {
+        if (!singerImg) return;
+        applySingerTo("#hudSingerImg");
+        singerImg.style.cursor = "pointer";
+        singerImg.title = "Click to choose singer";
+        singerImg.addEventListener("click", () => {
+          try {
+            document.querySelector('[data-section="games"]').click();
+          } catch (_) {}
+          const btn = document.getElementById("gachaCollectionBtn");
+          if (btn) btn.click();
+        });
       })();
     })();
 
@@ -1291,8 +1977,14 @@ document.addEventListener("DOMContentLoaded", () => {
       HUD.counts = { COOL: 0, GREAT: 0, FINE: 0, SAD: 0, MISS: 0 };
       HUD.start = Date.now();
       HUD.game = game;
-      HUD.lives = Math.max(3, HUD.lives);
-      HUD.lives = clamp(HUD.lives, 3, HUD.maxLives);
+      // Scale starting lives by difficulty (easy more, hard fewer)
+      try {
+        const d = typeof getJpDifficulty === "function" ? getJpDifficulty() : 3;
+        const base = d <= 2 ? 5 : d <= 4 ? 4 : d <= 7 ? 3 : 2;
+        HUD.lives = clamp(base, 1, HUD.maxLives);
+      } catch (_) {
+        HUD.lives = clamp(Math.max(3, HUD.lives), 3, HUD.maxLives);
+      }
       renderLives("vocabCard");
       renderLives("kanjiCard");
       // Route to selected game and set mode/timed
@@ -1341,7 +2033,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ov.querySelector("#resReason").textContent = reason || "Song Clear";
       ov.querySelector("#resScore").textContent = String(HUD.score);
       ov.querySelector("#resMaxCombo").textContent = String(HUD.maxCombo);
-      ov.querySelector("#resTime").textContent = /*html*/`${dur}s`;
+      ov.querySelector("#resTime").textContent = /*html*/ `${dur}s`;
       ov.querySelector("#resCool").textContent = String(HUD.counts.COOL);
       ov.querySelector("#resGreat").textContent = String(HUD.counts.GREAT);
       ov.querySelector("#resFine").textContent = String(HUD.counts.FINE);
@@ -1350,13 +2042,19 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       const rank = gradeFromStats();
       ov.querySelector("#resRank").textContent = rank;
+      const panel = ov.querySelector(".result-panel");
+      if (panel) {
+        panel.classList.remove("win", "gamer");
+        if (rank === "S" || rank === "A") panel.classList.add("win");
+        else if (rank === "B") panel.classList.add("gamer");
+      }
       // Result voice line based on performance
       try {
-        if (rank === 'S') SFX.play('result.perfect');
-        else if (rank === 'A') SFX.play('result.great');
-        else if (rank === 'B') SFX.play('result.standard');
-        else if (rank === 'C') SFX.play('result.cheap');
-        else SFX.play('result.miss');
+        if (rank === "S") SFX.play("result.perfect");
+        else if (rank === "A") SFX.play("result.great");
+        else if (rank === "B") SFX.play("result.standard");
+        else if (rank === "C") SFX.play("result.cheap");
+        else SFX.play("result.miss");
       } catch (_) {}
       ov.style.display = "flex";
     }
@@ -1366,7 +2064,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ov = document.createElement("div");
       ov.id = "resultOverlay";
       ov.className = "result-overlay";
-      ov.innerHTML = /*html*/`
+      ov.innerHTML = /*html*/ `
         <div class="result-panel">
           <div class="result-rings">
             <div class="ring" style="width:120px;height:120px;left:calc(50% - 60px);top:-20px"></div>
@@ -1395,14 +2093,19 @@ document.addEventListener("DOMContentLoaded", () => {
       if (card.querySelector(".diva-hud")) return;
       const wrap = document.createElement("div");
       wrap.className = "diva-hud";
-      wrap.innerHTML = /*html*/`
+      wrap.innerHTML = /*html*/ `
         <div class="diva-voltage"><div class="fill" id="${cardId}-voltage"></div></div>
         <div class="diva-judge" id="${cardId}-judge"></div>
         <div class="diva-lives" id="${cardId}-lives"></div>
+        <img class="singer-badge" id="${cardId}-singer" alt="Singer" style="width:28px;height:28px;object-fit:cover;border-radius:50%;border:2px solid var(--border);background:#fff" />
       `;
       card.insertBefore(wrap, card.firstChild);
       renderLives(cardId);
       updateVoltage(cardId);
+      // set singer avatar
+      try {
+        applySingerTo(`#${cardId}-singer`);
+      } catch (_) {}
     }
     function renderLives(cardId) {
       const el = document.getElementById(`${cardId}-lives`);
@@ -1419,12 +2122,12 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateVoltage(cardId) {
       const el = document.getElementById(`${cardId}-voltage`);
       if (!el) return;
-      el.style.width = /*html*/`${clamp(HUD.voltage, 0, 100)}%`;
+      el.style.width = /*html*/ `${clamp(HUD.voltage, 0, 100)}%`;
     }
     function flashJudge(cardId, label) {
       const el = document.getElementById(`${cardId}-judge`);
       if (!el) return;
-      el.className = /*html*/`diva-judge judge-${label}`;
+      el.className = /*html*/ `diva-judge judge-${label}`;
       el.textContent = label;
     }
     function party(cardId) {
@@ -1462,10 +2165,36 @@ document.addEventListener("DOMContentLoaded", () => {
     function addCombo(cardId) {
       HUD.combo++;
       HUD.maxCombo = Math.max(HUD.maxCombo, HUD.combo);
-      if (HUD.combo > 0 && HUD.combo % 10 === 0) gainLife(cardId);
+      if (HUD.combo > 0 && HUD.combo % 10 === 0) {
+        gainLife(cardId);
+        showVoltageBurst(cardId);
+      }
     }
     function resetCombo() {
       HUD.combo = 0;
+    }
+
+    function showVoltageBurst(cardId) {
+      const card = document.getElementById(cardId);
+      if (!card || card.querySelector(".voltage-burst")) return;
+      const b = document.createElement("div");
+      b.className = "voltage-burst";
+      b.style.cssText =
+        "position:absolute;right:10px;top:10px;background:#fff;border:3px solid var(--border);border-radius:12px;padding:10px;font-weight:900;box-shadow:var(--shadow);z-index:5;cursor:pointer";
+      b.innerHTML = "Voltage Burst! Tap for bonus 💖";
+      card.style.position = "relative";
+      card.appendChild(b);
+      const grant = () => {
+        awardHearts(3);
+        try {
+          SFX.play("ui.scoreTally");
+        } catch (_) {}
+        b.remove();
+      };
+      b.addEventListener("click", grant);
+      setTimeout(() => {
+        if (b && b.parentNode) b.parentNode.removeChild(b);
+      }, 5000);
     }
 
     // In-memory caches and session state (online-only)
@@ -1486,7 +2215,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (r.ok) return await r.json();
       } catch (_) {}
       try {
-        const prox = /*html*/`https://api.allorigins.win/raw?url=${encodeURIComponent(
+        const prox = /*html*/ `https://api.allorigins.win/raw?url=${encodeURIComponent(
           url
         )}`;
         const r2 = await fetch(prox, { cache: "no-store" });
@@ -1496,7 +2225,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function primeVocabPage(page) {
-      const url = /*html*/`https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`;
+      const url = /*html*/ `https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`;
       const j = await fetchJsonWithProxy(url);
       const arr = Array.isArray(j?.data) ? j.data : [];
       if (!arr.length) return [];
@@ -1582,7 +2311,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (direction === "jp-en") {
           const correct = en.trim();
           const decoys = Array.from(
-            new Set(pickN(vocabCache.enDefs, decoyCount * 2, new Set([correct])))
+            new Set(
+              pickN(vocabCache.enDefs, decoyCount * 2, new Set([correct]))
+            )
           )
             .filter((x) => x !== correct)
             .slice(0, decoyCount);
@@ -1602,7 +2333,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const surface = (jp || reading).trim();
           const correct = surface;
           const decoys = Array.from(
-            new Set(pickN(vocabCache.jpSurfaces, decoyCount * 2, new Set([correct])))
+            new Set(
+              pickN(vocabCache.jpSurfaces, decoyCount * 2, new Set([correct]))
+            )
           )
             .filter((x) => x !== correct)
             .slice(0, decoyCount);
@@ -1663,7 +2396,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (mode === "meaning") {
           const correct = k;
           const pool = list.filter((x) => x !== k);
-          const decoys = pickN(pool, decoyCount * 2, new Set([correct])).slice(0, decoyCount);
+          const decoys = pickN(pool, decoyCount * 2, new Set([correct])).slice(
+            0,
+            decoyCount
+          );
           if (decoys.length < decoyCount) continue;
           pushRecent(recentKanji, k);
           return {
@@ -1705,15 +2441,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // SFX wrappers using asset library
-    function sfxOk() { try { SFX.play("quiz.ok"); } catch (_) {} }
-    function sfxBad() { try { SFX.play("quiz.bad"); } catch (_) {} }
-    function sfxTime() { try { SFX.play("quiz.tick"); } catch (_) {} }
-    function sfxHeartClick() { try { SFX.play("hearts.click"); } catch (_) {} }
-    function sfxHeartAdd(amount = 1) {
-      try { SFX.play("hearts.add"); } catch (_) {}
+    function sfxOk() {
+      try {
+        SFX.play("quiz.ok");
+      } catch (_) {}
     }
-    function sfxRoll() { try { SFX.play("gacha.roll"); } catch (_) {} }
-    function sfxPop() { try { SFX.play("gacha.pop"); } catch (_) {} }
+    function sfxBad() {
+      try {
+        SFX.play("quiz.bad");
+      } catch (_) {}
+    }
+    function sfxTime() {
+      try {
+        SFX.play("quiz.tick");
+      } catch (_) {}
+    }
+    function sfxHeartClick() {
+      try {
+        SFX.play("hearts.click");
+      } catch (_) {}
+    }
+    function sfxHeartAdd(amount = 1) {
+      try {
+        SFX.play("hearts.add");
+      } catch (_) {}
+    }
+    function sfxRoll() {
+      try {
+        SFX.play("gacha.roll");
+      } catch (_) {}
+    }
+    function sfxPop() {
+      try {
+        SFX.play("gacha.pop");
+      } catch (_) {}
+    }
     function sfxFanfare(rarity = 4) {
       try {
         if (rarity >= 5) SFX.play("gacha.high");
@@ -1742,11 +2504,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const streakEl = document.getElementById("vocabStreak");
       const bestStreakEl = document.getElementById("vocabBestStreak");
       const bestTimeEl = document.getElementById("vocabBestTime");
-      const overlay = document.getElementById("vocabOverlay");
-      const modeBtn = document.getElementById("vocabModeBtn");
-      const startBtn = document.getElementById("vocabStart");
+      // Removed Start button: auto-start when a mode is selected
       const timedTgl = document.getElementById("vocabTimedToggle");
-      const optionBtns = overlay.querySelectorAll(".mode-option");
+      const optionBtns = document.querySelectorAll("#vocabMeta .mode-option");
       let score = 0,
         lock = false;
       let direction = localStorage.getItem("vocab.direction") || "jp-en";
@@ -1762,14 +2522,25 @@ document.addEventListener("DOMContentLoaded", () => {
         tId = null,
         startAt = 0;
 
-      // Mode overlay (hidden until used)
+      // Inline mode controls
       let chosenMode = direction;
-      overlay.style.display = "none";
+      function beginVocab() {
+        direction = chosenMode || "jp-en";
+        localStorage.setItem("vocab.direction", direction);
+        localStorage.setItem("vocab.timed", timed ? "1" : "0");
+        timerWrap.style.display = timed ? "inline-flex" : "none";
+        load();
+      }
       optionBtns.forEach((b) => {
         b.addEventListener("click", () => {
           chosenMode = b.getAttribute("data-mode");
           optionBtns.forEach((x) => x.classList.remove("active"));
           b.classList.add("active");
+          // Auto-start on first mode selection
+          try {
+            SFX.play("ui.select");
+          } catch (_) {}
+          beginVocab();
         });
       });
       if (timed)
@@ -1780,14 +2551,13 @@ document.addEventListener("DOMContentLoaded", () => {
         timedTgl.setAttribute("data-on", timed ? "1" : "0");
         timedTgl.textContent = timed ? "Timed: ON" : "Timed: OFF";
       });
-      startBtn.addEventListener("click", () => {
-        direction = chosenMode || "jp-en";
-        localStorage.setItem("vocab.direction", direction);
-        localStorage.setItem("vocab.timed", timed ? "1" : "0");
-        timerWrap.style.display = timed ? "inline-flex" : "none";
-        overlay.style.display = "none";
-        load();
-      });
+      // Expose a stop hook for navigation cleanup
+      window.__vocabStop = () => {
+        try {
+          if (tId) clearInterval(tId);
+        } catch (_) {}
+        tId = null;
+      };
       document.addEventListener("vocab-start", (ev) => {
         const d = ev.detail || {};
         direction = d.direction === "en-jp" ? "en-jp" : "jp-en";
@@ -1795,11 +2565,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("vocab.direction", direction);
         localStorage.setItem("vocab.timed", timed ? "1" : "0");
         timerWrap.style.display = timed ? "inline-flex" : "none";
-        overlay.style.display = "none";
         load();
-      });
-      modeBtn.addEventListener("click", () => {
-        overlay.style.display = "flex";
       });
       timerWrap.style.display = timed ? "inline-flex" : "none";
       bestStreakEl.textContent = String(bestStreak);
@@ -1807,6 +2573,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ? `${(bestTime / 1000).toFixed(1)}s`
         : "-";
       attachDivaHud("vocabCard");
+      attachRhythmLite("vocabCard");
 
       async function load() {
         lock = false;
@@ -1831,9 +2598,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 clearInterval(tId);
                 tId = null;
                 lock = true;
-                fb.textContent = /*html*/`⏰ Time! Correct: ${correct}`;
+                fb.textContent = /*html*/ `⏰ Time! Correct: ${correct}`;
                 fb.style.color = "#c00";
-                sfxTime();
+                try {
+                  SFX.play("quiz.timeup");
+                } catch (_) {}
                 streak = 0;
                 streakEl.textContent = String(streak);
                 HUD.counts.MISS++;
@@ -1861,16 +2630,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 fb.style.color = "#2b2b44";
                 score++;
                 scoreEl.textContent = String(score);
-                addHearts(1);
+                awardHearts(1);
                 sfxOk();
                 // streaks/xp
                 streak++;
                 streakEl.textContent = String(streak);
                 if (streak > 1) loveToast(`コンボ x${streak}!`);
                 const { mult } = diffParams();
-                const gain = (12 + Math.min(15, (streak - 1) * 2)) * mult;
+                const gain =
+                  (12 + Math.min(15, (streak - 1) * 2)) *
+                  mult *
+                  getRhythmMult();
                 addXP(Math.round(gain));
-                if (streak > 0 && streak % 5 === 0) addHearts(1);
+                if (streak > 0 && streak % 5 === 0) awardHearts(1);
                 const dt = Date.now() - startAt;
                 let judge = "FINE",
                   v = 2,
@@ -1892,9 +2664,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 flashJudge("vocabCard", judge);
                 addVoltage(v, "vocabCard");
                 addCombo("vocabCard");
-                HUD.score += Math.round(sc * mult);
+                HUD.score += Math.round(sc * mult * getRhythmMult());
               } else {
-                fb.textContent = /*html*/`❌ ${correct}`;
+                fb.textContent = /*html*/ `❌ ${correct}`;
                 fb.style.color = "#c00";
                 sfxBad();
                 streak = 0;
@@ -1910,7 +2682,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!bestTime || elapsed < bestTime) {
                   bestTime = elapsed;
                   localStorage.setItem("vocab.bestTime", String(bestTime));
-                  bestTimeEl.textContent = /*html*/`${(bestTime / 1000).toFixed(1)}s`;
+                  bestTimeEl.textContent = /*html*/ `${(
+                    bestTime / 1000
+                  ).toFixed(1)}s`;
                 }
               }
               setTimeout(load, 900);
@@ -1936,11 +2710,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const streakEl = document.getElementById("kanjiStreak");
       const bestStreakEl = document.getElementById("kanjiBestStreak");
       const bestTimeEl = document.getElementById("kanjiBestTime");
-      const overlay = document.getElementById("kanjiOverlay");
-      const modeBtn = document.getElementById("kanjiModeBtn");
-      const startBtn = document.getElementById("kanjiStart");
+      // Removed Start button: auto-start when a mode is selected
       const timedTgl = document.getElementById("kanjiTimedToggle");
-      const optionBtns = overlay.querySelectorAll(".mode-option");
+      const optionBtns = document.querySelectorAll("#kanjiMeta .mode-option");
       let score = 0,
         lock = false;
       let mode = localStorage.getItem("kanji.mode") || "meaning";
@@ -1956,14 +2728,25 @@ document.addEventListener("DOMContentLoaded", () => {
         tId = null,
         startAt = 0;
 
-      // Mode overlay (hidden until used)
+      // Inline mode controls
       let chosenMode = mode;
-      overlay.style.display = "none";
+      function beginKanji() {
+        mode = chosenMode || "meaning";
+        localStorage.setItem("kanji.mode", mode);
+        localStorage.setItem("kanji.timed", timed ? "1" : "0");
+        timerWrap.style.display = timed ? "inline-flex" : "none";
+        load();
+      }
       optionBtns.forEach((b) => {
         b.addEventListener("click", () => {
           chosenMode = b.getAttribute("data-mode");
           optionBtns.forEach((x) => x.classList.remove("active"));
           b.classList.add("active");
+          // Auto-start on first mode selection
+          try {
+            SFX.play("ui.select");
+          } catch (_) {}
+          beginKanji();
         });
       });
       if (timed)
@@ -1974,14 +2757,13 @@ document.addEventListener("DOMContentLoaded", () => {
         timedTgl.setAttribute("data-on", timed ? "1" : "0");
         timedTgl.textContent = timed ? "Timed: ON" : "Timed: OFF";
       });
-      startBtn.addEventListener("click", () => {
-        mode = chosenMode || "meaning";
-        localStorage.setItem("kanji.mode", mode);
-        localStorage.setItem("kanji.timed", timed ? "1" : "0");
-        timerWrap.style.display = timed ? "inline-flex" : "none";
-        overlay.style.display = "none";
-        load();
-      });
+      // Expose a stop hook for navigation cleanup
+      window.__kanjiStop = () => {
+        try {
+          if (tId) clearInterval(tId);
+        } catch (_) {}
+        tId = null;
+      };
       document.addEventListener("kanji-start", (ev) => {
         const d = ev.detail || {};
         mode = d.mode === "reading" ? "reading" : "meaning";
@@ -1989,11 +2771,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("kanji.mode", mode);
         localStorage.setItem("kanji.timed", timed ? "1" : "0");
         timerWrap.style.display = timed ? "inline-flex" : "none";
-        overlay.style.display = "none";
         load();
-      });
-      modeBtn.addEventListener("click", () => {
-        overlay.style.display = "flex";
       });
       timerWrap.style.display = timed ? "inline-flex" : "none";
       bestStreakEl.textContent = String(bestStreak);
@@ -2001,6 +2779,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ? `${(bestTime / 1000).toFixed(1)}s`
         : "-";
       attachDivaHud("kanjiCard");
+      attachRhythmLite("kanjiCard");
 
       async function load() {
         lock = false;
@@ -2025,9 +2804,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 clearInterval(tId);
                 tId = null;
                 lock = true;
-                fb.textContent = /*html*/`⏰ Time! Correct: ${correct}`;
+                fb.textContent = /*html*/ `⏰ Time! Correct: ${correct}`;
                 fb.style.color = "#c00";
-                sfxTime();
+                try {
+                  SFX.play("quiz.timeup");
+                } catch (_) {}
                 streak = 0;
                 streakEl.textContent = String(streak);
                 HUD.counts.MISS++;
@@ -2055,7 +2836,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 fb.style.color = "#2b2b44";
                 score++;
                 scoreEl.textContent = String(score);
-                addHearts(1);
+                awardHearts(1);
                 sfxOk();
                 streak++;
                 streakEl.textContent = String(streak);
@@ -2067,17 +2848,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 const { mult } = diffParams();
                 const gainBase = mode === "reading" ? 16 : 12;
-                const gain = (gainBase + Math.min(15, (streak - 1) * 2)) * mult;
+                const gain =
+                  (gainBase + Math.min(15, (streak - 1) * 2)) *
+                  mult *
+                  getRhythmMult();
                 addXP(Math.round(gain));
                 if (timed) {
                   const elapsed = Date.now() - startAt;
                   if (!bestTime || elapsed < bestTime) {
                     bestTime = elapsed;
                     localStorage.setItem("kanji.bestTime", String(bestTime));
-                    bestTimeEl.textContent = /*html*/`${(bestTime / 1000).toFixed(1)}s`;
+                    bestTimeEl.textContent = /*html*/ `${(
+                      bestTime / 1000
+                    ).toFixed(1)}s`;
                   }
                 }
-                if (streak > 0 && streak % 5 === 0) addHearts(1);
+                if (streak > 0 && streak % 5 === 0) awardHearts(1);
                 const dt = Date.now() - startAt;
                 let judge = "FINE",
                   v = 2,
@@ -2100,9 +2886,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 addVoltage(v, "kanjiCard");
                 addCombo("kanjiCard");
                 const { mult: km } = diffParams();
-                HUD.score += Math.round(sc * km);
+                HUD.score += Math.round(sc * km * getRhythmMult());
               } else {
-                fb.textContent = /*html*/`❌ ${correct}`;
+                fb.textContent = /*html*/ `❌ ${correct}`;
                 fb.style.color = "#c00";
                 sfxBad();
                 streak = 0;
@@ -2137,7 +2923,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       function say(text, from = "miku") {
         const b = document.createElement("div");
-        b.style.cssText = /*html*/`padding:8px 12px; border-radius:12px; max-width:88%; box-shadow: var(--shadow);`;
+        b.style.cssText = /*html*/ `padding:8px 12px; border-radius:12px; max-width:88%; box-shadow: var(--shadow);`;
         if (from === "miku") {
           b.style.background = "linear-gradient(45deg, #BDE3FF, #CFF6E6)";
           b.style.alignSelf = "flex-start";
@@ -2184,8 +2970,39 @@ document.addEventListener("DOMContentLoaded", () => {
             cEl.appendChild(b);
           });
         } catch (_) {
-          cEl.innerHTML =
-            '<div style="opacity:.8">⚠️ Could not load. Try again.</div>';
+          // Offline fallback
+          const fallback = {
+            promptHtml:
+              '<div style="font-size:22px;font-weight:900">こんにちは</div>',
+            correct: "hello",
+            options: shuffle(["hello", "goodbye", "thank you", "please"]),
+          };
+          const q = fallback;
+          const correct = q.correct;
+          chat.innerHTML = "";
+          say(`「こんにちは」って、どういう意味？`);
+          q.options.forEach((opt) => {
+            const b = document.createElement("button");
+            b.className = "pixel-btn";
+            b.textContent = opt;
+            b.style.padding = "8px";
+            b.addEventListener("click", () => {
+              if (lock) return;
+              lock = true;
+              if (opt === correct) {
+                say("正解だよ！");
+                sfxOk();
+                score++;
+                scoreEl.textContent = String(score);
+                addXP(6);
+              } else {
+                say(`残念！正解は「${correct}」`);
+                sfxBad();
+              }
+              setTimeout(round, 900);
+            });
+            cEl.appendChild(b);
+          });
         }
       }
       start.addEventListener("click", () => {
@@ -2222,7 +3039,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (C.images?.headerBg) {
         const header = document.getElementById("header");
         if (header)
-          header.style.backgroundImage = /*html*/`linear-gradient(135deg, rgba(189,227,255,.9), rgba(255,209,236,.9)), url('${C.images.headerBg}')`;
+          header.style.backgroundImage = /*html*/ `linear-gradient(135deg, rgba(189,227,255,.9), rgba(255,209,236,.9)), url('${C.images.headerBg}')`;
       }
 
       // Splash/hero/shrine images
@@ -2306,25 +3123,19 @@ document.addEventListener("DOMContentLoaded", () => {
               ? mikuIcon(n.mikuIcon, n.emoji || "")
               : n.emoji || "";
             // displayIcon variable was introduced in socials only; use local icon here
-            a.innerHTML = /*html*/`${icon} ${n.label}`;
+            a.innerHTML = /*html*/ `${icon} ${n.label}`;
           }
         });
       }
 
-      // Status now-playing placeholder if empty
-      const nowPlaying = document.getElementById("nowPlaying");
-      if (
-        nowPlaying &&
-        !localStorage.getItem("pixelbelle-now-playing") &&
-        C.status?.nowPlayingPlaceholder
-      ) {
-        nowPlaying.textContent = C.status.nowPlayingPlaceholder;
-      }
+      // (Removed old nowPlaying placeholder: using radioStatus/radioDisplayStatus instead)
       // Status labels
       const onlineStatus = document.getElementById("onlineStatus");
       if (onlineStatus && C.status?.onlineLabel) {
-        const statusIcon = C.status.statusIcon ? mikuIcon(C.status.statusIcon, "") : "";
-        onlineStatus.innerHTML = /*html*/`${statusIcon}${C.status.onlineLabel}`;
+        const statusIcon = C.status.statusIcon
+          ? mikuIcon(C.status.statusIcon, "")
+          : "";
+        onlineStatus.innerHTML = /*html*/ `${statusIcon}${C.status.onlineLabel}`;
       }
       const heartCountLbl = document.querySelector(".status-item:nth-child(3)");
       if (heartCountLbl && C.status?.heartsLabel) {
@@ -2334,7 +3145,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ? mikuIcon(C.status.heartIcon, "💖")
             : "💖";
           span.previousSibling &&
-            (span.previousSibling.innerHTML = /*html*/` ${heartIcon} ${C.status.heartsLabel} `);
+            (span.previousSibling.innerHTML = /*html*/ ` ${heartIcon} ${C.status.heartsLabel} `);
         }
       }
 
@@ -2348,7 +3159,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .map((line, idx, arr) => {
               // Add love letter icon to the final line
               if (idx === arr.length - 1) {
-                const ll = mikuIcon('loveLetter', '💌');
+                const ll = mikuIcon("loveLetter", "💌");
                 return `${line} ${ll}`;
               }
               return line;
@@ -2360,58 +3171,78 @@ document.addEventListener("DOMContentLoaded", () => {
           const heartIcon = C.home.heartButtonIcon
             ? mikuIcon(C.home.heartButtonIcon, "💖")
             : "💖";
-          heartBtn.innerHTML = /*html*/`${heartIcon} ${C.home.heartButton}`;
+          heartBtn.innerHTML = /*html*/ `${heartIcon} ${C.home.heartButton}`;
         }
 
         // Rebuild the grid with unified presentation system
         const grid = document.querySelector("#home .content-grid");
         if (grid) {
           // Check if we have the new presentation slides
-          if (C.home.presentationSlides && C.home.presentationSlides.length > 0) {
-            const presentationIcon = C.home.presentationIcon ? mikuIcon(C.home.presentationIcon, "✨") : "✨";
-            const presentationTitle = C.home.presentationTitle || "Getting to Know Baby Belle";
-            
+          if (
+            C.home.presentationSlides &&
+            C.home.presentationSlides.length > 0
+          ) {
+            const presentationIcon = C.home.presentationIcon
+              ? mikuIcon(C.home.presentationIcon, "✨")
+              : "✨";
+            const presentationTitle =
+              C.home.presentationTitle || "Getting to Know Baby Belle";
+
             // Build unified presentation
-            const slidesHtml = C.home.presentationSlides.map((slide, index) => {
-              const titleIcon = slide.titleIcon ? mikuIcon(slide.titleIcon, "") : "";
-              const decorativeIconsHtml = slide.decorativeIcons
-                ? slide.decorativeIcons.map(iconName => mikuIcon(iconName, "")).join("")
-                : "";
-              
-              return `
-                <div class="presentation-slide ${index === 0 ? 'active' : ''}" 
+            const slidesHtml = C.home.presentationSlides
+              .map((slide, index) => {
+                const titleIcon = slide.titleIcon
+                  ? mikuIcon(slide.titleIcon, "")
+                  : "";
+                const decorativeIconsHtml = slide.decorativeIcons
+                  ? slide.decorativeIcons
+                      .map((iconName) => mikuIcon(iconName, ""))
+                      .join("")
+                  : "";
+
+                return `
+                <div class="presentation-slide ${index === 0 ? "active" : ""}" 
                      data-slide="${index}" 
-                     data-theme="${slide.theme || 'default'}">
+                     data-theme="${slide.theme || "default"}">
                   <div class="slide-header">
                     <h3>${titleIcon}${slide.title}</h3>
                     <div class="slide-decorations">${decorativeIconsHtml}</div>
                   </div>
                   <div class="slide-content">
-                    ${slide.content.map(line => line ? `<p>${line}</p>` : '<br>').join('')}
+                    ${slide.content
+                      .map((line) => (line ? `<p>${line}</p>` : "<br>"))
+                      .join("")}
                   </div>
-                  <div class="slide-number">${index + 1} / ${C.home.presentationSlides.length}</div>
+                  <div class="slide-number">${index + 1} / ${
+                  C.home.presentationSlides.length
+                }</div>
                 </div>
               `;
-            }).join("");
-            
-            grid.innerHTML = /*html*/`
+              })
+              .join("");
+
+            grid.innerHTML = /*html*/ `
               <div class="belle-presentation">
                 <div class="presentation-header">
                   <h2>${presentationIcon}${presentationTitle}</h2>
                   <div class="presentation-controls">
                     <button class="presentation-btn prev-slide" data-direction="prev">
-                      ${mikuIcon('wallHide', '◀')} Previous
+                      ${mikuIcon("wallHide", "◀")} Previous
                     </button>
                     <div class="slide-indicator">
-                      <span class="current-slide">1</span> / ${C.home.presentationSlides.length}
+                      <span class="current-slide">1</span> / ${
+                        C.home.presentationSlides.length
+                      }
                     </div>
                     <button class="presentation-btn next-slide" data-direction="next">
-                      Next ${mikuIcon('cheering', '▶')}
+                      Next ${mikuIcon("cheering", "▶")}
                     </button>
                   </div>
                   <div class="presentation-progress">
                     <div class="progress-bar">
-                      <div class="progress-fill" style="width: ${100/C.home.presentationSlides.length}%"></div>
+                      <div class="progress-fill" style="width: ${
+                        100 / C.home.presentationSlides.length
+                      }%"></div>
                     </div>
                   </div>
                 </div>
@@ -2421,7 +3252,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="floating-decorations"></div>
               </div>
             `;
-            
+
             // Initialize the enhanced presentation system
             initBellePresentation();
           } else {
@@ -2440,64 +3271,99 @@ document.addEventListener("DOMContentLoaded", () => {
                 return `<li>${dreamIcon}${li}</li>`;
               })
               .join("");
-            
+
             // Build paginated about content
-            const aboutPages = C.home.aboutPages || [C.home.aboutParagraphs || []];
-            const aboutPageHtml = aboutPages.map((page, index) => 
-              `<div class="card-page ${index === 0 ? 'active' : ''}" data-page="${index}">
+            const aboutPages = C.home.aboutPages || [
+              C.home.aboutParagraphs || [],
+            ];
+            const aboutPageHtml = aboutPages
+              .map(
+                (page, index) =>
+                  `<div class="card-page ${
+                    index === 0 ? "active" : ""
+                  }" data-page="${index}">
                 ${page.map((txt) => `<p>${txt}</p>`).join("")}
               </div>`
-            ).join("");
+              )
+              .join("");
 
             // Build paginated dislikes content
-            const dislikesPages = C.home.dislikesPages || [C.home.dislikes || []];
-            const dislikesPageHtml = dislikesPages.map((page, index) =>
-              `<div class="card-page ${index === 0 ? 'active' : ''}" data-page="${index}">
+            const dislikesPages = C.home.dislikesPages || [
+              C.home.dislikes || [],
+            ];
+            const dislikesPageHtml = dislikesPages
+              .map(
+                (page, index) =>
+                  `<div class="card-page ${
+                    index === 0 ? "active" : ""
+                  }" data-page="${index}">
                 <ul>${page.map((item) => `<li>${item}</li>`).join("")}</ul>
               </div>`
-            ).join("");
+              )
+              .join("");
 
             // Build paginated dreams content
             const dreamsPages = C.home.dreamsPages || [C.home.dreams || []];
-            const dreamsPageHtml = dreamsPages.map((page, index) =>
-              `<div class="card-page ${index === 0 ? 'active' : ''}" data-page="${index}">
-                <ul>${page.map((item, idx) => {
-                  const dreamIcon = C.home.dreamItemIcons?.[idx] ? mikuIcon(C.home.dreamItemIcons[idx], "") : "";
-                  return `<li>${dreamIcon}${item}</li>`;
-                }).join("")}</ul>
+            const dreamsPageHtml = dreamsPages
+              .map(
+                (page, index) =>
+                  `<div class="card-page ${
+                    index === 0 ? "active" : ""
+                  }" data-page="${index}">
+                <ul>${page
+                  .map((item, idx) => {
+                    const dreamIcon = C.home.dreamItemIcons?.[idx]
+                      ? mikuIcon(C.home.dreamItemIcons[idx], "")
+                      : "";
+                    return `<li>${dreamIcon}${item}</li>`;
+                  })
+                  .join("")}</ul>
               </div>`
-            ).join("");
+              )
+              .join("");
 
             const pieces = [];
             const aboutTitleIcon = C.home.aboutIcon
               ? mikuIcon(C.home.aboutIcon, "")
               : "";
-            const aboutTitle = /*html*/`${aboutTitleIcon}${
+            const aboutTitle = /*html*/ `${aboutTitleIcon}${
               C.home.aboutTitle || "About Me"
             }`;
-            
+
             // About card with pagination
             pieces.push(`
               <div class="card paginated-card" data-card="about">
                 <div class="card-header">
                   <h3>${aboutTitle}</h3>
-                  ${aboutPages.length > 1 ? `
+                  ${
+                    aboutPages.length > 1
+                      ? `
                     <div class="card-nav">
-                      <button class="card-nav-btn prev-btn" data-direction="prev">${mikuIcon('wallHide', '←')}</button>
+                      <button class="card-nav-btn prev-btn" data-direction="prev">${mikuIcon(
+                        "wallHide",
+                        "←"
+                      )}</button>
                       <span class="page-indicator">1/${aboutPages.length}</span>
-                      <button class="card-nav-btn next-btn" data-direction="next">${mikuIcon('cheering', '→')}</button>
+                      <button class="card-nav-btn next-btn" data-direction="next">${mikuIcon(
+                        "cheering",
+                        "→"
+                      )}</button>
                     </div>
-                  ` : ''}
+                  `
+                      : ""
+                  }
                 </div>
                 <div class="card-content">
                   ${aboutPageHtml}
                 </div>
               </div>
             `);
-            
+
             // Likes card with icon
             if (likes) {
-              const likesIcon = C.home.likesIcon ? mikuIcon(C.home.likesIcon, "") : "";
+              const likesIcon = C.home.likesIcon
+                ? mikuIcon(C.home.likesIcon, "")
+                : "";
               pieces.push(`
                 <div class="card">
                   <h3>${likesIcon}${C.home.likesTitle || "Likes"}</h3>
@@ -2505,21 +3371,37 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
               `);
             }
-            
+
             // Dislikes card with pagination
             if (C.home.dislikesPages && C.home.dislikesPages.length > 0) {
-              const dislikesIcon = C.home.dislikesIcon ? mikuIcon(C.home.dislikesIcon, "") : "";
+              const dislikesIcon = C.home.dislikesIcon
+                ? mikuIcon(C.home.dislikesIcon, "")
+                : "";
               pieces.push(`
                 <div class="card paginated-card" data-card="dislikes">
                   <div class="card-header">
-                    <h3>${dislikesIcon}${C.home.dislikesTitle || "Dislikes"}</h3>
-                    ${dislikesPages.length > 1 ? `
+                    <h3>${dislikesIcon}${
+                C.home.dislikesTitle || "Dislikes"
+              }</h3>
+                    ${
+                      dislikesPages.length > 1
+                        ? `
                       <div class="card-nav">
-                        <button class="card-nav-btn prev-btn" data-direction="prev">${mikuIcon('wallHide', '←')}</button>
-                        <span class="page-indicator">1/${dislikesPages.length}</span>
-                        <button class="card-nav-btn next-btn" data-direction="next">${mikuIcon('innocent', '→')}</button>
+                        <button class="card-nav-btn prev-btn" data-direction="prev">${mikuIcon(
+                          "wallHide",
+                          "←"
+                        )}</button>
+                        <span class="page-indicator">1/${
+                          dislikesPages.length
+                        }</span>
+                        <button class="card-nav-btn next-btn" data-direction="next">${mikuIcon(
+                          "innocent",
+                          "→"
+                        )}</button>
                       </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
                   </div>
                   <div class="card-content">
                     ${dislikesPageHtml}
@@ -2527,7 +3409,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
               `);
             } else if (dislikes) {
-              const dislikesIcon = C.home.dislikesIcon ? mikuIcon(C.home.dislikesIcon, "") : "";
+              const dislikesIcon = C.home.dislikesIcon
+                ? mikuIcon(C.home.dislikesIcon, "")
+                : "";
               pieces.push(`
                 <div class="card">
                   <h3>${dislikesIcon}${C.home.dislikesTitle || "Dislikes"}</h3>
@@ -2535,22 +3419,38 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
               `);
             }
-            
+
             // Dreams card with pagination
             if (C.home.dreamsPages && C.home.dreamsPages.length > 0) {
-              const dreamsTitleIcon = C.home.dreamsIcon ? mikuIcon(C.home.dreamsIcon, "") : "";
-              const dreamsTitle = /*html*/`${dreamsTitleIcon}${C.home.dreamsTitle || "Dreams"}`;
+              const dreamsTitleIcon = C.home.dreamsIcon
+                ? mikuIcon(C.home.dreamsIcon, "")
+                : "";
+              const dreamsTitle = /*html*/ `${dreamsTitleIcon}${
+                C.home.dreamsTitle || "Dreams"
+              }`;
               pieces.push(`
                 <div class="card paginated-card" data-card="dreams">
                   <div class="card-header">
                     <h3>${dreamsTitle}</h3>
-                    ${dreamsPages.length > 1 ? `
+                    ${
+                      dreamsPages.length > 1
+                        ? `
                       <div class="card-nav">
-                        <button class="card-nav-btn prev-btn" data-direction="prev">${mikuIcon('wallHide', '←')}</button>
-                        <span class="page-indicator">1/${dreamsPages.length}</span>
-                        <button class="card-nav-btn next-btn" data-direction="next">${mikuIcon('starUwu', '→')}</button>
+                        <button class="card-nav-btn prev-btn" data-direction="prev">${mikuIcon(
+                          "wallHide",
+                          "←"
+                        )}</button>
+                        <span class="page-indicator">1/${
+                          dreamsPages.length
+                        }</span>
+                        <button class="card-nav-btn next-btn" data-direction="next">${mikuIcon(
+                          "starUwu",
+                          "→"
+                        )}</button>
                       </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
                   </div>
                   <div class="card-content">
                     ${dreamsPageHtml}
@@ -2558,8 +3458,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
               `);
             } else if (dreams) {
-              const dreamsTitleIcon = C.home.dreamsIcon ? mikuIcon(C.home.dreamsIcon, "") : "";
-              const dreamsTitle = /*html*/`${dreamsTitleIcon}${C.home.dreamsTitle || "Dreams"}`;
+              const dreamsTitleIcon = C.home.dreamsIcon
+                ? mikuIcon(C.home.dreamsIcon, "")
+                : "";
+              const dreamsTitle = /*html*/ `${dreamsTitleIcon}${
+                C.home.dreamsTitle || "Dreams"
+              }`;
               pieces.push(`
                 <div class="card">
                   <h3>${dreamsTitle}</h3>
@@ -2569,7 +3473,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             grid.innerHTML = pieces.join("");
-            
+
             // Initialize card pagination
             initCardPagination();
           }
@@ -2582,7 +3486,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const titleIcon = C.socials.titleIcon
           ? mikuIcon(C.socials.titleIcon, "🔗")
           : "🔗";
-        if (h2) h2.innerHTML = /*html*/`${titleIcon} ${C.socials.title}`;
+        if (h2) h2.innerHTML = /*html*/ `${titleIcon} ${C.socials.title}`;
       }
 
       // Quick Links in left sidebar
@@ -2605,16 +3509,19 @@ document.addEventListener("DOMContentLoaded", () => {
       // Study copy
       if (C.study) {
         const h2 = document.querySelector("#study h2");
-        const studyIcon = C.study.titleIcon ? mikuIcon(C.study.titleIcon, "🎌") : "🎌";
-        if (h2) h2.innerHTML = /*html*/`${studyIcon} ${C.study.title}`;
+        const studyIcon = C.study.titleIcon
+          ? mikuIcon(C.study.titleIcon, "🎌")
+          : "🎌";
+        if (h2) h2.innerHTML = /*html*/ `${studyIcon} ${C.study.title}`;
         // Update HUD Level text/progress if provided by content
         const hudProg = document.getElementById("hudLevelProgress");
         const hudText = document.getElementById("hudLevelText");
         if (hudProg && Number.isFinite(C.study.progressPercent))
-          hudProg.style.width = /*html*/`${C.study.progressPercent}%`;
-        if (hudText && C.study.levelText) hudText.textContent = C.study.levelText;
+          hudProg.style.width = /*html*/ `${C.study.progressPercent}%`;
+        if (hudText && C.study.levelText)
+          hudText.textContent = C.study.levelText;
         const wodCard = document.getElementById("wodCard");
-        const wodInline = document.querySelector('.word-of-day');
+        const wodInline = document.querySelector(".word-of-day");
         if (C.study.wordOfDay) {
           const setWod = (root) => {
             if (!root) return;
@@ -2633,14 +3540,20 @@ document.addEventListener("DOMContentLoaded", () => {
           const h3 = goalsCard.querySelector("h3");
           const ul = goalsCard.querySelector("ul");
           if (h3 && C.study.goalsTitle) {
-            const goalsIcon = C.study.goalsIcon ? mikuIcon(C.study.goalsIcon, "") : "";
-            h3.innerHTML = /*html*/`${goalsIcon}${C.study.goalsTitle}`;
+            const goalsIcon = C.study.goalsIcon
+              ? mikuIcon(C.study.goalsIcon, "")
+              : "";
+            h3.innerHTML = /*html*/ `${goalsIcon}${C.study.goalsTitle}`;
           }
           if (ul && Array.isArray(C.study.goals))
-            ul.innerHTML = C.study.goals.map((g, idx) => {
-              const goalIcon = C.study.goalItemIcons?.[idx] ? mikuIcon(C.study.goalItemIcons[idx], "") : "";
-              return `<li>${goalIcon}${g}</li>`;
-            }).join("");
+            ul.innerHTML = C.study.goals
+              .map((g, idx) => {
+                const goalIcon = C.study.goalItemIcons?.[idx]
+                  ? mikuIcon(C.study.goalItemIcons[idx], "")
+                  : "";
+                return `<li>${goalIcon}${g}</li>`;
+              })
+              .join("");
         }
       }
 
@@ -2658,7 +3571,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const memoryIcon = C.games.memoryIcon
               ? mikuIcon(C.games.memoryIcon, "🧩")
               : "🧩";
-            h3.innerHTML = /*html*/`${memoryIcon} ${C.games.memoryTitle}`;
+            h3.innerHTML = /*html*/ `${memoryIcon} ${C.games.memoryTitle}`;
           }
           const reset = document.getElementById("resetMemory");
           if (reset && C.games.memoryReset)
@@ -2670,14 +3583,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const heartsIcon = C.games.heartsIcon
               ? mikuIcon(C.games.heartsIcon, "💖")
               : "💖";
-            h3.innerHTML = /*html*/`${heartsIcon} ${C.games.heartsTitle}`;
+            h3.innerHTML = /*html*/ `${heartsIcon} ${C.games.heartsTitle}`;
           }
           const zone = document.getElementById("heartZone");
           if (zone && C.games.heartsZone) {
             const zoneIcon = C.games.heartsZoneIcon
               ? mikuIcon(C.games.heartsZoneIcon, "💖")
               : "💖";
-            zone.innerHTML = /*html*/`Click to collect hearts! ${zoneIcon}`;
+            zone.innerHTML = /*html*/ `Click to collect hearts! ${zoneIcon}`;
           }
           const btn = document.getElementById("resetHearts");
           if (btn && C.games.heartsReset) btn.textContent = C.games.heartsReset;
@@ -2688,7 +3601,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const gachaIcon = C.games.gachaIcon
               ? mikuIcon(C.games.gachaIcon, "🎰")
               : "🎰";
-            h3.innerHTML = /*html*/`${gachaIcon} ${C.games.gachaTitle}`;
+            h3.innerHTML = /*html*/ `${gachaIcon} ${C.games.gachaTitle}`;
           }
           const dexBtn = document.getElementById("gachaCollectionBtn");
           if (dexBtn && C.games.gachaOpenDex)
@@ -2703,14 +3616,14 @@ document.addEventListener("DOMContentLoaded", () => {
           const titleIcon = C.shrine.titleIcon
             ? mikuIcon(C.shrine.titleIcon, "⛩️")
             : "⛩️";
-          h2.innerHTML = /*html*/`${titleIcon} ${C.shrine.title}`;
+          h2.innerHTML = /*html*/ `${titleIcon} ${C.shrine.title}`;
         }
         const aboutTitle = document.querySelector("#shrine .shrine-info h3");
         if (aboutTitle && C.shrine.aboutTitle) {
           const aboutIcon = C.shrine.aboutIcon
             ? mikuIcon(C.shrine.aboutIcon, "💙")
             : "💙";
-          aboutTitle.innerHTML = /*html*/`${aboutIcon} ${C.shrine.aboutTitle}`;
+          aboutTitle.innerHTML = /*html*/ `${aboutIcon} ${C.shrine.aboutTitle}`;
         }
         const aboutP = document.querySelector("#shrine .shrine-info p");
         if (aboutP && C.shrine.aboutText)
@@ -2721,10 +3634,64 @@ document.addEventListener("DOMContentLoaded", () => {
         if (listTitle && C.shrine.favoriteSongsTitle)
           listTitle.textContent = C.shrine.favoriteSongsTitle;
         const ul = document.querySelector("#shrine .song-list");
-        if (ul && Array.isArray(C.shrine.favoriteSongs))
-          ul.innerHTML = C.shrine.favoriteSongs
-            .map((s) => `<li>${s}</li>`)
+        if (ul) {
+          // Build a structured favorites list from config
+          const maxN = Number.isFinite(C.shrine.favoriteSongsMax)
+            ? C.shrine.favoriteSongsMax
+            : 999;
+          const rich = Array.isArray(C.shrine.favoriteSongsData)
+            ? C.shrine.favoriteSongsData
+            : [];
+          const simple = Array.isArray(C.shrine.favoriteSongs)
+            ? C.shrine.favoriteSongs
+            : [];
+
+          const items = [];
+          if (rich.length) {
+            for (const r of rich) {
+              if (!r || !r.title) continue;
+              items.push({
+                title: r.title,
+                artist: r.artist || "",
+                videoId: r.youtubeId || "",
+                search:
+                  r.search ||
+                  `${r.title} ${r.artist || "Hatsune Miku"} official`,
+              });
+              if (items.length >= maxN) break;
+            }
+          } else if (simple.length) {
+            for (const s of simple) {
+              if (typeof s !== "string") continue;
+              const parts = s.split(" - ");
+              const title = parts[0] || s;
+              const artist = parts[1] || "Hatsune Miku";
+              items.push({
+                title,
+                artist,
+                videoId: "",
+                search: `${title} ${artist} official`,
+              });
+              if (items.length >= maxN) break;
+            }
+          }
+
+          ul.innerHTML = items
+            .map((it) => {
+              const label = it.artist ? `${it.title} - ${it.artist}` : it.title;
+              const data = [
+                `data-title="${label.replace(/"/g, "&quot;")}"`,
+                it.videoId ? `data-video-id="${it.videoId}"` : "",
+                it.search
+                  ? `data-search="${it.search.replace(/"/g, "&quot;")}"`
+                  : "",
+              ]
+                .filter(Boolean)
+                .join(" ");
+              return `<li class="favorite-song" ${data} style="cursor:pointer">${label}</li>`;
+            })
             .join("");
+        }
         const galTitle = document.querySelector("#shrine .gallery h3");
         if (galTitle && C.shrine.galleryTitle)
           galTitle.textContent = C.shrine.galleryTitle;
@@ -2736,8 +3703,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (friendsListEl) {
           const widget = friendsListEl.closest(".widget");
           const h3 = widget ? widget.querySelector("h3") : null;
-          const friendsIcon = C.friends.titleIcon ? mikuIcon(C.friends.titleIcon, "👥") : "👥";
-          if (h3) h3.innerHTML = /*html*/`${friendsIcon} ${C.friends.title}`;
+          const friendsIcon = C.friends.titleIcon
+            ? mikuIcon(C.friends.titleIcon, "👥")
+            : "👥";
+          if (h3) h3.innerHTML = /*html*/ `${friendsIcon} ${C.friends.title}`;
         }
       }
 
@@ -2747,12 +3716,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const right = C.sidebarTitles.right || {};
 
         // Radio heading
-        const radioWidget = document.querySelector('.radio-widget');
+        const radioWidget = document.querySelector(".radio-widget");
         if (radioWidget && C.radio?.title) {
-          const w = radioWidget.closest('.widget');
-          const h = w ? w.querySelector('h3') : null;
-          const radioIcon = C.radio.titleIcon ? mikuIcon(C.radio.titleIcon, "📻") : "📻";
-          if (h) h.innerHTML = /*html*/`${radioIcon} ${C.radio.title}`;
+          const w = radioWidget.closest(".widget");
+          const h = w ? w.querySelector("h3") : null;
+          const radioIcon = C.radio.titleIcon
+            ? mikuIcon(C.radio.titleIcon, "📻")
+            : "📻";
+          if (h) h.innerHTML = /*html*/ `${radioIcon} ${C.radio.title}`;
         }
 
         // Pet heading
@@ -2761,7 +3732,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const w = petIframe.closest(".widget");
           const h = w ? w.querySelector("h3") : null;
           const petIcon = left.petIcon ? mikuIcon(left.petIcon, "🐾") : "🐾";
-          if (h) h.innerHTML = /*html*/`${petIcon} ${left.pet}`;
+          if (h) h.innerHTML = /*html*/ `${petIcon} ${left.pet}`;
         }
 
         // Friends heading handled above
@@ -2771,22 +3742,26 @@ document.addEventListener("DOMContentLoaded", () => {
         if (statBadge1 && left.stats) {
           const w = statBadge1.closest(".widget");
           const h = w ? w.querySelector("h3") : null;
-          const statsIcon = left.statsIcon ? mikuIcon(left.statsIcon, "🌸") : "🌸";
-          if (h) h.innerHTML = /*html*/`${statsIcon} ${left.stats}`;
-          
+          const statsIcon = left.statsIcon
+            ? mikuIcon(left.statsIcon, "🌸")
+            : "🌸";
+          if (h) h.innerHTML = /*html*/ `${statsIcon} ${left.stats}`;
+
           // Also update visitor counter label with icon
           const visitorLabel = w ? w.querySelector(".counter-label") : null;
           if (visitorLabel && C.status?.visitorIcon) {
             const visitorIcon = mikuIcon(C.status.visitorIcon, "");
-            visitorLabel.innerHTML = /*html*/`${visitorIcon}Visitors:`;
+            visitorLabel.innerHTML = /*html*/ `${visitorIcon}Visitors:`;
           }
         }
 
         // Quick Links title (now on right)
         const quickLinksTitle = document.getElementById("quickLinksTitle");
         if (quickLinksTitle && right.quickLinks) {
-          const quickLinksIcon = right.quickLinksIcon ? mikuIcon(right.quickLinksIcon, "🌟") : "🌟";
-          quickLinksTitle.innerHTML = /*html*/`${quickLinksIcon} ${right.quickLinks}`;
+          const quickLinksIcon = right.quickLinksIcon
+            ? mikuIcon(right.quickLinksIcon, "🌟")
+            : "🌟";
+          quickLinksTitle.innerHTML = /*html*/ `${quickLinksIcon} ${right.quickLinks}`;
         }
 
         // Badges title
@@ -2794,8 +3769,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (webBadges && right.badges) {
           const w = webBadges.closest(".widget");
           const h = w ? w.querySelector("h3") : null;
-          const badgesIcon = right.badgesIcon ? mikuIcon(right.badgesIcon, "💫") : "💫";
-          if (h) h.innerHTML = /*html*/`${badgesIcon} ${right.badges}`;
+          const badgesIcon = right.badgesIcon
+            ? mikuIcon(right.badgesIcon, "💫")
+            : "💫";
+          if (h) h.innerHTML = /*html*/ `${badgesIcon} ${right.badges}`;
         }
 
         // Vibe title
@@ -2803,8 +3780,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (vibeMeter && right.vibe) {
           const w = vibeMeter.closest(".widget");
           const h = w ? w.querySelector("h3") : null;
-          const vibeIcon = right.vibeIcon ? mikuIcon(right.vibeIcon, "📊") : "📊";
-          if (h) h.innerHTML = /*html*/`${vibeIcon} ${right.vibe}`;
+          const vibeIcon = right.vibeIcon
+            ? mikuIcon(right.vibeIcon, "📊")
+            : "📊";
+          if (h) h.innerHTML = /*html*/ `${vibeIcon} ${right.vibe}`;
         }
       }
 
@@ -2832,6 +3811,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function showSection(sectionId) {
+      const prevSection = currentSection;
       // Hide all sections
       sections.forEach((section) => {
         section.classList.remove("active");
@@ -2862,12 +3842,27 @@ document.addEventListener("DOMContentLoaded", () => {
         if (Math.random() < 0.15) SFX.play("extra.fx2");
       } catch (_) {}
 
-      // Pause/resume presentation autoplay and fix layout
+      // Pause/resume presentation autoplay and fix layout when showing Home
       try {
-        if (sectionId === 'study') {
-          window._presentationControl && window._presentationControl.onShow && window._presentationControl.onShow();
+        if (sectionId === "home") {
+          window._presentationControl &&
+            window._presentationControl.onShow &&
+            window._presentationControl.onShow();
         } else {
-          window._presentationControl && window._presentationControl.onHide && window._presentationControl.onHide();
+          window._presentationControl &&
+            window._presentationControl.onHide &&
+            window._presentationControl.onHide();
+        }
+      } catch (_) {}
+
+      // End any active games when navigating away from their section
+      try {
+        if (prevSection === "games") {
+          window.__memoryStop && window.__memoryStop();
+        }
+        if (prevSection === "study") {
+          window.__vocabStop && window.__vocabStop();
+          window.__kanjiStop && window.__kanjiStop();
         }
       } catch (_) {}
     }
@@ -2875,9 +3870,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const container = document.getElementById("floatingMikusContainer");
       if (!container) return;
       container.innerHTML = "";
-      const available = MIKU_IMAGES.length;
+      // Restrict to pixel-only sources
+      const pixelOnly = MIKU_IMAGES.filter(
+        (u) =>
+          /\/assets\/pixel-miku\//i.test(u) ||
+          /Pixel Hatsune Miku by Cutebunni/i.test(u) ||
+          /@illufinch/i.test(u)
+      );
+      const available = pixelOnly.length;
       if (!available) return;
-      const spawnAmount = 15;
+      const spawnAmount = 6; // keep header lightweight
       const numMikus = Math.min(
         Math.floor(Math.random() * spawnAmount + 1),
         available
@@ -2890,18 +3892,30 @@ document.addEventListener("DOMContentLoaded", () => {
         } while (selected.has(index));
         selected.add(index);
         const img = document.createElement("img");
-        img.src = MIKU_IMAGES[index];
+        img.src = pixelOnly[index];
         img.className = "float-miku";
         img.alt = "Pixel Miku";
+        // Ensure animation is explicitly set (in case global styles override)
+        img.style.animationName = "float";
+        img.style.animationTimingFunction = "ease-in-out";
+        img.style.animationIterationCount = "infinite";
+        // nudge higher so they don’t touch the title and stagger floats
+        img.style.marginTop = "-6px";
+        const delay = (Math.random() * 1.5).toFixed(2) + "s";
+        const duration = (3.5 + Math.random() * 2).toFixed(2) + "s";
+        img.style.animationDelay = delay;
+        img.style.animationDuration = duration;
         container.appendChild(img);
       }
     }
 
-    if (MIKU_IMAGES.length) spawnFloatingMikus();
-    else
+    if (MIKU_IMAGES.length) {
+      spawnFloatingMikus();
+    } else {
       document.addEventListener("miku-images-ready", spawnFloatingMikus, {
         once: true,
       });
+    }
   }
 
   // ====== STATUS BAR ======
@@ -2929,7 +3943,7 @@ document.addEventListener("DOMContentLoaded", () => {
       saveMoodBtn.addEventListener("click", () => {
         const mood = moodInput.value.trim();
         if (mood) {
-          moodDisplay.textContent = /*html*/`💭 ${mood}`;
+          moodDisplay.textContent = /*html*/ `💭 ${mood}`;
           localStorage.setItem("pixelbelle-mood", mood);
           moodInput.value = "";
 
@@ -3141,6 +4155,23 @@ document.addEventListener("DOMContentLoaded", () => {
     audio.crossOrigin = "anonymous";
     audio.volume = 0.85;
 
+    // Expose radio controls for external pause (e.g., when playing YouTube)
+    try {
+      window.__radioAudio = audio;
+      window.__pauseRadio = () => {
+        try {
+          audio.pause();
+        } catch (_) {}
+        const status = C.radio?.stoppedStatus || "Radio Stopped";
+        if (radioStatus) radioStatus.textContent = status;
+        if (radioDisplayStatus) radioDisplayStatus.textContent = status;
+        if (onlineStatus)
+          onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
+        stopEqualizer();
+        if (statusDot) statusDot.style.color = "#ff4d4d";
+      };
+    } catch (_) {}
+
     // Initialize labels
     if (onlineStatus)
       onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
@@ -3158,7 +4189,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
       if (onlineStatus) onlineStatus.textContent = "Playing";
       // Stop any background music permanently once radio starts
-      try { if (window.__stopBgm) window.__stopBgm(true); } catch(_) {}
+      try {
+        if (window.__stopBgm) window.__stopBgm(true);
+      } catch (_) {}
       audio.play().catch(() => {});
       startEqualizer();
       if (statusDot) statusDot.style.color = "#00ff00"; // green when playing
@@ -3166,14 +4199,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     pauseBtn.addEventListener("click", () => {
       isPlaying = false;
-      audio.pause();
-      const status = C.radio?.stoppedStatus || "Radio Stopped";
-      radioStatus.textContent = status;
-      if (radioDisplayStatus) radioDisplayStatus.textContent = status;
-      if (onlineStatus)
-        onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
-      stopEqualizer();
-      if (statusDot) statusDot.style.color = "#ff4d4d"; // red when stopped
+      if (typeof window.__pauseRadio === "function") window.__pauseRadio();
     });
 
     audio.addEventListener("error", () => {
@@ -3236,7 +4262,7 @@ document.addEventListener("DOMContentLoaded", () => {
       statsEl = document.createElement("div");
       statsEl.id = "memoryStats";
       statsEl.className = "memory-stats";
-      statsEl.innerHTML = /*html*/`
+      statsEl.innerHTML = /*html*/ `
         <div class="memory-controls" style="margin-bottom:6px; display:flex; gap:8px; justify-content:center; align-items:center;">
           <label for="memoryDifficulty" style="font-weight:700">Difficulty:</label>
           <select id="memoryDifficulty" class="pixel-btn" style="padding:6px 10px; border-radius:8px; border:2px solid var(--border); background:#fff;">
@@ -3262,7 +4288,7 @@ document.addEventListener("DOMContentLoaded", () => {
         difficulty = diffSel.value;
         localStorage.setItem("memory.difficulty", difficulty);
         totalPairs = difficulty === "6x6" ? 18 : 8;
-        memoryGrid.style.gridTemplateColumns = /*html*/`repeat(${
+        memoryGrid.style.gridTemplateColumns = /*html*/ `repeat(${
           difficulty === "6x6" ? 6 : 4
         }, 1fr)`;
         renderBest();
@@ -3270,7 +4296,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       // Apply initial grid width
       totalPairs = difficulty === "6x6" ? 18 : 8;
-      memoryGrid.style.gridTemplateColumns = /*html*/`repeat(${
+      memoryGrid.style.gridTemplateColumns = /*html*/ `repeat(${
         difficulty === "6x6" ? 6 : 4
       }, 1fr)`;
     }
@@ -3354,9 +4380,23 @@ document.addEventListener("DOMContentLoaded", () => {
       if (matchedPairs === totalPairs) {
         setTimeout(() => {
           stopTimer(true);
-          alert("🎉 Congratulations! You found all pairs! 💖");
+          // Replace board with win image instead of alert
+          try {
+            const imgPath =
+              (C &&
+                C.images &&
+                C.images.menuCovers &&
+                C.images.menuCovers.kanji) ||
+              "./assets/win.jpg";
+            memoryGrid.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;width:100%"><img src="${imgPath}" alt="You Win!" style="max-width:100%;height:auto;border-radius:10px;box-shadow:0 6px 18px rgba(43,43,68,0.15)"/></div>`;
+          } catch (_) {}
           addHearts(5);
           playWin();
+          setTimeout(() => {
+            try {
+              SFX.play("extra.thanks");
+            } catch (_) {}
+          }, 900);
         }, 300);
       }
     }
@@ -3366,7 +4406,9 @@ document.addEventListener("DOMContentLoaded", () => {
         [firstCard, secondCard].forEach((c) => c.classList.remove("flipped"));
         resetTurn();
       }, 700);
-      try { SFX.play('memory.miss'); } catch (_) {}
+      try {
+        SFX.play("memory.miss");
+      } catch (_) {}
     }
 
     function resetTurn() {
@@ -3494,10 +4536,30 @@ document.addEventListener("DOMContentLoaded", () => {
         const elapsed = performance.now() - startTime;
         if (timeEl()) timeEl().textContent = formatTime(elapsed);
       }, 100);
+      // subtle tick while timing (every ~5s)
+      try {
+        if (window.__memoryTickId) {
+          clearInterval(window.__memoryTickId);
+          window.__memoryTickId = null;
+        }
+      } catch (_) {}
+      try {
+        window.__memoryTickId = setInterval(() => {
+          try {
+            SFX.play("memory.tick", { volume: 0.35 });
+          } catch (_) {}
+        }, 5000);
+      } catch (_) {}
     }
     function stopTimer(finalize) {
       if (timerId) clearInterval(timerId);
       timerId = null;
+      try {
+        if (window.__memoryTickId) clearInterval(window.__memoryTickId);
+      } catch (_) {}
+      try {
+        window.__memoryTickId = null;
+      } catch (_) {}
       if (timerRunning && finalize) {
         const elapsed = performance.now() - startTime;
         if (timeEl()) timeEl().textContent = formatTime(elapsed);
@@ -3526,43 +4588,118 @@ document.addEventListener("DOMContentLoaded", () => {
       if (bestEl())
         bestEl().textContent = isFinite(prev) ? formatTime(prev) : "-";
     }
+
+    // Expose stop hook for navigation cleanup
+    window.__memoryStop = () => {
+      try {
+        stopTimer(false);
+      } catch (_) {}
+    };
     renderBest();
 
     // ------- Sound helpers (asset SFX) -------
-    function playFlip() { try { SFX.play("memory.flip"); } catch (_) {} }
-    function playMatch() { try { SFX.play("memory.match"); } catch (_) {} }
-    function playWin() { try { SFX.play("memory.win"); } catch (_) {} }
+    function playFlip() {
+      try {
+        SFX.play("memory.flip");
+      } catch (_) {}
+    }
+    function playMatch() {
+      try {
+        SFX.play("memory.match");
+      } catch (_) {}
+    }
+    function playWin() {
+      try {
+        SFX.play("memory.win");
+      } catch (_) {}
+    }
   }
 
   function initHeartCollector() {
-  const heartZone = document.getElementById("heartZone");
-  const gameHeartCountEl = document.getElementById("gameHeartCount");
-  // reset button may be removed from the UI; handle gracefully
-  const resetHeartsBtn = document.getElementById("resetHearts");
-  if (!heartZone || !gameHeartCountEl) return;
+    const heartZone = document.getElementById("heartZone");
+    const gameHeartCountEl = document.getElementById("gameHeartCount");
+    // reset button may be removed from the UI; handle gracefully
+    const resetHeartsBtn = document.getElementById("resetHearts");
+    // Optional cute controls
+    let decoyBtn = document.getElementById("spawnDecoy");
+    let shieldBtn = document.getElementById("activateShield");
+    if (!heartZone || !gameHeartCountEl) return;
 
-  gameHeartCountEl.textContent = gameHeartCount;
+    // Always mirror global hearts
+    const syncCollector = () => {
+      gameHeartCountEl.textContent = String(heartCount);
+    };
+    syncCollector();
 
-  heartZone.addEventListener("click", (e) => {
-      try { SFX.play('hearts.click'); } catch (_) {}
+    heartZone.addEventListener("click", (e) => {
+      try {
+        SFX.play("hearts.click");
+      } catch (_) {}
       // Always link clicks to global hearts
       addHearts(1);
-      gameHeartCount++;
-      gameHeartCountEl.textContent = gameHeartCount;
-      localStorage.setItem("pixelbelle-game-hearts", gameHeartCount);
+      // Keep collector in sync with global count
+      syncCollector();
+      // brief ward aura
+      heartZone.classList.add("warded");
+      setTimeout(() => heartZone.classList.remove("warded"), 900);
 
       // Create floating heart animation
       createFloatingHeart(e.clientX, e.clientY);
     });
 
-  // Attach reset only if the button still exists (kept for dev/testing)
-  if (resetHeartsBtn) {
-    resetHeartsBtn.addEventListener("click", () => {
-      gameHeartCount = 0;
-      gameHeartCountEl.textContent = gameHeartCount;
-      localStorage.setItem("pixelbelle-game-hearts", gameHeartCount);
-    });
+    // Attach reset only if the button still exists (kept for dev/testing)
+    if (resetHeartsBtn) {
+      resetHeartsBtn.addEventListener("click", () => {
+        // Reset disabled for global; simply sync to current total
+        syncCollector();
+      });
+    }
+
+    // Support decoy and shield controls if present
+    if (decoyBtn) {
+      decoyBtn.addEventListener("click", () => {
+        spawnDecoyTreats(1 + Math.floor(Math.random() * 3));
+      });
+    }
+    if (shieldBtn) {
+      shieldBtn.addEventListener("click", () => {
+        activateHeartShield(3000);
+      });
+    }
   }
+  // Decoy treats distract the swallow from hearts
+  function spawnDecoyTreats(n = 2) {
+    const body = document.body;
+    const vw = Math.max(
+      document.documentElement.clientWidth,
+      window.innerWidth || 0
+    );
+    for (let i = 0; i < n; i++) {
+      const d = document.createElement("div");
+      d.className = "decoy-treat";
+      d.textContent = Math.random() < 0.5 ? "🍪" : "🍭";
+      d.style.left = Math.random() * vw + "px";
+      body.appendChild(d);
+      setTimeout(() => d.remove(), 6000);
+    }
+    // brief SFX
+    try {
+      SFX.play("extra.yo");
+    } catch (_) {}
+  }
+
+  // Temporary shield prevents swallow from eating hearts
+  let __heartShieldUntil = 0;
+  function activateHeartShield(ms = 3000) {
+    __heartShieldUntil = Date.now() + ms;
+    const zone = document.getElementById("heartZone");
+    if (zone) {
+      zone.classList.add("warded");
+      setTimeout(() => zone.classList.remove("warded"), ms);
+    }
+    try {
+      SFX.play("extra.fx1");
+    } catch (_) {}
   }
 
   function initRandomMiku() {
@@ -3575,7 +4712,9 @@ document.addEventListener("DOMContentLoaded", () => {
       randomMikuImg.src = randomImage;
 
       // Add bounce effect
-      try { SFX.play("ui.change"); } catch (_) {}
+      try {
+        SFX.play("ui.change");
+      } catch (_) {}
       randomMikuImg.style.animation = "bounce 0.6s ease-out";
       setTimeout(() => {
         randomMikuImg.style.animation = "";
@@ -3586,113 +4725,244 @@ document.addEventListener("DOMContentLoaded", () => {
   // ====== SHRINE SECTION ======
   function initShrine() {
     const mikuGallery = document.getElementById("mikuGallery");
-    if (!mikuGallery) return;
+    const songList = document.querySelector("#shrine .song-list");
+    if (!mikuGallery && !songList) return;
 
     function renderGallery() {
-      mikuGallery.innerHTML = MIKU_IMAGES.map(
-        (img, index) => `
-        <img data-src="${img}" alt="Miku ${index + 1}" class="gallery-image lazy" loading="lazy" decoding="async" onclick="openImageModal('${img}')">
-      `
-      ).join("");
+      // Only include pixel-art sources
+      const pixelOnly = MIKU_IMAGES.filter(
+        (u) =>
+          /\/assets\/pixel-miku\//i.test(u) ||
+          /Pixel Hatsune Miku by Cutebunni/i.test(u) ||
+          /@illufinch/i.test(u)
+      );
 
-      const lazyImgs = mikuGallery.querySelectorAll('img.lazy');
-      if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              const el = entry.target;
-              el.src = el.getAttribute('data-src');
-              el.classList.remove('lazy');
-              io.unobserve(el);
-            }
-          });
-        }, { rootMargin: '200px 0px' });
+      // Always include PixieBel surprise slot (hidden '?' until won)
+      const pixieUrl = "./assets/pixiebel.gif";
+      const coll = collectionMap();
+      const pixieOwned = !!coll[pixieUrl];
+
+      const galleryItems = pixelOnly.slice();
+      if (galleryItems.indexOf(pixieUrl) === -1) galleryItems.push(pixieUrl);
+
+      mikuGallery.innerHTML = galleryItems
+        .map((img, index) => {
+          const isPixie = img.includes("pixiebel.gif");
+          const coverClass = isPixie && !pixieOwned ? "mystery-cover" : "";
+          const coverText =
+            isPixie && !pixieOwned ? '<div class="mystery-text">?</div>' : "";
+          const r =
+            typeof rarityFor === "function"
+              ? rarityFor(img)
+              : typeof rarityForGlobal === "function"
+              ? rarityForGlobal(img)
+              : 1;
+          const rClass = `rarity-${r}`;
+          return `
+          <div class="gallery-item ${coverClass} ${rClass}">
+            <img data-src="${img}" alt="Miku ${
+            index + 1
+          }" class="gallery-image lazy" loading="lazy" decoding="async" onclick="openImageModal('${img}')">
+            <div class="rarity-ring"></div>
+            ${coverText}
+          </div>
+        `;
+        })
+        .join("");
+
+      const lazyImgs = mikuGallery.querySelectorAll("img.lazy");
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const el = entry.target;
+                el.src = el.getAttribute("data-src");
+                el.classList.remove("lazy");
+                io.unobserve(el);
+              }
+            });
+          },
+          { rootMargin: "200px 0px" }
+        );
         lazyImgs.forEach((img) => io.observe(img));
       } else {
-        lazyImgs.forEach((el) => { el.src = el.getAttribute('data-src'); el.classList.remove('lazy'); });
+        lazyImgs.forEach((el) => {
+          el.src = el.getAttribute("data-src");
+          el.classList.remove("lazy");
+        });
       }
     }
 
-    if (MIKU_IMAGES.length) renderGallery();
-    else
-      document.addEventListener("miku-images-ready", renderGallery, {
-        once: true,
+    if (mikuGallery) {
+      if (MIKU_IMAGES.length) renderGallery();
+      else
+        document.addEventListener("miku-images-ready", renderGallery, {
+          once: true,
+        });
+    }
+
+    // Lightweight Miku mini-player for favorites (YouTube)
+    if (songList) {
+      const playFavorite = (title, videoId, search) => {
+        // Stop any site audio
+        try {
+          if (window.__stopBgm) window.__stopBgm(true);
+        } catch (_) {}
+        try {
+          if (window.__pauseRadio) window.__pauseRadio();
+        } catch (_) {}
+        try {
+          if (window.SFX) SFX.play("ui.select");
+        } catch (_) {}
+
+        // Ensure a player exists
+        ensureMikuPlayer();
+        // Load the video/search into the iframe
+        const iframe = document.getElementById("mikuPlayerIframe");
+        if (!iframe) return;
+        const base = videoId
+          ? `https://www.youtube.com/embed/${encodeURIComponent(videoId)}`
+          : `https://www.youtube.com/embed`;
+        const qs = videoId
+          ? `autoplay=1&rel=0&playsinline=1&modestbranding=1&color=white`
+          : `listType=search&list=${encodeURIComponent(
+              search || title
+            )}&autoplay=1&rel=0&playsinline=1&modestbranding=1&color=white`;
+        const origin = (() => {
+          try {
+            return `&origin=${encodeURIComponent(location.origin)}`;
+          } catch {
+            return "";
+          }
+        })();
+        iframe.src = `${base}?${qs}${origin}`;
+        const now = document.getElementById("mikuPlayerNow");
+        if (now) now.textContent = title || "Now Playing";
+        const wrap = document.getElementById("mikuPlayer");
+        if (wrap) wrap.style.display = "block";
+      };
+
+      const ensureMikuPlayer = () => {
+        if (document.getElementById("mikuPlayer")) return;
+        const wrap = document.createElement("div");
+        wrap.id = "mikuPlayer";
+        wrap.style.cssText = [
+          "position:fixed",
+          "right:16px",
+          "bottom:16px",
+          "width:360px",
+          "z-index:9999",
+          "background:rgba(255,255,255,0.96)",
+          "backdrop-filter:saturate(1.2) blur(6px)",
+          "border:2px solid var(--border)",
+          "border-radius:14px",
+          "box-shadow:0 10px 30px rgba(43,43,68,0.25)",
+        ].join(";");
+
+        wrap.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px 6px 10px;border-bottom:1px solid var(--border);border-top-left-radius:12px;border-top-right-radius:12px;background:linear-gradient(90deg, rgba(189,227,255,0.4), rgba(255,255,255,0.4))">
+            <div style="display:flex;align-items:center;gap:8px;font-weight:900">
+              ${mikuIcon("jumpingMusic", "🎵", "miku-icon")}
+              <span id="mikuPlayerNow">Now Playing</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <button id="mikuPlayerLove" title="send love" class="pixel-btn" style="padding:4px 8px;line-height:1">💖</button>
+              <button id="mikuPlayerClose" title="close" class="pixel-btn" style="padding:4px 8px;line-height:1">✖</button>
+            </div>
+          </div>
+          <div style="width:100%;aspect-ratio:16/9;border-bottom-left-radius:12px;border-bottom-right-radius:12px;overflow:hidden;background:#000">
+            <iframe id="mikuPlayerIframe" style="width:100%;height:100%;border:0;display:block" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          </div>`;
+        document.body.appendChild(wrap);
+
+        const stop = () => {
+          const iframe = document.getElementById("mikuPlayerIframe");
+          if (iframe) iframe.src = "about:blank";
+          const wrap = document.getElementById("mikuPlayer");
+          if (wrap) wrap.style.display = "none";
+          try {
+            if (window.SFX) SFX.play("ui.back");
+          } catch (_) {}
+        };
+        const closeBtn = document.getElementById("mikuPlayerClose");
+        if (closeBtn) closeBtn.addEventListener("click", stop);
+        const loveBtn = document.getElementById("mikuPlayerLove");
+        if (loveBtn)
+          loveBtn.addEventListener("click", () => {
+            try {
+              addHearts(1);
+            } catch (_) {}
+          });
+        window.__closeMikuPlayer = stop;
+      };
+
+      songList.addEventListener("click", (e) => {
+        const li = e.target && e.target.closest("li.favorite-song");
+        if (!li) return;
+        const label =
+          li.getAttribute("data-title") || li.textContent || "Now Playing";
+        const vid = li.getAttribute("data-video-id") || "";
+        const search = li.getAttribute("data-search") || label;
+        playFavorite(label, vid, search);
       });
+    }
   }
 
-  function openImageModal(imageSrc) {
-    const modal = document.createElement("div");
-    modal.className = "image-modal";
-    modal.style.cssText = /*html*/`
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8); display: flex; align-items: center;
-      justify-content: center; z-index: 10000; cursor: pointer;
-    `;
-
-    const img = document.createElement("img");
-    img.src = imageSrc;
-    img.style.cssText = /*html*/`
-      max-width: 90%; max-height: 90%; border-radius: 10px;
-      box-shadow: 0 0 30px rgba(255,255,255,0.3);
-    `;
-
-    modal.appendChild(img);
-    document.body.appendChild(modal);
-    try { SFX.play('extra.camera'); } catch (_) {}
-
-    modal.addEventListener("click", () => {
-      document.body.removeChild(modal);
-    });
-  }
+  // Removed: openImageModal is now handled by the new enhanced version below
 
   // ====== FRIENDS SECTION ======
   function initFriends() {
     const friendsList = document.getElementById("friendsList");
 
-    friendsList.innerHTML = FRIENDS.map(
-      (friend) => {
-        const icon = friend.mikuIcon ? mikuIcon(friend.mikuIcon, friend.emoji) : friend.emoji;
-        return `
+    friendsList.innerHTML = FRIENDS.map((friend) => {
+      const icon = friend.mikuIcon
+        ? mikuIcon(friend.mikuIcon, friend.emoji)
+        : friend.emoji;
+      return `
           <a href="${friend.url}" class="friend-button" target="_blank">
             ${icon} ${friend.name}
           </a>
         `;
-      }
-    ).join("");
+    }).join("");
   }
 
   // ====== CURSOR EFFECTS ======
   function initCursorEffects() {
-  const cursorTrail = document.getElementById("cursorTrail");
+    const cursorTrail = document.getElementById("cursorTrail");
     let lastTrailTime = 0;
     let rafId = null;
 
     // Optimized mousemove with RAF throttling for better performance
-    document.addEventListener("mousemove", (e) => {
-      const now = Date.now();
-      if (now - lastTrailTime > 160 && !rafId) {
-        rafId = requestAnimationFrame(() => {
-          createCursorTrail(e.clientX, e.clientY);
-          lastTrailTime = now;
-          rafId = null;
-        });
-      }
-    }, { passive: true });
+    document.addEventListener(
+      "mousemove",
+      (e) => {
+        const now = Date.now();
+        if (now - lastTrailTime > 160 && !rafId) {
+          rafId = requestAnimationFrame(() => {
+            createCursorTrail(e.clientX, e.clientY);
+            lastTrailTime = now;
+            rafId = null;
+          });
+        }
+      },
+      { passive: true }
+    );
 
     function createCursorTrail(x, y) {
       // Performance optimization: reuse elements from a pool
       if (!window._heartPool) window._heartPool = [];
-      
+
       let heart = window._heartPool.pop();
       if (!heart) {
         heart = document.createElement("div");
         heart.className = "heart-trail";
         heart.textContent = "💖";
       }
-      
+
       // Reset position efficiently
       heart.style.cssText = `left: ${x}px; top: ${y}px; opacity: 1; transform: translateZ(0);`;
-      
+
       cursorTrail.appendChild(heart);
 
       // Optimized cleanup with object pooling
@@ -3710,53 +4980,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ====== CARD PAGINATION SYSTEM ======
   function initCardPagination() {
-    const paginatedCards = document.querySelectorAll('.paginated-card');
-    
-    paginatedCards.forEach(card => {
+    const paginatedCards = document.querySelectorAll(".paginated-card");
+
+    paginatedCards.forEach((card) => {
       const cardType = card.dataset.card;
-      const pages = card.querySelectorAll('.card-page');
-      const prevBtn = card.querySelector('.prev-btn');
-      const nextBtn = card.querySelector('.next-btn');
-      const indicator = card.querySelector('.page-indicator');
-      
+      const pages = card.querySelectorAll(".card-page");
+      const prevBtn = card.querySelector(".prev-btn");
+      const nextBtn = card.querySelector(".next-btn");
+      const indicator = card.querySelector(".page-indicator");
+
       if (pages.length <= 1) return; // No pagination needed
-      
+
       let currentPage = 0;
-      
+
       function updateCard() {
         pages.forEach((page, index) => {
-          page.classList.toggle('active', index === currentPage);
+          page.classList.toggle("active", index === currentPage);
         });
-        
+
         if (indicator) {
-          indicator.textContent = /*html*/`${currentPage + 1}/${pages.length}`;
+          indicator.textContent = /*html*/ `${currentPage + 1}/${pages.length}`;
         }
-        
+
         // Add sparkle effect when changing pages
         createSparkleEffect(card);
       }
-      
+
       function nextPage() {
         currentPage = (currentPage + 1) % pages.length;
         updateCard();
-        
+
         // Play a cute sound
-        try { SFX.play("ui.move"); } catch (_) {}
+        try {
+          SFX.play("ui.move");
+        } catch (_) {}
       }
-      
+
       function prevPage() {
         currentPage = (currentPage - 1 + pages.length) % pages.length;
         updateCard();
-        
+
         // Play a cute sound
-        try { SFX.play("ui.move"); } catch (_) {}
+        try {
+          SFX.play("ui.move");
+        } catch (_) {}
       }
-      
-      if (nextBtn) nextBtn.addEventListener('click', nextPage);
-      if (prevBtn) prevBtn.addEventListener('click', prevPage);
-      
+
+      if (nextBtn) nextBtn.addEventListener("click", nextPage);
+      if (prevBtn) prevBtn.addEventListener("click", prevPage);
+
       // Auto-advance every 10 seconds for about cards (with memory cleanup)
-      if (cardType === 'about') {
+      if (cardType === "about") {
         setIntervalTracked(() => {
           nextPage();
         }, 10000);
@@ -3765,6 +5039,259 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ====== UTILITY FUNCTIONS ======
+  // Hearts economy: scaled award helper by difficulty
+  function awardHearts(base) {
+    let amt = base;
+    const d =
+      typeof window.getJpDifficulty === "function"
+        ? window.getJpDifficulty()
+        : 3;
+
+    // More generous rewards for harder difficulties
+    if (d >= 8) amt = Math.floor(base * 2.5); // Expert: 2.5x
+    else if (d >= 6) amt = Math.floor(base * 2); // Hard: 2x
+    else if (d >= 4) amt = Math.floor(base * 1.5); // Medium: 1.5x
+    else amt = base; // Easy: 1x
+
+    // Bonus chance for extra heart on medium+
+    if (d >= 4 && Math.random() < 0.3) amt += 1;
+
+    addHearts(amt);
+    return amt;
+  }
+
+  // Expose minimal API (consolidated below near global export)
+
+  // Singer system
+  function collectionMap() {
+    try {
+      return JSON.parse(localStorage.getItem("gacha.collection") || "{}");
+    } catch (_) {
+      return {};
+    }
+  }
+  function singerGet() {
+    return localStorage.getItem("singer.current") || "";
+  }
+  function singerSet(url) {
+    const coll = collectionMap();
+    if (!coll[url]) {
+      loveToast("Win this singer in Gacha first!");
+      try {
+        SFX.play("ui.unavailable");
+      } catch (_) {}
+      return false;
+    }
+    localStorage.setItem("singer.current", url);
+    applySinger();
+    loveToast("Singer set! 🎤");
+    try {
+      SFX.play("ui.select");
+    } catch (_) {}
+    return true;
+  }
+  function applySingerTo(selector) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    const url = singerGet();
+    if (url) {
+      el.src = url;
+      return;
+    }
+    // Fallback image when no singer selected yet
+    try {
+      // Prefer a known hero/shrine image from content
+      const fallback =
+        (C.images && (C.images.heroMiku || C.images.shrineMiku)) ||
+        (Array.isArray(window.MIKU_IMAGES) && window.MIKU_IMAGES.length
+          ? window.MIKU_IMAGES[0]
+          : null);
+      if (fallback) {
+        el.src = fallback;
+        return;
+      }
+    } catch (_) {}
+    el.removeAttribute("src");
+  }
+  function applySinger() {
+    applySingerTo("#hudSingerImg");
+    // update card badges if present
+    document.querySelectorAll(".singer-badge").forEach((_) => {
+      applySingerTo("#" + _.id);
+    });
+    applySingerTheme();
+  }
+  function applySingerTheme() {
+    try {
+      const url = singerGet();
+      const r = url
+        ? typeof rarityFor === "function"
+          ? rarityFor(url)
+          : rarityForGlobal(url)
+        : 0;
+      const color =
+        r >= 5
+          ? "#ffb300"
+          : r >= 4
+          ? "#a594f9"
+          : r >= 3
+          ? "#6bc3ff"
+          : "#8fd3a8";
+      const prog = document.getElementById("hudLevelProgress");
+      if (prog)
+        prog.style.background = `linear-gradient(45deg, ${color}, #ffffff)`;
+      const singer = document.getElementById("hudSingerImg");
+      if (singer) singer.style.borderColor = color;
+    } catch (_) {}
+  }
+  window.setSinger = singerSet;
+  window.getSinger = singerGet;
+
+  // Image modal with card info and singer selection
+  function ensureImageModal() {
+    let m = document.getElementById("imageModal");
+    if (m) return m;
+    m = document.createElement("div");
+    m.id = "imageModal";
+    m.className = "image-modal";
+    m.innerHTML = `
+      <div class="image-panel">
+        <div class="top">
+          <img id="imageModalImg" alt="Preview" />
+          <div class="meta">
+            <h3 id="imageModalTitle">Hatsune Miku</h3>
+            <div id="imageModalRarity">★</div>
+            <div id="imageModalOwned"></div>
+            <div id="imageModalInfo" style="font-size:14px;color:var(--ink-soft);margin-top:8px;"></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="pixel-btn" id="imageModalSetSinger">Set as Singer</button>
+          <button class="pixel-btn" id="imageModalOpenDex">Open MikuDex</button>
+          <button class="pixel-btn" id="imageModalClose">Close</button>
+        </div>
+      </div>`;
+    document.body.appendChild(m);
+    m.addEventListener("click", (e) => {
+      if (e.target === m) m.classList.remove("open");
+    });
+    m.querySelector("#imageModalClose").addEventListener("click", () =>
+      m.classList.remove("open")
+    );
+    m.querySelector("#imageModalOpenDex").addEventListener("click", () => {
+      // open Games -> Gacha -> Dex
+      try {
+        document.querySelector('[data-section="games"]').click();
+      } catch (_) {}
+      const btn = document.getElementById("gachaCollectionBtn");
+      if (btn) btn.click();
+    });
+    return m;
+  }
+
+  // Enhanced openImageModal with character identification
+  function guessName(url) {
+    if (url.includes("pixiebel")) return "PixieBel";
+    if (url.includes("gamer")) return "Gamer Miku";
+    if (url.includes("win")) return "Victory Miku";
+    if (url.includes("beam")) return "Beam Miku";
+    if (url.includes("Song-Over")) return "Song Over Miku";
+    if (url.includes("makiilu")) return "Elegant Miku";
+    if (url.includes("jimmyisaac")) return "Render Miku";
+    if (url.includes("birthday")) return "Birthday Miku";
+    if (url.includes("@illufinch")) {
+      const num = url.match(/(\d+)\.png/);
+      return num ? `Pixel Miku ${num[1]}` : "Pixel Miku";
+    }
+    return "Hatsune Miku";
+  }
+
+  function getCharacterInfo(url) {
+    if (url.includes("pixiebel"))
+      return "The rarest and most mysterious character! A secret collab between PixelBelle and Miku. Only the luckiest collectors will find her! 🌟";
+    if (url.includes("gamer"))
+      return "Gaming enthusiast Miku ready for any challenge! Perfect for competitive modes and high-score runs.";
+    if (url.includes("win"))
+      return "Victory pose Miku celebrating your success! Shows up when you achieve great things.";
+    if (url.includes("beam"))
+      return "Energetic beam attack Miku! Full of power and determination.";
+    if (url.includes("Song-Over"))
+      return "Concert finale Miku after an amazing performance! The show must go on!";
+    if (url.includes("@illufinch"))
+      return "Adorable pixel art Miku by @illufinch! Part of the cutest collection in the garden.";
+    return "The beloved virtual singer who brings music and joy to everyone! 🎤";
+  }
+  function hashCode(s) {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) {
+      h = (h << 5) - h + s.charCodeAt(i);
+      h |= 0;
+    }
+    return h >>> 0;
+  }
+  function rarityForGlobal(url) {
+    const r = hashCode(url) % 100;
+    return r < 55 ? 1 : r < 85 ? 2 : r < 95 ? 3 : r < 99 ? 4 : 5;
+  }
+  window.openImageModal = function (url) {
+    const m = ensureImageModal();
+    const img = m.querySelector("#imageModalImg");
+    const title = m.querySelector("#imageModalTitle");
+    const rar = m.querySelector("#imageModalRarity");
+    const owned = m.querySelector("#imageModalOwned");
+    const info = m.querySelector("#imageModalInfo");
+    const setBtn = m.querySelector("#imageModalSetSinger");
+
+    img.src = url;
+    title.textContent = guessName(url);
+    info.textContent = getCharacterInfo(url);
+
+    const r =
+      typeof rarityFor === "function" ? rarityFor(url) : rarityForGlobal(url);
+    rar.textContent = "Rarity: " + "★".repeat(r);
+
+    const coll = collectionMap();
+    const entry = coll[url];
+    if (entry) {
+      owned.textContent = `Owned: x${entry.count}`;
+      setBtn.disabled = false;
+      setBtn.textContent = "Set as Singer";
+    } else {
+      owned.textContent = "Owned: —";
+      setBtn.disabled = true;
+      setBtn.textContent = "Win in Gacha";
+    }
+    setBtn.onclick = () => singerSet(url);
+    try {
+      SFX.play("extra.camera");
+    } catch (_) {}
+    m.classList.add("open");
+  };
+
+  function setGameTheme(game) {
+    try {
+      const theme = (C.music && C.music.themes && C.music.themes[game]) || null;
+      if (theme && theme.accent) {
+        const prog = document.getElementById("hudLevelProgress");
+        if (prog)
+          prog.style.background = `linear-gradient(45deg, ${theme.accent}, #ffffff)`;
+        const singer = document.getElementById("hudSingerImg");
+        if (singer) singer.style.borderColor = theme.accent;
+      } else {
+        applySingerTheme();
+      }
+      if (theme && theme.src && window.__bgmAudio && !window.__bgmKilled) {
+        const a = window.__bgmAudio;
+        const wasPlaying = !a.paused;
+        a.pause();
+        a.src = theme.src;
+        a.load();
+        if (wasPlaying) {
+          a.play().catch(() => {});
+        }
+      }
+    } catch (_) {}
+  }
   function addHearts(amount) {
     heartCount += amount;
     localStorage.setItem("pixelbelle-hearts", heartCount);
@@ -3776,8 +5303,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Play a pleasant chime for adding hearts
     try {
-      SFX.play('hearts.add');
-      if (amount >= 5) SFX.play('extra.coin');
+      SFX.play("hearts.add");
+      if (amount >= 5) SFX.play("extra.coin");
     } catch (_) {}
 
     // Milestone banner: show a special toast when we've hit a NEW milestone step
@@ -3800,9 +5327,11 @@ document.addEventListener("DOMContentLoaded", () => {
           const milestoneIcon = highestMilestone.icon
             ? mikuIcon(highestMilestone.icon, "✨")
             : "✨";
-          const milestoneMsg = /*html*/`${milestoneIcon} ${highestMilestone.msg}`;
+          const milestoneMsg = /*html*/ `${milestoneIcon} ${highestMilestone.msg}`;
           loveToast(milestoneMsg);
-          try { SFX.play("hearts.milestone"); } catch (_) {}
+          try {
+            SFX.play("hearts.milestone");
+          } catch (_) {}
 
           console.info(
             `New milestone reached: ${highestMilestone.step} -> ${highestMilestone.msg}`
@@ -3830,10 +5359,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const iconName = toastIcons[randomIndex];
     const icon = iconName ? mikuIcon(iconName, "💖") : "💖";
 
-    const msg = /*html*/`${text} ${toastText} ${icon}`;
+    const msg = /*html*/ `${text} ${toastText} ${icon}`;
     const toast = document.createElement("div");
     toast.innerHTML = msg;
-    toast.style.cssText = /*html*/`
+    toast.style.cssText = /*html*/ `
       position: fixed; left: 50%; top: 14%; transform: translateX(-50%);
       background: rgba(255,255,255,0.9); border: 2px solid var(--border);
       border-radius: 12px; padding: 8px 14px; font-weight: 800; color: var(--ink);
@@ -3860,7 +5389,7 @@ document.addEventListener("DOMContentLoaded", () => {
         Math.random() < 0.6 ? "💖" : Math.random() < 0.5 ? "✨" : "⭐";
       const el = document.createElement("div");
       el.textContent = which;
-      el.style.cssText = /*html*/`
+      el.style.cssText = /*html*/ `
         position: fixed; left: ${x}px; top: ${y}px; font-size: ${
         which === "💖" ? "22px" : "18px"
       };
@@ -3879,9 +5408,10 @@ document.addEventListener("DOMContentLoaded", () => {
     else s.triggerMassHappy();
     if (heartCount % 25 === 0 && s.triggerMassDance) s.triggerMassDance();
     try {
-      if (heartCount % 25 === 0) SFX.play('extra.clap');
-      else if (Math.random() < 0.5) SFX.play('extra.yo');
-      else SFX.play('hearts.add');
+      if (heartCount % 25 === 0) SFX.play("extra.clap");
+      else if (Math.random() < 0.5) SFX.play("extra.yo");
+      else if (Math.random() < 0.5) SFX.play("extra.wan");
+      else SFX.play("hearts.add");
     } catch (_) {}
   }
 
@@ -3902,7 +5432,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function createFloatingHeart(x, y) {
     const heart = document.createElement("div");
     heart.textContent = "💖";
-    heart.style.cssText = /*html*/`
+    heart.style.cssText = /*html*/ `
       position: fixed; left: ${x}px; top: ${y}px; font-size: 1.5rem;
       pointer-events: none; z-index: 9999; animation: heartFloat 2s ease-out forwards;
     `;
@@ -3921,7 +5451,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         const sparkle = document.createElement("div");
         sparkle.textContent = "✨";
-        sparkle.style.cssText = /*html*/`
+        sparkle.style.cssText = /*html*/ `
           position: absolute; font-size: 1rem; pointer-events: none;
           left: ${Math.random() * 50 - 25}px; top: ${Math.random() * 50 - 25}px;
           animation: sparkle 1s ease-out forwards;
@@ -3951,7 +5481,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedMood = localStorage.getItem("pixelbelle-mood");
     if (savedMood) {
       const moodDisplayEl = document.getElementById("moodDisplay");
-      if (moodDisplayEl) moodDisplayEl.textContent = /*html*/`💭 ${savedMood}`;
+      if (moodDisplayEl) moodDisplayEl.textContent = /*html*/ `💭 ${savedMood}`;
     }
 
     // Load saved now playing
@@ -3968,7 +5498,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const heartBtn = document.getElementById("heartBtn");
     if (heartBtn) {
       heartBtn.addEventListener("click", () => {
-        try { SFX.play('hearts.click'); } catch (_) {}
+        try {
+          SFX.play("hearts.click");
+        } catch (_) {}
         addHearts(1);
         createFloatingHeart(
           heartBtn.getBoundingClientRect().left + heartBtn.offsetWidth / 2,
@@ -3987,7 +5519,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Update the updates list occasionally
       if (Math.random() < 0.3) {
-  const updatesList = document.getElementById("updates");
+        const updatesList = document.getElementById("updates");
         if (updatesList) {
           const li = document.createElement("li");
           li.textContent = randomUpdate;
@@ -4003,18 +5535,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Vibe meter animation (with memory cleanup)
     setIntervalTracked(() => {
-  const vibeFill = document.getElementById("vibe-fill") || document.querySelector(".vibe-fill");
+      const vibeFill =
+        document.getElementById("vibe-fill") ||
+        document.querySelector(".vibe-fill");
       if (vibeFill) {
         const randomVibe = Math.floor(Math.random() * 20) + 80; // 80-100%
         vibeFill.style.width = randomVibe + "%";
-        vibeFill.parentNode.nextElementSibling.textContent = /*html*/`${randomVibe}% Kawaii Energy! ✨`;
+        vibeFill.parentNode.nextElementSibling.textContent = /*html*/ `${randomVibe}% Kawaii Energy! ✨`;
       }
     }, 5000);
   }
 
   // Add sparkle animation keyframes
   const sparkleStyles = document.createElement("style");
-  sparkleStyles.textContent = /*html*/`
+  sparkleStyles.textContent = /*html*/ `
     @keyframes sparkle {
       0% { opacity: 1; transform: scale(0) rotate(0deg); }
       50% { opacity: 1; transform: scale(1) rotate(180deg); }
@@ -4042,7 +5576,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!container) return;
     try {
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
         return; // respect reduced motion for performance/accessibility
       }
     } catch (_) {}
@@ -4055,7 +5592,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!style) {
       style = document.createElement("style");
       style.id = "hearts-style";
-      style.textContent = /*html*/`
+      style.textContent = /*html*/ `
       .heart-particle { position: fixed; bottom: -24px; font-size: 22px; pointer-events:none; z-index: 2; animation: heartRise 8s linear forwards; will-change: transform, opacity; }
       @keyframes heartRise {
         0%   { transform: translateX(0) translateY(0); opacity: .8; }
@@ -4064,7 +5601,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       .heart-eaten { animation: heartEaten .4s ease-out forwards !important; }
       @keyframes heartEaten { from { transform: scale(1); opacity:1 } to { transform: scale(0); opacity:0 } }
-      .swallow { position: fixed; bottom: 8vh; left: -120px; width: 80px; height:auto; image-rendering: pixelated; z-index: 3; pointer-events:none; }
+  .swallow { position: fixed; bottom: 8vh; left: -100px; width: 96px; height:auto; image-rendering: pixelated; z-index: 3; pointer-events:auto; }
+  .swallow.evil { filter: hue-rotate(180deg) saturate(1.3) contrast(1.2); }
+  /* Warding aura around heartZone */
+  .heart-zone.warded { position: relative; }
+  .heart-zone.warded::after { content: ""; position: absolute; inset: -6px; border: 2px dashed #ff69b4; border-radius: 12px; animation: wardPulse .8s ease-in-out infinite; pointer-events: none; }
+  @keyframes wardPulse { 0% { opacity:.9; transform: scale(1);} 100% { opacity:0; transform: scale(1.06);} }
+  /* Decoy treats */
+  .decoy-treat { position: fixed; bottom: -24px; font-size: 20px; pointer-events: none; z-index: 2; animation: decoyRise 6s linear forwards; }
+  @keyframes decoyRise { from { transform: translateY(0);} to { transform: translateY(-90vh);} }
     `;
       document.head.appendChild(style);
     }
@@ -4094,18 +5639,23 @@ document.addEventListener("DOMContentLoaded", () => {
     function scheduleHearts() {
       if (heartsTimer) clearTimeout(heartsTimer);
       heartsTimer = setTimeout(() => {
-        if (!document.hidden && container.childElementCount < MAX_HEARTS) createHeart();
+        if (!document.hidden && container.childElementCount < MAX_HEARTS)
+          createHeart();
         scheduleHearts();
       }, 2000);
     }
     scheduleHearts();
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        if (heartsTimer) clearTimeout(heartsTimer);
-      } else {
-        scheduleHearts();
-      }
-    }, { passive: true });
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        if (document.hidden) {
+          if (heartsTimer) clearTimeout(heartsTimer);
+        } else {
+          scheduleHearts();
+        }
+      },
+      { passive: true }
+    );
 
     // Create initial hearts
     for (let i = 0; i < 5; i++) {
@@ -4122,62 +5672,69 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentSlide = 0;
     let isAutoPlaying = false;
     let autoPlayInterval = null;
-    
-    const slides = document.querySelectorAll('.presentation-slide');
+
+    const slides = document.querySelectorAll(".presentation-slide");
     const totalSlides = slides.length;
-    
+
     if (totalSlides === 0) return;
-    
-    const prevBtn = document.querySelector('.prev-slide');
-    const nextBtn = document.querySelector('.next-slide');
-    const currentSlideIndicator = document.querySelector('.current-slide');
-    const progressFill = document.querySelector('.progress-fill');
-    const floatingDecorations = document.querySelector('.floating-decorations');
-    
+
+    const prevBtn = document.querySelector(".prev-slide");
+    const nextBtn = document.querySelector(".next-slide");
+    const currentSlideIndicator = document.querySelector(".current-slide");
+    const progressFill = document.querySelector(".progress-fill");
+    const floatingDecorations = document.querySelector(".floating-decorations");
+
     // Kawaii sounds for interactions (asset-based)
-    const playKawaiiSound = (type = 'click') => {
+    const playKawaiiSound = (type = "click") => {
       try {
-        if (type === 'prev') SFX.play('ui.back');
-        else if (type === 'next') SFX.play('ui.move');
-        else if (type === 'auto') SFX.play('ui.se_sy_24');
-        else SFX.play('ui.move');
+        if (type === "prev") SFX.play("ui.back");
+        else if (type === "next") SFX.play("ui.move");
+        else if (type === "auto") SFX.play("ui.se_sy_24");
+        else SFX.play("ui.move");
       } catch (_) {}
     };
-    
+
     // Create floating sparkles and icons
     const createFloatingElements = () => {
       if (!floatingDecorations) return;
-      
-      const decorativeIcons = ['sparkle', 'love', 'innocent', 'cheering', 'starUwu'];
-      
+
+      const decorativeIcons = [
+        "sparkle",
+        "love",
+        "innocent",
+        "cheering",
+        "starUwu",
+      ];
+
       for (let i = 0; i < 8; i++) {
-        const element = document.createElement('div');
-        element.className = 'floating-decoration';
-        
-        const iconName = decorativeIcons[Math.floor(Math.random() * decorativeIcons.length)];
-        element.innerHTML = mikuIcon(iconName, '✨');
-        
-        element.style.left = /*html*/`${Math.random() * 100}%`;
-        element.style.animationDelay = /*html*/`${Math.random() * 5}s`;
-        element.style.animationDuration = /*html*/`${3 + Math.random() * 4}s`;
-        
+        const element = document.createElement("div");
+        element.className = "floating-decoration";
+
+        const iconName =
+          decorativeIcons[Math.floor(Math.random() * decorativeIcons.length)];
+        element.innerHTML = mikuIcon(iconName, "✨");
+
+        element.style.left = /*html*/ `${Math.random() * 100}%`;
+        element.style.animationDelay = /*html*/ `${Math.random() * 5}s`;
+        element.style.animationDuration = /*html*/ `${3 + Math.random() * 4}s`;
+
         floatingDecorations.appendChild(element);
       }
     };
-    
+
     // Update slide display
     const updateSlide = (newSlide, playSound = true) => {
       if (newSlide < 0 || newSlide >= totalSlides) return;
-      
+
       // Hide current slide
-      slides[currentSlide].classList.remove('active');
-      
+      slides[currentSlide].classList.remove("active");
+
       // Show new slide
       currentSlide = newSlide;
-      slides[currentSlide].classList.add('active');
+      slides[currentSlide].classList.add("active");
 
       // Sync container height to active slide for zero-scroll experience
-      const container = document.querySelector('.presentation-content');
+      const container = document.querySelector(".presentation-content");
       if (container) {
         // measure active after paint
         requestAnimationFrame(() => {
@@ -4185,66 +5742,72 @@ document.addEventListener("DOMContentLoaded", () => {
           if (active) {
             const targetH = active.offsetHeight;
             // Lock height to avoid layout jump during transition
-            container.style.height = targetH + 'px';
+            container.style.height = targetH + "px";
           }
         });
       }
-      
+
       // Update indicators
       if (currentSlideIndicator) {
         currentSlideIndicator.textContent = currentSlide + 1;
       }
-      
+
       // Update progress bar
       if (progressFill) {
         const progress = ((currentSlide + 1) / totalSlides) * 100;
-        progressFill.style.width = /*html*/`${progress}%`;
+        progressFill.style.width = /*html*/ `${progress}%`;
       }
-      
+
       // Add sparkle effect to current slide
       const currentSlideEl = slides[currentSlide];
-      currentSlideEl.classList.add('slide-sparkle');
+      currentSlideEl.classList.add("slide-sparkle");
       setTimeout(() => {
-        currentSlideEl.classList.remove('slide-sparkle');
+        currentSlideEl.classList.remove("slide-sparkle");
       }, 1000);
-      
+
       // Play kawaii sound
       if (playSound) {
-        playKawaiiSound('next');
+        playKawaiiSound("next");
       }
-      
+
       // Update button states
-      if (prevBtn) prevBtn.disabled = (currentSlide === 0);
-      if (nextBtn) nextBtn.disabled = (currentSlide === totalSlides - 1);
+      if (prevBtn) prevBtn.disabled = currentSlide === 0;
+      if (nextBtn) nextBtn.disabled = currentSlide === totalSlides - 1;
     };
-    
+
     // Navigation event handlers
     if (prevBtn) {
-      prevBtn.addEventListener('click', () => {
+      prevBtn.addEventListener("click", () => {
         if (currentSlide > 0) {
           // Stop auto on manual navigation
-          if (isAutoPlaying) { stopAutoPlay(); isAutoPlaying = false; }
+          if (isAutoPlaying) {
+            stopAutoPlay();
+            isAutoPlaying = false;
+          }
           updateSlide(currentSlide - 1);
-          playKawaiiSound('prev');
+          playKawaiiSound("prev");
         }
       });
     }
-    
+
     if (nextBtn) {
-      nextBtn.addEventListener('click', () => {
+      nextBtn.addEventListener("click", () => {
         if (currentSlide < totalSlides - 1) {
           // Stop auto on manual navigation
-          if (isAutoPlaying) { stopAutoPlay(); isAutoPlaying = false; }
+          if (isAutoPlaying) {
+            stopAutoPlay();
+            isAutoPlaying = false;
+          }
           updateSlide(currentSlide + 1);
-          playKawaiiSound('next');
+          playKawaiiSound("next");
         }
       });
     }
-    
+
     // Auto-play functionality
     const startAutoPlay = () => {
       if (autoPlayInterval) clearInterval(autoPlayInterval);
-      
+
       autoPlayInterval = setInterval(() => {
         if (currentSlide < totalSlides - 1) {
           updateSlide(currentSlide + 1, false);
@@ -4254,119 +5817,137 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }, 4000); // 4 seconds per slide
     };
-    
+
     const stopAutoPlay = () => {
       if (autoPlayInterval) {
         clearInterval(autoPlayInterval);
         autoPlayInterval = null;
       }
     };
-    
-  // Removed auto/shuffle/restart UI per design; auto starts on load and stops on manual nav
-    
+
+    // Removed auto/shuffle/restart UI per design; auto starts on load and stops on manual nav
+
     // Optimized keyboard navigation with passive listeners
-    document.addEventListener('keydown', (e) => {
-      // Only process if focused on presentation
-      if (document.querySelector('.belle-presentation:hover') || 
-          document.activeElement.closest('.belle-presentation')) {
-        switch(e.key) {
-          case 'ArrowLeft':
-            e.preventDefault();
-            if (currentSlide > 0) {
-              updateSlide(currentSlide - 1);
-              playKawaiiSound('prev');
-            }
-            break;
-          case 'ArrowRight':
-            e.preventDefault();
-            if (currentSlide < totalSlides - 1) {
-              updateSlide(currentSlide + 1);
-              playKawaiiSound('next');
-            }
-            break;
-          // Space no-op (auto UI removed)
-          case 'Home':
-            e.preventDefault();
-            updateSlide(0);
-            break;
-          case 'End':
-            e.preventDefault();
-            updateSlide(totalSlides - 1);
-            break;
+    document.addEventListener(
+      "keydown",
+      (e) => {
+        // Only process if focused on presentation
+        if (
+          document.querySelector(".belle-presentation:hover") ||
+          document.activeElement.closest(".belle-presentation")
+        ) {
+          switch (e.key) {
+            case "ArrowLeft":
+              e.preventDefault();
+              if (currentSlide > 0) {
+                updateSlide(currentSlide - 1);
+                playKawaiiSound("prev");
+              }
+              break;
+            case "ArrowRight":
+              e.preventDefault();
+              if (currentSlide < totalSlides - 1) {
+                updateSlide(currentSlide + 1);
+                playKawaiiSound("next");
+              }
+              break;
+            // Space no-op (auto UI removed)
+            case "Home":
+              e.preventDefault();
+              updateSlide(0);
+              break;
+            case "End":
+              e.preventDefault();
+              updateSlide(totalSlides - 1);
+              break;
+          }
         }
-      }
-    }, { passive: false }); // Need preventDefault
-    
+      },
+      { passive: false }
+    ); // Need preventDefault
+
     // Touch/swipe support
     let touchStartX = 0;
     let touchEndX = 0;
-    
-    const presentationEl = document.querySelector('.belle-presentation');
+
+    const presentationEl = document.querySelector(".belle-presentation");
     if (presentationEl) {
-      presentationEl.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-      }, { passive: true });
-      
-      presentationEl.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        
-        const swipeThreshold = 50;
-        const diff = touchStartX - touchEndX;
-        
-        if (Math.abs(diff) > swipeThreshold) {
-          if (diff > 0 && currentSlide < totalSlides - 1) {
-            // Swiped left - next slide
-            updateSlide(currentSlide + 1);
-          } else if (diff < 0 && currentSlide > 0) {
-            // Swiped right - previous slide
-            updateSlide(currentSlide - 1);
+      presentationEl.addEventListener(
+        "touchstart",
+        (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        },
+        { passive: true }
+      );
+
+      presentationEl.addEventListener(
+        "touchend",
+        (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+
+          const swipeThreshold = 50;
+          const diff = touchStartX - touchEndX;
+
+          if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0 && currentSlide < totalSlides - 1) {
+              // Swiped left - next slide
+              updateSlide(currentSlide + 1);
+            } else if (diff < 0 && currentSlide > 0) {
+              // Swiped right - previous slide
+              updateSlide(currentSlide - 1);
+            }
           }
-        }
-      }, { passive: true });
+        },
+        { passive: true }
+      );
     }
-    
+
     // Initialize
     createFloatingElements();
     // Pre-set container height to first slide
-    const firstContainer = document.querySelector('.presentation-content');
+    const firstContainer = document.querySelector(".presentation-content");
     if (firstContainer && slides[0]) {
-      firstContainer.style.height = slides[0].offsetHeight + 'px';
+      firstContainer.style.height = slides[0].offsetHeight + "px";
     }
     updateSlide(0, false);
-    
+
     // Auto-start presentation after 1.5 seconds
     setTimeout(() => {
       if (!isAutoPlaying) {
         isAutoPlaying = true;
         startAutoPlay();
-        playKawaiiSound('auto');
+        playKawaiiSound("auto");
       }
     }, 1500);
 
     // Pause autoplay if tab is hidden
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        stopAutoPlay();
-      } else if (isAutoPlaying && !autoPlayInterval) {
-        startAutoPlay();
-      }
-    }, { passive: true });
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        if (document.hidden) {
+          stopAutoPlay();
+        } else if (isAutoPlaying && !autoPlayInterval) {
+          startAutoPlay();
+        }
+      },
+      { passive: true }
+    );
 
     // Expose controls for navigation hide/show
     window._presentationControl = {
       onShow: () => {
         // Ensure container height syncs after being hidden
-        const container = document.querySelector('.presentation-content');
+        const container = document.querySelector(".presentation-content");
         if (container && slides[currentSlide]) {
-          container.style.height = slides[currentSlide].offsetHeight + 'px';
+          container.style.height = slides[currentSlide].offsetHeight + "px";
         }
         if (isAutoPlaying && !autoPlayInterval) startAutoPlay();
       },
       onHide: () => {
         stopAutoPlay();
-        const container = document.querySelector('.presentation-content');
-        if (container) container.style.height = 'auto';
-      }
+        const container = document.querySelector(".presentation-content");
+        if (container) container.style.height = "auto";
+      },
     };
   }
 
@@ -4403,7 +5984,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Add bonus hearts for eating floating hearts
       if (heartsEaten > 0) {
-        try { SFX.play("hearts.click"); } catch (_) {}
+        try {
+          SFX.play("hearts.click");
+        } catch (_) {}
         addHearts(heartsEaten);
       }
     });
@@ -4430,23 +6013,91 @@ document.addEventListener("DOMContentLoaded", () => {
     preload.src = swallowSrc;
 
     function start() {
-      let x = -120;
+      // Randomize initial direction and side; gif faces left by default
+      let vx = Math.random() < 0.5 ? 1.2 : -1.2; // px per frame (approx)
+      let x = vx > 0 ? -100 : window.innerWidth + 100;
       let y =
         window.innerHeight * 0.12 + Math.random() * window.innerHeight * 0.4;
-      let vx = 1.2; // px per frame (approx)
+      let evil = false;
+      let eatenThisPass = 0;
+
+      // Toggle evil mode occasionally
+      setInterval(() => {
+        evil = Math.random() < 0.2 ? !evil : evil;
+        img.classList.toggle("evil", evil);
+        try {
+          // distinct cue on mode flip
+          if (evil) {
+            SFX.play("result.miss");
+          } else {
+            SFX.play("extra.sona");
+          }
+        } catch (_) {}
+      }, 8000);
+
+      // Shoo on click: speed up off-screen
+      img.addEventListener("click", () => {
+        vx = Math.sign(vx) * 4;
+        setTimeout(() => {
+          vx = Math.sign(vx) * 1.2;
+        }, 1500);
+      });
 
       function step() {
         x += vx;
-        if (x > window.innerWidth + 120) {
-          // reset and randomize altitude
-          x = -120;
+        // Reset when off either edge and randomize direction each pass
+        if (x > window.innerWidth + 120 || x < -120) {
+          vx = Math.random() < 0.5 ? 1.2 : -1.2;
+          x = vx > 0 ? -100 : window.innerWidth + 100;
           y = window.innerHeight * (0.12 + Math.random() * 0.5);
+          eatenThisPass = 0;
         }
-        img.style.transform = /*html*/`translate(${x}px, ${y}px)`;
+        const face = vx > 0 ? -1 : 1; // flip when moving right so Kirby faces direction
+        img.style.transform = /*html*/ `translate(${x}px, ${y}px) scaleX(${face})`;
 
-        // Eat nearby hearts
-        const hearts = document.querySelectorAll(".heart-particle");
-        hearts.forEach((h) => {
+        // Occasionally swoop higher for stars
+        if (Math.random() < 0.002) {
+          y = Math.max(60, y - 80 - Math.random() * 60);
+          // subtle whoosh on swoop
+          try {
+            const pan = (x / window.innerWidth) * 2 - 1;
+            SFX.play("swallow.swoop", {
+              volume: 0.45,
+              rate: evil ? 0.92 : 1.02,
+              pan,
+            });
+          } catch (_) {}
+        } else if (Math.random() < 0.002) {
+          y = Math.min(window.innerHeight * 0.8, y + 80 + Math.random() * 60);
+          try {
+            const pan = (x / window.innerWidth) * 2 - 1;
+            SFX.play("swallow.swoop", {
+              volume: 0.42,
+              rate: evil ? 0.9 : 1.0,
+              pan,
+            });
+          } catch (_) {}
+        }
+
+        // Dynamic speed: more hearts -> speed up, fewer -> slow
+        const onScreenHearts =
+          document.querySelectorAll(".heart-particle").length;
+        if (onScreenHearts > 10) vx = Math.sign(vx) * 1.8;
+        else if (onScreenHearts < 4) vx = Math.sign(vx) * 1.1;
+
+        // If shield active, skip consuming hearts
+        const shielded =
+          typeof __heartShieldUntil === "number" &&
+          Date.now() < __heartShieldUntil;
+
+        // Prefer decoy treats
+        const decoys = document.querySelectorAll(".decoy-treat");
+        const targets = decoys.length
+          ? decoys
+          : document.querySelectorAll(
+              ".heart-particle, .heart-trail, .celebration-particle.star"
+            );
+        targets.forEach((h) => {
           const r1 = img.getBoundingClientRect();
           const r2 = h.getBoundingClientRect();
           const overlap = !(
@@ -4456,9 +6107,20 @@ document.addEventListener("DOMContentLoaded", () => {
             r2.top > r1.bottom - 10
           );
           if (overlap) {
+            if (!decoys.length && shielded) return; // shield blocks heart eats
+            if (!decoys.length && eatenThisPass >= 5) return; // cap per pass
             h.classList.add("heart-eaten");
-            try { SFX.play('hearts.click'); } catch (_) {}
+            try {
+              const pan = (x / window.innerWidth) * 2 - 1;
+              // chomp has slight pan; evil is lower pitch
+              SFX.play("swallow.chomp", {
+                volume: 0.5,
+                rate: evil ? 0.9 : 1.05,
+                pan,
+              });
+            } catch (_) {}
             setTimeout(() => h.remove(), 350);
+            if (!decoys.length) eatenThisPass++;
           }
         });
 
@@ -4466,15 +6128,60 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       requestAnimationFrame(step);
     }
+    // HeartZone “ward”: when user clicks heartZone, temporarily repel the swallow
+    const ward = document.getElementById("heartZone");
+    if (ward) {
+      ward.addEventListener("click", () => {
+        try {
+          img.style.filter =
+            "drop-shadow(0 0 6px rgba(255,0,0,0.6)) " +
+            (img.classList.contains("evil") ? "hue-rotate(200deg)" : "");
+        } catch (_) {}
+        // push it off-screen quickly
+        const rect = img.getBoundingClientRect();
+        const goRight = rect.left < window.innerWidth / 2;
+        const target = goRight ? window.innerWidth + 160 : -160;
+        const startX = rect.left;
+        const startTime = performance.now();
+        function dash(tNow) {
+          const t = Math.min(1, (tNow - startTime) / 400);
+          const nx = startX + (target - startX) * t;
+          const currFace = target > startX ? -1 : 1;
+          img.style.transform = `translate(${nx}px, ${rect.top}px) scaleX(${currFace})`;
+          if (t < 1) requestAnimationFrame(dash);
+          else
+            setTimeout(() => {
+              img.style.filter = "";
+            }, 300);
+        }
+        requestAnimationFrame(dash);
+      });
+    }
   }
 
   window.pixelBelleGarden = {
     addHearts: addHearts,
     sfx: {
-      play: (key) => { try { SFX.play(key); } catch (_) {} },
-      sega: () => { try { SFX.play('sega.tag'); } catch (_) {} },
-      setEnabled: (on) => { try { SFX.setEnabled(!!on); } catch (_) {} },
-      setVolume: (v) => { try { SFX.setVolume(v); } catch (_) {} },
+      play: (key) => {
+        try {
+          SFX.play(key);
+        } catch (_) {}
+      },
+      sega: () => {
+        try {
+          SFX.play("sega.tag");
+        } catch (_) {}
+      },
+      setEnabled: (on) => {
+        try {
+          SFX.setEnabled(!!on);
+        } catch (_) {}
+      },
+      setVolume: (v) => {
+        try {
+          SFX.setVolume(v);
+        } catch (_) {}
+      },
     },
     showSection: (section) => {
       const link = document.querySelector(`[data-section="${section}"]`);
@@ -4503,3 +6210,195 @@ document.addEventListener("DOMContentLoaded", () => {
     "Try: pixelBelleGarden.addHearts(10) or pixelBelleGarden.spawnShimeji()"
   );
 });
+// Rhythm Lite shared state
+let RHY = { mult: 1 };
+function getRhythmMult() {
+  return RHY.mult || 1;
+}
+function setRhythmMult(m) {
+  RHY.mult = Math.max(1, Math.min(2, m));
+}
+window.getRhythmMult = getRhythmMult;
+
+function attachRhythmLite(cardId) {
+  const card = document.getElementById(cardId);
+  if (!card || card.querySelector(".rhythm-lite")) return;
+  const wrap = document.createElement("div");
+  wrap.className = "rhythm-lite";
+  wrap.style.cssText =
+    "position:relative;height:120px;margin:8px 0;border:2px dashed var(--border);border-radius:10px;background:linear-gradient(180deg,rgba(189,227,255,.25),rgba(207,246,230,.25));overflow:hidden;";
+  wrap.innerHTML = `<div class="lane" style="position:absolute;left:10px;right:10px;bottom:10px;height:6px;background:#2b2b44;border-radius:6px"></div>`;
+  const notesHost = document.createElement("div");
+  notesHost.className = "notes";
+  notesHost.style.cssText =
+    "position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;";
+  wrap.appendChild(notesHost);
+  const mLabel = document.createElement("div");
+  mLabel.style.cssText =
+    "position:absolute;right:8px;top:6px;font-weight:800;color:#596286;background:rgba(255,255,255,.9);border:2px solid var(--border);border-radius:8px;padding:2px 6px;";
+  mLabel.textContent = "x1.0";
+  wrap.appendChild(mLabel);
+  card.insertBefore(wrap, card.children[1] || card.firstChild);
+  // Tunable timing
+  let bpm = parseInt(
+    localStorage.getItem("rhythm.bpm") || String(window.__rhythmBpm || 100),
+    10
+  );
+  if (!isFinite(bpm)) bpm = 100;
+  bpm = Math.max(60, Math.min(220, bpm));
+  let travelMs = parseInt(localStorage.getItem("rhythm.travel") || "2200", 10);
+  if (!isFinite(travelMs)) travelMs = 2200;
+  travelMs = Math.max(800, Math.min(4000, travelMs));
+  let interval = 60000 / bpm; // ms per beat
+  let spawnId = null,
+    metroId = null;
+  // Controls UI
+  const controls = document.createElement("div");
+  controls.style.cssText =
+    "position:absolute;left:8px;top:6px;display:flex;gap:6px;align-items:center;background:rgba(255,255,255,.9);border:2px solid var(--border);border-radius:8px;padding:2px 6px;font-weight:800;color:#596286;";
+  controls.innerHTML = `
+        <label style="display:flex;align-items:center;gap:4px">BPM <input id="rl-bpm-${cardId}" type="number" min="60" max="220" step="1" value="${Math.round(
+    bpm
+  )}" style="width:58px;border:2px solid var(--border);border-radius:8px;padding:2px 4px;font-weight:800;color:#2b2b44" /></label>
+        <label style="display:flex;align-items:center;gap:4px">Travel <input id="rl-travel-${cardId}" type="number" min="800" max="4000" step="50" value="${Math.round(
+    travelMs
+  )}" style="width:70px;border:2px solid var(--border);border-radius:8px;padding:2px 4px;font-weight:800;color:#2b2b44" /></label>
+      `;
+  wrap.appendChild(controls);
+  function spawn() {
+    const now = performance.now();
+    const n = document.createElement("div");
+    n.className = "note";
+    n.style.cssText =
+      "position:absolute;left:calc(50% - 8px);top:-16px;width:16px;height:16px;border-radius:50%;background:linear-gradient(180deg,#a594f9,#6bc3ff);box-shadow:0 2px 6px rgba(43,43,68,.25);";
+    n.dataset.t = String(now + travelMs); // reach lane in configurable time
+    notesHost.appendChild(n);
+    n.animate(
+      [{ transform: "translateY(0)" }, { transform: "translateY(100px)" }],
+      { duration: travelMs, easing: "linear" }
+    );
+    setTimeout(() => {
+      if (n && n.parentNode) n.parentNode.removeChild(n);
+    }, travelMs + 100);
+  }
+  function pulse() {
+    if (!window.__rhythmMet) return;
+    try {
+      SFX.play("quiz.tick");
+    } catch (_) {}
+    wrap.animate([{ opacity: 1 }, { opacity: 0.92 }, { opacity: 1 }], {
+      duration: 160,
+    });
+  }
+  function start() {
+    stop();
+    spawn();
+    spawnId = (window.setIntervalTracked || window.setInterval)(
+      spawn,
+      interval
+    );
+    if (window.__rhythmMet) {
+      metroId = (window.setIntervalTracked || window.setInterval)(
+        pulse,
+        interval
+      );
+    }
+  }
+  function stop() {
+    if (spawnId) {
+      clearInterval(spawnId);
+      spawnId = null;
+    }
+    if (metroId) {
+      clearInterval(metroId);
+      metroId = null;
+    }
+  }
+  start();
+  // Controls wiring
+  const bpmInput = controls.querySelector(`#rl-bpm-${cardId}`);
+  const trvInput = controls.querySelector(`#rl-travel-${cardId}`);
+  const updateBpm = () => {
+    const v = parseInt(bpmInput.value, 10);
+    if (!isFinite(v)) return;
+    bpm = Math.max(60, Math.min(220, v));
+    interval = 60000 / bpm;
+    localStorage.setItem("rhythm.bpm", String(Math.round(bpm)));
+    start();
+  };
+  const updateTravel = () => {
+    const v = parseInt(trvInput.value, 10);
+    if (!isFinite(v)) return;
+    travelMs = Math.max(800, Math.min(4000, v));
+    localStorage.setItem("rhythm.travel", String(Math.round(travelMs)));
+  };
+  bpmInput.addEventListener("change", updateBpm);
+  bpmInput.addEventListener("input", () => {
+    /* light live update */ updateBpm();
+  });
+  trvInput.addEventListener("change", updateTravel);
+  function showHit(label) {
+    const fx = document.createElement("div");
+    fx.textContent = label + "!";
+    fx.style.cssText =
+      "position:absolute;left:50%;transform:translateX(-50%);bottom:24px;font-weight:900;color:#2b2b44;background:rgba(255,255,255,.9);border:2px solid var(--border);border-radius:10px;padding:2px 10px;";
+    wrap.appendChild(fx);
+    fx.animate(
+      [
+        { transform: "translate(-50%,0)", opacity: 1 },
+        { transform: "translate(-50%,-20px)", opacity: 0 },
+      ],
+      { duration: 600 }
+    );
+    setTimeout(() => fx.remove(), 600);
+  }
+  function onKey(e) {
+    if (e.code !== "Space") return;
+    const t = performance.now();
+    const ns = Array.from(notesHost.querySelectorAll(".note"));
+    let best = null,
+      bestDt = 1e9;
+    ns.forEach((el) => {
+      const dt = Math.abs(parseFloat(el.dataset.t) - t);
+      if (dt < bestDt) {
+        best = el;
+        bestDt = dt;
+      }
+    });
+    if (!best) return;
+    if (bestDt <= 100) {
+      setRhythmMult(getRhythmMult() + 0.15);
+      flashJudge(cardId, "COOL");
+      showHit("COOL");
+      try {
+        SFX.play("memory.match");
+      } catch (_) {}
+      best.remove();
+    } else if (bestDt <= 180) {
+      setRhythmMult(getRhythmMult() + 0.08);
+      flashJudge(cardId, "GREAT");
+      showHit("GREAT");
+      try {
+        SFX.play("ui.select");
+      } catch (_) {}
+      best.remove();
+    } else if (bestDt <= 260) {
+      setRhythmMult(getRhythmMult() + 0.02);
+      flashJudge(cardId, "FINE");
+      showHit("FINE");
+      try {
+        SFX.play("ui.move");
+      } catch (_) {}
+      best.remove();
+    } else {
+      setRhythmMult(1);
+      flashJudge(cardId, "MISS");
+      showHit("MISS");
+      try {
+        SFX.play("ui.unavailable");
+      } catch (_) {}
+    }
+    mLabel.textContent = "x" + getRhythmMult().toFixed(2);
+  }
+  document.addEventListener("keydown", onKey);
+}
