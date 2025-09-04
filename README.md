@@ -153,3 +153,15 @@ Edit configurations in `js/shimeji.js`:
 Made with 💖 for the retro web community and Miku fans everywhere! ✨
 
 *This site is always under construction!* 🚧
+
+## 🔖 Link to us
+
+Grab a badge and copy‑paste code at:
+
+https://babybelle.neocities.org/badge.html
+
+Quick HTML (responsive banner):
+
+<a href="https://babybelle.neocities.org/" target="_blank" rel="noopener">
+    <img src="https://babybelle.neocities.org/assets/discordServerBanner.png" alt="Visit BabyBelle" style="max-width:600px; width:100%; height:auto; border-radius:8px" />
+</a>

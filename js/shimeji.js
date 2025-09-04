@@ -828,55 +828,71 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Spawn initial creatures
-  function spawnCreatures() {
-    // Spawn 2 Miku companions
-    for (let i = 0; i < 2; i++) {
-      const miku = new EnhancedCreature(`miku-${i}`, MIKU_CONFIG, 'miku');
-      creatures.push(miku);
-    }
+// Spawn initial creatures (use window functions to create one of each)
+function spawnCreatures() {
+    const w = window.shimejiFunctions || {};
 
-    // Spawn 1 classic shimeji
-    const classic = new EnhancedCreature('classic-0', CLASSIC_CONFIG, 'classic');
-    creatures.push(classic);
+    const miku = w.spawnMiku ? w.spawnMiku() : (() => {
+        const c = new EnhancedCreature('miku-0', MIKU_CONFIG, 'miku');
+        creatures.push(c);
+        return c;
+    })();
 
-    console.log(`Spawned ${creatures.length} enhanced companions`);
-  }
+    const mikuAlt = w.spawnMikuAlt ? w.spawnMikuAlt() : (() => {
+        const c = new EnhancedCreature('miku-alt-0', MIKU_ALT_CONFIG, 'miku-alt');
+        creatures.push(c);
+        return c;
+    })();
 
-  // Global functions for interaction
-  window.shimejiFunctions = {
+    const mikuSketch = w.spawnMikuSketch ? w.spawnMikuSketch() : (() => {
+        const c = new EnhancedCreature('miku-sketch-0', MIKU_SKETCH_CONFIG, 'miku-sketch');
+        creatures.push(c);
+        return c;
+    })();
+
+    const classic = w.spawnClassic ? w.spawnClassic() : (() => {
+        const c = new EnhancedCreature('classic-0', CLASSIC_CONFIG, 'classic');
+        creatures.push(c);
+        return c;
+    })();
+
+    console.log(`Spawned ${creatures.length} enhanced companions`, { miku, mikuAlt, mikuSketch, classic });
+}
+
+// Global functions for interaction
+window.shimejiFunctions = {
     spawnMiku: () => {
-      if (creatures.length < MIKU_CONFIG.maxCreatures) {
-        const miku = new EnhancedCreature(`miku-${Date.now()}`, MIKU_CONFIG, 'miku');
-        creatures.push(miku);
-        return miku;
-      }
-      return null;
+        if (creatures.length < MIKU_CONFIG.maxCreatures) {
+            const miku = new EnhancedCreature(`miku-${Date.now()}`, MIKU_CONFIG, 'miku');
+            creatures.push(miku);
+            return miku;
+        }
+        return null;
     },
     spawnMikuAlt: () => {
-      if (creatures.length < MIKU_ALT_CONFIG.maxCreatures) {
-        const miku = new EnhancedCreature(`miku-alt-${Date.now()}`, MIKU_ALT_CONFIG, 'miku-alt');
-        creatures.push(miku);
-        return miku;
-      }
-      return null;
+        if (creatures.length < MIKU_ALT_CONFIG.maxCreatures) {
+            const miku = new EnhancedCreature(`miku-alt-${Date.now()}`, MIKU_ALT_CONFIG, 'miku-alt');
+            creatures.push(miku);
+            return miku;
+        }
+        return null;
     },
     spawnMikuSketch: () => {
-      if (creatures.length < MIKU_SKETCH_CONFIG.maxCreatures) {
-        const miku = new EnhancedCreature(`miku-sketch-${Date.now()}`, MIKU_SKETCH_CONFIG, 'miku-sketch');
-        creatures.push(miku);
-        return miku;
-      }
-      return null;
+        if (creatures.length < MIKU_SKETCH_CONFIG.maxCreatures) {
+            const miku = new EnhancedCreature(`miku-sketch-${Date.now()}`, MIKU_SKETCH_CONFIG, 'miku-sketch');
+            creatures.push(miku);
+            return miku;
+        }
+        return null;
     },
     
     spawnClassic: () => {
-      if (creatures.length < CLASSIC_CONFIG.maxCreatures) {
-        const classic = new EnhancedCreature(`classic-${Date.now()}`, CLASSIC_CONFIG, 'classic');
-        creatures.push(classic);
-        return classic;
-      }
-      return null;
+        if (creatures.length < CLASSIC_CONFIG.maxCreatures) {
+            const classic = new EnhancedCreature(`classic-${Date.now()}`, CLASSIC_CONFIG, 'classic');
+            creatures.push(classic);
+            return classic;
+        }
+        return null;
     },
     
     removeAll: () => {

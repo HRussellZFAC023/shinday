@@ -8,18 +8,22 @@
       name="description"
       content="A cozy pastel web home for Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) — links, music, games, study corner, and interactive Miku companions!"
     />
-  <meta property="og:title" content="Baby Belle — Pastel Miku Garden" />
+    <meta property="og:title" content="Baby Belle — Pastel Miku Garden" />
     <meta
       property="og:description"
       content="A magical retro website with interactive Miku friends and kawaii vibes"
     />
     <meta property="og:type" content="website" />
-  <meta property="og:image" content="" id="metaOgImage" />
+    <meta property="og:image" content="" id="metaOgImage" />
 
-  <link rel="icon" href="" id="faviconLink" />
+    <link rel="icon" href="" id="faviconLink" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
 
@@ -30,7 +34,7 @@
     <!-- Loading splash -->
     <div id="splash" class="splash-screen">
       <div class="splash-content">
-  <img src="" alt="Miku" class="splash-miku" id="splashMiku" />
+        <img src="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png" alt="Miku" class="splash-miku" id="splashMiku" />
         <h1 class="glitch" data-text="Baby Belle's Pixel Garden">
           Baby Belle's Pixel Garden
         </h1>
@@ -49,7 +53,9 @@
         <header id="header">
           <div class="header-content">
             <h1 id="siteTitle">Baby Belle's Pixel Garden</h1>
-            <p id="siteSub">where sweet dreams come to life ♡ • べべベルのデジタル庭</p>
+            <p id="siteSub">
+              where sweet dreams come to life ♡ • べべベルのデジタル庭
+            </p>
           </div>
           <div id="floatingMikusContainer" class="floating-mikus"></div>
         </header>
@@ -58,7 +64,8 @@
         <div id="statusBar" class="status-bar">
           <div class="status-left">
             <div class="status-item">
-              <span class="blink" id="statusDot">●</span> <span id="onlineStatus">Online</span>
+              <span class="blink" id="statusDot">●</span>
+              <span id="onlineStatus">Online</span>
             </div>
             <div class="status-item">
               🎵 <span id="radioStatus">Kawaii FM 📻</span>
@@ -73,7 +80,9 @@
               <li><a href="#socials" data-section="socials">🔗 Socials</a></li>
               <li><a href="#study" data-section="study">📚 日本語</a></li>
               <li><a href="#games" data-section="games">🎮 Games</a></li>
-              <li><a href="#shrine" data-section="shrine">⛩️ Miku Shrine</a></li>
+              <li>
+                <a href="#shrine" data-section="shrine">⛩️ Miku Shrine</a>
+              </li>
             </ul>
           </nav>
         </div>
@@ -83,7 +92,7 @@
           <!-- Left sidebar -->
           <aside id="leftSidebar">
             <div class="widget">
-                <h3>📻 Kawaii Radio</h3>
+              <h3>📻 miku radio</h3>
               <div class="radio-widget">
                 <div class="retro-radio">
                   <div class="radio-display">
@@ -103,11 +112,16 @@
               </div>
             </div>
 
-            
-
             <div class="widget">
-              <h3>🐾 Your e-pet</h3>
-              <iframe width="314" height="321" scrolling="no" src="" frameborder="0" id="petIframe"></iframe>
+              <h3>🐾 Your new best friend~!</h3>
+              <iframe
+                width="314"
+                height="321"
+                scrolling="no"
+                src=""
+                frameborder="0"
+                id="petIframe"
+              ></iframe>
               <small style="display: block; color: #596286; margin-top: 6px"
                 >Powered by
                 <a
@@ -120,7 +134,7 @@
             </div>
 
             <div class="widget">
-              <h3>👥 Friends</h3>
+              <h3>👥 MyFriends</h3>
               <div class="friends-list" id="friendsList">
                 <!-- Will be populated by JS -->
               </div>
@@ -133,7 +147,12 @@
                   <img src="" alt="Computer" class="badge" id="statBadge1" />
                 </div>
                 <div class="stat-item">
-                  <img src="" alt="Made with love" class="badge" id="statBadge2" />
+                  <img
+                    src=""
+                    alt="Made with love"
+                    class="badge"
+                    id="statBadge2"
+                  />
                 </div>
                 <div class="visitor-counter">
                   <span class="counter-label">Visitors:</span>
@@ -199,8 +218,10 @@
                     <div id="heartZone" class="heart-zone">
                       Click to collect hearts! 💖
                     </div>
-                    <p>💖 Hearts collected: <span id="gameHeartCount">0</span></p>
-                    <button id="resetHearts" class="pixel-btn">Reset</button>
+                    <p>
+                      💖 Hearts collected: <span id="gameHeartCount">0</span>
+                    </p>
+                        <!-- Reset button removed: heart collector persists and cannot be reset from UI -->
                   </div>
                 </div>
 
@@ -243,7 +264,12 @@
               <h2>⛩️ Miku Shrine</h2>
               <div class="shrine-content">
                 <div class="shrine-altar">
-                  <img src="" alt="Miku Shrine" class="shrine-image" id="shrineMiku" />
+                  <img
+                    src=""
+                    alt="Miku Shrine"
+                    class="shrine-image"
+                    id="shrineMiku"
+                  />
                   <div class="offering-candles">
                     <div class="candle">🕯️</div>
                     <div class="candle">🕯️</div>
@@ -280,8 +306,35 @@
 
           <!-- Right sidebar -->
           <aside id="rightSidebar">
+            <div class="widget" id="jpHudWidget">
+              <h3>🎤 Diva HUD</h3>
+              <div class="jp-hud-widget">
+                <div class="hud-line"><strong>💖 Hearts:</strong> <span id="hudHearts">0</span></div>
+                <div class="hud-line"><strong>❤️ Lives:</strong> <span id="hudLives">3</span>/<span id="hudMaxLives">5</span></div>
+                <div class="hud-controls">
+                  <label class="hud-label">Game:</label>
+                  <select id="hudGame" class="pixel-btn">
+                    <option value="vocab">Vocab</option>
+                    <option value="kanji">Kanji</option>
+                    <option value="kotoba">Kotoba</option>
+                  </select>
+                  <label class="hud-label">Mode:</label>
+                  <select id="hudMode" class="pixel-btn">
+                    <option value="jp-en">JP→EN</option>
+                    <option value="en-jp">EN→JP</option>
+                    <option value="meaning">Meaning→Kanji</option>
+                    <option value="reading">Kanji→Reading</option>
+                  </select>
+                  <button id="hudTimed" class="pixel-btn" data-on="0">Timed: OFF</button>
+                </div>
+                <div class="hud-actions">
+                  <button id="hudStart" class="pixel-btn">▶️ Start Song</button>
+                  <button id="hudEnd" class="pixel-btn">⏹️ End Song</button>
+                </div>
+              </div>
+            </div>
             <div class="widget">
-                <h3 id="quickLinksTitle">🌟 Quick Links</h3>
+              <h3 id="quickLinksTitle">🌟 Quick Links</h3>
               <ul class="quick-links" id="quickLinksList">
                 <!-- Will be populated by JS -->
               </ul>
@@ -327,16 +380,15 @@
 
       <!-- Background animations -->
       <div class="bg-animations">
-        <div class="floating-hearts">💖 💙 💚 💛 💜 🤍 🖤 💖 💙 💚 💖 💙 💚 💛 💜 🤍 🖤 💖 💙 💚</div>
+        <div class="floating-hearts">
+        </div>
       </div>
     </div>
 
     <!-- Scripts -->
-  <script src="./js/shimeji.js"></script>
-  <!-- Centralized editable copy -->
-  <script src="./js/content.js"></script>
+    <script src="./js/shimeji.js"></script>
+    <!-- Centralized editable copy -->
+    <script src="./js/content.js"></script>
     <script src="./js/main.js"></script>
-
-
   </body>
 </html>

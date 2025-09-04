@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Games • Baby Belle's Pixel Garden ✨</title>
+    <meta name="description" content="Interactive kawaii games from Baby Belle's garden - Memory game, Heart collector, and Miku gacha!" />
+    <link rel="icon" href="./assets/icon.jpg" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/styles.css" />
+    <style>
+      /* Embed-specific styles */
+      body {
+        padding: 20px;
+      }
+      
+      #container {
+        max-width: 100%;
+        padding: 0;
+      }
+      
+      /* Hide header and sidebar for clean embed */
+      #header, #leftSidebar, #rightSidebar, #statusBar, #footer {
+        display: none;
+      }
+      
+      #flex {
+        display: block;
+      }
+      
+      #mainContent {
+        margin: 0;
+        padding: 0;
+      }
+      
+      .content-section {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 0;
+      }
+      
+      .game-widget {
+        background: var(--panel);
+        border: 3px solid var(--border);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+      
+      /* Make games more compact for embedding */
+      .memory-grid {
+        max-width: 280px;
+        margin: 0 auto;
+      }
+      
+      .heart-zone {
+        height: 150px;
+      }
+      
+      .gacha {
+        max-width: 100%;
+      }
+      
+      /* Kawaii embed indicator */
+      .embed-indicator {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 10px;
+        background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-pink));
+        border-radius: 15px;
+        border: 2px solid var(--border);
+      }
+      
+      .embed-indicator a {
+        color: var(--ink);
+        text-decoration: none;
+        font-weight: 700;
+      }
+      
+      .embed-indicator a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div class="embed-indicator">
+        <p>🌸 <a href="https://babybelle.neocities.org/" target="_blank" rel="noopener">Playing from Baby Belle's Pixel Garden</a> ✨</p>
+      </div>
+      
+      <div id="flex">
+        <main id="mainContent">
+          <section id="games" class="content-section active">
+            <div class="games-grid">
+              <div class="game-widget">
+                <h3>🧩 Miku Memory Game</h3>
+                <div id="memoryGame" class="memory-grid">
+                  <!-- Will be populated by JS -->
+                </div>
+                <button id="resetMemory" class="pixel-btn">Reset Game</button>
+              </div>
+
+              <div class="game-widget">
+                <h3>💖 Heart Collector</h3>
+                <div class="heart-game">
+                  <div id="heartZone" class="heart-zone">
+                    Click to collect hearts! 💖
+                  </div>
+                  <p>
+                    💖 Hearts collected: <span id="gameHeartCount">0</span>
+                  </p>
+                  <button id="resetHearts" class="pixel-btn">Reset</button>
+                </div>
+              </div>
+
+              <div class="game-widget">
+                <h3>🎰 Miku Gacha</h3>
+                <div class="gacha" id="mikuGacha">
+                  <div class="gacha-header">
+                    <div class="gacha-tokens">
+                      🎟️ Tickets: <span id="gachaTokens">0</span>
+                    </div>
+                    <div class="gacha-actions">
+                      <button id="gachaPull1" class="pixel-btn">Pull x1</button>
+                      <button id="gachaPull10" class="pixel-btn">Pull x10</button>
+                      <button id="gachaDaily" class="pixel-btn">Daily Ticket</button>
+                      <button id="gachaConvert" class="pixel-btn">100💖 → +1</button>
+                    </div>
+                  </div>
+                  <div id="gachaResults" class="gacha-results"></div>
+                  <div class="gacha-footer">
+                    <button id="gachaCollectionBtn" class="pixel-btn">Open MikuDex</button>
+                  </div>
+                  <div id="mikuDex" class="gacha-collection hidden"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./js/shimeji.js"></script>
+    <script src="./js/content.js"></script>
+    <script src="./js/main.js"></script>
+  </body>
+</html>
