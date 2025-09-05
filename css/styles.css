@@ -933,7 +933,9 @@ main {
   border: 2px solid var(--border);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow), 0 6px 24px rgba(165, 148, 249, 0.08);
+  position: relative;
+  overflow: hidden;
 }
 
 /* Mode overlay (game mode picker) */
@@ -1080,6 +1082,209 @@ main {
   min-height: 48px;
 }
 
+/* ====== ULTIMATE PROJECT DIVA BEATPAD SYSTEM ====== */
+.rhythm-grid {
+  position: relative;
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  grid-template-rows: repeat(2, 1fr) !important;
+  gap: 12px !important;
+  padding: 8px;
+  z-index: 10;
+}
+
+/* PlayStation Colors with Neon Glow */
+:root {
+  --ps-triangle: #00ff88;  /* Neon Green */
+  --ps-circle: #ff0080;    /* Hot Pink */
+  --ps-cross: #0088ff;     /* Electric Blue */
+  --ps-square: #ffaa00;    /* Bright Orange */
+}
+
+/* Beatpad Button Base */
+.beatpad-btn {
+  position: relative !important;
+  min-height: 80px !important;
+  border: 3px solid transparent !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  overflow: hidden !important;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  word-wrap: break-word !important;
+  hyphens: auto !important;
+}
+
+/* PlayStation Symbol Styling */
+.beatpad-btn[data-ps="triangle"] {
+  border-color: var(--ps-triangle) !important;
+  color: var(--ps-triangle) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), inset 0 0 20px rgba(0, 255, 136, 0.1) !important;
+}
+
+.beatpad-btn[data-ps="circle"] {
+  border-color: var(--ps-circle) !important;
+  color: var(--ps-circle) !important;
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.3), inset 0 0 20px rgba(255, 0, 128, 0.1) !important;
+}
+
+.beatpad-btn[data-ps="cross"] {
+  border-color: var(--ps-cross) !important;
+  color: var(--ps-cross) !important;
+  box-shadow: 0 0 20px rgba(0, 136, 255, 0.3), inset 0 0 20px rgba(0, 136, 255, 0.1) !important;
+}
+
+.beatpad-btn[data-ps="square"] {
+  border-color: var(--ps-square) !important;
+  color: var(--ps-square) !important;
+  box-shadow: 0 0 20px rgba(255, 170, 0, 0.3), inset 0 0 20px rgba(255, 170, 0, 0.1) !important;
+}
+
+/* PlayStation Symbol Icons */
+.beatpad-btn::before {
+  content: attr(data-symbol);
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  opacity: 0.8;
+  z-index: 2;
+}
+
+/* Keyboard Hint */
+.beatpad-btn::after {
+  content: attr(data-key);
+  position: absolute;
+  bottom: 8px;
+  left: 12px;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  opacity: 0.6;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px 6px;
+  border-radius: 6px;
+  z-index: 2;
+}
+
+/* Hover Effects */
+.beatpad-btn:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  filter: brightness(1.1) !important;
+}
+
+.beatpad-btn[data-ps="triangle"]:hover {
+  box-shadow: 0 8px 30px rgba(0, 255, 136, 0.5), inset 0 0 30px rgba(0, 255, 136, 0.2) !important;
+}
+
+.beatpad-btn[data-ps="circle"]:hover {
+  box-shadow: 0 8px 30px rgba(255, 0, 128, 0.5), inset 0 0 30px rgba(255, 0, 128, 0.2) !important;
+}
+
+.beatpad-btn[data-ps="cross"]:hover {
+  box-shadow: 0 8px 30px rgba(0, 136, 255, 0.5), inset 0 0 30px rgba(0, 136, 255, 0.2) !important;
+}
+
+.beatpad-btn[data-ps="square"]:hover {
+  box-shadow: 0 8px 30px rgba(255, 170, 0, 0.5), inset 0 0 30px rgba(255, 170, 0, 0.2) !important;
+}
+
+/* Active/Press Animation */
+.beatpad-btn:active {
+  transform: scale(0.95) translateY(-2px) !important;
+  animation: divaHitPulse 0.3s ease !important;
+}
+
+.beatpad-btn:disabled {
+  opacity: 0.4 !important;
+  transform: none !important;
+  filter: grayscale(0.8) !important;
+}
+
+/* Falling Beat Notes */
+.beat-note {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.beat-note.triangle {
+  background: radial-gradient(circle, var(--ps-triangle), #00cc66);
+  box-shadow: 0 0 12px var(--ps-triangle);
+}
+
+.beat-note.circle {
+  background: radial-gradient(circle, var(--ps-circle), #cc0060);
+  box-shadow: 0 0 12px var(--ps-circle);
+}
+
+.beat-note.cross {
+  background: radial-gradient(circle, var(--ps-cross), #0066cc);
+  box-shadow: 0 0 12px var(--ps-cross);
+}
+
+.beat-note.square {
+  background: radial-gradient(circle, var(--ps-square), #cc8800);
+  box-shadow: 0 0 12px var(--ps-square);
+}
+
+/* Spotlight Sweep Effect */
+.spotlight-sweep {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.1) 20%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    rgba(255, 255, 255, 0.1) 80%, 
+    transparent 100%);
+  pointer-events: none;
+  z-index: 5;
+  animation: spotlightSweep 2s ease-in-out;
+}
+
+/* Confetti Particles */
+.confetti-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  pointer-events: none;
+  z-index: 9;
+}
+
+.confetti-particle.triangle {
+  background: var(--ps-triangle);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.confetti-particle.circle {
+  background: var(--ps-circle);
+  border-radius: 50%;
+}
+
+.confetti-particle.cross {
+  background: var(--ps-cross);
+  clip-path: polygon(20% 0%, 0% 20%, 30% 50%, 0% 80%, 20% 100%, 50% 70%, 80% 100%, 100% 80%, 70% 50%, 100% 20%, 80% 0%, 50% 30%);
+}
+
+.confetti-particle.square {
+  background: var(--ps-square);
+}
+
 /* Special kanji emphasis */
 #kanjiQuestion {
   font-size: 36px;
@@ -1195,6 +1400,7 @@ main {
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  overflow: visible;
 }
 .result-panel {
   background: #fff;
@@ -1205,15 +1411,25 @@ main {
   box-shadow: var(--shadow);
   text-align: center;
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* allow decorative rings to extend */
+  margin: 60px; /* provide space for rings to expand */
 }
 .result-panel.win { background-image: url('../assets/win.jpg'); background-size: cover; background-position: center; }
 .result-panel.gamer { background-image: url('../assets/Gamer.png'); background-size: cover; background-position: center; }
 .result-panel.win, .result-panel.gamer { color: #2b2b44; }
+.result-panel h2 {
+  margin: 0 0 6px;
+  font-weight: 900;
+  background: linear-gradient(90deg, #6bc3ff, #a594f9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 .result-rings {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  overflow: visible;
 }
 .ring {
   position: absolute;
@@ -2244,6 +2460,112 @@ main {
     opacity: 0;
     transform: translateX(-50%) translateY(-10px) scale(0.8);
   }
+}
+
+@keyframes idolSpeaking {
+  0%, 100% { transform: translateX(-50%) scale(1) translateY(0); }
+  25% { transform: translateX(-50%) scale(1.05) translateY(-3px); }
+  50% { transform: translateX(-50%) scale(1.08) translateY(-5px); }
+  75% { transform: translateX(-50%) scale(1.05) translateY(-2px); }
+}
+
+@keyframes ringExpand {
+  0% { 
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% { 
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes divaHitPulse {
+  0% { 
+    box-shadow: 0 0 0 0 currentColor;
+    transform: scale(0.95) translateY(-2px);
+  }
+  50% { 
+    box-shadow: 0 0 0 20px transparent;
+    transform: scale(1) translateY(-4px);
+  }
+  100% { 
+    box-shadow: 0 0 0 0 transparent;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes spotlightSweep {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes beatFall {
+  0% {
+    transform: translateY(-20px) scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(120px) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes perfectTiming {
+  0% { 
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% { 
+    transform: scale(1.1);
+    filter: brightness(1.3) saturate(1.5);
+  }
+  100% { 
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes comboGlow {
+  0% { 
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  50% { 
+    box-shadow: 0 0 30px 10px currentColor;
+  }
+  100% { 
+    box-shadow: 0 0 0 0 currentColor;
+  }
+}
+
+@keyframes stageLighting {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.7; }
+}
+
+/* Stage visuals */
+.stage-floor { pointer-events: none; }
+.stage-lighting { pointer-events: none; }
+.stage-idol {
+  image-rendering: pixelated;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.25));
+  transform-origin: bottom center;
+  pointer-events: none;
+}
+
+@media (max-width: 540px) {
+  .stage-idol { width: 76px !important; }
 }
 
 @keyframes fadeToast {

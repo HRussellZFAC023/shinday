@@ -1,5 +1,39 @@
 /* Main JavaScript for PixelBelle's Garden */
-(() => {
+console.log("🌸 Main.js starting execution...");
+// Fail-safe splash bootstrap: ensures Enter/click transitions even if later code fails
+(function failsafeSplashBootstrap(){
+  try {
+    const wire = () => {
+      try {
+        const splash = document.getElementById('splash');
+        const btn = document.getElementById('enterSite');
+        const main = document.getElementById('mainSite');
+        if (!splash || !btn || !main) return;
+        if (splash.dataset.wired === '1') return; // idempotent
+        splash.dataset.wired = '1';
+        const enter = () => {
+          if (window.__entered) return;
+          window.__entered = true;
+          try { btn.disabled = true; } catch(_) {}
+          try { splash.style.animation = 'none'; } catch(_) {}
+          try { splash.style.display = 'none'; } catch(_) {}
+          try { main.classList.remove('hidden'); } catch(_) {}
+          // Try to start the site if available
+          try {
+            if (typeof initSite === 'function') initSite();
+            else if (typeof window.initSite === 'function') window.initSite();
+          } catch(_) {}
+        };
+        btn.addEventListener('click', enter, { once: true });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.keyCode === 13) enter();
+        }, { capture: true });
+      } catch(_) {}
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);
+    else wire();
+  } catch(_) {}
+})();
   const C = window.SITE_CONTENT || {};
 
   // ====== MIKU ICON HELPER ======
@@ -21,6 +55,7 @@
   // ====== SFX AUDIO ENGINE (asset-based) ======
   // Loads and plays high-quality SFX from assets/SFX. Minimal, lazy-loaded, and shared.
   (function initSfxEngine() {
+    try { if (window.SFX) return; } catch(_){}
     const BASE = "./assets/SFX";
     const p = (sub) => `${BASE}/${sub}`;
     const MAP = {
@@ -762,12 +797,17 @@
 
   // ====== OPTIMIZED SPLASH SCREEN ======
   function initSplash() {
+    console.log("initSplash called!");
     const splash = byId("splash");
     const enterBtn = byId("enterSite");
     const mainSite = byId("mainSite");
     let isEntering = false;
 
-    if (!splash || !enterBtn || !mainSite) return;
+    if (!splash || !enterBtn || !mainSite) {
+      console.log("Missing elements:", { splash: !!splash, enterBtn: !!enterBtn, mainSite: !!mainSite });
+      return;
+    }
+    console.log("All splash elements found, setting up event listeners");
 
     // Start preloading critical assets while splash is showing
     (function preloadSplashAssets() {
@@ -859,8 +899,14 @@
     })();
 
     const handleEnter = () => {
+      console.log("handleEnter called!");
       if (isEntering) return;
       isEntering = true;
+      // Best-effort cleanup to avoid duplicate triggers
+      try { document.removeEventListener("keydown", handleKeyPress); } catch(_) {}
+      try { enterBtn.removeEventListener("click", handleEnter); } catch(_) {}
+      try { if (window._splashTimeout) { clearTimeout(window._splashTimeout); } } catch(_) {}
+      try { enterBtn.disabled = true; } catch(_) {}
       try {
         SFX.play("ui.teleport");
       } catch (_) {}
@@ -873,7 +919,18 @@
       }, 800);
     };
 
-    enterBtn.addEventListener("click", handleEnter, { once: true });
+  enterBtn.addEventListener("click", handleEnter, { once: true });
+    console.log("Click event listener added to enter button");
+    
+    // Also listen for Enter key press
+    const handleKeyPress = (e) => {
+      if (e.key === 'Enter' || e.keyCode === 13) {
+        console.log("Enter key pressed!");
+        handleEnter();
+      }
+    };
+  document.addEventListener("keydown", handleKeyPress, { capture: true });
+  console.log("Keydown event listener added for Enter key (persistent)");
 
     // Auto-enter with cleanup
     const autoEnterTimeout = setTimeout(() => {
@@ -1534,8 +1591,10 @@
     initNavigation();
     initStatusBar();
     // Start BGM first; radio will override if user plays it
-    initBgm();
-    initRadio();
+    try {
+      if (window.AudioMod) { AudioMod.initBgm(); AudioMod.initRadio(); }
+      else { initBgm && initBgm(); initRadio && initRadio(); }
+    } catch (_) {}
     initSocials();
     initJpGames();
     initGames();
@@ -1715,13 +1774,20 @@
     if (studyHeading) studyHeading.style.display = "none";
 
   container.innerHTML = /*html*/ `
-      <div class="study-card" id="startCard" style="position:relative;min-height:240px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+      <div class="study-card" id="startCard" style="position:relative;min-height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
         <div id="jpMikus" class="floating-mikus" style="position:absolute;right:10px;top:10px;pointer-events:none"></div>
         <div id="startMenu" class="start-menu">
           <div class="menu-grid" id="jpMenuGrid" tabindex="0" aria-label="Game Select">
             <button id="startVocab" class="pixel-btn menu-tile" data-idx="0" data-label="📝 Vocabulary Pop!">📝 Vocabulary Pop!</button>
             <button id="startKanji" class="pixel-btn menu-tile" data-idx="1" data-label="漢字 Master!">漢字 Master!</button>
             <button id="startKotoba" class="pixel-btn menu-tile" data-idx="2" data-label="💬 Miku × chat">💬 Miku × chat</button>
+            <button id="openSongSelect" class="pixel-btn menu-tile" data-idx="3" data-label="🎶 Song Select">🎶 Song Select</button>
+          </div>
+          <div id="unlockProgress" style="margin-top:10px">
+            <div style="font-weight:800;color:#596286;margin-bottom:4px">Song Unlocks</div>
+            <div style="background:#eee;border:2px solid var(--border);border-radius:10px;height:12px;overflow:hidden;position:relative">
+              <div id="unlockFill" style="height:100%;background:linear-gradient(90deg,#6bc3ff,#a594f9);width:0%"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1783,6 +1849,11 @@
         </div>
       </div>
     `;
+
+  // Mount modular game logic onto newly created DOM cards
+  try { window.Games && Games.vocab && typeof Games.vocab.mount === 'function' && Games.vocab.mount(); } catch(_){}
+  try { window.Games && Games.kanji && typeof Games.kanji.mount === 'function' && Games.kanji.mount(); } catch(_){}
+  try { window.Games && Games.kotoba && typeof Games.kotoba.mount === 'function' && Games.kotoba.mount(); } catch(_){}
 
     // Pre-start settings overlay (centralizes difficulty, timer, metronome, BPM, and game mode)
     (function ensureSettingsOverlay() {
@@ -1899,6 +1970,8 @@
         // Rhythm toggles (no BPM UI in this design)
         const savedRhythm = localStorage.getItem('rhythm.met') === '1';
         const savedRings = localStorage.getItem('rhythm.rings') !== '0'; // default ON
+        const savedAssist = localStorage.getItem('assist.on') === '1';
+        const savedNoFail = localStorage.getItem('nofail.on') === '1';
         if (rhythmBtn) {
           rhythmBtn.setAttribute('data-on', savedRhythm ? '1' : '0');
           rhythmBtn.textContent = `Rhythm Effects: ${savedRhythm ? 'ON' : 'OFF'}`;
@@ -1920,6 +1993,29 @@
         // Apply globals immediately so effects align with saved state
         window.__rhythmMet = !!savedRhythm;
         window.__rhythmRings = !!savedRings;
+        window.__assistMode = !!savedAssist;
+        window.__noFail = !!savedNoFail;
+        // Create Assist/No-Fail toggles if missing
+        const assistBtn = document.getElementById('setAssistBtn');
+        if (assistBtn) {
+          assistBtn.setAttribute('data-on', savedAssist ? '1' : '0');
+          assistBtn.textContent = `Assist: ${savedAssist ? 'ON' : 'OFF'}`;
+          assistBtn.onclick = () => {
+            const on = assistBtn.getAttribute('data-on') !== '1';
+            assistBtn.setAttribute('data-on', on ? '1' : '0');
+            assistBtn.textContent = `Assist: ${on ? 'ON' : 'OFF'}`;
+          };
+        }
+        const nofailBtn = document.getElementById('setNoFailBtn');
+        if (nofailBtn) {
+          nofailBtn.setAttribute('data-on', savedNoFail ? '1' : '0');
+          nofailBtn.textContent = `No‑Fail: ${savedNoFail ? 'ON' : 'OFF'}`;
+          nofailBtn.onclick = () => {
+            const on = nofailBtn.getAttribute('data-on') !== '1';
+            nofailBtn.setAttribute('data-on', on ? '1' : '0');
+            nofailBtn.textContent = `No‑Fail: ${on ? 'ON' : 'OFF'}`;
+          };
+        }
         // Timed uses per-game key; we'll update when opening
         function openWith(game) {
           selectGame(game);
@@ -1952,6 +2048,12 @@
           const ringsOn = ringsBtn ? ringsBtn.getAttribute('data-on') === '1' : true;
           window.__rhythmMet = !!rhythmOn; try { localStorage.setItem('rhythm.met', rhythmOn ? '1' : '0'); } catch(_) {}
           window.__rhythmRings = !!ringsOn; try { localStorage.setItem('rhythm.rings', ringsOn ? '1' : '0'); } catch(_) {}
+          const assistBtn = document.getElementById('setAssistBtn');
+          const nofailBtn = document.getElementById('setNoFailBtn');
+          const assistOn = assistBtn ? assistBtn.getAttribute('data-on') === '1' : false;
+          const nofailOn = nofailBtn ? nofailBtn.getAttribute('data-on') === '1' : false;
+          window.__assistMode = assistOn; try { localStorage.setItem('assist.on', assistOn ? '1' : '0'); } catch(_) {}
+          window.__noFail = nofailOn; try { localStorage.setItem('nofail.on', nofailOn ? '1' : '0'); } catch(_) {}
           // Gate start until site ready
           const startBtn = ov.querySelector('#startGameBtn');
           if (startBtn) {
@@ -2081,9 +2183,10 @@
       const cardId = which + "Card";
       const card = document.getElementById(cardId);
       if (!card) return;
-      // Set root.png as background on the game card
+      // Set jacket or root.png as background on the game card
       try {
-        card.style.backgroundImage = "url('./assets/root.png')";
+        let jacket = (window.Jukebox && Jukebox.songs && (function(){ try{ const curId = localStorage.getItem('jukebox.song'); const s = Jukebox.songs.find(x=>x.id===curId); return s && s.jacket; }catch(_){ return null; } })()) || './assets/root.png';
+        card.style.backgroundImage = `url('${jacket}')`;
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
         card.style.backgroundRepeat = "no-repeat";
@@ -2121,21 +2224,23 @@
         card.appendChild(idol);
       }
       
-      // Add stage lighting effects
+      // Add stage lighting effects and theme
       let lighting = card.querySelector('.stage-lighting');
       if (!lighting) {
         lighting = document.createElement('div');
         lighting.className = 'stage-lighting';
+        const theme = (function(){ try{ const curId=localStorage.getItem('jukebox.song'); const s=(Jukebox&&Jukebox.songs||[]).find(x=>x.id===curId); return (s&&s.theme)||'#a594f9'; }catch(_){ return '#a594f9'; } })();
         lighting.style.cssText = `
           position: absolute;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: radial-gradient(ellipse at center bottom, 
-            rgba(255,255,255,0.1) 0%, 
-            rgba(0,255,255,0.05) 30%, 
-            transparent 60%);
+          background: radial-gradient(ellipse at center bottom,
+            ${'rgba(255,255,255,0.12)'} 0%,
+            ${'rgba(255,255,255,0.08)'} 20%,
+            ${theme}22 40%,
+            transparent 70%);
           pointer-events: none;
           z-index: 1;
           animation: stageLighting 4s ease-in-out infinite alternate;
@@ -2253,6 +2358,15 @@
         const ov = document.getElementById("jpSettingsOverlay");
         if (ov && ov.__openWith) ov.__openWith("kotoba");
       });
+    const openSongSelectBtn = document.getElementById('openSongSelect');
+    if (openSongSelectBtn) openSongSelectBtn.addEventListener('click', ()=>{ try{ Jukebox.openSongSelect(); }catch(_){ alert('Song Select unavailable'); } });
+    // Unlock progress bar
+    try {
+      const maxReq = (Jukebox.songs||[]).reduce((m,s)=>Math.max(m,s.req||1),1);
+      const lvl = (Progression && Progression.getLevel && Progression.getLevel()) || parseInt(localStorage.getItem('study.level')||'1',10)||1;
+      const pct = Math.min(100, Math.round((lvl/maxReq)*100));
+      const fill = document.getElementById('unlockFill'); if (fill) fill.style.width = pct+'%';
+    } catch(_) {}
     if (vocabBack()) vocabBack().addEventListener("click", showMenu);
     if (kanjiBack()) kanjiBack().addEventListener("click", showMenu);
     if (kotobaBack()) kotobaBack().addEventListener("click", showMenu);
@@ -2407,12 +2521,10 @@
           new CustomEvent("kanji-start", { detail: { mode, timed } })
         );
       } else if (game === "kotoba") {
-        const start = document.getElementById("kotobaStart");
-        if (start) {
-          start.click();
-        }
+        document.dispatchEvent(new CustomEvent("kotoba-start", { detail: { timed: localStorage.getItem('kotoba.timed')==='1' } }));
       }
     }
+    try { window.__startSong = startSong; } catch(_){}
     function gradeFromStats() {
       const acc =
         (HUD.counts.COOL + HUD.counts.GREAT + HUD.counts.FINE) /
@@ -2442,11 +2554,47 @@
       );
       const rank = gradeFromStats();
       ov.querySelector("#resRank").textContent = rank;
+      // Tint result with current song theme
+      try {
+        const curId = localStorage.getItem('jukebox.song');
+        const s = (window.Jukebox && Jukebox.songs || []).find(x=>x.id===curId);
+        if (s && s.theme) {
+          const panelEl = ov.querySelector('.result-panel');
+          if (panelEl) panelEl.style.borderColor = s.theme;
+        }
+      } catch(_) {}
+      // Show preset thresholds
+      try {
+        const preset = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { key:'normal' };
+        const table = {
+          easy:    { clear: 500,  great: 900,  perfect: 1300 },
+          normal:  { clear: 700,  great: 1100, perfect: 1600 },
+          hard:    { clear: 900,  great: 1400, perfect: 2000 },
+          extreme: { clear: 1200, great: 1800, perfect: 2400 },
+        };
+        let th = table[preset.key] || table.normal;
+        try {
+          // Mode-based multipliers (kanji slightly stricter than vocab)
+          const g = (typeof HUD!=='undefined' && HUD.game) ? HUD.game : (localStorage.getItem('preferred.game')||'vocab');
+          const mult = g === 'kanji' ? 1.15 : 1.0;
+          th = { clear: Math.round(th.clear*mult), great: Math.round(th.great*mult), perfect: Math.round(th.perfect*mult) };
+        } catch(_) {}
+        const tEl = ov.querySelector('#resThresholds');
+        if (tEl) tEl.textContent = `Stage Clear: ${th.clear} • Great: ${th.great} • Perfect: ${th.perfect}`;
+      } catch(_) {}
       const panel = ov.querySelector(".result-panel");
       if (panel) {
         panel.classList.remove("win", "gamer");
         if (rank === "S" || rank === "A") panel.classList.add("win");
         else if (rank === "B") panel.classList.add("gamer");
+        // Apply theme accent from current song
+        try {
+          const s = (window.Jukebox && Jukebox.songs && (function(){ const id = localStorage.getItem('jukebox.song'); return (Jukebox.songs||[]).find(x=>x.id===id); })()) || null;
+          if (s && s.theme) {
+            panel.style.borderColor = s.theme;
+            panel.style.boxShadow = `0 10px 30px ${s.theme}33`;
+          }
+        } catch(_) {}
       }
       // Result voice line based on performance
       try {
@@ -2476,6 +2624,7 @@
           <p>Score: <strong id="resScore">0</strong> • Max Combo: <strong id="resMaxCombo">0</strong> • Time: <strong id="resTime">0s</strong></p>
           <p>COOL <strong id="resCool">0</strong> • GREAT <strong id="resGreat">0</strong> • FINE <strong id="resFine">0</strong> • SAD/MISS <strong id="resSad">0</strong></p>
           <h3>Rank: <span id="resRank">C</span></h3>
+          <div id="resThresholds" style="font-size:12px;color:#596286;margin-top:6px"></div>
           <div style="margin-top:10px"><button class="pixel-btn" id="resClose">Close</button></div>
         </div>`;
       document.body.appendChild(ov);
@@ -2551,6 +2700,7 @@
       }
     }
     function loseLife(cardId) {
+      if (window.__noFail) { renderLives(cardId); return; }
       if (HUD.lives > 0) {
         HUD.lives--;
         localStorage.setItem("jp.lives", String(HUD.lives));
@@ -2693,7 +2843,8 @@
 
     async function getVocabQuestion(direction) {
       // Force a 4-grid beatpad layout (3 decoys + 1 correct)
-      const decoyCount = 3;
+      const preset = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { options: 4 };
+      const decoyCount = Math.max(1, (preset.options || 4) - 1);
       if (vocabCache.pages.length === 0) await primeVocabPage(rnd(50) + 1);
       if (vocabCache.enDefs.size < 12 || vocabCache.jpSurfaces.size < 12)
         await primeVocabPage(rnd(50) + 1);
@@ -2787,7 +2938,8 @@
 
     async function getKanjiQuestion(mode) {
       // Force a 4-grid beatpad layout (3 decoys + 1 correct)
-      const decoyCount = 3;
+      const presetK = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { options: 4 };
+      const decoyCount = Math.max(1, (presetK.options || 4) - 1);
       // Map difficulty (1-9) to school grade (1-6)
       const d = (typeof window.getJpDifficulty === 'function' ? window.getJpDifficulty() : 3) || 3;
       const gradeMap = { 1:1, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:6, 9:6 };
@@ -2901,8 +3053,8 @@
 
     // Enhanced ultimate beatpad system integrated directly into quiz options
 
-    // Vocab Quiz (online-only Jisho)
-    (function vocabQuiz() {
+  // Vocab Quiz (online-only Jisho)
+  (function vocabQuiz() { if (true) {
       const qEl = document.getElementById("vocabQuestion");
       const cEl = document.getElementById("vocabChoices");
       const fb = document.getElementById("vocabFeedback");
@@ -2993,9 +3145,18 @@
           const q = await getVocabQuestion(direction);
           const correct = q.correct;
           qEl.innerHTML = q.promptHtml;
+          // Apply per-song preset
+          const PRESET = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { baseTime: 15, options: 4 };
+          // If options != 4, adjust grid layout
+          try {
+            const cols = PRESET.options >= 6 ? 3 : 2;
+            cEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            cEl.style.gridTemplateRows = `repeat(${Math.ceil(PRESET.options/cols)}, 1fr)`;
+          } catch(_) {}
+
           if (timed) {
             const { baseTime } = diffParams();
-            countdown = baseTime;
+            countdown = PRESET.baseTime || baseTime;
             timerEl.textContent = String(countdown);
             startAt = Date.now();
             if (tId) clearInterval(tId);
@@ -3021,7 +3182,10 @@
               }
             }, 1000);
           }
-          q.options.forEach((opt, idx) => {
+          // Trim or extend options according to preset
+          const opts = q.options.slice(0, PRESET.options || 4);
+          q.options = opts;
+          opts.forEach((opt, idx) => {
             const { btn } = createUltimateBeatpadButton(opt, idx, (text, element, style) => {
               if (lock) return;
               lock = true;
@@ -3125,10 +3289,10 @@
         }
       }
       // Start flow waits for overlay
-    })();
+    }})();
 
-    // Kanji Quiz (online-only KanjiAPI)
-    (function kanjiQuiz() {
+  // Kanji Quiz (online-only KanjiAPI)
+  (function kanjiQuiz() { if (true) {
       const qEl = document.getElementById("kanjiQuestion");
       const cEl = document.getElementById("kanjiChoices");
       const fb = document.getElementById("kanjiFeedback");
@@ -3221,9 +3385,15 @@
           const q = await getKanjiQuestion(mode);
           const correct = q.correct;
           qEl.innerHTML = q.promptHtml;
+          const PRESET2 = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { baseTime: 15, options: 4 };
+          try {
+            const cols2 = PRESET2.options >= 6 ? 3 : 2;
+            cEl.style.gridTemplateColumns = `repeat(${cols2}, 1fr)`;
+            cEl.style.gridTemplateRows = `repeat(${Math.ceil(PRESET2.options/cols2)}, 1fr)`;
+          } catch(_) {}
           if (timed) {
             const { baseTime } = diffParams();
-            countdown = baseTime;
+            countdown = PRESET2.baseTime || baseTime;
             timerEl.textContent = String(countdown);
             startAt = Date.now();
             if (tId) clearInterval(tId);
@@ -3249,7 +3419,8 @@
               }
             }, 1000);
           }
-          q.options.forEach((opt, idx) => {
+          const opts2 = q.options.slice(0, PRESET2.options || 4);
+          opts2.forEach((opt, idx) => {
             const { btn } = createUltimateBeatpadButton(opt, idx, (text, element, style) => {
               if (lock) return;
               lock = true;
@@ -3357,10 +3528,10 @@
         }
       }
       // Start flow waits for overlay
-    })();
+    }})();
 
     // Miku Meets Kotoba (chat-styled vocab multiple choice)
-    (function mikuKotoba() {
+  (function mikuKotoba() { if (true) {
       const chat = document.getElementById("kotobaChat");
       const cEl = document.getElementById("kotobaChoices");
       const start = document.getElementById("kotobaStart");
@@ -3395,7 +3566,9 @@
           say(
             `「${q.promptHtml.replace(/<[^>]+>/g, "")}」って、どういう意味？`
           );
-          q.options.forEach((opt, idx) => {
+          const PRESET3 = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { options: 4 };
+          const use = q.options.slice(0, PRESET3.options || 4);
+          use.forEach((opt, idx) => {
             const { btn } = createUltimateBeatpadButton(opt, idx, (text, element, style) => {
               if (lock) return;
               lock = true;
@@ -3495,7 +3668,7 @@
         start.style.display = 'none';
         round();
       });
-    })();
+    }} )();
   }
 
   function showSpotlightSweep(cardId) {
@@ -5996,7 +6169,9 @@
       // Perfect timing detection
       const now = performance.now();
       const timingSinceNote = now - (btn.dataset.lastBeatTime || 0);
-      const isPerfectTiming = timingSinceNote < 150; // 150ms window for perfect
+      let coolWindow = 150;
+      try { const p = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()); if (p && p.judge && p.judge.cool) coolWindow = p.judge.cool; } catch(_){}
+      const isPerfectTiming = timingSinceNote < coolWindow;
       
       if (isPerfectTiming) {
         btn.style.animation = 'perfectTiming 0.4s ease';
@@ -6119,7 +6294,9 @@
         
         // Store timing for perfect hit detection
         const fallTime = performance.now();
-        targetBtn.dataset.lastBeatTime = fallTime + 800; // 800ms fall time
+        let travel = 800;
+        try { const p = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()); if (p && p.travelMs) travel = p.travelMs; } catch(_){}
+        targetBtn.dataset.lastBeatTime = fallTime + travel; // fall time by preset
         
         beatsLayer.appendChild(beat);
         
@@ -6127,9 +6304,9 @@
         beat.animate([
           { transform: 'translateY(-20px) scale(0.8)', opacity: 0.8 },
           { transform: 'translateY(120px) scale(1)', opacity: 1 }
-        ], { duration: 800, easing: 'ease-in' });
+        ], { duration: (function(){ try{ const p = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()); return (p && p.travelMs) ? p.travelMs : 800; }catch(_){ return 800; } })(), easing: 'ease-in' });
         
-        setTimeout(() => beat.remove(), 800);
+        setTimeout(() => beat.remove(), (function(){ try{ const p=(window.Jukebox&&Jukebox.getPreset&&Jukebox.getPreset()); return (p&&p.travelMs)?p.travelMs:800; }catch(_){ return 800; } })());
       }
     }
     
@@ -6814,8 +6991,12 @@
   `;
   document.head.appendChild(sparkleStyles);
 
-  // Initialize splash screen
-  initSplash();
+  // Initialize splash screen when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSplash);
+  } else {
+    initSplash();
+  }
 
   // Expose love toasts globally for shimejis
   window.LOVE_TOASTS = LOVE_TOASTS;
@@ -7469,6 +7650,7 @@
   console.log(
     "Try: pixelBelleGarden.addHearts(10) or pixelBelleGarden.spawnShimeji()"
   );
+};
 // Rhythm Lite shared state
 let RHY = { mult: 1 };
 function getRhythmMult() {
@@ -7668,6 +7850,3 @@ function attachRhythmLite(cardId) {
   }
   document.addEventListener('keydown', onKey);
 }
-
-// Finalize: close main DOMContentLoaded scope
-}});

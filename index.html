@@ -353,15 +353,6 @@
             <div class="widget" id="jpHudWidget">
               <h3>🎤 Diva HUD</h3>
               <div class="jp-hud-widget">
-                <div class="hud-line">
-                  <strong>💖 Hearts:</strong> <span id="hudHearts">0</span>
-                </div>
-                <div class="hud-line">
-                  <strong>❤️ Lives:</strong> <span id="hudLives">3</span>/<span
-                    id="hudMaxLives"
-                    >5</span
-                  >
-                </div>
                 <!-- Moved Level bar into Diva HUD -->
                 <div class="hud-line" id="hudLevelWrap">
                   <strong>⭐ Level:</strong>
@@ -373,6 +364,12 @@
                       style="width: 0%"
                     ></div>
                   </div>
+                </div>
+                <div class="hud-line">
+                  <strong>❤️ Lives:</strong> <span id="hudLives">5</span>/<span
+                    id="hudMaxLives"
+                    >5</span
+                  >
                 </div>
                 <!-- Difficulty control that actually affects gameplay -->
                 <div
@@ -465,8 +462,22 @@
 
     <!-- Scripts -->
     <script src="./js/shimeji.js"></script>
+    <!-- Extracted core modules -->
+    <script src="./js/modules/sfx.js"></script>
+    <script src="./js/modules/audio.js"></script>
+    <!-- New modular helpers: progression + jukebox (non-breaking, attach to window) -->
+    <script src="./js/modules/progression.js"></script>
+    <script src="./js/modules/achievements.js"></script>
+    <script src="./js/modules/jukebox.js"></script>
+    <script src="./js/modules/games/index.js"></script>
+    <script src="./js/modules/games/vocab.js"></script>
+    <script src="./js/modules/games/kanji.js"></script>
+    <script src="./js/modules/games/kotoba.js"></script>
     <!-- Centralized editable copy -->
     <script src="./js/content.js"></script>
+  <!-- Load remaining modules before main.js -->
+    <script src="./js/modules/effects.js"></script>
+    <script src="./js/modules/quests.js"></script>
     <script src="./js/main.js"></script>
   </body>
 </html>
