@@ -4217,8 +4217,7 @@ console.log("🌸 Main.js starting execution...");
         if (h2) h2.textContent = C.games.title;
         const cards = document.querySelectorAll("#games .game-widget");
         const mem = cards[0],
-          heart = cards[1],
-          gacha = cards[2];
+          heart = cards[1];
         if (mem) {
           const h3 = mem.querySelector("h3");
           if (h3 && C.games.memoryTitle) {
@@ -4249,13 +4248,14 @@ console.log("🌸 Main.js starting execution...");
           const btn = document.getElementById("resetHearts");
           if (btn && C.games.heartsReset) btn.textContent = C.games.heartsReset;
         }
-        if (gacha) {
-          const h3 = gacha.querySelector("h3");
-          if (h3 && C.games.gachaTitle) {
+        const gachaSection = document.getElementById("gacha");
+        if (gachaSection) {
+          const gachaHeader = gachaSection.querySelector("h2");
+          if (gachaHeader && C.games.gachaTitle) {
             const gachaIcon = C.games.gachaIcon
               ? mikuIcon(C.games.gachaIcon, "🎰")
               : "🎰";
-            h3.innerHTML = /*html*/ `${gachaIcon} ${C.games.gachaTitle}`;
+            gachaHeader.innerHTML = /*html*/ `${gachaIcon} ${C.games.gachaTitle}`;
           }
           const dexBtn = document.getElementById("gachaCollectionBtn");
           if (dexBtn && C.games.gachaOpenDex)
@@ -4529,7 +4529,7 @@ console.log("🌸 Main.js starting execution...");
       let src = singer;
       if (!src) {
         // Prefer a pixel Miku if available, else any image
-        const pixelOnly = (Array.isArray(MIKU_IMAGES) ? MIKU_IMAGES : []).filter((u) => /\/assets\/pixel-miku\//i.test(u) || /@illufinch/i.test(u));
+        const pixelOnly = (Array.isArray(MIKU_IMAGES) ? MIKU_IMAGES : []).filter((u) => /\/assets\/pixel-miku\//i.test(u));
         if (pixelOnly.length) src = pixelOnly[0];
         else if (Array.isArray(MIKU_IMAGES) && MIKU_IMAGES.length) src = MIKU_IMAGES[0];
         else return;
@@ -5369,12 +5369,7 @@ console.log("🌸 Main.js starting execution...");
 
     function renderGallery() {
       // Only include pixel-art sources
-      const pixelOnly = MIKU_IMAGES.filter(
-        (u) =>
-          /\/assets\/pixel-miku\//i.test(u) ||
-          /Pixel Hatsune Miku by Cutebunni/i.test(u) ||
-          /@illufinch/i.test(u)
-      );
+  const pixelOnly = MIKU_IMAGES.filter((u) => /\/assets\/pixel-miku\//i.test(u) || /Pixel Hatsune Miku by Cutebunni/i.test(u));
 
   // Always include PixieBel surprise slot (hidden '?' until won)
   const pixieUrl = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
