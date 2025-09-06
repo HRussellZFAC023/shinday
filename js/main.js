@@ -6580,7 +6580,7 @@ console.log("🌸 Main.js starting execution...");
   console.log(
     "Try: pixelBelleGarden.addHearts(10) or pixelBelleGarden.spawnShimeji()"
   );
-};
+
 // Rhythm Lite shared state
 let RHY = { mult: 1 };
 function getRhythmMult() {

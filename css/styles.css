@@ -237,21 +237,15 @@ body {
   background-size: 300% 100%;
   border: 1px solid var(--border);
   transition: all 0.3s ease;
-  animation: navShimmer 8s linear infinite;
 }
 
 .status-nav a:hover,
 .status-nav a.active {
-  background: var(--accent);
-  color: white;
+  background: var(--pastel-pink);
   transform: translateY(-2px);
   animation: none;
 }
 
-@keyframes navShimmer {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 300% 0%; }
-}
 
 .status-item {
   display: flex;
