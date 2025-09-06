@@ -453,17 +453,6 @@ window.SITE_CONTENT = {
       { name: "Art Friends", url: "#", emoji: "🎨", mikuIcon: "cheering" },
     ],
   },
-
-  // Optional API endpoints for JP games (Mistval/Kotoba)
-  // If you self-host the Kotoba API, set these to valid endpoints
-  // Expected response shapes are flexible and adapted in code.
-  jpGames: {
-    api: {
-      // randomVocab: "https://your-kotoba.example.com/vocab/random",
-      // randomKanji: "https://your-kotoba.example.com/kanji/random",
-    },
-  },
-
   quickLinks: {
     title: "🌟 Quick Links",
     items: [
