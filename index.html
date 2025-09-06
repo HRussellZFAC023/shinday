@@ -222,30 +222,7 @@
                     <p>
                       💖 Hearts collected: <span id="gameHeartCount">0</span>
                     </p>
-                    <div
-                      class="heart-tools"
-                      style="
-                        display: flex;
-                        gap: 8px;
-                        flex-wrap: wrap;
-                        align-items: center;
-                      "
-                    >
-                      <button
-                        id="spawnDecoy"
-                        class="pixel-btn"
-                        title="Drop a decoy treat to distract the swallow"
-                      >
-                        Drop Decoy 🍪
-                      </button>
-                      <button
-                        id="activateShield"
-                        class="pixel-btn"
-                        title="Briefly ward the hearts against the swallow"
-                      >
-                        Shield ⛨
-                      </button>
-                    </div>
+                    <!-- Heart tools moved to right sidebar shop; UI hidden here -->
                     <!-- Reset button removed: heart collector persists and cannot be reset from UI -->
                   </div>
                 </div>
@@ -312,7 +289,16 @@
                       </button>
                     </div>
                   </div>
-                  <div id="gachaResults" class="gacha-results"></div>
+                  <!-- Persistent summon preview slot machine (idle state) -->
+                  <div id="gachaRotation" class="gacha-rotation">
+                    <div class="summon-preview">
+                      <div class="preview-reel">
+                        <img class="preview-image" src="" alt="Summon preview" />
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Results panel replaces rotation after a pull -->
+                  <div id="gachaResults" class="gacha-results" hidden></div>
                   <div class="gacha-footer">
                     <button id="gachaCollectionBtn" class="pixel-btn">
                       Open MikuDex
@@ -458,7 +444,20 @@
             </div>
 
             <div class="widget">
-              <h3>💫 Web Badges</h3>
+              <h3>�️ Shop</h3>
+              <div class="shop-panel">
+                <div class="shop-item">
+                  <button id="shopShield" class="pixel-btn" title="Ward hearts briefly">⛨ Shield (50💖)</button>
+                </div>
+                <div class="shop-item">
+                  <button id="shopDecoy" class="pixel-btn" title="Distract the swallower">🍪 Decoy (5💖)</button>
+                </div>
+                <div id="shopStatus" class="shop-status" aria-live="polite"></div>
+              </div>
+            </div>
+
+            <div class="widget">
+              <h3>�💫 Web Badges</h3>
               <div class="badges-collection" id="webBadges"></div>
             </div>
 
@@ -503,6 +502,7 @@
     <script src="./js/modules/games/vocab.js"></script>
     <script src="./js/modules/games/kanji.js"></script>
     <script src="./js/modules/games/kotoba.js"></script>
+    <!-- <script src="./js/modules/diva.js"></script> -->
     <!-- Centralized editable copy -->
     <script src="./js/content.js"></script>
     <!-- Load remaining modules before main.js -->

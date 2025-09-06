@@ -1127,7 +1127,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
         // Reward hearts for new companion!
         try {
-          if (window.pixelBelleGarden && window.pixelBelleGarden.addHearts) {
+          // Suppress the initial boot-time reward; allow rewards for user-triggered spawns later
+          const booting = !!window.__shimejiBoot;
+          if (!booting && window.pixelBelleGarden && window.pixelBelleGarden.addHearts) {
             window.pixelBelleGarden.addHearts(3);
             if (window.loveToast) window.loveToast("New companion! +3💖");
           }
@@ -1225,7 +1227,11 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 
   // Initialize companions
+  // Mark boot phase to avoid granting bonus hearts on initial auto-spawns
+  try { window.__shimejiBoot = true; } catch(_){}
   spawnCreatures();
+  // Clear the boot flag on next tick
+  setTimeout(()=>{ try{ window.__shimejiBoot = false; }catch(_){ } }, 0);
 
   // Economy tie-in: earn small hearts over time when companions are active
   (function shimejiEconomy() {

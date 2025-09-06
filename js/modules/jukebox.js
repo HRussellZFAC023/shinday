@@ -44,7 +44,7 @@
     wrap.style.cssText = 'position:fixed;right:16px;bottom:16px;width:360px;z-index:9999;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border:2px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(43,43,68,.25)';
     wrap.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border)">
-        <div style="font-weight:900">🎵 Miku Jukebox • <span id="jukeboxNow">Ready</span></div>
+        <div style=\"font-weight:900;display:flex;align-items:center;gap:8px\">🎵 Miku Jukebox • <span id=\"jukeboxNow\">Ready</span> <span title=\"hearts\" aria-label=\"hearts\">💖</span></div>
         <button id="jukeboxClose" class="pixel-btn" style="padding:4px 8px">✖</button>
       </div>
       <div style="width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;border-bottom-left-radius:12px;border-bottom-right-radius:12px">
@@ -61,6 +61,7 @@
 
   function play(song){
     if (!song) return;
+    try{ if (window.__pauseRadio) window.__pauseRadio(); }catch(_){ }
     const wrap = ensurePlayer();
     const iframe = document.getElementById('jukeboxIframe');
     const now = document.getElementById('jukeboxNow');
@@ -146,86 +147,36 @@
           <div style="padding:8px;font-weight:800;color:#2b2b44">${s.title}</div>
         </div>`
       }).join('');
-      ov.innerHTML = `
+  ov.innerHTML = `
         <div class="song-panel" style="background:#fff;border:3px solid var(--border);border-radius:14px;box-shadow:var(--shadow);width:min(820px,95vw);max-height:90vh;overflow:auto;padding:14px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
             <h3 style="margin:0">Song Select</h3>
             <button id="songClose" class="pixel-btn">✕</button>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:10px">${grid}</div>
-          <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end">
-            <label style="font-weight:800">Preset:</label>
-            <select id="songPreset" class="pixel-btn">
-              <option value="easy">Easy</option>
-              <option value="normal" selected>Normal</option>
-              <option value="hard">Hard</option>
-              <option value="extreme">Extreme</option>
-            </select>
-            <button id="songPlay" class="pixel-btn">Play ▶</button>
-            <button id="songStartRecommended" class="pixel-btn">Start Recommended ⭐</button>
-          </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:10px">${grid}</div>
+      <div style="opacity:.8;font-size:12px;text-align:right">Click a song to play</div>
         </div>`;
       document.body.appendChild(ov);
+  try{ SFX.play('ui.change'); }catch(_){ }
   ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.remove(); });
   document.addEventListener('keydown', function escClose(e){ if(e.key==='Escape'){ ov.remove(); document.removeEventListener('keydown', escClose);} });
-      ov.querySelector('#songClose').onclick = ()=> ov.remove();
+  ov.querySelector('#songClose').onclick = ()=> { try{ SFX.play('ui.move'); }catch(_){ } ov.remove(); };
         ov.__selected = list.find(s=>s.id===(localStorage.getItem('jukebox.song')||'')) || list[0];
       ov.addEventListener('click',(e)=>{
         const t = e.target.closest('.song-tile');
         if (!t) return;
         const s = list.find(x=>x.id===t.getAttribute('data-id'));
         if (!s) return;
-        ov.__selected = s;
-        // Visual focus
-        ov.querySelectorAll('.song-tile').forEach(el=>el.style.outline='none');
-        t.style.outline = '3px solid var(--accent)';
-      });
-      ov.querySelector('#songPlay').onclick = ()=>{
-        const s = ov.__selected || list[0];
-        const keyPerSong = `jukebox.preset.${s.id}`;
-        const pKey = ov.querySelector('#songPreset').value || localStorage.getItem(keyPerSong) || 'normal';
-        const preset = PRESETS[pKey] || PRESETS.normal;
-        try { localStorage.setItem(keyPerSong, preset.key); } catch(_){ }
+        try{ SFX.play('ui.select'); }catch(_){ }
+        const preset = PRESETS.normal;
         saveSelection(s, preset);
         play(s);
-        // Apply recommended settings
-        try {
-          if (s.recommend) {
-            if (s.recommend.game === 'vocab' && s.recommend.direction)
-              localStorage.setItem('vocab.direction', s.recommend.direction);
-            if (s.recommend.game === 'kanji' && s.recommend.mode)
-              localStorage.setItem('kanji.mode', s.recommend.mode);
-            localStorage.setItem('preferred.game', s.recommend.game);
-          }
-        } catch(_){}
         const cur = document.getElementById('jukeboxCurrent'); if (cur) cur.textContent = s.title;
         ov.remove();
-      };
-      ov.querySelector('#songStartRecommended').onclick = ()=>{
-        const s = ov.__selected || list[0];
-        const pKey = ov.querySelector('#songPreset').value || 'normal';
-        const preset = PRESETS[pKey] || PRESETS.normal;
-        saveSelection(s, preset);
-        play(s);
-        try{
-          const game = (s.recommend && s.recommend.game) || 'vocab';
-          const timed = localStorage.getItem(game+'.timed')==='1';
-          if (game==='vocab') {
-            if (s.recommend && s.recommend.direction)
-              localStorage.setItem('vocab.direction', s.recommend.direction);
-            window.__startSong && window.__startSong('vocab', localStorage.getItem('vocab.direction')||'jp-en', timed);
-          } else if (game==='kanji') {
-            if (s.recommend && s.recommend.mode)
-              localStorage.setItem('kanji.mode', s.recommend.mode);
-            window.__startSong && window.__startSong('kanji', localStorage.getItem('kanji.mode')||'meaning', timed);
-          } else {
-            window.__startSong && window.__startSong('kotoba');
-          }
-          ov.remove();
-        }catch(_){ ov.remove(); }
-      };
+      });
     } else {
       document.body.appendChild(ov);
+      try{ SFX.play('ui.change'); }catch(_){ }
     }
   }
 

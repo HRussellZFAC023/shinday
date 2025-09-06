@@ -243,28 +243,6 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-.status-nav a::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1;
-}
-
-.status-nav a::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(45deg, var(--pastel-pink), var(--pastel-purple));
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 0;
-}
-
 .status-nav a span,
 .status-nav a img {
   position: relative;
@@ -281,15 +259,7 @@ body {
   border-color: var(--accent);
 }
 
-.status-nav a:hover::before,
-.status-nav a.active::before {
-  left: 100%;
-}
-
-.status-nav a:hover::after,
-.status-nav a.active::after {
-  opacity: 1;
-}
+/* Hover effects now rely on background/transform only (no overlays) */
 
 .status-nav a:active {
   transform: translateY(-1px) scale(1.02);
@@ -1453,6 +1423,39 @@ main {
   position: relative;
   overflow: visible;
 }
+
+/* Cute rhythm grid accent */
+.rhythm-grid { background: rgba(255,255,255,0.6); border: 2px solid var(--border); border-radius: 12px; }
+
+/* Missing animations for merged Diva features */
+@keyframes idolBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes speechBubbleIn {
+  from { transform: translateY(6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes speechBubbleOut {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(6px); opacity: 0; }
+}
+@keyframes idolSpeaking {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes ringExpand {
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(120px) rotate(180deg); opacity: 0; }
+}
+@keyframes stageLighting {
+  0% { opacity: 0.8; }
+  100% { opacity: 0.5; }
+}
 .party .stick,
 .party .leek {
   position: absolute;
@@ -1876,6 +1879,21 @@ main {
   display: flex;
   gap: 8px;
 }
+.gacha-actions .pixel-btn {
+  background: linear-gradient(180deg, #ffffff, #ffe9f6);
+  border: 3px solid var(--accent);
+  box-shadow: 0 6px 14px rgba(43,43,68,.15), inset 0 -2px 0 rgba(0,0,0,.05);
+  transform: translateY(0);
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.gacha-actions .pixel-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 20px rgba(43,43,68,.25);
+  filter: saturate(1.05);
+}
+.gacha-actions .pixel-btn:active {
+  transform: translateY(0);
+}
 .gacha-controls {
   display: flex;
   gap: 12px;
@@ -2192,6 +2210,26 @@ main {
 
 .candle {
   font-size: 1.5rem;
+.gacha-rotation {
+  margin: 8px 0 12px;
+  overflow: hidden;
+  border-radius: 10px;
+  border:2px solid var(--border);
+  background: rgba(255,255,255,.7);
+}
+.gacha-rotation .rotation-strip {
+  display:flex;
+  gap:8px;
+  padding:6px;
+  overflow:auto;
+}
+.gacha-rotation .rotation-strip img {
+  width:72px;
+  height:72px;
+  object-fit:cover;
+  border-radius:8px;
+  border:1px solid var(--border);
+}
   animation: flicker 2s ease-in-out infinite;
 }
 
@@ -2485,6 +2523,11 @@ main {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+  /* Heart garden planted hearts */
+  .heart-zone { position: relative; overflow: hidden; }
+  .planted-heart { position:absolute; font-size:18px; transform-origin:50% 100%; animation:heartGrow 2.4s ease-out forwards; pointer-events:none; }
+  @keyframes heartGrow { 0%{ transform:translateY(0) scale(.6); opacity:.1 } 50%{ transform:translateY(-6px) scale(1.1); opacity:1 } 100%{ transform:translateY(-12px) scale(1); opacity:0 } }
 
 /* Keyframe animations */
 @keyframes fadeIn {
@@ -3489,32 +3532,63 @@ main {
 
 /* Diva game */
 .diva-wrap { display:flex; flex-direction:column; gap:10px; }
-.diva-stage { position:relative; border:2px solid var(--border); border-radius:12px; overflow:hidden; background:#e8f5ff center/cover no-repeat; min-height:260px; background-image: var(--diva-bg, url('./assets/root.png')); }
-.diva-stage::before { content:''; position:absolute; inset:0; background:rgba(255,255,255,0.2); pointer-events:none; }
-.diva-singer { position:absolute; left:10px; bottom:10px; width:140px; max-width:25vw; z-index:2; image-rendering: pixelated; }
-.diva-singer.stunned { filter: grayscale(1) brightness(0.8); transform: translateY(6px) rotate(-3deg); transition: all .2s ease; }
+.diva-stage { position:relative; border:2px solid var(--border); border-radius:12px; overflow:hidden; background:#e8f5ff center/cover no-repeat; min-height:320px; background-image: var(--diva-bg, url('./assets/root.png')); }
+.diva-stage::before { content:''; position:absolute; inset:0; background:rgba(255,255,255,0.15); pointer-events:none; }
+
+.diva-singer { position:absolute; left:10px; bottom:10px; width:140px; max-width:25vw; z-index:2; image-rendering: pixelated; transition: all 0.3s ease; }
+.diva-singer.stunned { filter: grayscale(1) brightness(0.8) contrast(1.05); transform: translateY(6px) rotate(-3deg) scale(0.98); transition: filter .2s ease, transform .2s ease; }
+
 .diva-judge { position:absolute; top:8px; left:50%; transform:translateX(-50%); font-weight:900; font-size:22px; color:#333; text-shadow:0 2px 6px rgba(0,0,0,0.15); opacity:0; transition:opacity .15s ease; z-index:3; }
-.diva-judge.show { opacity:1; }
+.diva-judge.show { opacity:1; animation: judgeFlash 0.6s ease-out; }
+@keyframes judgeFlash { 0%{ transform: translateX(-50%) scale(1.2); } 100%{ transform: translateX(-50%) scale(1); } }
+
+.stage-overlay { position:absolute; top:8px; right:8px; z-index:3; text-align:right; }
+.score-display { background: rgba(255,255,255,0.9); border: 2px solid var(--border); border-radius: 8px; padding: 6px 10px; font-weight: 800; color: var(--ink); }
+.score-display div { margin: 2px 0; }
+
 .diva-lanes { position:absolute; right:6%; top:8%; bottom:12%; width:40%; display:grid; grid-template-columns:1fr; grid-template-rows: repeat(4, 1fr); gap:10px; z-index:1; }
 .diva-lane { position:relative; border:2px dashed rgba(89,98,134,0.25); border-radius:10px; overflow:hidden; }
-.diva-dot { position:absolute; left:50%; transform:translateX(-50%); top:-20px; width:18px; height:18px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #fff, #7dd3fc); box-shadow:0 2px 8px rgba(0,0,0,0.25); animation: divaFall linear forwards; cursor:pointer; }
+
+.hit-zone { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:32px; height:32px; border:3px solid rgba(125,211,252,0.6); border-radius:50%; background: radial-gradient(circle, rgba(125,211,252,0.2), transparent); animation: ringPulse 1s ease-in-out infinite; }
+@keyframes ringPulse { 0%,100%{ transform: translateX(-50%) scale(1); opacity:0.8; } 50%{ transform: translateX(-50%) scale(1.1); opacity:1; } }
+
+.diva-dot { position:absolute; left:50%; transform:translateX(-50%); top:-20px; width:18px; height:18px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #fff, #7dd3fc); box-shadow:0 2px 8px rgba(0,0,0,0.25); animation: divaFall linear forwards; cursor:pointer; z-index:2; }
+.diva-dot.has-ring .hit-ring { position:absolute; inset:-6px; border: 2px solid #fbbf24; border-radius:50%; animation: ringSpin 0.8s linear infinite; }
+@keyframes ringSpin { from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
 @keyframes divaFall { from{ top:-20px; } to { top: calc(100% - 14px); } }
+
+@keyframes pointsFloat { 
+  0%{ opacity:1; transform: translateX(-50%) translateY(0); } 
+  100%{ opacity:0; transform: translateX(-50%) translateY(-30px); } 
+}
 
 .diva-ui { display:flex; gap:12px; align-items:stretch; }
 .diva-left { flex:1; display:flex; flex-direction:column; gap:10px; }
-.diva-options { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px; }
+
+.diva-options { border: 2px solid var(--border); border-radius: 12px; padding: 12px; background: #fff; }
+.question-prompt { text-align: center; margin-bottom: 10px; }
+.jp-word { font-size: 24px; font-weight: 900; color: var(--accent); margin-bottom: 4px; }
+.romaji { font-size: 14px; color: #666; font-style: italic; }
+.choice-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px; }
 .gamepad-opt { font-size:.95rem; }
 
-.diva-items { display:flex; align-items:center; gap:8px; }
+.diva-stats { display: flex; gap: 15px; font-size: 0.9rem; color: #666; }
+
+.diva-items { display:flex; align-items:center; gap:8px; flex-wrap: wrap; }
 .diva-item-status { font-weight:800; color:#596286; }
 
-.diva-chat { flex:1; display:flex; flex-direction:column; border:2px solid var(--border); border-radius:12px; background:#fff; padding:8px; min-width:280px; }
-.chat-log { flex:1; overflow:auto; display:flex; flex-direction:column; gap:6px; }
-.chat-entry { padding:6px 10px; border-radius:10px; max-width:80%; }
+.diva-chat { flex:1; display:flex; flex-direction:column; border:2px solid var(--border); border-radius:12px; background:#fff; padding:8px; min-width:300px; max-width:400px; }
+.chat-header { display: flex; align-items: center; gap: 8px; padding: 4px 0 8px 0; border-bottom: 1px solid #eee; margin-bottom: 8px; }
+.chat-miku { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); }
+.chat-log { flex:1; overflow:auto; display:flex; flex-direction:column; gap:6px; max-height: 240px; }
+.chat-entry { padding:6px 10px; border-radius:10px; max-width:85%; font-size: 0.9rem; }
 .chat-entry.user { align-self:flex-end; background: #e0f2fe; border: 2px solid #7dd3fc; }
 .chat-entry.miku { align-self:flex-start; background: #fce7f3; border: 2px solid #f472b6; }
+.chat-entry.welcome { background: #f0f9ff; border: 2px solid #0ea5e9; }
+.chat-entry.encourage { background: #ecfdf5; border: 2px solid #10b981; font-style: italic; }
+.miku-response { line-height: 1.4; }
 #divaChatForm { display:flex; gap:8px; margin-top:8px; }
 
-.diva-kirby { position:absolute; width:64px; height:auto; z-index:2; pointer-events:none; }
+.diva-kirby { position:absolute; width:64px; height:auto; z-index:2; pointer-events:none; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3)); }
 .diva-bait { position:absolute; font-size:22px; animation: baitBlink 1s ease-in-out infinite; z-index:1; }
 @keyframes baitBlink { 0%,100%{ transform:scale(1); opacity:.9;} 50%{ transform:scale(1.2); opacity:1; } }

@@ -162,10 +162,7 @@
   }
 
   function updateItemsUI(){
-    const btnShield = document.getElementById('divaShieldBtn');
-    const status = document.getElementById('divaShieldStatus');
-    if (btnShield){ btnShield.disabled = isShieldActive(); }
-    if (status){ status.textContent = isShieldActive() ? 'Shield: ACTIVE' : 'Shield: OFF'; }
+  // Items moved to sidebar shop; no-op UI updater
   }
 
   function spawnKirby(stage){
@@ -253,11 +250,7 @@
               </select>
               <button id="divaStart" class="pixel-btn">Start Song</button>
             </div>
-            <div class="diva-items">
-              <button id="divaShieldBtn" class="pixel-btn">Shield (100💖)</button>
-              <button id="divaBaitBtn" class="pixel-btn">Bait (10💖)</button>
-              <span id="divaShieldStatus" class="diva-item-status"></span>
-            </div>
+            <!-- Items moved to sidebar shop; in-game UI hidden -->
           </div>
           <div class="diva-chat" id="divaChat">
             <div class="chat-log" id="divaChatLog"></div>
