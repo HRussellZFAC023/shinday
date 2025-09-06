@@ -865,6 +865,182 @@ console.log("🌸 Main.js starting execution...");
     window._splashTimeout = autoEnterTimeout;
   }
 
+  // ====== ANI CURSORS (animated Windows .ani files) ======
+  async function initAniCursors() {
+    try {
+      // Skip under constrained conditions for performance
+      const smallScreen = Math.min(window.innerWidth, window.innerHeight) < 500;
+      const prefersReduce =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const saveData = navigator.connection && navigator.connection.saveData;
+      if (smallScreen || prefersReduce || saveData) return;
+      // Map logical roles to filenames from assets/ani file-animation WxS
+      const roleToFile = {
+        normal: "Normal.ani",
+        link: "Link.ani",
+        text: "Text.ani",
+        help: "Help.ani",
+        busy: "Busy.ani",
+        working: "Working.ani",
+        precision: "Precision.ani",
+        move: "Move.ani",
+        person: "Person.ani",
+        unavailable: "Unavailable.ani",
+        vertical: "Vertical.ani",
+        horizontal: "Horizontal.ani",
+        diagonal1: "Diagonal1.ani",
+        diagonal2: "Diagonal2.ani",
+        handwriting: "Handwriting.ani",
+        pin: "Pin.ani",
+        alternate: "Alternate.ani",
+      };
+
+      // Defer heavy import and application until idle
+      const boot = async () => {
+        const mod = await import("https://cdn.skypack.dev/ani-cursor");
+        const style = document.createElement("style");
+        style.id = "ani-cursor-styles";
+        document.head.appendChild(style);
+
+        // Helper to fetch a file and build CSS for a selector
+        const base = encodeURI("./assets/ani file-animation WxS/");
+        const aniCssCache = new Map();
+        const aniApplied = new Set(); // `${selector}::${fileName}`
+        async function getAniCss(selector, fileName) {
+          const key = `${selector}::${fileName}`;
+          if (aniCssCache.has(key)) return aniCssCache.get(key);
+          try {
+            const res = await fetch(`${base}${encodeURIComponent(fileName)}`);
+            const buf = await res.arrayBuffer();
+            const convert =
+              mod.convertAniBinaryToCSS ||
+              (mod.default && mod.default.convertAniBinaryToCSS);
+            if (!convert) throw new Error("ani-cursor convert not available");
+            const css = convert(selector, new Uint8Array(buf));
+            aniCssCache.set(key, css);
+            return css;
+          } catch (_) {
+            return "";
+          }
+        }
+        async function applyAni(selector, fileName) {
+          const appliedKey = `${selector}::${fileName}`;
+          if (aniApplied.has(appliedKey)) return;
+          try {
+            const css = await getAniCss(selector, fileName);
+            if (css) {
+              style.appendChild(document.createTextNode(css));
+              aniApplied.add(appliedKey);
+            }
+          } catch (_) {
+            // Ignore if not supported
+          }
+        }
+
+        // Apply minimal set first; defer the rest to idle
+        await Promise.all([
+          applyAni("html, body", roleToFile.normal),
+          applyAni(
+            "a, button, .pixel-btn, .heart-btn, .radio-btn, .enter-btn, .quick-links a",
+            roleToFile.link
+          ),
+          applyAni(
+            'input, textarea, [contenteditable="true"], .editable',
+            roleToFile.text
+          ),
+          applyAni(
+            ".memory-card, .gacha-card, .dex-card, .memory-grid, canvas, svg",
+            roleToFile.precision
+          ),
+        ]);
+        const applyLater = () =>
+          Promise.all([
+            applyAni(
+              ".hero-miku, .splash-miku, .float-miku, .shrine-image, #shrineMiku, #heroMiku, #splashMiku, .avatar, .friend-avatar",
+              roleToFile.person
+            ),
+            applyAni(
+              ".help, [title], .widget h3, .status-item, .hud-line",
+              roleToFile.help
+            ),
+            applyAni(
+              '[draggable="true"], .draggable, .movable, .gacha-card.matched',
+              roleToFile.move
+            ),
+            applyAni(
+              'button:disabled, .pixel-btn:disabled, [aria-disabled="true"], .disabled, .unavailable',
+              roleToFile.unavailable
+            ),
+            applyAni(
+              ".badge, .pin, .pinned, .candle, .blink, #statusDot",
+              roleToFile.pin
+            ),
+          ]).catch(() => {});
+        if (window.requestIdleCallback) requestIdleCallback(() => applyLater());
+        else setTimeout(applyLater, 1500);
+
+        // Expose cursor control API
+        window.setBusyCursor = (on) => {
+          const id = "ani-busy-toggle";
+          let busyStyle = document.getElementById(id);
+          if (on) {
+            if (!busyStyle) {
+              busyStyle = document.createElement("style");
+              busyStyle.id = id;
+              document.head.appendChild(busyStyle);
+            }
+            busyStyle.textContent = `html, body, * { cursor: auto !important; }`;
+            applyAni("html, body, *", roleToFile.busy);
+          } else if (busyStyle) {
+            busyStyle.remove();
+          }
+        };
+
+        window.setWorkingCursor = (on) => {
+          const id = "ani-working-toggle";
+          let w = document.getElementById(id);
+          if (on) {
+            if (!w) {
+              w = document.createElement("style");
+              w.id = id;
+              document.head.appendChild(w);
+            }
+            w.textContent = `html, body, * { cursor: auto !important; }`;
+            applyAni("html, body, *", roleToFile.working);
+          } else if (w) {
+            w.remove();
+          }
+        };
+
+        // Dynamic cursor switching for different contexts
+        window.setGameCursor = (mode) => {
+          const id = "ani-game-cursor";
+          let gameStyle = document.getElementById(id);
+          if (mode && roleToFile[mode]) {
+            if (!gameStyle) {
+              gameStyle = document.createElement("style");
+              gameStyle.id = id;
+              document.head.appendChild(gameStyle);
+            }
+            gameStyle.textContent = `.memory-card, .gacha-card, .heart-zone { cursor: auto !important; }`;
+            applyAni(
+              ".memory-card, .gacha-card, .heart-zone",
+              roleToFile[mode]
+            );
+          } else if (gameStyle) {
+            gameStyle.remove();
+          }
+        };
+      };
+
+      if (window.requestIdleCallback) requestIdleCallback(() => boot());
+      else setTimeout(() => boot(), 1500);
+    } catch (_) {
+      // If anything fails (e.g., no module), do nothing; site still works.
+    }
+  }
+
   // ====== OPTIMIZED GACHA SYSTEM ======
   function initMikuGacha() {
     const poolReady = () =>
@@ -1379,6 +1555,7 @@ console.log("🌸 Main.js starting execution...");
     initPassiveHearts();
     updateCounters();
     loadSavedData();
+    initAniCursors();
     initEnhancedCursors();
     try {
       applySinger();
@@ -6037,6 +6214,59 @@ console.log("🌸 Main.js starting execution...");
     mikuSpeakToast(`🌟 ${combo} COMBO! すごいよ! 🌟`);
   }
 
+  // ====== MIKU JUKEBOX & MUSIC SYNC SYSTEM ======
+  
+  // Ultimate Project Diva music experience
+  function initMikuJukebox() {
+    // Create background music layer that syncs with gameplay
+    const musicTracks = [
+      { name: "Senbonzakura", bpm: 154, energy: "high" },
+      { name: "World is Mine", bpm: 150, energy: "medium" },
+      { name: "Tell Your World", bpm: 128, energy: "calm" },
+      { name: "Rolling Girl", bpm: 135, energy: "medium" },
+      { name: "Decorator", bpm: 165, energy: "high" }
+    ];
+    
+    let currentTrack = null;
+    let musicSync = null;
+    
+    function startMusicSync(track) {
+      if (musicSync) clearInterval(musicSync);
+      
+      const beatInterval = 60000 / track.bpm;
+      
+      // Sync visual effects to music beats
+      musicSync = setInterval(() => {
+        if (window.__rhythmMet && !document.hidden) {
+          // Subtle stage lighting pulse
+          const stages = document.querySelectorAll('.stage-lighting');
+          stages.forEach(stage => {
+            stage.style.animation = 'none';
+            setTimeout(() => {
+              stage.style.animation = 'stageLighting 0.8s ease';
+            }, 10);
+          });
+          
+          // Idol breathing sync
+          const idols = document.querySelectorAll('.stage-idol');
+          idols.forEach(idol => {
+            idol.style.animationDuration = (beatInterval * 4) + 'ms';
+          });
+        }
+      }, beatInterval);
+    }
+    
+    // Auto-select track based on game intensity
+    function selectTrackForMood(score, combo) {
+      let energy = "calm";
+      if (combo > 20 || score > 50) energy = "high";
+      else if (combo > 10 || score > 25) energy = "medium";
+      
+      const suitableTracks = musicTracks.filter(t => t.energy === energy);
+      return suitableTracks[Math.floor(Math.random() * suitableTracks.length)];
+    }
+    
+    // Enhanced confetti system with PlayStation colors
   function createConfettiBurst(container, intensity = 10) {
     const shapes = [
       { name: 'triangle', symbol: '△', color: '#00ff88' },
@@ -6044,6 +6274,7 @@ console.log("🌸 Main.js starting execution...");
       { name: 'cross', symbol: '×', color: '#0088ff' },
       { name: 'square', symbol: '□', color: '#ffaa00' }
     ];
+    
     for (let i = 0; i < intensity; i++) {
       setTimeout(() => {
         const shape = shapes[Math.floor(Math.random() * shapes.length)];
@@ -6063,13 +6294,16 @@ console.log("🌸 Main.js starting execution...");
           pointer-events: none;
           z-index: 12;
         `;
+        
         container.appendChild(particle);
         setTimeout(() => particle.remove(), 2500);
       }, i * 30);
     }
   }
 
+  // Perfect timing celebration effect
   function createPerfectCelebration(element) {
+    // Create rainbow burst
     const burst = document.createElement('div');
     burst.style.cssText = `
       position: absolute;
@@ -6084,16 +6318,163 @@ console.log("🌸 Main.js starting execution...");
       z-index: 20;
       opacity: 0.8;
     `;
+    
     element.style.position = element.style.position || 'relative';
     element.appendChild(burst);
+    
     burst.animate([
       { transform: 'translate(-50%, -50%) scale(0) rotate(0deg)', opacity: 0.8 },
       { transform: 'translate(-50%, -50%) scale(1.5) rotate(180deg)', opacity: 0.6 },
       { transform: 'translate(-50%, -50%) scale(2) rotate(360deg)', opacity: 0 }
     ], { duration: 800, easing: 'ease-out' });
+    
     setTimeout(() => burst.remove(), 800);
-    try { SFX.play("result.perfect"); } catch (_) {}
+    
+    // Perfect sound effect
+    try {
+      SFX.play("result.perfect");
+    } catch (_) {}
   }
+
+  // ====== MIKU JUKEBOX & MUSIC SYNC SYSTEM ======
+  
+  // Ultimate Project Diva music experience
+  function initMikuJukebox() {
+    // Create background music layer that syncs with gameplay
+    const musicTracks = [
+      { name: "Senbonzakura", bpm: 154, energy: "high" },
+      { name: "World is Mine", bpm: 150, energy: "medium" },
+      { name: "Tell Your World", bpm: 128, energy: "calm" },
+      { name: "Rolling Girl", bpm: 135, energy: "medium" },
+      { name: "Decorator", bpm: 165, energy: "high" }
+    ];
+    
+    let currentTrack = null;
+    let musicSync = null;
+    
+    function startMusicSync(track) {
+      if (musicSync) clearInterval(musicSync);
+      
+      const beatInterval = 60000 / track.bpm;
+      
+      // Sync visual effects to music beats
+      musicSync = setInterval(() => {
+        if (window.__rhythmMet && !document.hidden) {
+          // Subtle stage lighting pulse
+          const stages = document.querySelectorAll('.stage-lighting');
+          stages.forEach(stage => {
+            stage.style.animation = 'none';
+            setTimeout(() => {
+              stage.style.animation = 'stageLighting 0.8s ease';
+            }, 10);
+          });
+          
+          // Idol breathing sync
+          const idols = document.querySelectorAll('.stage-idol');
+          idols.forEach(idol => {
+            idol.style.animationDuration = (beatInterval * 4) + 'ms';
+          });
+        }
+      }, beatInterval);
+    }
+    
+    // Auto-select track based on game intensity
+    function selectTrackForMood(score, combo) {
+      let energy = "calm";
+      if (combo > 20 || score > 50) energy = "high";
+      else if (combo > 10 || score > 25) energy = "medium";
+      
+      const suitableTracks = musicTracks.filter(t => t.energy === energy);
+      return suitableTracks[Math.floor(Math.random() * suitableTracks.length)];
+    }
+    
+    window.mikuJukebox = {
+      startMusicSync,
+      selectTrackForMood,
+      setTrack: (trackName) => {
+        currentTrack = musicTracks.find(t => t.name === trackName) || musicTracks[0];
+        startMusicSync(currentTrack);
+      },
+      stop: () => {
+        if (musicSync) clearInterval(musicSync);
+        musicSync = null;
+      }
+    };
+  }
+
+  // Enhanced confetti system with PlayStation colors
+  function createConfettiBurst(container, intensity = 10) {
+    const shapes = [
+      { name: 'triangle', symbol: '△', color: '#00ff88' },
+      { name: 'circle', symbol: '○', color: '#ff0080' },
+      { name: 'cross', symbol: '×', color: '#0088ff' },
+      { name: 'square', symbol: '□', color: '#ffaa00' }
+    ];
+    
+    for (let i = 0; i < intensity; i++) {
+      setTimeout(() => {
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        const particle = document.createElement('div');
+        particle.className = `confetti-particle ${shape.name}`;
+        particle.textContent = shape.symbol;
+        particle.style.cssText = `
+          position: absolute;
+          left: ${Math.random() * 100}%;
+          top: -10px;
+          font-size: 14px;
+          font-weight: 900;
+          color: ${shape.color};
+          text-shadow: 0 0 8px ${shape.color};
+          animation: confettiFall ${1.5 + Math.random()}s ease-out forwards;
+          animation-delay: ${Math.random() * 500}ms;
+          pointer-events: none;
+          z-index: 12;
+        `;
+        
+        container.appendChild(particle);
+        setTimeout(() => particle.remove(), 2500);
+      }, i * 30);
+    }
+  }
+
+  // Perfect timing celebration effect
+  function createPerfectCelebration(element) {
+    // Create rainbow burst
+    const burst = document.createElement('div');
+    burst.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 150px;
+      height: 150px;
+      background: conic-gradient(from 0deg, #00ff88, #ff0080, #0088ff, #ffaa00, #00ff88);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      pointer-events: none;
+      z-index: 20;
+      opacity: 0.8;
+    `;
+    
+    element.style.position = element.style.position || 'relative';
+    element.appendChild(burst);
+    
+    burst.animate([
+      { transform: 'translate(-50%, -50%) scale(0) rotate(0deg)', opacity: 0.8 },
+      { transform: 'translate(-50%, -50%) scale(1.5) rotate(180deg)', opacity: 0.6 },
+      { transform: 'translate(-50%, -50%) scale(2) rotate(360deg)', opacity: 0 }
+    ], { duration: 800, easing: 'ease-out' });
+    
+    setTimeout(() => burst.remove(), 800);
+    
+    // Perfect sound effect
+    try {
+      SFX.play("result.perfect");
+    } catch (_) {}
+  }
+
+  // Initialize jukebox
+  initMikuJukebox();
+
   // ====== PROJECT DIVA QUALITIES THAT MAKE IT AMAZING ======
   /*
   What makes Project Diva special:

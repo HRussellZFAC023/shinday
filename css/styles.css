@@ -233,11 +233,9 @@ body {
   font-size: 0.9rem;
   padding: 6px 12px;
   border-radius: 8px;
-  background: linear-gradient(90deg, var(--pastel-pink), var(--pastel-blue), var(--pastel-mint));
-  background-size: 300% 100%;
+  background: rgba(255, 255, 255, 0.5);
   border: 1px solid var(--border);
   transition: all 0.3s ease;
-  animation: navShimmer 8s linear infinite;
 }
 
 .status-nav a:hover,
@@ -245,12 +243,6 @@ body {
   background: var(--accent);
   color: white;
   transform: translateY(-2px);
-  animation: none;
-}
-
-@keyframes navShimmer {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 300% 0%; }
 }
 
 .status-item {
