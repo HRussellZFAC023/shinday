@@ -26,7 +26,8 @@
 
   async function getQuestion(mode){
     const preset = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { options:4 };
-    const decoyCount = Math.max(1,(preset.options||4)-1);
+    const optCount = Math.min(preset.options || 4, 4);
+    const decoyCount = Math.max(1, optCount - 1);
     const grade = gradeFromDiff();
     const list = await getGradeList(grade);
     for (let guard=0; guard<20; guard++){
@@ -63,7 +64,8 @@
     try{
       const q = await getQuestion(curMode); const correct = q.correct; qEl.innerHTML = q.promptHtml;
       const PRESET = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { baseTime:15, options:4 };
-      try{ const cols = PRESET.options>=6?3:2; cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`; cEl.style.gridTemplateRows = `repeat(${Math.ceil(PRESET.options/cols)},1fr)`; }catch(_){ }
+      const maxOpts = Math.min(PRESET.options || 4, 4);
+      try{ const cols = maxOpts>=6?3:2; cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`; cEl.style.gridTemplateRows = `repeat(${Math.ceil(maxOpts/cols)},1fr)`; }catch(_){ }
       if (isTimed()){
         const baseTime = (function(){ try{ return (window.diffParams && diffParams().baseTime) || 15; } catch(_){ return 15; } })();
         countdown = PRESET.baseTime || baseTime; if (timerEl) timerEl.textContent = String(countdown);
@@ -76,7 +78,7 @@
           }
         }, 1000);
       }
-      const use = q.options.slice(0, PRESET.options||4);
+      const use = q.options.slice(0, maxOpts);
       use.forEach((opt, idx)=>{
         const maker = window.createUltimateBeatpadButton || ((label)=>{ const btn=document.createElement('button'); btn.className='pixel-btn beatpad-btn'; btn.textContent=label; return { btn, style:{ isPerfect:false, color:'#a594f9' } }; });
         const { btn } = maker(opt, idx, (text, element, style)=> onSelect(text, element, style, correct));
@@ -96,7 +98,6 @@
       else { if (fbEl) fbEl.textContent='✅ 正解!'; try{ awardHearts && awardHearts(1); }catch(_){ } }
       if (fbEl) fbEl.style.color='#2b2b44';
       score++; if (scoreEl) scoreEl.textContent = String(score);
-      try{ SFX.play('quiz.ok'); }catch(_){ }
       streak++; if (streakEl) streakEl.textContent = String(streak); try{ if (streak>1) loveToast && loveToast(`コンボ x${streak}!`); createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak); }catch(_){ }
       const mult = (function(){ try{ return diffParams().mult; }catch(_){ return 1; } })();
       const rmult = (function(){ try{ return getRhythmMult(); }catch(_){ return 1; } })();
@@ -107,11 +108,11 @@
     } else {
       try{ createRingEffect && createRingEffect(element,false); }catch(_){ }
       if (fbEl){ fbEl.textContent = `❌ ${correct}`; fbEl.style.color='#c00'; }
-      try{ SFX.play('quiz.bad'); }catch(_){ }
       streak=0; if (streakEl) streakEl.textContent=String(streak);
       try{ HUD&&HUD.counts&&(HUD.counts.SAD++); flashJudge && flashJudge('kanjiCard','SAD'); addVoltage && addVoltage(-5,'kanjiCard'); resetCombo && resetCombo(); loseLife && loseLife('kanjiCard'); }catch(_){ }
     }
     setTimeout(loadRound, 900);
+    return isCorrect;
   }
 
   function start({ mode:m, timed }){ if (m){ curMode=m; setMode(m); } if (typeof timed==='boolean') setTimed(timed); if (timerWrap) timerWrap.style.display = isTimed() ? 'inline-flex' : 'none'; loadRound(); }

@@ -51,7 +51,8 @@
 
   async function getVocabQuestion(direction){
     const preset = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { options:4 };
-    const decoyCount = Math.max(1, (preset.options||4)-1);
+    const optCount = Math.min(preset.options || 4, 4);
+    const decoyCount = Math.max(1, optCount - 1);
     if (vocabCache.pages.length === 0) await primeVocabPage(rnd(50)+1);
     if (vocabCache.enDefs.size < 12 || vocabCache.jpSurfaces.size < 12) await primeVocabPage(rnd(50)+1);
     const page = vocabCache.pages[rnd(vocabCache.pages.length)];
@@ -116,7 +117,8 @@
       const q = await getVocabQuestion(curDir);
       const correct = q.correct; qEl.innerHTML = q.promptHtml;
       const PRESET = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { baseTime:15, options:4 };
-      try{ const cols = PRESET.options>=6?3:2; cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`; cEl.style.gridTemplateRows = `repeat(${Math.ceil(PRESET.options/cols)},1fr)`; }catch(_){ }
+      const maxOpts = Math.min(PRESET.options || 4, 4);
+      try{ const cols = maxOpts>=6?3:2; cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`; cEl.style.gridTemplateRows = `repeat(${Math.ceil(maxOpts/cols)},1fr)`; }catch(_){ }
       if (isTimed()){
         const baseTime = (function(){ try{ return (window.diffParams && diffParams().baseTime) || 15; } catch(_){ return 15; } })();
         countdown = PRESET.baseTime || baseTime; if (timerEl) timerEl.textContent = String(countdown);
@@ -129,7 +131,7 @@
           }
         }, 1000);
       }
-      const use = q.options.slice(0, PRESET.options||4);
+      const use = q.options.slice(0, maxOpts);
       use.forEach((opt, idx)=>{
         const maker = window.createUltimateBeatpadButton || ((label)=>{ const btn=document.createElement('button'); btn.className='pixel-btn beatpad-btn'; btn.textContent=label; return { btn, style:{ isPerfect:false, color:'#a594f9' } }; });
         const { btn } = maker(opt, idx, (text, element, style)=> onSelect(text, element, style, correct));
@@ -150,7 +152,6 @@
       if (style && style.isPerfect){ try{ createPerfectHitEffect && createPerfectHitEffect(element, style.color); }catch(_){ } if (fbEl) fbEl.textContent='✨ PERFECT! ✨'; try{ awardHearts && awardHearts(2); }catch(_){ } } else { if (fbEl){ fbEl.textContent='✅ Correct!'; } try{ awardHearts && awardHearts(1); }catch(_){ } }
       if (fbEl) fbEl.style.color = '#2b2b44';
       score++; if (scoreEl) scoreEl.textContent = String(score);
-      try{ SFX.play('quiz.ok'); }catch(_){ }
       streak++; if (streakEl) streakEl.textContent = String(streak);
       try{ if (streak>1) loveToast && loveToast(`コンボ x${streak}!`); createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak); }catch(_){ }
       const mult = (function(){ try{ return diffParams().mult; }catch(_){ return 1; } })();
@@ -168,11 +169,11 @@
     } else {
       try{ createRingEffect && createRingEffect(element,false); }catch(_){ }
       if (fbEl){ fbEl.textContent = `❌ ${correct}`; fbEl.style.color = '#c00'; }
-      try{ SFX.play('quiz.bad'); }catch(_){ }
       streak=0; if (streakEl) streakEl.textContent = String(streak);
       try{ HUD && HUD.counts && (HUD.counts.SAD++); flashJudge && flashJudge('vocabCard','SAD'); addVoltage && addVoltage(-5,'vocabCard'); resetCombo && resetCombo(); loseLife && loseLife('vocabCard'); }catch(_){ }
     }
     setTimeout(loadRound, 900);
+    return isCorrect;
   }
 
   function start({ direction: dir, timed }){
