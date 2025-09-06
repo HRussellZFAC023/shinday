@@ -48,7 +48,7 @@
         <button id="jukeboxClose" class="pixel-btn" style="padding:4px 8px">✖</button>
       </div>
       <div style="width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;border-bottom-left-radius:12px;border-bottom-right-radius:12px">
-        <iframe id="jukeboxIframe" style="width:100%;height:100%;border:0;display:block" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  <iframe id="jukeboxIframe" style="width:100%;height:100%;border:0;display:block" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
       </div>`;
     document.body.appendChild(wrap);
     document.getElementById('jukeboxClose').onclick = () => { document.getElementById('jukeboxIframe').src='about:blank'; wrap.style.display='none'; };

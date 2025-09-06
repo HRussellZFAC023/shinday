@@ -1353,7 +1353,7 @@ console.log("🌸 Main.js starting execution...");
               <div class=\"dex-title\">${name}</div>
               <div class=\"dex-rarity\">${'★'.repeat(r)}</div>
               ${meta?.description ? `<div class=\"dex-desc\">${meta.description}</div>` : ''}
-              ${vid ? `<div class=\"dex-video\"><iframe src=\"https://www.youtube.com/embed/${vid}\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen loading=\"lazy\"></iframe></div>`:''}
+              ${vid ? `<div class=\"dex-video\"><iframe src=\"https://www.youtube.com/embed/${vid}\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen loading=\"lazy\" referrerpolicy=\"strict-origin-when-cross-origin\"></iframe></div>`:''}
               ${linkHtml?`<div class=\"dex-links\">${linkHtml}</div>`:''}
             </div>
           </div>`;
@@ -4659,7 +4659,7 @@ console.log("🌸 Main.js starting execution...");
             <div class="social-item" style="--accent:${color}">
               <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
               <div class="social-embed" style="aspect-ratio:16/9">
-                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed/${vid}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed/${vid}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
               </div>
             </div>
           `;
@@ -4670,7 +4670,7 @@ console.log("🌸 Main.js starting execution...");
             <div class="social-item" style="--accent:${color}">
               <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
               <div class="social-embed" style="aspect-ratio:16/9">
-                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed?listType=user_uploads&list=${handle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed?listType=user_uploads&list=${handle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
               </div>
             </div>
           `;
@@ -5941,7 +5941,7 @@ console.log("🌸 Main.js starting execution...");
         const match = meta.song.match(/(?:v=|be\/)([a-zA-Z0-9_-]{11})/);
         const vid = match ? match[1] : "";
         songDiv.innerHTML = vid
-          ? `<iframe style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" src="https://www.youtube.com/embed/${vid}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+          ? `<iframe style=\"width:100%;aspect-ratio:16/9;border:0;border-radius:8px\" src=\"https://www.youtube.com/embed/${vid}\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen referrerpolicy=\"strict-origin-when-cross-origin\"></iframe>`
           : "";
       } else {
         songDiv.innerHTML = "";
