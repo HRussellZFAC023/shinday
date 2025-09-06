@@ -58,7 +58,7 @@ shinday/
 │   ├── pixel-miku/         # Pixel art collection
 │   ├── *.png               # Hero images and backgrounds
 │   └── *.gif               # Animated decorations
-└── webmeji-main/           # Shimeji sprite assets
+└── assets/webmeji/           # Shimeji sprite assets
     ├── miku/               # Miku sprites
     └── shimeji/            # Classic shimeji sprites
 ```

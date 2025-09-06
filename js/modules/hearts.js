@@ -129,7 +129,7 @@
       heart.className='heart-particle';
       heart.textContent='💖';
       heart.style.left=Math.random()*100+'vw';
-      heart.style.animation='heartRise 8s linear forwards';
+      heart.style.setProperty('--drift', (Math.random()*40-20)+'px');
       container.appendChild(heart);
       setTimeout(()=>heart.remove(),8000);
     }
