@@ -6,7 +6,7 @@
     hard:    { key:'hard',    label:'Hard',    options:6, baseTime:12, travelMs:1600, judge:{cool:120, great:180, fine:260} },
     extreme: { key:'extreme', label:'Extreme', options:8, baseTime:10, travelMs:1200, judge:{cool:90,  great:150, fine:220} }
   };
-  const songs = [
+  const baseSongs = [
     { id:'senbonzakura',   title:'千本桜 (Senbonzakura)',         yt:'Mqpsf84m_b0', bpm:154, req:1, jacket:'./assets/pixel-miku/18 Senbonzakura Miku.png', theme:'#00aa88', recommend:{game:'kanji', mode:'meaning'} },
     { id:'world-is-mine',  title:'ワールドイズマイン (World is Mine)', yt:'R7gUdbH0Le8', bpm:150, req:2, jacket:'./assets/pixel-miku/Hatsune Miku @illufinch 17.png', theme:'#ff66aa', recommend:{game:'vocab', direction:'jp-en'} },
     { id:'tell-your-world',title:'Tell Your World',               yt:'PqJNc9KVIZE', bpm:128, req:3, jacket:'./assets/pixel-miku/Hatsune Miku @illufinch 16.png', theme:'#66bbff', recommend:{game:'vocab', direction:'en-jp'} },
@@ -18,8 +18,24 @@
     { id:'weekender-girl', title:'Weekender Girl',                 yt:'0u9P4kzT0W8', bpm:128, req:9, jacket:'./assets/pixel-miku/Hatsune Miku @illufinch 22.png', theme:'#00bcd4', recommend:{game:'vocab', direction:'jp-en'} }
   ];
 
+  function gachaSongs(){
+    try{
+      const coll = JSON.parse(localStorage.getItem('gacha.collection')||'{}');
+      const list=[];
+      for(const url in coll){
+        const meta = typeof window.getMikuMeta==='function'? window.getMikuMeta(url,true):null;
+        if(meta && meta.song){
+          const m = meta.song.match(/(?:v=|be\/)([a-zA-Z0-9_-]{11})/);
+          const vid = m? m[1]:'';
+          list.push({ id:`miku-${meta.id}`, title:meta.name, yt:vid, bpm:120, req:0, jacket:`./assets/pixel-miku/${meta.filename}`, theme:'#66bbff' });
+        }
+      }
+      return list;
+    }catch(_){return [];} 
+  }
+  const allSongs = () => baseSongs.concat(gachaSongs());
   function level(){ return (window.Progression && Progression.getLevel()) || parseInt(localStorage.getItem('study.level')||'1',10) || 1; }
-  function unlocked(){ const lvl = level(); return songs.filter(s => s.req <= lvl); }
+  function unlocked(){ const lvl = level(); return allSongs().filter(s => s.req <= lvl); }
 
   function ensurePlayer(){
     if (document.getElementById('jukeboxPlayer')) return;
@@ -82,7 +98,7 @@
   }
 
   function getCurrentSong(){
-    try{ const id = localStorage.getItem('jukebox.song') || ''; return songs.find(s=>s.id===id) || null; }catch(_){ return null; }
+    try{ const id = localStorage.getItem('jukebox.song') || ''; return allSongs().find(s=>s.id===id) || null; }catch(_){ return null; }
   }
 
   function saveSelection(song, preset){
@@ -104,7 +120,8 @@
       ov = document.createElement('div');
       ov.id = 'songSelectOverlay';
       ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:10000;';
-      const grid = songs.map(s => {
+      const list = allSongs();
+      const grid = list.map(s => {
         const locked = level() < s.req;
         const jacket = s.jacket || './assets/root.png';
         const tip = locked ? `Reach Lv ${s.req} to unlock` : `BPM ${s.bpm}`;
@@ -137,11 +154,11 @@
       document.body.appendChild(ov);
       ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.remove(); });
       ov.querySelector('#songClose').onclick = ()=> ov.remove();
-      ov.__selected = songs.find(s=>level()>=s.req) || songs[0];
+        ov.__selected = list.find(s=>level()>=s.req) || list[0];
       ov.addEventListener('click',(e)=>{
         const t = e.target.closest('.song-tile');
         if (!t) return;
-        const s = songs.find(x=>x.id===t.getAttribute('data-id'));
+        const s = list.find(x=>x.id===t.getAttribute('data-id'));
         if (!s) return;
         if (level() < s.req) return; // locked
         ov.__selected = s;
@@ -150,7 +167,7 @@
         t.style.outline = '3px solid var(--accent)';
       });
       ov.querySelector('#songPlay').onclick = ()=>{
-        const s = ov.__selected || songs[0];
+        const s = ov.__selected || list[0];
         const keyPerSong = `jukebox.preset.${s.id}`;
         const pKey = ov.querySelector('#songPreset').value || localStorage.getItem(keyPerSong) || 'normal';
         const preset = PRESETS[pKey] || PRESETS.normal;
@@ -171,7 +188,7 @@
         ov.remove();
       };
       ov.querySelector('#songStartRecommended').onclick = ()=>{
-        const s = ov.__selected || songs[0];
+        const s = ov.__selected || list[0];
         const pKey = ov.querySelector('#songPreset').value || 'normal';
         const preset = PRESETS[pKey] || PRESETS.normal;
         saveSelection(s, preset);
@@ -198,5 +215,5 @@
     }
   }
 
-  window.Jukebox = { songs, unlocked, play, attachHudSelect, openSongSelect, getPreset };
+  window.Jukebox = { songs: allSongs, unlocked, play, attachHudSelect, openSongSelect, getPreset };
 })();

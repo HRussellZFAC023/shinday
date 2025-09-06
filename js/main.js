@@ -430,119 +430,52 @@ console.log("🌸 Main.js starting execution...");
 
   // ====== OPTIMIZED IMAGE LOADING ======
   const MIKU_IMAGES = [];
+  const MIKU_META = Object.create(null);
+  try { window.MIKU_META = MIKU_META; } catch (_) {}
   let resolveMiku;
   window.MIKU_IMAGES_READY = new Promise((res) => (resolveMiku = res));
-  // Global readiness: gate gameplay start until core visuals are ready
   try {
     window.SITE_READY = window.MIKU_IMAGES_READY.then(() => true);
   } catch (_) {}
 
-  // Non-blocking, batched image loading with worker-like approach
+  // Load metadata + images from JSON manifest instead of guessing filenames
   (function loadImages() {
-    const roots = ["./assets/pixel-miku/Hatsune Miku @illufinch "];
+    const manifest = "./assets/pixel-miku/mikus.json";
 
-    // Add user-specified extra Miku images first (no validation needed)
     if (Array.isArray(C.images?.extraMikus)) {
       MIKU_IMAGES.push(
         ...C.images.extraMikus.filter((url) => typeof url === "string" && url)
       );
     }
 
-    // Optimized parallel loading with batching
-    async function loadBatch(root, startIdx = 1, batchSize = 10) {
-      const promises = [];
-      for (let i = startIdx; i < startIdx + batchSize; i++) {
-        const path = `${root}${i.toString().padStart(2, "0")}.png`;
-        promises.push(
-          new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => resolve(path);
-            img.onerror = () => resolve(null);
-            img.src = path;
+    fetch(manifest)
+      .then((r) => r.json())
+      .then((list) => {
+        list.forEach((m) => {
+          const url = `./assets/pixel-miku/${m.filename}`;
+          MIKU_IMAGES.push(url);
+          MIKU_META[url] = m;
+        });
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (typeof resolveMiku === "function") resolveMiku(MIKU_IMAGES.slice());
+        try {
+          window.SITE_READY = (window.MIKU_IMAGES_READY || Promise.resolve()).then(
+            () => new Promise((res) => setTimeout(res, 150))
+          );
+        } catch (_) {}
+        document.dispatchEvent(
+          new CustomEvent("miku-images-ready", {
+            detail: { images: MIKU_IMAGES.slice() },
           })
         );
-      }
-      return Promise.all(promises);
-    }
-
-    async function loadRoot(root) {
-      let currentIdx = 1;
-      let consecutiveFailures = 0;
-      const MAX_TOTAL = 80; // soft cap to avoid excessive memory
-
-      while (consecutiveFailures < 3 && MIKU_IMAGES.length < MAX_TOTAL) {
-        // Stop after 3 consecutive failures or soft cap
-        const batch = await loadBatch(root, currentIdx, 5); // Smaller batches
-        const validPaths = batch.filter((path) => path !== null);
-
-        if (validPaths.length === 0) {
-          consecutiveFailures++;
-        } else {
-          consecutiveFailures = 0;
-          for (const p of validPaths) {
-            if (MIKU_IMAGES.length >= MAX_TOTAL) break;
-            MIKU_IMAGES.push(p);
-          }
-        }
-
-        currentIdx += 5;
-
-        // Yield control to prevent blocking
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      }
-    }
-
-    // Load from first available root only
-    (async () => {
-      for (const root of roots) {
-        const testPath = `${root}01.png`;
-        const testResult = await new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => resolve(true);
-          img.onerror = () => resolve(false);
-          img.src = testPath;
-        });
-
-        if (testResult) {
-          await loadRoot(root);
-          break;
-        }
-      }
-      // Try to include PixieBel if asset exists
-      try {
-        const pix = "./assets/pixiebel.gif";
-        const ok = await new Promise((res) => {
-          const i = new Image();
-          i.onload = () => res(true);
-          i.onerror = () => res(false);
-          i.src = pix;
-        });
-        if (ok) {
-          window.__PIXIEBEL_ASSET = true;
-          if (!MIKU_IMAGES.includes(pix)) MIKU_IMAGES.push(pix);
-        }
-      } catch (_) {}
-
-      // Resolve readiness
-      if (typeof resolveMiku === "function") resolveMiku(MIKU_IMAGES.slice());
-      // Site/game readiness hook (images warmed up). Add a tiny idle to smooth UX.
-      try {
-        window.SITE_READY = (window.MIKU_IMAGES_READY || Promise.resolve()).then(() => new Promise((res) => setTimeout(res, 150)));
-      } catch (_) {}
-      document.dispatchEvent(
-        new CustomEvent("miku-images-ready", {
-          detail: { images: MIKU_IMAGES.slice() },
-        })
-      );
-    })();
+      });
   })();
 
   // ====== MIKU CLASSIFIER (color-based heuristic) ======
   // Classifies each Miku image into a likely type (e.g., Sakura, Snow, BRS)
   // and assigns a rarity override. Results are cached in window.MIKU_META.
-  const MIKU_META = Object.create(null);
-  try { window.MIKU_META = MIKU_META; } catch (_) {}
-
   function rgbToHsv(r, g, b) {
     r /= 255; g /= 255; b /= 255;
     const max = Math.max(r, g, b), min = Math.min(r, g, b);
@@ -755,23 +688,6 @@ console.log("🌸 Main.js starting execution...");
   try {
     window.MIKU_CLASSIFY_READY = window.MIKU_IMAGES_READY.then(() => classifyAllMikus());
   } catch (_) {}
-
-  // Probe presence of PixieBel asset so gacha can safely include it
-  (function probePixieBel() {
-    const PIX = "./assets/pixiebel.gif";
-    try {
-      const img = new Image();
-      img.onload = () => {
-        window.__PIXIEBEL_ASSET = true;
-      };
-      img.onerror = () => {
-        window.__PIXIEBEL_ASSET = false;
-      };
-      img.src = PIX;
-    } catch (_) {
-      window.__PIXIEBEL_ASSET = false;
-    }
-  })();
 
   // ====== DATA CONFIGURATION ======
   const SOCIALS = (C.socials && C.socials.items) || [];
@@ -1201,19 +1117,13 @@ console.log("🌸 Main.js starting execution...");
       return h >>> 0;
     }
     function rarityFor(url) {
-      // Special handling for PixieBel - rarest card
-      if (url.includes("pixiebel.gif")) return 5;
-      // Classification override if available
       try {
         if (typeof window.getMikuMeta === "function") {
           const meta = window.getMikuMeta(url, true);
           if (meta && typeof meta.rarity === "number") return meta.rarity;
         }
       } catch (_) {}
-      // Keep deterministic rarity per URL for consistent UI filtering
       const r = hashCode(url) % 100;
-      // Shift distribution toward 3★/4★/5★ (fewer 1★/2★)
-      // ~12% 1★, 18% 2★, 30% 3★, 25% 4★, 15% 5★
       if (r < 12) return 1;
       if (r < 30) return 2;
       if (r < 60) return 3;
@@ -1243,40 +1153,41 @@ console.log("🌸 Main.js starting execution...");
       const prev = collection[id] || { count: 0, rarity: card.rarity };
       prev.count += 1;
       prev.rarity = card.rarity;
+      try {
+        const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(card.url, true) : null;
+        if (meta && meta.song) prev.song = meta.song;
+        if (meta && meta.multiplier) prev.multiplier = meta.multiplier;
+      } catch (_) {}
+      if (!prev.multiplier) prev.multiplier = card.rarity;
       collection[id] = prev;
       localStorage.setItem(LS_COLL, JSON.stringify(collection));
       return prev.count === 1;
     }
 
     function pickRandom() {
-      // ~0.5% chance to get PixieBel (super rare) if asset exists
-      const pixieUrl = "./assets/pixiebel.gif";
-      if (window.__PIXIEBEL_ASSET && Math.random() < 0.005) {
-        return { id: pixieUrl, url: pixieUrl, rarity: 5 };
-      }
-      // Weight by rarity: bias toward higher rarities per request
-      // Approximate balance: 1:10, 2:15, 3:30, 4:25, 5:20
-      const weights = { 1: 10, 2: 15, 3: 30, 4: 25, 5: 20 };
-      const buckets = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+      // Weight by rarity with slight bias toward higher rarity cards
+      const weights = { 1: 10, 2: 15, 3: 30, 4: 25, 5: 19, 6: 1 };
+      const buckets = {};
       for (const url of MIKU_IMAGES) {
-        buckets[rarityFor(url)].push(url);
+        const r = rarityFor(url);
+        (buckets[r] ||= []).push(url);
       }
-      // Compute total weight across non-empty buckets
       let total = 0;
-      for (const k of [1, 2, 3, 4, 5]) {
-        if (buckets[k].length) total += weights[k];
+      for (const k of Object.keys(weights)) {
+        const num = Number(k);
+        if (buckets[num] && buckets[num].length) total += weights[num];
       }
       let r = Math.random() * total;
       let pickedR = 1;
-      for (const k of [1, 2, 3, 4, 5]) {
-        const w = buckets[k].length ? weights[k] : 0;
+      for (const k of Object.keys(weights).map(Number)) {
+        const w = buckets[k] && buckets[k].length ? weights[k] : 0;
         if (r < w) {
           pickedR = k;
           break;
         }
         r -= w;
       }
-      const pool = buckets[pickedR].length ? buckets[pickedR] : MIKU_IMAGES;
+      const pool = buckets[pickedR] && buckets[pickedR].length ? buckets[pickedR] : MIKU_IMAGES;
       const url = pool[Math.floor(Math.random() * pool.length)];
       return { id: url, url, rarity: rarityFor(url) };
     }
@@ -1382,21 +1293,18 @@ console.log("🌸 Main.js starting execution...");
       const applySearch = (url) => {
         if (!filters.search) return true;
         const q = filters.search.toLowerCase();
-        const base = (url.split("/").pop() || url).toLowerCase();
-        if (base.includes(q)) return true;
         try {
           const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url, true) : null;
-          if (meta && ((meta.type || "").toLowerCase().includes(q))) return true;
+          if (meta) {
+            if ((meta.name || "").toLowerCase().includes(q)) return true;
+            if (Array.isArray(meta.alt_names) && meta.alt_names.some((n) => (n || "").toLowerCase().includes(q))) return true;
+          }
         } catch (_) {}
-        return false;
+        const base = (url.split("/").pop() || url).toLowerCase();
+        return base.includes(q);
       };
       const minR = filters.rarity === "all" ? 0 : parseInt(filters.rarity, 10);
-      const pix = "./assets/pixiebel.gif";
-      const pixOwned = !!collection[pix];
       const pool = MIKU_IMAGES.filter((url) => {
-        // Hide PixieBel entirely from Dex until owned
-        if (!pixOwned && (url === pix || /pixiebel\.gif$/i.test(url)))
-          return false;
         const own = !!collection[url];
         if (filters.scope === "owned" && !own) return false;
         const r = rarityFor(url);
@@ -1410,6 +1318,8 @@ console.log("🌸 Main.js starting execution...");
           const entry = collection[url];
           const owned = !!entry;
           const r = rarityFor(url);
+          const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url, true) : null;
+          const name = meta ? meta.name || "Miku" : "Miku";
           const ownClass = owned ? `owned rarity-${r}` : "locked";
           const count = owned
             ? `<span class="dex-count">x${entry.count}</span>`
@@ -1418,7 +1328,8 @@ console.log("🌸 Main.js starting execution...");
           <div class="dex-card ${ownClass}" onclick="openImageModal('${url}')">
             <div class="dex-stars">${stars(r)}</div>
             ${count}
-            <img src="${url}" alt="Miku dex" loading="lazy" />
+            <img src="${url}" alt="${name}" loading="lazy" />
+            <div class="dex-name">${name}</div>
           </div>
         `;
         })
@@ -5865,6 +5776,7 @@ console.log("🌸 Main.js starting execution...");
             <div id="imageModalRarity">★</div>
             <div id="imageModalOwned"></div>
             <div id="imageModalInfo" style="font-size:14px;color:var(--ink-soft);margin-top:8px;"></div>
+            <div id="imageModalSong" style="margin-top:8px;"></div>
           </div>
         </div>
         <div class="actions">
@@ -5896,21 +5808,9 @@ console.log("🌸 Main.js starting execution...");
     try {
       if (typeof window.getMikuMeta === "function") {
         const meta = window.getMikuMeta(url, true);
-        if (meta && meta.type) return meta.type;
+        if (meta && meta.name) return meta.name;
       }
     } catch (_) {}
-    if (url.includes("pixiebel")) return "PixieBel";
-    if (url.includes("gamer")) return "Gamer Miku";
-    if (url.includes("win")) return "Victory Miku";
-    if (url.includes("beam")) return "Beam Miku";
-    if (url.includes("Song-Over")) return "Song Over Miku";
-    if (url.includes("makiilu")) return "Elegant Miku";
-    if (url.includes("jimmyisaac")) return "Render Miku";
-    if (url.includes("birthday")) return "Birthday Miku";
-    if (url.includes("@illufinch")) {
-      const num = url.match(/(\d+)\.png/);
-      return num ? `Pixel Miku ${num[1]}` : "Pixel Miku";
-    }
     return "Hatsune Miku";
   }
 
@@ -5921,18 +5821,6 @@ console.log("🌸 Main.js starting execution...");
         if (meta && meta.description) return meta.description;
       }
     } catch (_) {}
-    if (url.includes("pixiebel"))
-      return "The rarest and most mysterious character! A secret collab between PixelBelle and Miku. Only the luckiest collectors will find her! 🌟";
-    if (url.includes("gamer"))
-      return "Gaming enthusiast Miku ready for any challenge! Perfect for competitive modes and high-score runs.";
-    if (url.includes("win"))
-      return "Victory pose Miku celebrating your success! Shows up when you achieve great things.";
-    if (url.includes("beam"))
-      return "Energetic beam attack Miku! Full of power and determination.";
-    if (url.includes("Song-Over"))
-      return "Concert finale Miku after an amazing performance! The show must go on!";
-    if (url.includes("@illufinch"))
-      return "Adorable pixel art Miku by @illufinch! Part of the cutest collection in the garden.";
     return "The beloved virtual singer who brings music and joy to everyone! 🎤";
   }
   function hashCode(s) {
@@ -5961,14 +5849,27 @@ console.log("🌸 Main.js starting execution...");
     const rar = m.querySelector("#imageModalRarity");
     const owned = m.querySelector("#imageModalOwned");
     const info = m.querySelector("#imageModalInfo");
+    const songDiv = m.querySelector("#imageModalSong");
     const setBtn = m.querySelector("#imageModalSetSinger");
 
+    const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url, true) : null;
     img.src = url;
-    title.textContent = guessName(url);
-    info.textContent = getCharacterInfo(url);
+    title.textContent = meta?.name || guessName(url);
+    info.textContent = meta?.description || getCharacterInfo(url);
 
-    const r =
-      typeof rarityFor === "function" ? rarityFor(url) : rarityForGlobal(url);
+    if (songDiv) {
+      if (meta && meta.song) {
+        const match = meta.song.match(/(?:v=|be\/)([a-zA-Z0-9_-]{11})/);
+        const vid = match ? match[1] : "";
+        songDiv.innerHTML = vid
+          ? `<iframe style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" src="https://www.youtube.com/embed/${vid}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+          : "";
+      } else {
+        songDiv.innerHTML = "";
+      }
+    }
+
+    const r = typeof rarityFor === "function" ? rarityFor(url) : rarityForGlobal(url);
     rar.textContent = "Rarity: " + "★".repeat(r);
 
     const coll = collectionMap();
