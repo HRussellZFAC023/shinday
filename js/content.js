@@ -57,10 +57,10 @@ window.SITE_CONTENT = {
       wallHide: "./assets/icons/wall hide.png",
     },
     // Optional swallow gif path for the swallow mascot
-    swallowGif: "./assets/swallow.gif",
+  swallowGif: "./assets/swallow.gif",
     // Game selector tile covers
     menuCovers: {
-      vocab: "./assets/Gamer.png",
+      vocab: "./assets/Song-Over.full.2116602.gif",
       kanji: "./assets/win.jpg",
       kotoba: "./assets/miku beam.gif",
     },
@@ -172,7 +172,11 @@ window.SITE_CONTENT = {
     playingStatus: "Now Playing",
     stoppedStatus: "Radio Stopped",
     playButton: "▶️",
-    stopButton: "⏸️",
+  stopButton: "⏸️",
+  // Optional: if your radio host exposes JSON metadata for now playing, set it here
+  // Example (Radio.co public status): "https://public.radio.co/stations/{station_id}/status"
+  // Example (Shoutcast/Icecast): a proxy that returns { title: "Artist - Track" }
+  metaUrl: "",
   },
 
   home: {

@@ -229,22 +229,71 @@ body {
 .status-nav a {
   color: var(--ink);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.9rem;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, var(--pastel-pink), var(--pastel-blue), var(--pastel-mint));
-  background-size: 300% 100%;
-  border: 1px solid var(--border);
-  transition: all 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(45deg, var(--pastel-mint), var(--pastel-blue));
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.status-nav a span,
+.status-nav a img {
+  position: relative;
+  z-index: 2;
 }
 
 .status-nav a:hover,
 .status-nav a.active {
-  background: var(--pastel-pink);
-  transform: translateY(-2px);
-  animation: none;
+  background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-purple));
+  transform: translateY(-3px) scale(1.02);
+  text-decoration: none;
+  color: var(--ink);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  border-color: var(--accent);
 }
+
+/* Hover effects now rely on background/transform only (no overlays) */
+
+.status-nav a:active {
+  transform: translateY(-1px) scale(1.02);
+  transition-duration: 0.1s;
+}
+
+/* Summon preview styles */
+.summon-preview {
+  display:flex;
+  justify-content:center;
+  margin-bottom:10px;
+}
+.preview-reel {
+  width: 140px;
+  height: 140px;
+  border: 3px solid var(--border);
+  border-radius: 14px;
+  overflow:hidden;
+  background: #fff;
+  box-shadow: var(--shadow);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation: slotMachineGlow 2s ease-in-out infinite;
+}
+.preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  image-rendering: pixelated;
+  transition: transform 0.1s linear;
+}
+
+
+
 
 
 .status-item {
@@ -1020,9 +1069,10 @@ main {
   background: linear-gradient(145deg, #ffffff, #f3f3ff);
   border: 2px solid var(--border);
   box-shadow: var(--shadow);
-  transition: transform .12s ease, box-shadow .12s ease, outline .12s ease;
+  transition: transform .12s ease, box-shadow .12s ease, outline .12s ease, background-position .5s ease;
   position: relative;
   overflow: hidden;
+  background-size: 200% 100%;
 }
 .menu-tile.active,
 .menu-tile:focus-visible {
@@ -1044,6 +1094,13 @@ main {
   border-radius: 10px;
   padding: 8px 12px;
   font-weight: 800;
+}
+
+/* shiny swipe on menu tile */
+.menu-tile:hover {
+  background-image: linear-gradient(145deg, #ffffff, #f3f3ff), linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+  background-blend-mode: overlay;
+  background-position: 100% 0;
 }
 
 .menu-tile .corner-badge {
@@ -1366,6 +1423,39 @@ main {
   position: relative;
   overflow: visible;
 }
+
+/* Cute rhythm grid accent */
+.rhythm-grid { background: rgba(255,255,255,0.6); border: 2px solid var(--border); border-radius: 12px; }
+
+/* Missing animations for merged Diva features */
+@keyframes idolBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes speechBubbleIn {
+  from { transform: translateY(6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes speechBubbleOut {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(6px); opacity: 0; }
+}
+@keyframes idolSpeaking {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes ringExpand {
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(120px) rotate(180deg); opacity: 0; }
+}
+@keyframes stageLighting {
+  0% { opacity: 0.8; }
+  100% { opacity: 0.5; }
+}
 .party .stick,
 .party .leek {
   position: absolute;
@@ -1571,6 +1661,43 @@ main {
 .dex-rarity { font-weight: 800; color: #ffb300; margin-bottom: 6px; }
 .dex-desc { font-size: 12px; color: #596286; }
 .dex-video iframe { width: 100%; aspect-ratio: 16/9; border: 0; border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+
+/* Video container and error handling */
+.video-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.video-container iframe {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-error {
+  padding: 20px;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255, 182, 193, 0.2), rgba(255, 192, 203, 0.2));
+  border: 2px dashed rgba(255, 182, 193, 0.6);
+  border-radius: 8px;
+  color: #ff69b4;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.video-error a {
+  color: #ff1493;
+  text-decoration: none;
+  border-bottom: 1px dotted #ff1493;
+  transition: all 0.2s ease;
+}
+
+.video-error a:hover {
+  color: #ff69b4;
+  border-bottom-style: solid;
+  text-shadow: 0 0 4px rgba(255, 20, 147, 0.4);
+}
 .dex-links { display:flex; gap:8px; margin-top:6px; }
 .dex-link { font-weight:800; color:#596286; text-decoration:none; background:rgba(255,255,255,.9); border:2px solid var(--border); padding:4px 8px; border-radius:8px; }
 .dex-link:hover { color:#2b2b44; }
@@ -1752,6 +1879,21 @@ main {
   display: flex;
   gap: 8px;
 }
+.gacha-actions .pixel-btn {
+  background: linear-gradient(180deg, #ffffff, #ffe9f6);
+  border: 3px solid var(--accent);
+  box-shadow: 0 6px 14px rgba(43,43,68,.15), inset 0 -2px 0 rgba(0,0,0,.05);
+  transform: translateY(0);
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.gacha-actions .pixel-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 20px rgba(43,43,68,.25);
+  filter: saturate(1.05);
+}
+.gacha-actions .pixel-btn:active {
+  transform: translateY(0);
+}
 .gacha-controls {
   display: flex;
   gap: 12px;
@@ -1775,6 +1917,154 @@ main {
   will-change: transform, opacity;
   backface-visibility: hidden;
   transform: translateZ(0);
+}
+/* Gacha slot machine styles */
+.gacha-card.slot-machine {
+  background: linear-gradient(45deg, #f0f8ff, #ffd1ec, #e6f3ff);
+  border: 3px solid #6bc3ff;
+  animation: slotMachineGlow 0.5s ease-in-out infinite alternate;
+  overflow: hidden;
+}
+
+.slot-reel {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(255,255,255,0.9) 20%, rgba(107,195,255,0.3) 100%);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.reel-image {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  animation: reelSpin 0.15s linear infinite;
+  filter: blur(1px) brightness(1.2);
+}
+
+.slot-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 12px;
+  animation: sparkleFloat 0.8s ease-out forwards;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.gacha-card.revealing {
+  animation: revealPulse 0.6s ease-out;
+}
+
+.reveal-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  image-rendering: pixelated;
+  animation: revealZoom 0.5s ease-out;
+}
+
+@keyframes slotMachineGlow {
+  0% { 
+    box-shadow: 0 0 10px rgba(107,195,255,0.5);
+    transform: scale(1);
+  }
+  100% { 
+    box-shadow: 0 0 20px rgba(107,195,255,0.8), 0 0 30px rgba(255,107,157,0.3);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes reelSpin {
+  0% { transform: translateY(0) scale(1) rotate(0deg); }
+  25% { transform: translateY(-3px) scale(1.05) rotate(5deg); }
+  50% { transform: translateY(0) scale(0.95) rotate(0deg); }
+  75% { transform: translateY(3px) scale(1.05) rotate(-5deg); }
+  100% { transform: translateY(0) scale(1) rotate(0deg); }
+}
+
+@keyframes sparkleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.5) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.2) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.8) rotate(360deg);
+  }
+}
+
+@keyframes revealPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes revealZoom {
+  0% { 
+    opacity: 0;
+    transform: scale(0.5) rotate(10deg);
+    filter: brightness(2);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
+  }
+}
+
+@keyframes legendaryGlow {
+  0%, 100% {
+    filter: brightness(1) hue-rotate(0deg);
+    box-shadow: 0 0 15px rgba(255,215,0,0.6);
+  }
+  33% {
+    filter: brightness(1.2) hue-rotate(60deg);
+    box-shadow: 0 0 25px rgba(255,107,157,0.8);
+  }
+  66% {
+    filter: brightness(1.2) hue-rotate(240deg);
+    box-shadow: 0 0 25px rgba(107,195,255,0.8);
+  }
+}
+
+.gacha-card.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.gacha-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(180deg, #f6f9ff, #eaeffd);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  color: #a8b5d1;
+}
+.gacha-card.placeholder.spin .gacha-placeholder {
+  animation: slotSpin 600ms ease-in-out infinite;
+}
+@keyframes slotSpin {
+  0% { filter: brightness(1); transform: translateY(0); }
+  50% { filter: brightness(1.2); transform: translateY(-6px); }
+  100% { filter: brightness(1); transform: translateY(0); }
 }
 .gacha-card img {
   width: 100%;
@@ -1920,6 +2210,26 @@ main {
 
 .candle {
   font-size: 1.5rem;
+.gacha-rotation {
+  margin: 8px 0 12px;
+  overflow: hidden;
+  border-radius: 10px;
+  border:2px solid var(--border);
+  background: rgba(255,255,255,.7);
+}
+.gacha-rotation .rotation-strip {
+  display:flex;
+  gap:8px;
+  padding:6px;
+  overflow:auto;
+}
+.gacha-rotation .rotation-strip img {
+  width:72px;
+  height:72px;
+  object-fit:cover;
+  border-radius:8px;
+  border:1px solid var(--border);
+}
   animation: flicker 2s ease-in-out infinite;
 }
 
@@ -2107,6 +2417,7 @@ main {
   height: 100%;
   pointer-events: none;
   z-index: 0;
+  overflow: visible;
 }
 
 .floating-hearts {
@@ -2128,7 +2439,7 @@ main {
 .heart-trail {
   position: absolute;
   font-size: 1rem;
-  animation: heartFloat 2s ease-out forwards;
+  animation: heartPop 2s ease-out forwards;
   pointer-events: none;
 }
 
@@ -2212,6 +2523,11 @@ main {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+  /* Heart garden planted hearts */
+  .heart-zone { position: relative; overflow: hidden; }
+  .planted-heart { position:absolute; font-size:18px; transform-origin:50% 100%; animation:heartGrow 2.4s ease-out forwards; pointer-events:none; }
+  @keyframes heartGrow { 0%{ transform:translateY(0) scale(.6); opacity:.1 } 50%{ transform:translateY(-6px) scale(1.1); opacity:1 } 100%{ transform:translateY(-12px) scale(1); opacity:0 } }
 
 /* Keyframe animations */
 @keyframes fadeIn {
@@ -2444,7 +2760,7 @@ main {
 }
 
 /* small pop used for click bursts */
-@keyframes heartFloat {
+@keyframes heartPop {
   0% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -2453,6 +2769,17 @@ main {
     opacity: 0;
     transform: translateY(-60px) scale(1.2);
   }
+}
+
+/* Grey tint for not-owned gallery images */
+.gallery-item.not-owned .gallery-image {
+  filter: grayscale(0.7) brightness(0.9);
+  opacity: 0.8;
+  cursor: default;
+}
+.gallery-item.not-owned .gallery-image:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 @keyframes speechBubbleIn {
@@ -3202,3 +3529,66 @@ main {
   }
 
 }
+
+/* Diva game */
+.diva-wrap { display:flex; flex-direction:column; gap:10px; }
+.diva-stage { position:relative; border:2px solid var(--border); border-radius:12px; overflow:hidden; background:#e8f5ff center/cover no-repeat; min-height:320px; background-image: var(--diva-bg, url('./assets/root.png')); }
+.diva-stage::before { content:''; position:absolute; inset:0; background:rgba(255,255,255,0.15); pointer-events:none; }
+
+.diva-singer { position:absolute; left:10px; bottom:10px; width:140px; max-width:25vw; z-index:2; image-rendering: pixelated; transition: all 0.3s ease; }
+.diva-singer.stunned { filter: grayscale(1) brightness(0.8) contrast(1.05); transform: translateY(6px) rotate(-3deg) scale(0.98); transition: filter .2s ease, transform .2s ease; }
+
+.diva-judge { position:absolute; top:8px; left:50%; transform:translateX(-50%); font-weight:900; font-size:22px; color:#333; text-shadow:0 2px 6px rgba(0,0,0,0.15); opacity:0; transition:opacity .15s ease; z-index:3; }
+.diva-judge.show { opacity:1; animation: judgeFlash 0.6s ease-out; }
+@keyframes judgeFlash { 0%{ transform: translateX(-50%) scale(1.2); } 100%{ transform: translateX(-50%) scale(1); } }
+
+.stage-overlay { position:absolute; top:8px; right:8px; z-index:3; text-align:right; }
+.score-display { background: rgba(255,255,255,0.9); border: 2px solid var(--border); border-radius: 8px; padding: 6px 10px; font-weight: 800; color: var(--ink); }
+.score-display div { margin: 2px 0; }
+
+.diva-lanes { position:absolute; right:6%; top:8%; bottom:12%; width:40%; display:grid; grid-template-columns:1fr; grid-template-rows: repeat(4, 1fr); gap:10px; z-index:1; }
+.diva-lane { position:relative; border:2px dashed rgba(89,98,134,0.25); border-radius:10px; overflow:hidden; }
+
+.hit-zone { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:32px; height:32px; border:3px solid rgba(125,211,252,0.6); border-radius:50%; background: radial-gradient(circle, rgba(125,211,252,0.2), transparent); animation: ringPulse 1s ease-in-out infinite; }
+@keyframes ringPulse { 0%,100%{ transform: translateX(-50%) scale(1); opacity:0.8; } 50%{ transform: translateX(-50%) scale(1.1); opacity:1; } }
+
+.diva-dot { position:absolute; left:50%; transform:translateX(-50%); top:-20px; width:18px; height:18px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #fff, #7dd3fc); box-shadow:0 2px 8px rgba(0,0,0,0.25); animation: divaFall linear forwards; cursor:pointer; z-index:2; }
+.diva-dot.has-ring .hit-ring { position:absolute; inset:-6px; border: 2px solid #fbbf24; border-radius:50%; animation: ringSpin 0.8s linear infinite; }
+@keyframes ringSpin { from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
+@keyframes divaFall { from{ top:-20px; } to { top: calc(100% - 14px); } }
+
+@keyframes pointsFloat { 
+  0%{ opacity:1; transform: translateX(-50%) translateY(0); } 
+  100%{ opacity:0; transform: translateX(-50%) translateY(-30px); } 
+}
+
+.diva-ui { display:flex; gap:12px; align-items:stretch; }
+.diva-left { flex:1; display:flex; flex-direction:column; gap:10px; }
+
+.diva-options { border: 2px solid var(--border); border-radius: 12px; padding: 12px; background: #fff; }
+.question-prompt { text-align: center; margin-bottom: 10px; }
+.jp-word { font-size: 24px; font-weight: 900; color: var(--accent); margin-bottom: 4px; }
+.romaji { font-size: 14px; color: #666; font-style: italic; }
+.choice-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px; }
+.gamepad-opt { font-size:.95rem; }
+
+.diva-stats { display: flex; gap: 15px; font-size: 0.9rem; color: #666; }
+
+.diva-items { display:flex; align-items:center; gap:8px; flex-wrap: wrap; }
+.diva-item-status { font-weight:800; color:#596286; }
+
+.diva-chat { flex:1; display:flex; flex-direction:column; border:2px solid var(--border); border-radius:12px; background:#fff; padding:8px; min-width:300px; max-width:400px; }
+.chat-header { display: flex; align-items: center; gap: 8px; padding: 4px 0 8px 0; border-bottom: 1px solid #eee; margin-bottom: 8px; }
+.chat-miku { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); }
+.chat-log { flex:1; overflow:auto; display:flex; flex-direction:column; gap:6px; max-height: 240px; }
+.chat-entry { padding:6px 10px; border-radius:10px; max-width:85%; font-size: 0.9rem; }
+.chat-entry.user { align-self:flex-end; background: #e0f2fe; border: 2px solid #7dd3fc; }
+.chat-entry.miku { align-self:flex-start; background: #fce7f3; border: 2px solid #f472b6; }
+.chat-entry.welcome { background: #f0f9ff; border: 2px solid #0ea5e9; }
+.chat-entry.encourage { background: #ecfdf5; border: 2px solid #10b981; font-style: italic; }
+.miku-response { line-height: 1.4; }
+#divaChatForm { display:flex; gap:8px; margin-top:8px; }
+
+.diva-kirby { position:absolute; width:64px; height:auto; z-index:2; pointer-events:none; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3)); }
+.diva-bait { position:absolute; font-size:22px; animation: baitBlink 1s ease-in-out infinite; z-index:1; }
+@keyframes baitBlink { 0%,100%{ transform:scale(1); opacity:.9;} 50%{ transform:scale(1.2); opacity:1; } }

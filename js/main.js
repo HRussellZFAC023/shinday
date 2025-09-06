@@ -877,7 +877,8 @@ console.log("🌸 Main.js starting execution...");
       pull10: byId("gachaPull10"),
       daily: byId("gachaDaily"),
       convert: byId("gachaConvert"),
-      results: byId("gachaResults"),
+  rotation: byId("gachaRotation"),
+  results: byId("gachaResults"),
       dexBtn: byId("gachaCollectionBtn"),
       dex: byId("mikuDex"),
     };
@@ -964,7 +965,7 @@ console.log("🌸 Main.js starting execution...");
       return "★".repeat(n);
     }
 
-    function ensurePool(cb) {
+  function ensurePool(cb) {
       if (poolReady()) {
         cb();
         return;
@@ -977,6 +978,28 @@ console.log("🌸 Main.js starting execution...");
         }
       }, 150);
     }
+
+    // Populate and animate idle summon preview (persistent)
+    ensurePool(() => {
+      try {
+        if (!elements.rotation) return;
+        const prev = elements.rotation.querySelector('.preview-image');
+        const pool = MIKU_IMAGES.filter(u => !/PixieBel \(bonus\)\.gif$/i.test(u));
+        if (prev && pool.length) {
+          // Seed with a random image
+          prev.src = pool[Math.floor(Math.random()*pool.length)];
+          // Start gentle cycling animation
+          let t = 0;
+          setInterval(()=>{
+            if (!prev.isConnected) return;
+            const r = pool[Math.floor(Math.random()*pool.length)];
+            prev.src = r;
+            prev.style.transform = `scale(${0.96 + Math.random()*0.08})`;
+            t += 100;
+          }, 1000);
+        }
+      } catch(_){}
+    });
 
     function addToCollection(card) {
       const id = card.id;
@@ -1044,16 +1067,26 @@ console.log("🌸 Main.js starting execution...");
       return pack;
     }
 
-    function renderResults(cards) {
-      // initially render placeholders for a staged reveal
-      elements.results.innerHTML = cards
+  function renderResults(cards) {
+      // Hide idle rotation and show results container
+      try { if (elements.rotation) elements.rotation.hidden = true; } catch(_){ }
+      try { if (elements.results) elements.results.hidden = false; } catch(_){ }
+      // Create amazing slot machine animation
+      const slotDuration = 2000; // 2 seconds of spinning
+      const cycleSpeed = 150; // Change image every 150ms
+      
+  // Results grid only (preview is persistent in idle panel)
+  const previewPool = MIKU_IMAGES.filter(u => !/PixieBel \(bonus\)\.gif$/i.test(u));
+  const previewImg = (previewPool[0] || cards[0]?.url || MIKU_IMAGES[0]);
+  elements.results.innerHTML = cards
         .map((c, i) => {
           return `
-          <div class="gacha-card placeholder rarity-${
-            c.rarity
-          }" data-index="${i}">
+          <div class="gacha-card slot-machine rarity-${c.rarity}" data-index="${i}">
             <div class="gacha-stars">${stars(c.rarity)}</div>
-            <div class="gacha-placeholder">?</div>
+            <div class="slot-reel">
+              <img class="reel-image" src="${previewImg || c.url}" alt="Miku" loading="lazy" />
+            </div>
+            <div class="slot-sparkles"></div>
           </div>
         `;
         })
@@ -1064,65 +1097,111 @@ console.log("🌸 Main.js starting execution...");
         SFX.play("gacha.roll");
       } catch (e) {}
 
-      // stagger reveal with pop sounds; reveal image and NEW badge
-      cards.forEach((c, i) => {
+      // Start the magical slot machine animation for each card
+  // No per-results preview; only the slot reels spin
+
+      cards.forEach((c, cardIndex) => {
+        const cardEl = elements.results.querySelector(`.gacha-card[data-index="${cardIndex}"]`);
+        if (!cardEl) return;
+        
+        const reelImg = cardEl.querySelector('.reel-image');
+        const sparkles = cardEl.querySelector('.slot-sparkles');
+        
+        // Add cute sparkle effects
+        const createSparkle = () => {
+          if (!sparkles) return;
+          const sparkle = document.createElement('div');
+          sparkle.className = 'sparkle';
+          sparkle.style.left = Math.random() * 100 + '%';
+          sparkle.style.top = Math.random() * 100 + '%';
+          sparkle.textContent = ['✨', '⭐', '💫', '🌟'][Math.floor(Math.random() * 4)];
+          sparkles.appendChild(sparkle);
+          setTimeout(() => sparkle.remove(), 800);
+        };
+        
+        // Cycle through random Miku images during spin
+        const spinInterval = setInterval(() => {
+          if (reelImg && MIKU_IMAGES.length > 0) {
+            // Exclude PixieBel bonus from reels to keep surprise
+            const pool = previewPool.length ? previewPool : MIKU_IMAGES;
+            const randomImg = pool[Math.floor(Math.random() * pool.length)];
+            reelImg.src = randomImg;
+            reelImg.style.transform = `scale(${0.9 + Math.random() * 0.2}) rotate(${-5 + Math.random() * 10}deg)`;
+            
+            // Add sparkles randomly during spin
+            if (Math.random() < 0.7) createSparkle();
+          }
+        }, cycleSpeed);
+        
+        // Stop spinning and reveal final card
         setTimeout(() => {
-          const cardEl = elements.results.querySelector(
-            `.gacha-card[data-index="${i}"]`
-          );
-          if (!cardEl) return;
+          clearInterval(spinInterval);
+          
           const isNew = addToCollection(c);
           const newBadge = isNew ? '<div class="gacha-new">NEW!</div>' : "";
-          cardEl.classList.remove("placeholder");
-          cardEl.innerHTML = `\n            <div class="gacha-stars">${stars(
-            c.rarity
-          )}</div>\n            ${newBadge}\n            <img src="${
-            c.url
-          }" alt="Miku card" loading="lazy" />\n          `;
-          // reveal and pop SFX
+          
+          cardEl.classList.remove("slot-machine");
+          cardEl.classList.add("revealing");
+          
+          cardEl.innerHTML = `
+            <div class="gacha-stars">${stars(c.rarity)}</div>
+            ${newBadge}
+            <img src="${c.url}" alt="Miku card" loading="lazy" class="reveal-image" />
+          `;
+          
+          // Final sparkle burst for reveal
+          for(let i = 0; i < 6; i++) {
+            setTimeout(() => createSparkle(), i * 100);
+          }
+          
+          // Reveal animation and SFX
           try {
-            if (i === 0) SFX.play("gacha.reveal");
-          } catch (e) {}
-          // pop SFX and reveal change
-          try {
+            if (cardIndex === 0) SFX.play("gacha.reveal");
             SFX.play("gacha.pop");
           } catch (e) {}
-          // special fanfare for high rarity
+          
+          // Special effects for high rarity
           if (c.rarity >= 4) {
             try {
               SFX.play("gacha.high");
             } catch (e) {}
-            // lightweight glow using transform + brightness (avoid box-shadow anim)
-            cardEl.animate(
-              [
-                { transform: "scale(1)", filter: "brightness(1.0)" },
-                { transform: "scale(1.03)", filter: "brightness(1.12)" },
-              ],
-              { duration: 500, easing: "ease-out" }
-            );
+            
+            cardEl.animate([
+              { transform: "scale(1)", filter: "brightness(1.0) hue-rotate(0deg)" },
+              { transform: "scale(1.08)", filter: "brightness(1.3) hue-rotate(15deg)" },
+              { transform: "scale(1.02)", filter: "brightness(1.1) hue-rotate(0deg)" }
+            ], { duration: 800, easing: "ease-out" });
+            
+            // Rainbow border for legendary cards
+            if (c.rarity >= 5) {
+              cardEl.style.border = "3px solid";
+              cardEl.style.borderImage = "linear-gradient(45deg, #ff6b9d, #ffd700, #6bc3ff, #a594f9) 1";
+              cardEl.style.animation = "legendaryGlow 2s ease-in-out infinite";
+            }
           }
-        }, 180 * i + 200);
+        }, slotDuration + (cardIndex * 300)); // Stagger reveals
       });
 
-      // small pop when all revealed
-      setTimeout(() => {
+      // Final animation when all cards are revealed
+  setTimeout(() => {
         elements.results.animate(
           [{ transform: "scale(0.98)" }, { transform: "scale(1)" }],
           { duration: 220, easing: "ease-out" }
         );
         renderDex();
-        // If pull was super weak (no ★★★ or higher), play fail sting
+        
+        // Check if pull was weak and play appropriate sound
         try {
-          const maxR = Math.max.apply(
-            null,
-            cards.map((x) => x.rarity || 1)
-          );
-          if (!isFinite(maxR) || maxR <= 2) SFX.play("gacha.fail");
+          const maxR = Math.max(...cards.map(x => x.rarity || 1));
+          if (!isFinite(maxR) || maxR <= 2) {
+            SFX.play("gacha.fail");
+          } else if (maxR >= 5) {
+            // Epic pull celebration!
+            try { SFX.play("extra.thanks"); } catch(_) {}
+          }
         } catch (_) {}
-      }, 200 + cards.length * 180);
-    }
-
-  function renderDex() {
+      }, slotDuration + cards.length * 300 + 500);
+    }  function renderDex() {
       const LS_FILTER = "gacha.dexFilter";
       let filters = { scope: "all", rarity: "all", search: "" };
       try {
@@ -1290,16 +1369,17 @@ console.log("🌸 Main.js starting execution...");
       const cards = Array.from({ length: n }, () => pickRandom());
       if (n >= 10) guaranteeAtLeast(3, cards);
       renderResults(cards);
-      // remove busy cursor after reveals finish
+      // Auto-remove busy cursor after slot animation completes
+      const totalAnimTime = 2000 + n * 300 + 1000; // slot duration + stagger + buffer
       setTimeout(() => {
         try {
           window.setBusyCursor && window.setBusyCursor(false);
         } catch (_) {}
-      }, 300 + n * 200);
+      }, totalAnimTime);
     }
 
-    elements.pull1.addEventListener("click", () => ensurePool(() => pull(1)));
-    elements.pull10.addEventListener("click", () => ensurePool(() => pull(10)));
+  elements.pull1.addEventListener("click", () => ensurePool(() => pull(1)));
+  elements.pull10.addEventListener("click", () => ensurePool(() => pull(10)));
     elements.daily.addEventListener("click", () => {
       const last = localStorage.getItem(LS_DAILY);
       const today = new Date().toDateString();
@@ -1327,9 +1407,20 @@ console.log("🌸 Main.js starting execution...");
         } catch (_) {}
         return;
       }
-      heartCount -= convertCost;
-      localStorage.setItem("pixelbelle-hearts", heartCount);
-      updateCounters();
+      // Use Hearts module to ensure counters/UI update consistently
+      try {
+        if (window.Hearts && typeof window.Hearts.add === 'function') {
+          window.Hearts.add(-convertCost);
+        } else {
+          heartCount -= convertCost;
+          localStorage.setItem("pixelbelle-hearts", heartCount);
+          updateCounters && updateCounters();
+        }
+      } catch(_) {
+        heartCount -= convertCost;
+        localStorage.setItem("pixelbelle-hearts", heartCount);
+        updateCounters && updateCounters();
+      }
       updateTokens(tokens + 1);
       loveToast("💖→チケット +1");
       try {
@@ -1365,11 +1456,41 @@ console.log("🌸 Main.js starting execution...");
     initStatusBar();
     // Start BGM first; radio will override if user plays it
     try {
-      if (window.AudioMod) { AudioMod.initBgm(); AudioMod.initRadio(); }
-      else { initBgm && initBgm(); initRadio && initRadio(); }
+      if (window.AudioMod) { AudioMod.initBgm(); AudioMod.initRadio && AudioMod.initRadio(); }
+      else { try{ initBgm && initBgm(); }catch(_){} }
     } catch (_) {}
+    // Wire the visible radio widget controls
+    try { wireRadioUI && wireRadioUI(); } catch(_){}
     initSocials();
     initJpGames();
+    // Ensure Unlock progress bar exists in HUD (merge from diva)
+    (function ensureHudUnlock(){
+      try{
+        if (!document.getElementById('hudUnlockBar')){
+          const hud = document.querySelector('.jp-hud-widget');
+          if (hud){
+            const line = document.createElement('div');
+            line.className = 'hud-line';
+            line.innerHTML = '<strong>Unlocks:</strong>\n            <span id="hudUnlockText">Unlocks: 0/0</span>\n            <div class="progress-bar" id="hudUnlockBar"><div class="progress" id="hudUnlockProgress" style="width:0%"></div></div>';
+            hud.appendChild(line);
+          }
+        }
+        // Update with current collection
+        (function updateUnlockProgress(){
+          try{
+            const coll = JSON.parse(localStorage.getItem('gacha.collection')||'{}');
+            const owned = Object.keys(coll).length;
+            const total = Array.isArray(window.MIKU_IMAGES) ? window.MIKU_IMAGES.length : 100;
+            const pct = Math.min(100, Math.round((owned/Math.max(1,total))*100));
+            const fill = document.getElementById('hudUnlockProgress');
+            const text = document.getElementById('hudUnlockText');
+            if (fill) fill.style.width = pct+'%';
+            if (text) text.textContent = `Unlocks: ${owned}/${total}`;
+          }catch(_){ }
+        })();
+      }catch(_){ }
+    })();
+  try { window.Diva && Diva.init && Diva.init(); } catch(_){}
     initGames();
     initShrine();
     initFriends();
@@ -1383,6 +1504,26 @@ console.log("🌸 Main.js starting execution...");
     try {
       applySinger();
     } catch (_) {}
+    // Safe Diva stub for backward compatibility (module merged)
+    (function(){
+      try{
+        const up = function(){
+          try{
+            const coll = JSON.parse(localStorage.getItem('gacha.collection')||'{}');
+            const owned = Object.keys(coll).length;
+            const total = Array.isArray(window.MIKU_IMAGES) ? window.MIKU_IMAGES.length : 100;
+            const pct = Math.min(100, Math.round((owned/Math.max(1,total))*100));
+            const fill = document.getElementById('hudUnlockProgress');
+            const text = document.getElementById('hudUnlockText');
+            if (fill) fill.style.width = pct+'%';
+            if (text) text.textContent = `Unlocks: ${owned}/${total}`;
+          }catch(_){ }
+        };
+        window.Diva = window.Diva || {};
+        window.Diva.updateUnlockProgress = up;
+        window.Diva.init = window.Diva.init || function(){}; // merged into main flow
+      }catch(_){ }
+    })();
     console.log("PixelBelle's Garden initialized! 🌸");
     // Global ESC for overlays: image modal and song select
     document.addEventListener('keydown',(e)=>{
@@ -1633,6 +1774,18 @@ console.log("🌸 Main.js starting execution...");
   try { window.Games && Games.vocab && typeof Games.vocab.mount === 'function' && Games.vocab.mount(); } catch(_){}
   try { window.Games && Games.kanji && typeof Games.kanji.mount === 'function' && Games.kanji.mount(); } catch(_){}
   try { window.Games && Games.kotoba && typeof Games.kotoba.mount === 'function' && Games.kotoba.mount(); } catch(_){}
+
+    // Pre-start settings overlay (centralizes difficulty, timer, metronome, BPM, and game mode)
+    // Provide a global reset hook to restore JP card state when leaving the tab
+    try {
+      window.__resetStudy = function(){
+        try{
+          const ids = ['vocabCard','kanjiCard','kotobaCard'];
+          ids.forEach(id=>{ const el = document.getElementById(id); if (el) el.style.display='none'; });
+          const start = document.getElementById('startCard'); if (start) start.style.display='';
+        }catch(_){ }
+      };
+    } catch(_) {}
 
     // Pre-start settings overlay (centralizes difficulty, timer, metronome, BPM, and game mode)
     (function ensureSettingsOverlay() {
@@ -2484,8 +2637,18 @@ console.log("🌸 Main.js starting execution...");
         HUD.lives--;
         localStorage.setItem("jp.lives", String(HUD.lives));
         renderLives(cardId);
+        // Diva-like feedback: grey idol + miss SFX
+        try {
+          const c = document.getElementById(cardId);
+          const idol = c && c.querySelector('.stage-idol');
+          if (idol) {
+            idol.classList.add('stunned');
+            idol.style.filter = 'grayscale(1) brightness(.9)';
+            setTimeout(()=>{ idol.classList.remove('stunned'); idol.style.filter=''; }, 700);
+          }
+          SFX.play('result.miss');
+        } catch(_) {}
         if (HUD.lives === 0) {
-          try { SFX.play('result.miss'); } catch (_) {}
           endSong("Out of Lives");
         }
       }
@@ -2779,50 +2942,6 @@ console.log("🌸 Main.js starting execution...");
       throw new Error("Could not build kanji question");
     }
 
-    // SFX wrappers using asset library
-    function sfxOk() {
-      try {
-        SFX.play("quiz.ok");
-      } catch (_) {}
-    }
-    function sfxBad() {
-      try {
-        SFX.play("quiz.bad");
-      } catch (_) {}
-    }
-    function sfxTime() {
-      try {
-        SFX.play("quiz.tick");
-      } catch (_) {}
-    }
-    function sfxHeartClick() {
-      try {
-        SFX.play("hearts.click");
-      } catch (_) {}
-    }
-    function sfxHeartAdd(amount = 1) {
-      try {
-        SFX.play("hearts.add");
-      } catch (_) {}
-    }
-    function sfxRoll() {
-      try {
-        SFX.play("gacha.roll");
-      } catch (_) {}
-    }
-    function sfxPop() {
-      try {
-        SFX.play("gacha.pop");
-      } catch (_) {}
-    }
-    function sfxFanfare(rarity = 4) {
-      try {
-        if (rarity >= 5) SFX.play("gacha.high");
-        else if (rarity >= 4) SFX.play("gacha.mid");
-        else SFX.play("gacha.low");
-      } catch (_) {}
-    }
-
     // Utilities
     function shuffle(a) {
       for (let i = a.length - 1; i > 0; i--) {
@@ -2986,6 +3105,7 @@ console.log("🌸 Main.js starting execution...");
                   // Bonus rewards for perfect timing
                   awardHearts(2);
                   addXP(Math.round(gain * 1.5));
+                  try { SFX.play('result.perfect'); } catch(_) {}
                 } else {
                   fb.textContent = "✅ Correct!";
                   awardHearts(1);
@@ -2994,6 +3114,9 @@ console.log("🌸 Main.js starting execution...");
                 fb.style.color = "#2b2b44";
                 score++;
                 scoreEl.textContent = String(score);
+
+                try { SFX.play("quiz.ok"); } catch(_) {}
+
                 
                 // Enhanced streak system
                 streak++;
@@ -3035,6 +3158,9 @@ console.log("🌸 Main.js starting execution...");
                 createRingEffect(element, false);
                 fb.textContent = `❌ ${correct}`;
                 fb.style.color = "#c00";
+
+                 try { SFX.play("quiz.bad"); } catch(_) {}
+
                 streak = 0;
                 streakEl.textContent = String(streak);
                 HUD.counts.SAD++;
@@ -3222,6 +3348,7 @@ console.log("🌸 Main.js starting execution...");
                   createPerfectHitEffect(element, style.color);
                   fb.textContent = "✨ PERFECT! 正解! ✨";
                   awardHearts(2);
+                  try { SFX.play('result.perfect'); } catch(_) {}
                 } else {
                   fb.textContent = "✅ 正解!";
                   awardHearts(1);
@@ -3229,6 +3356,9 @@ console.log("🌸 Main.js starting execution...");
                 fb.style.color = "#2b2b44";
                 score++;
                 scoreEl.textContent = String(score);
+
+                try { SFX.play("quiz.ok"); } catch(_) {}
+
                 
                 streak++;
                 streakEl.textContent = String(streak);
@@ -3287,6 +3417,9 @@ console.log("🌸 Main.js starting execution...");
                 createRingEffect(element, false);
                 fb.textContent = `❌ ${correct}`;
                 fb.style.color = "#c00";
+
+                 try { SFX.play("quiz.bad"); } catch(_) {}
+
                 streak = 0;
                 streakEl.textContent = String(streak);
                 HUD.counts.SAD++;
@@ -3369,10 +3502,14 @@ console.log("🌸 Main.js starting execution...");
                   createPerfectHitEffect(element, style.color);
                   say("✨ PERFECT! 正解だよ! ✨");
                   addXP(15); // Bonus XP for perfect
+                  try { SFX.play('result.perfect'); } catch(_) {}
                 } else {
                   say("正解だよ！");
                   addXP(10);
                 }
+
+                try { SFX.play("quiz.ok"); } catch(_) {}
+
                 score++;
                 scoreEl.textContent = String(score);
                 
@@ -3381,6 +3518,9 @@ console.log("🌸 Main.js starting execution...");
               } else {
                 createRingEffect(element, false);
                 say(`残念！正解は「${correct}」`);
+
+                 try { SFX.play("quiz.bad"); } catch(_) {}
+
               }
               setTimeout(round, 900);
               return isCorrect;
@@ -3425,6 +3565,9 @@ console.log("🌸 Main.js starting execution...");
                   say("正解だよ！");
                   addXP(6);
                 }
+
+                SFX.play("quiz.ok");
+
                 score++;
                 scoreEl.textContent = String(score);
                 
@@ -3433,6 +3576,9 @@ console.log("🌸 Main.js starting execution...");
               } else {
                 createRingEffect(element, false);
                 say(`残念！正解は「${correct}」`);
+
+                 SFX.play("quiz.bad");
+
               }
               setTimeout(round, 900);
               return isCorrect;
@@ -3484,6 +3630,17 @@ console.log("🌸 Main.js starting execution...");
       setTimeout(()=> p.remove(), 1400);
     }
   }
+
+  // ===== Global Swallower mascot (site-wide, not part of JP lives) =====
+  (function scheduleGlobalSwallower(){
+    try {
+      setInterval(() => {
+        if (!document.hidden) {
+          try { showSwallowMascot && showSwallowMascot(); } catch (_) {}
+        }
+      }, 20000);
+    } catch (_) {}
+  })();
 
   // ====== APPLY CONTENT (copy from SITE_CONTENT) ======
   function applyContent() {
@@ -3584,22 +3741,16 @@ console.log("🌸 Main.js starting execution...");
       if (splashBtn && C.splash?.button)
         splashBtn.textContent = C.splash.button;
 
-      // Nav labels (keep anchors, replace text)
-      const navLinks = Array.from(
-        document.querySelectorAll("#navbar a[data-section]")
-      );
-      if (Array.isArray(C.nav) && C.nav.length === navLinks.length) {
-        C.nav.forEach((n, i) => {
-          const a = navLinks[i];
-          if (a && n) {
-            const icon = n.mikuIcon
-              ? mikuIcon(n.mikuIcon, n.emoji || "")
-              : n.emoji || "";
-            // displayIcon variable was introduced in socials only; use local icon here
-            a.innerHTML = /*html*/ `${icon} ${n.label}`;
-          }
-        });
-      }
+      // Nav build: use C.nav to ensure order and labels (e.g., shrine then gacha)
+      try {
+        const ul = document.querySelector('#navbar ul');
+        if (ul && Array.isArray(C.nav) && C.nav.length) {
+          ul.innerHTML = C.nav.map((n)=>{
+            const icon = n.mikuIcon ? mikuIcon(n.mikuIcon, n.emoji || "") : (n.emoji || "");
+            return `<li><a href="#${n.id}" data-section="${n.id}">${icon} ${n.label}</a></li>`;
+          }).join('');
+        }
+      } catch(_){}
 
       // (Removed old nowPlaying placeholder: using radioStatus/radioDisplayStatus instead)
       // Status labels
@@ -4300,6 +4451,10 @@ console.log("🌸 Main.js starting execution...");
       if (targetSection) {
         targetSection.classList.add("active");
         currentSection = sectionId;
+        // Reset JP study state each time the Study tab is opened
+        if (sectionId === 'study') {
+          try { if (typeof window.__resetStudy==='function') window.__resetStudy(); } catch(_){ }
+        }
       }
 
       // Update nav links
@@ -4341,10 +4496,11 @@ console.log("🌸 Main.js starting execution...");
         if (prevSection === "study") {
           window.__vocabStop && window.__vocabStop();
           window.__kanjiStop && window.__kanjiStop();
+          try { if (typeof window.__resetStudy==='function') window.__resetStudy(); } catch(_){ }
         }
       } catch (_) {}
     }
-    function spawnFloatingMikus() {
+  function spawnFloatingMikus() {
       const container = document.getElementById("floatingMikusContainer");
       if (!container) return;
       container.innerHTML = "";
@@ -4371,6 +4527,9 @@ console.log("🌸 Main.js starting execution...");
       img.style.animationDuration = (3.8 + Math.random() * 1.6).toFixed(2) + "s";
       container.appendChild(img);
     }
+
+  // Expose a global refresher so singer changes can update the floating image
+  try { window.refreshFloatingMikus = spawnFloatingMikus; } catch(_) {}
 
     if (MIKU_IMAGES.length) {
       spawnFloatingMikus();
@@ -4600,7 +4759,7 @@ console.log("🌸 Main.js starting execution...");
   }
 
   // ====== RADIO SECTION ======
-  function initRadio() {
+  function wireRadioUI() {
     const playBtn = document.getElementById("playRadio");
     const pauseBtn = document.getElementById("pauseRadio");
     const radioStatus = document.getElementById("radioStatus");
@@ -4608,74 +4767,77 @@ console.log("🌸 Main.js starting execution...");
     const onlineStatus = document.getElementById("onlineStatus");
     const statusDot = document.getElementById("statusDot");
 
-    let isPlaying = false;
-
-    // Stream source (Vocaloid Radio)
+    // Create or reuse the hidden radio audio element from AudioMod
     const STREAM_URL = "https://vocaloid.radioca.st/stream";
-    const audio = new Audio();
-    audio.src = STREAM_URL;
-    audio.preload = "none";
-    audio.crossOrigin = "anonymous";
-    audio.volume = 0.85;
+    let audio = null;
+    try {
+      if (window.AudioMod && typeof AudioMod.initRadio === 'function') {
+        AudioMod.initRadio();
+        const a = document.getElementById('radioAudio');
+        if (a) { audio = a; a.src = STREAM_URL; a.crossOrigin = 'anonymous'; a.preload = 'none'; a.volume = 0.85; }
+      }
+    } catch(_){}
+    if (!audio) {
+      audio = new Audio();
+      audio.src = STREAM_URL;
+      audio.preload = 'none';
+      audio.crossOrigin = 'anonymous';
+      audio.volume = 0.85;
+    }
 
     // Expose radio controls for external pause (e.g., when playing YouTube)
     try {
       window.__radioAudio = audio;
       window.__pauseRadio = () => {
-        try {
-          audio.pause();
-        } catch (_) {}
-        const status = C.radio?.stoppedStatus || "Radio Stopped";
+        try { audio.pause(); } catch (_) {}
+        const status = C.radio?.stoppedStatus || 'Radio Stopped';
         if (radioStatus) radioStatus.textContent = status;
         if (radioDisplayStatus) radioDisplayStatus.textContent = status;
-        if (onlineStatus)
-          onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
+        if (onlineStatus) onlineStatus.textContent = C.status?.radioOffLabel || 'Radio Off';
         stopEqualizer();
-        if (statusDot) statusDot.style.color = "#ff4d4d";
+        if (statusDot) statusDot.style.color = '#ff4d4d';
       };
-    } catch (_) {}
+    } catch(_){}
 
     // Initialize labels
     if (onlineStatus)
       onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
+    const station = (C.radio && (C.radio.radioName || C.radio.radioName===0) ? C.radio.radioName : (C.radio?.radioName || C.radio?.title || 'Kawaii FM'));
     if (radioStatus)
-      radioStatus.textContent = C.radio?.defaultStatus || "Kawaii FM 📻";
+      radioStatus.textContent = station + ' 📻';
     if (radioDisplayStatus)
-      radioDisplayStatus.textContent = C.radio?.defaultStatus || "Kawaii FM 📻";
+      radioDisplayStatus.textContent = station + ' 📻';
     if (statusDot) statusDot.style.color = "#ffbf00"; // amber on load
 
     // Radio controls
-    playBtn.addEventListener("click", () => {
-      isPlaying = true;
-      const status = C.radio?.playingStatus || "Now Playing";
-      radioStatus.textContent = status;
+    if (playBtn) playBtn.addEventListener('click', () => {
+      const status = C.radio?.playingStatus || 'Now Playing';
+      if (radioStatus) radioStatus.textContent = status;
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
-      if (onlineStatus) onlineStatus.textContent = "Playing";
-      // Stop any background music permanently once radio starts
-      try {
-        if (window.__stopBgm) window.__stopBgm(true);
-      } catch (_) {}
-      audio.play().catch(() => {});
+      if (onlineStatus) onlineStatus.textContent = 'Playing';
+      try { if (window.__stopBgm) window.__stopBgm(true); } catch(_){}
+      audio.play().catch(()=>{});
       startEqualizer();
-      if (statusDot) statusDot.style.color = "#00ff00"; // green when playing
+      if (statusDot) statusDot.style.color = '#00ff00';
+      startMetadataPolling();
     });
 
-    pauseBtn.addEventListener("click", () => {
-      isPlaying = false;
-      if (typeof window.__pauseRadio === "function") window.__pauseRadio();
+    if (pauseBtn) pauseBtn.addEventListener('click', () => {
+      if (typeof window.__pauseRadio === 'function') window.__pauseRadio();
     });
 
-    audio.addEventListener("error", () => {
-      radioStatus.textContent = "⚠️ Stream error";
-      if (radioDisplayStatus)
-        radioDisplayStatus.textContent = "⚠️ Stream error";
-      if (statusDot) statusDot.style.color = "#ff4d4d";
+    audio.addEventListener('error', () => {
+      if (radioStatus) radioStatus.textContent = '⚠️ Stream error';
+      if (radioDisplayStatus) radioDisplayStatus.textContent = '⚠️ Stream error';
+      if (statusDot) statusDot.style.color = '#ff4d4d';
     });
 
-    audio.addEventListener("playing", () => {
-      const status = C.radio?.playingStatus || "Now Playing";
-      radioStatus.textContent = status;
+    audio.addEventListener('playing', () => {
+      const status = C.radio?.playingStatus || 'Now Playing';
+      if (radioStatus) radioStatus.textContent = status;
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
+      try{ localStorage.setItem('pixelbelle-now-playing', status); }catch(_){ }
+      startMetadataPolling();
     });
 
     function startEqualizer() {
@@ -4691,13 +4853,132 @@ console.log("🌸 Main.js starting execution...");
         bar.style.animationPlayState = "paused";
       });
     }
+
+    // Best-effort now playing metadata polling (CORS permitting)
+    let metaTimer = null;
+    function setNowPlaying(text){
+      try{
+        if (radioStatus) radioStatus.textContent = text;
+        if (radioDisplayStatus) radioDisplayStatus.textContent = text;
+        localStorage.setItem('pixelbelle-now-playing', text);
+      }catch(_){ }
+    }
+    function hostBaseFrom(url){
+      try{ const u = new URL(url); return `${u.protocol}//${u.host}`; }catch(_){ return null; }
+    }
+    function buildMetaCandidates(streamUrl){
+      const base = hostBaseFrom(streamUrl);
+      if (!base) return [];
+      return [
+        `${base}/status-json.xsl`,   // Icecast/SHOUTcast JSON
+        `${base}/stats?json=1`,      // Icecast JSON alt
+        `${base}/status.xsl`,        // HTML status page
+        `${base}/playing?sid=1`,     // Some SHOUTcast
+        `${base}/7.html`             // Legacy comma format
+      ];
+    }
+    function titleFromJson(data){
+      try{
+        if (!data || typeof data !== 'object') return null;
+        // Icecast style
+        if (data.icestats && data.icestats.source){
+          const src = Array.isArray(data.icestats.source) ? data.icestats.source[0] : data.icestats.source;
+          if (!src) return null;
+          const t = src.title || src.song || src.songtitle || src.stream_title || src.streamTitle || null;
+          if (t) return t;
+          if (src.artist && src.title) return `${src.artist} - ${src.title}`;
+        }
+        // SHOUTcast v2 common
+        if (data.songtitle) return data.songtitle;
+        if (data.title) return data.title;
+        if (data.now) return data.now;
+        if (data.song) return data.song;
+        return null;
+      }catch(_){ return null; }
+    }
+    function titleFromStatusHtml(html){
+      try{
+        // Try to find "Current Song" or "Stream Title"
+        const m = html.match(/Current\s*Song.*?<td[^>]*>([^<]*)/i) || html.match(/Stream\s*Title.*?<td[^>]*>([^<]*)/i);
+        if (m && m[1]) return m[1].trim();
+        return null;
+      }catch(_){ return null; }
+    }
+    function titleFromSevenHtml(text){
+      try{
+        // Format: "OK2,xxx,xxx,xxx,xxx,Artist - Title" (take last field)
+        const parts = (text || '').trim().split(',');
+        const last = parts[parts.length-1];
+        return last && last.length > 0 ? last.trim() : null;
+      }catch(_){ return null; }
+    }
+    async function autoDetectMetaUrl(){
+      // Use configured endpoint if provided
+      const configured = (C.radio && C.radio.metaUrl) || '';
+      if (configured) return configured;
+      try{
+        const cached = localStorage.getItem('radio.meta.auto');
+        if (cached) return cached;
+      }catch(_){ }
+      const candidates = buildMetaCandidates(STREAM_URL);
+      for (const url of candidates){
+        try{
+          const res = await fetch(url, { cache: 'no-store' });
+          if (!res.ok) continue;
+          const ct = (res.headers.get('content-type')||'').toLowerCase();
+          let title = null;
+          if (ct.includes('application/json')){
+            const data = await res.json().catch(()=>null);
+            title = titleFromJson(data);
+          } else {
+            const text = await res.text();
+            if (url.endsWith('/7.html')) title = titleFromSevenHtml(text);
+            else title = titleFromStatusHtml(text);
+          }
+          if (title){
+            try{ localStorage.setItem('radio.meta.auto', url); }catch(_){ }
+            return url;
+          }
+        }catch(_){ /* likely CORS or not available */ }
+      }
+      return '';
+    }
+    async function fetchIcyTitle(){
+      try{
+        const metaUrl = (C.radio && C.radio.metaUrl) || localStorage.getItem('radio.meta.auto') || await autoDetectMetaUrl();
+        if (!metaUrl) return null;
+        const res = await fetch(metaUrl, { cache: 'no-store' });
+        if (!res.ok) return null;
+        const ct = (res.headers.get('content-type')||'').toLowerCase();
+        if (ct.includes('application/json')){
+          const data = await res.json().catch(()=>null);
+          return titleFromJson(data);
+        } else {
+          const text = await res.text();
+          if (metaUrl.endsWith('/7.html')) return titleFromSevenHtml(text);
+          return titleFromStatusHtml(text);
+        }
+      }catch(_){ return null; }
+    }
+    function startMetadataPolling(){
+      if (metaTimer) return; // already polling
+      metaTimer = setInterval(async ()=>{
+        if (!audio || audio.paused || audio.ended) { clearInterval(metaTimer); metaTimer=null; return; }
+        const title = await fetchIcyTitle();
+        if (title) setNowPlaying(title);
+      }, 15000);
+    }
+    // Stop polling when paused
+    audio.addEventListener('pause', ()=>{ if (metaTimer){ clearInterval(metaTimer); metaTimer=null; } });
   }
+  try { window.initRadio = wireRadioUI; } catch(_){}
 
   // ====== GAMES SECTION ======
   function initGames() {
     initMemoryGame();
     initHeartCollector();
     initMikuGacha();
+  initShop();
   }
 
   function initMemoryGame() {
@@ -5090,11 +5371,14 @@ console.log("🌸 Main.js starting execution...");
 
     // Always mirror global hearts
     const syncCollector = () => {
-      gameHeartCountEl.textContent = String(heartCount);
+      try{
+        const n = (typeof window.getHeartCount==='function') ? window.getHeartCount() : (typeof heartCount!=='undefined'? heartCount : parseInt(localStorage.getItem('pixelbelle-hearts')||'0',10));
+        gameHeartCountEl.textContent = String(n);
+      }catch(_){ }
     };
     syncCollector();
 
-    heartZone.addEventListener("click", (e) => {
+  heartZone.addEventListener("click", (e) => {
       try {
         SFX.play("hearts.click");
       } catch (_) {}
@@ -5108,6 +5392,17 @@ console.log("🌸 Main.js starting execution...");
 
       // Create floating heart animation
       createFloatingHeart(e.clientX, e.clientY);
+      // Plant a heart in the garden to "grow"
+      try{
+        const rect = heartZone.getBoundingClientRect();
+        const h = document.createElement('div');
+        h.className = 'planted-heart';
+        h.textContent = '💖';
+        h.style.left = (e.clientX - rect.left - 10) + 'px';
+        h.style.top = (e.clientY - rect.top - 10) + 'px';
+        heartZone.appendChild(h);
+        setTimeout(()=>h.remove(), 2600);
+      }catch(_){ }
     });
 
     // Attach reset only if the button still exists (kept for dev/testing)
@@ -5118,17 +5413,9 @@ console.log("🌸 Main.js starting execution...");
       });
     }
 
-    // Support decoy and shield controls if present
-    if (decoyBtn) {
-      decoyBtn.addEventListener("click", () => {
-        spawnDecoyTreats(1 + Math.floor(Math.random() * 3));
-      });
-    }
-    if (shieldBtn) {
-      shieldBtn.addEventListener("click", () => {
-        activateHeartShield(3000);
-      });
-    }
+  // Support decoy and shield controls if present (legacy)
+  if (decoyBtn) decoyBtn.addEventListener("click", () => spawnDecoyTreats(1 + Math.floor(Math.random() * 3)));
+  if (shieldBtn) shieldBtn.addEventListener("click", () => activateHeartShield(3000));
   }
   // Decoy treats distract the swallow from hearts
   function spawnDecoyTreats(n = 2) {
@@ -5165,6 +5452,63 @@ console.log("🌸 Main.js starting execution...");
     } catch (_) {}
   }
 
+  // Swallower mascot animation (uses SITE_CONTENT.images.swallowGif if available)
+  function showSwallowMascot(){
+    try{
+      const src = (window.SITE_CONTENT && window.SITE_CONTENT.images && window.SITE_CONTENT.images.swallowGif) || './assets/swallow.gif';
+      const img = document.createElement('img');
+      img.src = src; img.alt = 'swallow';
+      img.style.cssText = 'position:fixed; top:20%; left:-120px; width:96px; height:auto; z-index:9998; pointer-events:none; filter: drop-shadow(2px 2px 4px rgba(0,0,0,.35));';
+      img.onerror = ()=>{ img.remove(); };
+      document.body.appendChild(img);
+      const W = Math.max(document.documentElement.clientWidth, window.innerWidth||0);
+      const start = performance.now();
+      const dur = 3600 + Math.random()*1200;
+      const dir = Math.random()<0.5 ? 1 : -1;
+      if (dir<0){ img.style.left = (W+120)+'px'; img.style.transform='scaleX(-1)'; }
+      function step(ts){
+        const p = Math.min(1,(ts-start)/dur);
+        const x = dir>0 ? -120 + (W+240)*p : (W+120) - (W+240)*p;
+        const y = Math.sin(p*Math.PI)*30; // gentle arc
+        img.style.transform = (dir>0? '' : 'scaleX(-1) ') + `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+        if (p<1 && img.isConnected) requestAnimationFrame(step); else img.remove();
+      }
+      requestAnimationFrame(step);
+    }catch(_){ }
+  }
+
+  // Shop wiring
+  function initShop(){
+    const btnDecoy = document.getElementById('shopDecoy');
+    const btnShield = document.getElementById('shopShield');
+    const status = document.getElementById('shopStatus');
+    if (btnDecoy) btnDecoy.addEventListener('click', ()=>{
+      const cost = 5;
+      try{
+        if (window.Hearts && typeof window.Hearts.add==='function'){
+          if ((window.getHeartCount && getHeartCount()>=cost) || (!window.getHeartCount && (heartCount||0)>=cost)){
+            window.Hearts.add(-cost);
+            spawnDecoyTreats(2 + Math.floor(Math.random()*3));
+            status && (status.textContent = 'Dropped a decoy!');
+          } else { status && (status.textContent = 'Not enough 💖'); SFX.play('ui.unavailable'); }
+        }
+      }catch(_){ }
+    });
+    if (btnShield) btnShield.addEventListener('click', ()=>{
+      const cost = 50;
+      try{
+        const have = (window.getHeartCount && getHeartCount()) || heartCount || parseInt(localStorage.getItem('pixelbelle-hearts')||'0',10);
+        if (have>=cost){
+          if (window.Hearts && typeof window.Hearts.add==='function') window.Hearts.add(-cost);
+          else { heartCount = have - cost; localStorage.setItem('pixelbelle-hearts', heartCount); updateCounters && updateCounters(); }
+          activateHeartShield(5000);
+          status && (status.textContent = 'Shield activated!');
+          try{ SFX.play('extra.fx2'); }catch(_){ }
+        } else { status && (status.textContent = 'Not enough 💖'); try{ SFX.play('ui.unavailable'); }catch(_){ } }
+      }catch(_){ }
+    });
+  }
+
   function initRandomMiku() {
     const randomMikuImg = document.getElementById("randomMikuImg");
     const changeMikuBtn = document.getElementById("changeMiku");
@@ -5185,13 +5529,27 @@ console.log("🌸 Main.js starting execution...");
     });
   }
 
+  // Swallower special event: swallows 100 hearts with noticeable SFX and shimeji reactions
+  window.triggerSwallowEvent = function(){
+    const take = 100;
+    try{ SFX.play('swallow.swoop'); setTimeout(()=>SFX.play('swallow.chomp'), 400); }catch(_){ }
+  showSwallowMascot();
+    try{
+      if (window.Hearts && typeof window.Hearts.add==='function') window.Hearts.add(-take);
+      else { heartCount = Math.max(0, (heartCount||parseInt(localStorage.getItem('pixelbelle-hearts')||'0',10)) - take); localStorage.setItem('pixelbelle-hearts', heartCount); updateCounters && updateCounters(); }
+    }catch(_){ }
+    try{
+      const s = window.shimejiFunctions; if (s){ s.triggerMassJump && s.triggerMassJump(); setTimeout(()=>s.triggerMassDance && s.triggerMassDance(), 800); s.makeAllSpeak && s.makeAllSpeak('あっ！💦 (100💖 たべられた…)', 2800); }
+    }catch(_){ }
+  };
+
   // ====== SHRINE SECTION ======
   function initShrine() {
     const mikuGallery = document.getElementById("mikuGallery");
     const songList = document.querySelector("#shrine .song-list");
     if (!mikuGallery && !songList) return;
 
-    function renderGallery() {
+  function renderGallery() {
       // Only include pixel-art sources
   const pixelOnly = MIKU_IMAGES.filter((u) => /\/assets\/pixel-miku\//i.test(u) || /Pixel Hatsune Miku by Cutebunni/i.test(u));
 
@@ -5208,6 +5566,7 @@ console.log("🌸 Main.js starting execution...");
           const isPixieSlot = /PixieBel \(bonus\)\.gif$/i.test(img);
           const coverClass = isPixieSlot && !pixieOwned ? "mystery-cover" : "";
           const coverText = isPixieSlot && !pixieOwned ? '<div class="mystery-text">?</div>' : "";
+          const owned = !!coll[img];
           const r =
             typeof rarityFor === "function"
               ? rarityFor(img)
@@ -5217,8 +5576,9 @@ console.log("🌸 Main.js starting execution...");
           const rClass = `rarity-${r}`;
           const clickable = !(isPixieSlot && !pixieOwned);
           const onClick = clickable ? `onclick=\"openImageModal('${img}')\"` : '';
+          const ownClass = owned ? '' : 'not-owned';
           return `
-          <div class="gallery-item ${coverClass} ${rClass}">
+          <div class="gallery-item ${coverClass} ${rClass} ${ownClass}">
             <img data-src="${img}" alt="Miku ${index + 1}" class="gallery-image lazy" loading="lazy" decoding="async" ${onClick}>
             <div class="rarity-ring"></div>
             ${coverText}
@@ -5540,6 +5900,7 @@ console.log("🌸 Main.js starting execution...");
       applySingerTo("#" + _.id);
     });
     applySingerTheme();
+  try { typeof window.refreshFloatingMikus === 'function' && window.refreshFloatingMikus(); } catch(_) {}
   }
   function applySingerTheme() {
     try {
@@ -5689,9 +6050,28 @@ console.log("🌸 Main.js starting execution...");
       if (meta && meta.song) {
         const match = meta.song.match(/(?:v=|be\/)([a-zA-Z0-9_-]{11})/);
         const vid = match ? match[1] : "";
-        songDiv.innerHTML = vid
-          ? `<iframe style=\"width:100%;aspect-ratio:16/9;border:0;border-radius:8px\" src=\"https://www.youtube.com/embed/${vid}\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen referrerpolicy=\"strict-origin-when-cross-origin\"></iframe>`
-          : "";
+        if (vid) {
+          // Create iframe with error handling
+          songDiv.innerHTML = `
+            <div class="video-container">
+              <iframe 
+                style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" 
+                src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1" 
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen 
+                referrerpolicy="strict-origin-when-cross-origin"
+                onload="this.style.opacity=1"
+                onerror="handleVideoError(this, '${meta.song.replace(/'/g, "\\'")}')">
+              </iframe>
+            </div>`;
+        } else if (meta.song) {
+          // Fallback link if video ID extraction fails
+          songDiv.innerHTML = `<div class="video-error">
+            <a href="${meta.song}" target="_blank" rel="noopener" class="pixel-btn">Watch on YouTube</a>
+          </div>`;
+        } else {
+          songDiv.innerHTML = "";
+        }
       } else {
         songDiv.innerHTML = "";
       }
@@ -5716,6 +6096,13 @@ console.log("🌸 Main.js starting execution...");
       SFX.play("extra.camera");
     } catch (_) {}
     m.classList.add("open");
+  };
+
+  // Helper function for video error handling
+  window.handleVideoError = function(iframe, videoUrl) {
+    if (iframe && iframe.parentElement) {
+      iframe.parentElement.innerHTML = `<div class="video-error">Video unavailable<br><a href="${videoUrl}" target="_blank" rel="noopener">Watch on YouTube</a></div>`;
+    }
   };
 
   function setGameTheme(game) {
@@ -5921,11 +6308,7 @@ console.log("🌸 Main.js starting execution...");
       ], { duration: 500, easing: 'ease-out' });
       
       setTimeout(() => glowBurst.remove(), 500);
-      
-      // Play perfect sound effect
-      try {
-        SFX.play("result.perfect");
-      } catch (_) {}
+  // (Audio handled by caller: avoid double-playing perfect SFX)
     } catch(e) {
       console.log("Perfect hit effect error:", e);
     }

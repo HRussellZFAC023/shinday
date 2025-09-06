@@ -1,68 +1,56 @@
 // Audio module: BGM and Radio controls (extracted)
 (function(){
+  function ensureBgm(){
+    if (!window.__bgmAudio){
+      const a = new Audio('./assets/bgm.ogg');
+      a.loop = true; a.preload='auto'; a.volume = 0.35;
+      window.__bgmAudio = a; window.__bgmKilled = false;
+    }
+    return window.__bgmAudio;
+  }
+
   function initBgm(){
     try{
-      const AUTO_KEY = 'pixelbelle-auto-music';
-      const autoPref = localStorage.getItem(AUTO_KEY);
-      const autoOn = autoPref == null ? true : autoPref === '1';
-      if (!autoOn) return;
-      if (window.__bgmAudio) return;
-      const bgm = new Audio('./assets/bgm.ogg');
-      bgm.loop = true; bgm.preload='auto'; bgm.volume = 0.35;
-      window.__bgmAudio = bgm; window.__bgmKilled = false;
+      const bgm = ensureBgm();
       const tryPlay = ()=>{ if (!window.__bgmKilled) bgm.play().catch(()=>{}); };
-      tryPlay();
+      document.addEventListener('visibilitychange', tryPlay, { once:true });
+      window.addEventListener('focus', tryPlay, { once:true });
       const resume = ()=>{ if (!window.__bgmKilled && bgm.paused) bgm.play().catch(()=>{}); cleanup(); };
-      const cleanup = ()=>{
-        document.removeEventListener('click', resume);
-        document.removeEventListener('keydown', resume);
-        document.removeEventListener('touchstart', resume);
-      };
-      document.addEventListener('click', resume, { passive:true });
-      document.addEventListener('keydown', resume, { passive:true });
-      document.addEventListener('touchstart', resume, { passive:true });
+      function cleanup(){ try{ document.removeEventListener('visibilitychange', resume); window.removeEventListener('focus', resume);}catch(_){} }
+      setTimeout(resume, 250);
       window.__stopBgm = (permanent=true)=>{ try{bgm.pause();}catch(_){}; try{bgm.currentTime=0;}catch(_){}; if(permanent) window.__bgmKilled=true; };
+      window.__pauseBgm = ()=>{ try{bgm.pause();}catch(_){}; };
+      window.__resumeBgm = ()=>{ try{ if (!window.__bgmKilled) bgm.play().catch(()=>{}); }catch(_){} };
+    }catch(_){ }
+  }
+
+  function setBgmSource(src, fallback){
+    try{
+      const bgm = ensureBgm();
+      const apply = (url)=>{ try{ bgm.src = url; }catch(_){} };
+      const onErr = ()=>{ if (fallback && bgm.src.indexOf(fallback)===-1) { apply(fallback); try{ bgm.play().catch(()=>{});}catch(_){} } };
+      bgm.removeEventListener('error', onErr);
+      apply(src);
+      bgm.addEventListener('error', onErr, { once:true });
+      window.__bgmKilled = false;
+      try{ bgm.play().catch(()=>{});}catch(_){ }
     }catch(_){ }
   }
 
   function initRadio(){
     try{
-      const radioStatus = document.getElementById('radioStatus');
-      const radioDisplayStatus = document.getElementById('radioDisplayStatus');
-      const STREAM_URL = 'https://vocaloid.radioca.st/stream';
-      const audio = new Audio(STREAM_URL);
-      audio.crossOrigin='anonymous';
-      audio.preload='none'; audio.volume = 0.5; audio.controls = false; audio.autoplay=false;
-      window.__radioAudio = audio;
-      const onlineStatus = document.getElementById('onlineStatus');
-      const stopped = ()=>{
-        const status = 'Radio Stopped';
-        if (radioStatus) radioStatus.textContent = status;
-        if (radioDisplayStatus) radioDisplayStatus.textContent = status;
-        if (onlineStatus) onlineStatus.textContent = 'Radio Off';
-      };
-      stopped();
-      const play = ()=>{
-        try{ window.__stopBgm && window.__stopBgm(true); }catch(_){}
-        audio.play().then(()=>{
-          const status = 'Now Playing';
-          if (radioStatus) radioStatus.textContent = status;
-          if (radioDisplayStatus) radioDisplayStatus.textContent = status;
-          if (onlineStatus) onlineStatus.textContent = 'Online';
-        }).catch(()=>{});
-      };
-      const pause = ()=>{ audio.pause(); stopped(); };
-      const playBtn = document.getElementById('playRadio');
-      const pauseBtn = document.getElementById('pauseRadio');
-      if (playBtn) playBtn.onclick = play;
-      if (pauseBtn) pauseBtn.onclick = pause;
-      audio.addEventListener('error', ()=>{
-        if (radioStatus) radioStatus.textContent = '⚠️ Stream error';
-        if (radioDisplayStatus) radioDisplayStatus.textContent = '⚠️ Stream error';
-      });
+      const wrapId = 'radioWidgetWrap';
+      if (document.getElementById(wrapId)) return;
+      const w = document.createElement('div');
+      w.id = wrapId;
+      w.style.cssText = 'position:fixed;left:16px;bottom:16px;z-index:9998;display:none';
+      w.innerHTML = '<audio id="radioAudio" crossorigin="anonymous"></audio>';
+      document.body.appendChild(w);
+      const audio = w.querySelector('#radioAudio');
+      audio.volume = 0.5; audio.preload='none';
+      audio.addEventListener('play', ()=>{ try{ window.__stopBgm && window.__stopBgm(true); }catch(_){}});
     }catch(_){ }
   }
-
-  window.AudioMod = { initBgm, initRadio };
+  window.AudioMod = { initBgm, initRadio, setBgmSource, ensureBgm };
 })();
 
