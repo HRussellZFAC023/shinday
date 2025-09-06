@@ -4215,8 +4215,7 @@ console.log("🌸 Main.js starting execution...");
         if (h2) h2.textContent = C.games.title;
         const cards = document.querySelectorAll("#games .game-widget");
         const mem = cards[0],
-          heart = cards[1],
-          gacha = cards[2];
+          heart = cards[1];
         if (mem) {
           const h3 = mem.querySelector("h3");
           if (h3 && C.games.memoryTitle) {
@@ -4247,13 +4246,14 @@ console.log("🌸 Main.js starting execution...");
           const btn = document.getElementById("resetHearts");
           if (btn && C.games.heartsReset) btn.textContent = C.games.heartsReset;
         }
-        if (gacha) {
-          const h3 = gacha.querySelector("h3");
-          if (h3 && C.games.gachaTitle) {
+        const gachaSection = document.getElementById("gacha");
+        if (gachaSection) {
+          const gachaHeader = gachaSection.querySelector("h2");
+          if (gachaHeader && C.games.gachaTitle) {
             const gachaIcon = C.games.gachaIcon
               ? mikuIcon(C.games.gachaIcon, "🎰")
               : "🎰";
-            h3.innerHTML = /*html*/ `${gachaIcon} ${C.games.gachaTitle}`;
+            gachaHeader.innerHTML = /*html*/ `${gachaIcon} ${C.games.gachaTitle}`;
           }
           const dexBtn = document.getElementById("gachaCollectionBtn");
           if (dexBtn && C.games.gachaOpenDex)
