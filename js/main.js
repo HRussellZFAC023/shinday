@@ -631,13 +631,9 @@ console.log("🌸 Main.js starting execution...");
       const { url, resolve } = __classifyQueue.shift();
       __classifyInflight++;
       if (/pixiebel\.gif$/i.test(url)) {
-        const meta = {
-          type: "PixieBel",
-          rarity: 5,
-          description:
-            "The rarest and most mysterious collab! Only the luckiest collectors will find her. 🌟",
-          final: true,
-        };
+        // Respect JSON-provided metadata entirely; don't override curated fields
+        const base = MIKU_META[url] || {};
+        const meta = { ...base, final: true };
         MIKU_META[url] = meta;
         __classifyInflight--;
         resolve(meta);
@@ -645,15 +641,25 @@ console.log("🌸 Main.js starting execution...");
       }
       analyzeImageUrl(url)
         .then((ratios) => {
-          const meta = ratios ? { ...decideType(ratios), ratios } : { type: "Hatsune Miku", rarity: null, description: "" };
-          meta.final = true;
-          MIKU_META[url] = meta;
-          resolve(meta);
+          // Classifier provides lightweight type hints; do not override JSON name/rarity/description if present
+          const base = MIKU_META[url] || {};
+          const hint = ratios ? { ...decideType(ratios), ratios } : { type: "Hatsune Miku", description: "" };
+          const merged = {
+            ...hint,
+            ...base, // JSON wins for id, name, alt_names, rarity, description, song, links
+            // Keep classifier type/ratios as auxiliary fields
+            type: base.type || hint.type,
+            ratios: hint.ratios || base.ratios,
+            final: true,
+          };
+          MIKU_META[url] = merged;
+          resolve(merged);
         })
         .catch(() => {
-          const meta = { type: "Hatsune Miku", rarity: null, description: "", final: true };
-          MIKU_META[url] = meta;
-          resolve(meta);
+          const base = MIKU_META[url] || {};
+          const merged = { type: base.type || "Hatsune Miku", rarity: base.rarity ?? null, description: base.description || "", ...base, final: true };
+          MIKU_META[url] = merged;
+          resolve(merged);
         })
         .finally(() => {
           __classifyInflight--;
@@ -1161,6 +1167,16 @@ console.log("🌸 Main.js starting execution...");
       if (!prev.multiplier) prev.multiplier = card.rarity;
       collection[id] = prev;
       localStorage.setItem(LS_COLL, JSON.stringify(collection));
+      try {
+        // If this card grants a song, hint to the player that Jukebox updated
+        if (prev.song) {
+          loveToast("New song unlocked in Jukebox! 🎶");
+          if (window.Jukebox && typeof Jukebox.attachHudSelect === 'function') {
+            // Refresh HUD label with current selection
+            setTimeout(()=>{ try{ Jukebox.attachHudSelect(); }catch(_){ } }, 200);
+          }
+        }
+      } catch(_){}
       return prev.count === 1;
     }
 
@@ -1282,7 +1298,7 @@ console.log("🌸 Main.js starting execution...");
       }, 200 + cards.length * 180);
     }
 
-    function renderDex() {
+  function renderDex() {
       const LS_FILTER = "gacha.dexFilter";
       let filters = { scope: "all", rarity: "all", search: "" };
       try {
@@ -1322,27 +1338,34 @@ console.log("🌸 Main.js starting execution...");
           const name = meta ? meta.name || "Miku" : "Miku";
           const ownClass = owned ? `owned rarity-${r}` : "locked";
           const count = owned
-            ? `<span class="dex-count">x${entry.count}</span>`
-            : `<span class="dex-locked">?</span>`;
+            ? `<span class=\"dex-count\">x${entry.count}</span>`
+            : `<span class=\"dex-locked\">?</span>`;
+          const vid = (meta && meta.song && (meta.song.match(/(?:v=|be\/)\b([a-zA-Z0-9_-]{11})/)||[])[1]) || '';
+          const links = Array.isArray(meta?.links) ? meta.links.slice(0,2) : [];
+          const linkHtml = links.map((l,i)=>`<a href=\"${l}\" target=\"_blank\" rel=\"noopener\" class=\"dex-link\">Link ${i+1}</a>`).join('');
           return `
-          <div class="dex-card ${ownClass}" onclick="openImageModal('${url}')">
-            <div class="dex-stars">${stars(r)}</div>
+          <div class=\"dex-card ${ownClass}\" data-url=\"${url}\" tabindex=\"0\">
+            <div class=\"dex-stars\">${stars(r)}</div>
             ${count}
-            <img src="${url}" alt="${name}" loading="lazy" />
-            <div class="dex-name">${name}</div>
-          </div>
-        `;
+            <img src=\"${url}\" alt=\"${name}\" loading=\"lazy\" />
+            <div class=\"dex-name\">${name}</div>
+            <div class=\"dex-details\" hidden>
+              <div class=\"dex-title\">${name}</div>
+              <div class=\"dex-rarity\">${'★'.repeat(r)}</div>
+              ${meta?.description ? `<div class=\"dex-desc\">${meta.description}</div>` : ''}
+              ${vid ? `<div class=\"dex-video\"><iframe src=\"https://www.youtube.com/embed/${vid}\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen loading=\"lazy\"></iframe></div>`:''}
+              ${linkHtml?`<div class=\"dex-links\">${linkHtml}</div>`:''}
+            </div>
+          </div>`;
         })
         .join("");
 
       const ownedCount = Object.keys(collection).length;
       const showing = pool.length;
       elements.dex.innerHTML = `
-        <div class="dex-pokedex">
-          <div class="dex-header">MikuDex • Owned: ${ownedCount} / ${
-        MIKU_IMAGES.length
-      }</div>
-          <div class="dex-controls">
+        <div class=\"dex-pokedex\">
+          <div class=\"dex-header\">MikuDex • Owned: ${ownedCount} / ${MIKU_IMAGES.length}</div>
+          <div class=\"dex-controls\">
             <label for="dexScope">Scope</label>
             <select id="dexScope">
               <option value="all" ${
@@ -1380,7 +1403,7 @@ console.log("🌸 Main.js starting execution...");
             <div class="spacer"></div>
             <div style="font-weight:800;color:#596286">Showing: ${showing}</div>
           </div>
-          <div class="dex-grid">${tiles}</div>
+          <div class=\"dex-grid\">${tiles}</div>
         </div>`;
 
       // Bind control events
@@ -1407,6 +1430,21 @@ console.log("🌸 Main.js starting execution...");
           save();
           setTimeout(renderDex, 0);
         });
+
+      // Card click to open modal or inline details
+      elements.dex.querySelectorAll('.dex-card').forEach((card)=>{
+        card.addEventListener('click',()=>{
+          const url = card.getAttribute('data-url');
+          if (url) { openImageModal(url); return; }
+        });
+        card.addEventListener('keydown',(e)=>{
+          if (e.key==='Enter' || e.key===' ') {
+            e.preventDefault();
+            const url = card.getAttribute('data-url');
+            if (url) openImageModal(url);
+          }
+        });
+      });
     }
 
     function pull(n) {
@@ -1523,6 +1561,13 @@ console.log("🌸 Main.js starting execution...");
       applySinger();
     } catch (_) {}
     console.log("PixelBelle's Garden initialized! 🌸");
+    // Global ESC for overlays: image modal and song select
+    document.addEventListener('keydown',(e)=>{
+      if (e.key === 'Escape') {
+        try { const m = document.getElementById('imageModal'); if (m && m.classList.contains('open')) m.classList.remove('open'); } catch(_){}
+        try { const ov = document.getElementById('songSelectOverlay'); if (ov) ov.remove(); } catch(_){ }
+      }
+    });
     // Preload a minimal set of critical SFX buffers in the background
     try {
       if (window.SFX && typeof window.SFX.preloadFirst === "function") {
@@ -3157,7 +3202,10 @@ console.log("🌸 Main.js starting execution...");
                 flashJudge("vocabCard", judge);
                 addVoltage(v, "vocabCard");
                 addCombo("vocabCard");
-                HUD.score += Math.round(sc * mult * getRhythmMult());
+                {
+                  const sm = (typeof window.getSingerScoreMult==='function'? getSingerScoreMult():1);
+                  HUD.score += Math.round(sc * mult * getRhythmMult() * sm);
+                }
               } else {
                 createRingEffect(element, false);
                 fb.textContent = `❌ ${correct}`;
@@ -3406,7 +3454,10 @@ console.log("🌸 Main.js starting execution...");
                 addVoltage(v, "kanjiCard");
                 addCombo("kanjiCard");
                 const { mult: km } = diffParams();
-                HUD.score += Math.round(sc * km * getRhythmMult());
+                {
+                  const sm = (typeof window.getSingerScoreMult==='function'? getSingerScoreMult():1);
+                  HUD.score += Math.round(sc * km * getRhythmMult() * sm);
+                }
               } else {
                 createRingEffect(element, false);
                 fb.textContent = `❌ ${correct}`;
@@ -4102,6 +4153,9 @@ console.log("🌸 Main.js starting execution...");
             )
             .join("");
         }
+      } else {
+        // Fallback if content not ready yet: render a basic set from defaults later
+        setTimeout(()=>{ try { if (window.SITE_CONTENT && window.SITE_CONTENT.quickLinks) applyContent(); } catch(_){} }, 100);
       }
 
       // Study copy
@@ -5330,10 +5384,9 @@ console.log("🌸 Main.js starting execution...");
 
       mikuGallery.innerHTML = galleryItems
         .map((img, index) => {
-          const isPixie = img.includes("pixiebel.gif");
-          const coverClass = isPixie && !pixieOwned ? "mystery-cover" : "";
-          const coverText =
-            isPixie && !pixieOwned ? '<div class="mystery-text">?</div>' : "";
+          const isPixieSlot = /pixiebel\.gif$/i.test(img);
+          const coverClass = isPixieSlot && !pixieOwned ? "mystery-cover" : "";
+          const coverText = isPixieSlot && !pixieOwned ? '<div class="mystery-text">?</div>' : "";
           const r =
             typeof rarityFor === "function"
               ? rarityFor(img)
@@ -5341,11 +5394,11 @@ console.log("🌸 Main.js starting execution...");
               ? rarityForGlobal(img)
               : 1;
           const rClass = `rarity-${r}`;
+          const clickable = !(isPixieSlot && !pixieOwned);
+          const onClick = clickable ? `onclick=\"openImageModal('${img}')\"` : '';
           return `
           <div class="gallery-item ${coverClass} ${rClass}">
-            <img data-src="${img}" alt="Miku ${
-            index + 1
-          }" class="gallery-image lazy" loading="lazy" decoding="async" onclick="openImageModal('${img}')">
+            <img data-src="${img}" alt="Miku ${index + 1}" class="gallery-image lazy" loading="lazy" decoding="async" ${onClick}>
             <div class="rarity-ring"></div>
             ${coverText}
           </div>
@@ -5472,8 +5525,9 @@ console.log("🌸 Main.js starting execution...");
             if (window.SFX) SFX.play("ui.back");
           } catch (_) {}
         };
-        const closeBtn = document.getElementById("mikuPlayerClose");
+  const closeBtn = document.getElementById("mikuPlayerClose");
         if (closeBtn) closeBtn.addEventListener("click", stop);
+  document.addEventListener('keydown', function escClose(e){ if(e.key==='Escape'){ stop(); document.removeEventListener('keydown', escClose);} });
         const loveBtn = document.getElementById("mikuPlayerLove");
         if (loveBtn)
           loveBtn.addEventListener("click", () => {
@@ -5484,7 +5538,7 @@ console.log("🌸 Main.js starting execution...");
         window.__closeMikuPlayer = stop;
       };
 
-      songList.addEventListener("click", (e) => {
+  songList.addEventListener("click", (e) => {
         const li = e.target && e.target.closest("li.favorite-song");
         if (!li) return;
         const label =
@@ -5492,6 +5546,12 @@ console.log("🌸 Main.js starting execution...");
         const vid = li.getAttribute("data-video-id") || "";
         const search = li.getAttribute("data-search") || label;
         playFavorite(label, vid, search);
+      });
+
+      // Backfill data attributes for static list items if not present
+      songList.querySelectorAll('li').forEach((li)=>{
+        if (!li.classList.contains('favorite-song')) li.classList.add('favorite-song');
+        if (!li.getAttribute('data-title')) li.setAttribute('data-title', li.textContent.trim());
       });
     }
   }
@@ -5759,6 +5819,24 @@ console.log("🌸 Main.js starting execution...");
   }
   window.setSinger = singerSet;
   window.getSinger = singerGet;
+  function getSingerScoreMult(){
+    try{
+      const url = singerGet();
+      if (!url) return 1;
+      const coll = collectionMap();
+      const entry = coll[url];
+      let m = 1;
+      if (entry && entry.multiplier) m = entry.multiplier;
+      else {
+        // fallback to rarity-based multiplier
+        m = typeof rarityFor === 'function' ? rarityFor(url) : rarityForGlobal(url);
+      }
+      // Convert integer rarity/multiplier into a gentle bonus: 1.00 .. 1.40
+      const bonus = Math.max(0, (m - 1)) * 0.1; // +10% per step above 1
+      return 1 + Math.min(0.4, bonus);
+    }catch(_){ return 1; }
+  }
+  try { window.getSingerScoreMult = getSingerScoreMult; } catch(_) {}
 
   // Image modal with card info and singer selection
   function ensureImageModal() {
@@ -5788,6 +5866,10 @@ console.log("🌸 Main.js starting execution...");
     document.body.appendChild(m);
     m.addEventListener("click", (e) => {
       if (e.target === m) m.classList.remove("open");
+    });
+    // Allow ESC to close
+    document.addEventListener('keydown', (ev)=>{
+      if (ev.key === 'Escape' && m.classList.contains('open')) m.classList.remove('open');
     });
     m.querySelector("#imageModalClose").addEventListener("click", () =>
       m.classList.remove("open")

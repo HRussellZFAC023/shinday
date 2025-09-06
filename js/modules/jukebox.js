@@ -7,15 +7,15 @@
     extreme: { key:'extreme', label:'Extreme', options:8, baseTime:10, travelMs:1200, judge:{cool:90,  great:150, fine:220} }
   };
   const baseSongs = [
-    { id:'senbonzakura',   title:'千本桜 (Senbonzakura)',         yt:'Mqpsf84m_b0', bpm:154, req:1, jacket:'./assets/pixel-miku/18 Senbonzakura Miku.png', theme:'#00aa88', recommend:{game:'kanji', mode:'meaning'} },
-    { id:'world-is-mine',  title:'ワールドイズマイン (World is Mine)', yt:'R7gUdbH0Le8', bpm:150, req:2, jacket:'./assets/pixel-miku/Hatsune Miku @illufinch 17.png', theme:'#ff66aa', recommend:{game:'vocab', direction:'jp-en'} },
-    { id:'tell-your-world',title:'Tell Your World',               yt:'PqJNc9KVIZE', bpm:128, req:3, jacket:'./assets/pixel-miku/Hatsune Miku @illufinch 16.png', theme:'#66bbff', recommend:{game:'vocab', direction:'en-jp'} },
-    { id:'rolling-girl',   title:'ローリンガール (Rolling Girl)',   yt:'9wSx-sLkGm4', bpm:135, req:4, jacket:'./assets/pixel-miku/Hatsune Miku @illufinch 19.png', theme:'#4444aa', recommend:{game:'kanji', mode:'reading'} },
-    { id:'meltdown',       title:'メルト (Melt)',                  yt:'FMD6-5qWCSM', bpm:180, req:5, jacket:'./assets/pixel-miku/15 Ghost Rule miku.png', theme:'#ffaa00', recommend:{game:'vocab', direction:'jp-en'} },
-    { id:'romeo-cinderella',title:'ロミオとシンデレラ',            yt:'n4gC7gqFCvM', bpm:170, req:6, jacket:'./assets/pixel-miku/11.png', theme:'#cc66ff', recommend:{game:'vocab', direction:'en-jp'} },
-    { id:'love-is-war',    title:'恋は戦争 (Love is War)',         yt:'AgA2wE8xmFQ', bpm:160, req:7, jacket:'./assets/pixel-miku/12 The Intense Voice of Hatsune Miku (Infinity module).png', theme:'#ff4444', recommend:{game:'kanji', mode:'reading'} },
-    { id:'popipo',         title:'ぽっぴっぽー (PoPiPo)',          yt:'cQKGUgOfD8U', bpm:140, req:8, jacket:'./assets/pixel-miku/07 Uniform (Seifuku) miku.png', theme:'#22cc22', recommend:{game:'kotoba'} },
-    { id:'weekender-girl', title:'Weekender Girl',                 yt:'0u9P4kzT0W8', bpm:128, req:9, jacket:'./assets/pixel-miku/Hatsune Miku @illufinch 22.png', theme:'#00bcd4', recommend:{game:'vocab', direction:'jp-en'} }
+    { id:'senbonzakura',   title:'千本桜 (Senbonzakura)',         yt:'Mqpsf84m_b0', bpm:154, req:1, jacket:'./assets/pixel-miku/018 - Senbonzakura Miku.png', theme:'#00aa88', recommend:{game:'kanji', mode:'meaning'} },
+    { id:'world-is-mine',  title:'ワールドイズマイン (World is Mine)', yt:'R7gUdbH0Le8', bpm:150, req:2, jacket:'./assets/pixel-miku/013 - World Is Mine Miku.png', theme:'#ff66aa', recommend:{game:'vocab', direction:'jp-en'} },
+    { id:'tell-your-world',title:'Tell Your World',               yt:'PqJNc9KVIZE', bpm:128, req:3, jacket:'./assets/pixel-miku/003 - Hatsune Miku Append.png', theme:'#66bbff', recommend:{game:'vocab', direction:'en-jp'} },
+    { id:'rolling-girl',   title:'ローリンガール (Rolling Girl)',   yt:'9wSx-sLkGm4', bpm:135, req:4, jacket:'./assets/pixel-miku/014 - Rolling Girl Miku.png', theme:'#4444aa', recommend:{game:'kanji', mode:'reading'} },
+    { id:'meltdown',       title:'メルト (Melt)',                  yt:'FMD6-5qWCSM', bpm:180, req:5, jacket:'./assets/pixel-miku/034 - Love Is War.png', theme:'#ffaa00', recommend:{game:'vocab', direction:'jp-en'} },
+    { id:'romeo-cinderella',title:'ロミオとシンデレラ',            yt:'n4gC7gqFCvM', bpm:170, req:6, jacket:'./assets/pixel-miku/086 - Romeo and Cinderella (vintage dress module).png', theme:'#cc66ff', recommend:{game:'vocab', direction:'en-jp'} },
+    { id:'love-is-war',    title:'恋は戦争 (Love is War)',         yt:'AgA2wE8xmFQ', bpm:160, req:7, jacket:'./assets/pixel-miku/034 - Love Is War.png', theme:'#ff4444', recommend:{game:'kanji', mode:'reading'} },
+    { id:'popipo',         title:'ぽっぴっぽー (PoPiPo)',          yt:'cQKGUgOfD8U', bpm:140, req:8, jacket:'./assets/pixel-miku/007 - Seifuku Miku (Sailor School Uniform).png', theme:'#22cc22', recommend:{game:'kotoba'} },
+    { id:'weekender-girl', title:'Weekender Girl',                 yt:'0u9P4kzT0W8', bpm:128, req:9, jacket:'./assets/pixel-miku/021 - Alien Alien Miku.png', theme:'#00bcd4', recommend:{game:'vocab', direction:'jp-en'} }
   ];
 
   function gachaSongs(){
@@ -66,10 +66,10 @@
     // Apply theme accent for HUD/results
     try {
       if (song.theme) {
-        document.documentElement.style.setProperty('--accent', song.theme);
-        document.documentElement.style.setProperty('--accent-2', song.theme);
+        // Apply only a scoped custom property to avoid clobbering global accents
+        document.documentElement.style.setProperty('--jukebox-accent', song.theme);
       }
-    } catch(_){}
+  } catch(_){}
     // Sync rhythm BPM to song
     try { window.__rhythmBpm = song.bpm|0; localStorage.setItem('rhythm.bpm', String(window.__rhythmBpm)); } catch(_){}
     try { window.__rhythmMet = true; localStorage.setItem('rhythm.met','1'); } catch(_){}
@@ -91,8 +91,7 @@
     // Theme accent hook
     try{
       const s = current; if (s && s.theme){
-        document.documentElement.style.setProperty('--accent', s.theme);
-        document.documentElement.style.setProperty('--accent-2', s.theme);
+        document.documentElement.style.setProperty('--jukebox-accent', s.theme);
       }
     }catch(_){ }
   }
@@ -152,7 +151,8 @@
           </div>
         </div>`;
       document.body.appendChild(ov);
-      ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.remove(); });
+  ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.remove(); });
+  document.addEventListener('keydown', function escClose(e){ if(e.key==='Escape'){ ov.remove(); document.removeEventListener('keydown', escClose);} });
       ov.querySelector('#songClose').onclick = ()=> ov.remove();
         ov.__selected = list.find(s=>level()>=s.req) || list[0];
       ov.addEventListener('click',(e)=>{
