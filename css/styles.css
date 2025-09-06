@@ -1546,6 +1546,7 @@ main {
 .dex-card { position: relative; border: 2px solid var(--border); border-radius: 10px; overflow: hidden; background: #fff; cursor: pointer; }
 .dex-card.locked { filter: grayscale(0.9) brightness(0.9); }
 .dex-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dex-name { font-size: 10px; text-align: center; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dex-stars { position: absolute; left: 6px; top: 4px; font-size: 12px; text-shadow: 0 1px 0 #fff; }
 .dex-count, .dex-locked { position: absolute; right: 6px; top: 4px; background: rgba(255,255,255,0.9); border: 1px solid var(--border); border-radius: 8px; padding: 0 6px; font-weight: 800; }
 .dex-open { animation: dexOpen 0.5s ease-out; }
@@ -1828,6 +1829,7 @@ main {
   filter: grayscale(1) contrast(0.8);
   opacity: 0.6;
 }
+.gacha-collection .dex-name { display: none; }
 .gacha-collection .dex-card.owned {
   border-style: solid;
 }
