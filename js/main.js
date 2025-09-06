@@ -2786,7 +2786,8 @@ console.log("🌸 Main.js starting execution...");
     async function getVocabQuestion(direction) {
       // Force a 4-grid beatpad layout (3 decoys + 1 correct)
       const preset = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { options: 4 };
-      const decoyCount = Math.max(1, (preset.options || 4) - 1);
+      const optCount = Math.min(preset.options || 4, 4);
+      const decoyCount = Math.max(1, optCount - 1);
       if (vocabCache.pages.length === 0) await primeVocabPage(rnd(50) + 1);
       if (vocabCache.enDefs.size < 12 || vocabCache.jpSurfaces.size < 12)
         await primeVocabPage(rnd(50) + 1);
@@ -2881,7 +2882,8 @@ console.log("🌸 Main.js starting execution...");
     async function getKanjiQuestion(mode) {
       // Force a 4-grid beatpad layout (3 decoys + 1 correct)
       const presetK = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { options: 4 };
-      const decoyCount = Math.max(1, (presetK.options || 4) - 1);
+      const optCountK = Math.min(presetK.options || 4, 4);
+      const decoyCount = Math.max(1, optCountK - 1);
       // Map difficulty (1-9) to school grade (1-6)
       const d = (typeof window.getJpDifficulty === 'function' ? window.getJpDifficulty() : 3) || 3;
       const gradeMap = { 1:1, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:6, 9:6 };
@@ -3045,11 +3047,12 @@ console.log("🌸 Main.js starting execution...");
           qEl.innerHTML = q.promptHtml;
           // Apply per-song preset
           const PRESET = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { baseTime: 15, options: 4 };
+          const maxOpts = Math.min(PRESET.options || 4, 4);
           // If options != 4, adjust grid layout
           try {
-            const cols = PRESET.options >= 6 ? 3 : 2;
+            const cols = maxOpts >= 6 ? 3 : 2;
             cEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-            cEl.style.gridTemplateRows = `repeat(${Math.ceil(PRESET.options/cols)}, 1fr)`;
+            cEl.style.gridTemplateRows = `repeat(${Math.ceil(maxOpts/cols)}, 1fr)`;
           } catch(_) {}
 
           if (timed) {
@@ -3081,7 +3084,7 @@ console.log("🌸 Main.js starting execution...");
             }, 1000);
           }
           // Trim or extend options according to preset
-          const opts = q.options.slice(0, PRESET.options || 4);
+          const opts = q.options.slice(0, maxOpts);
           q.options = opts;
           opts.forEach((opt, idx) => {
             const { btn } = createUltimateBeatpadButton(opt, idx, (text, element, style) => {
@@ -3111,7 +3114,9 @@ console.log("🌸 Main.js starting execution...");
                 fb.style.color = "#2b2b44";
                 score++;
                 scoreEl.textContent = String(score);
+
                 try { SFX.play("quiz.ok"); } catch(_) {}
+
                 
                 // Enhanced streak system
                 streak++;
@@ -3153,7 +3158,9 @@ console.log("🌸 Main.js starting execution...");
                 createRingEffect(element, false);
                 fb.textContent = `❌ ${correct}`;
                 fb.style.color = "#c00";
+
                  try { SFX.play("quiz.bad"); } catch(_) {}
+
                 streak = 0;
                 streakEl.textContent = String(streak);
                 HUD.counts.SAD++;
@@ -3162,7 +3169,7 @@ console.log("🌸 Main.js starting execution...");
                 resetCombo();
                 loseLife("vocabCard");
               }
-              
+
               if (timed) {
                 const elapsed = Date.now() - startAt;
                 if (!bestTime || elapsed < bestTime) {
@@ -3172,6 +3179,7 @@ console.log("🌸 Main.js starting execution...");
                 }
               }
               if (!HUD.gameOver) setTimeout(load, 900);
+              return isCorrect;
             });
             
             cEl.appendChild(btn);
@@ -3288,10 +3296,11 @@ console.log("🌸 Main.js starting execution...");
           const correct = q.correct;
           qEl.innerHTML = q.promptHtml;
           const PRESET2 = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { baseTime: 15, options: 4 };
+          const maxOpts2 = Math.min(PRESET2.options || 4, 4);
           try {
-            const cols2 = PRESET2.options >= 6 ? 3 : 2;
+            const cols2 = maxOpts2 >= 6 ? 3 : 2;
             cEl.style.gridTemplateColumns = `repeat(${cols2}, 1fr)`;
-            cEl.style.gridTemplateRows = `repeat(${Math.ceil(PRESET2.options/cols2)}, 1fr)`;
+            cEl.style.gridTemplateRows = `repeat(${Math.ceil(maxOpts2/cols2)}, 1fr)`;
           } catch(_) {}
           if (timed) {
             const { baseTime } = diffParams();
@@ -3321,7 +3330,7 @@ console.log("🌸 Main.js starting execution...");
               }
             }, 1000);
           }
-          const opts2 = q.options.slice(0, PRESET2.options || 4);
+          const opts2 = q.options.slice(0, maxOpts2);
           opts2.forEach((opt, idx) => {
             const { btn } = createUltimateBeatpadButton(opt, idx, (text, element, style) => {
               if (lock) return;
@@ -3347,7 +3356,9 @@ console.log("🌸 Main.js starting execution...");
                 fb.style.color = "#2b2b44";
                 score++;
                 scoreEl.textContent = String(score);
+
                 try { SFX.play("quiz.ok"); } catch(_) {}
+
                 
                 streak++;
                 streakEl.textContent = String(streak);
@@ -3406,7 +3417,9 @@ console.log("🌸 Main.js starting execution...");
                 createRingEffect(element, false);
                 fb.textContent = `❌ ${correct}`;
                 fb.style.color = "#c00";
+
                  try { SFX.play("quiz.bad"); } catch(_) {}
+
                 streak = 0;
                 streakEl.textContent = String(streak);
                 HUD.counts.SAD++;
@@ -3416,6 +3429,7 @@ console.log("🌸 Main.js starting execution...");
                 loseLife("kanjiCard");
               }
               if (!HUD.gameOver) setTimeout(load, 900);
+              return isCorrect;
             });
             
             cEl.appendChild(btn);
@@ -3473,7 +3487,8 @@ console.log("🌸 Main.js starting execution...");
             `「${q.promptHtml.replace(/<[^>]+>/g, "")}」って、どういう意味？`
           );
           const PRESET3 = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { options: 4 };
-          const use = q.options.slice(0, PRESET3.options || 4);
+          const maxOpts3 = Math.min(PRESET3.options || 4, 4);
+          const use = q.options.slice(0, maxOpts3);
           use.forEach((opt, idx) => {
             const { btn } = createUltimateBeatpadButton(opt, idx, (text, element, style) => {
               if (lock) return;
@@ -3492,7 +3507,9 @@ console.log("🌸 Main.js starting execution...");
                   say("正解だよ！");
                   addXP(10);
                 }
+
                 try { SFX.play("quiz.ok"); } catch(_) {}
+
                 score++;
                 scoreEl.textContent = String(score);
                 
@@ -3501,9 +3518,12 @@ console.log("🌸 Main.js starting execution...");
               } else {
                 createRingEffect(element, false);
                 say(`残念！正解は「${correct}」`);
+
                  try { SFX.play("quiz.bad"); } catch(_) {}
+
               }
               setTimeout(round, 900);
+              return isCorrect;
             });
             
             cEl.appendChild(btn);
@@ -3545,7 +3565,9 @@ console.log("🌸 Main.js starting execution...");
                   say("正解だよ！");
                   addXP(6);
                 }
+
                 SFX.play("quiz.ok");
+
                 score++;
                 scoreEl.textContent = String(score);
                 
@@ -3554,9 +3576,12 @@ console.log("🌸 Main.js starting execution...");
               } else {
                 createRingEffect(element, false);
                 say(`残念！正解は「${correct}」`);
+
                  SFX.play("quiz.bad");
+
               }
               setTimeout(round, 900);
+              return isCorrect;
             });
             
             cEl.appendChild(btn);
@@ -6210,9 +6235,16 @@ console.log("🌸 Main.js starting execution...");
         createPerfectHitEffect(btn, psBtn.color);
       }
       
-      // Call original answer handler
-      onAnswer(text, btn, { ...psBtn, isPerfect: isPerfectTiming });
-      
+      // Call original answer handler and use return value to decide SFX
+      try {
+        const res = onAnswer(text, btn, { ...psBtn, isPerfect: isPerfectTiming });
+        if (res === true) {
+          try { SFX.play('quiz.ok'); } catch(_){}
+        } else if (res === false) {
+          try { SFX.play('quiz.bad'); } catch(_){}
+        }
+      } catch(_){ onAnswer(text, btn, { ...psBtn, isPerfect: isPerfectTiming }); }
+
       // Visual feedback
       btn.style.animation = 'divaHitPulse 0.3s ease';
       setTimeout(() => btn.style.animation = '', 300);

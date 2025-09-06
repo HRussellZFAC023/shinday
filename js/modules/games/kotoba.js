@@ -29,7 +29,8 @@
 
   async function getQuestion(){
     const preset = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { options:4 };
-    const decoyCount = Math.max(1,(preset.options||4)-1);
+    const optCount = Math.min(preset.options || 4, 4);
+    const decoyCount = Math.max(1, optCount - 1);
     // 70% from deck, 30% from jisho word search
     if (Math.random()<0.7){
       for (let guard=0; guard<20; guard++){
@@ -82,7 +83,8 @@
     try{
       const q = await getQuestion(); const correct = q.correct; if (chatEl) say(`「${q.promptHtml.replace(/<[^>]+>/g,'')}」って、どういう意味？`,'miku');
       const PRESET = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { baseTime:20, options:4 };
-      try{ const cols = PRESET.options>=6?3:2; cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`; cEl.style.gridTemplateRows = `repeat(${Math.ceil(PRESET.options/cols)},1fr)`; }catch(_){ }
+      const maxOpts = Math.min(PRESET.options || 4, 4);
+      try{ const cols = maxOpts>=6?3:2; cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`; cEl.style.gridTemplateRows = `repeat(${Math.ceil(maxOpts/cols)},1fr)`; }catch(_){ }
       if (isTimed()){
         const baseTime = (function(){ try{ return (window.diffParams && diffParams().baseTime) || 20; } catch(_){ return 20; } })();
         countdown = PRESET.baseTime || baseTime; if (timerEl) timerEl.textContent = String(countdown);
@@ -95,7 +97,7 @@
           }
         }, 1000);
       }
-  const use = q.options.slice(0, PRESET.options||4);
+      const use = q.options.slice(0, maxOpts);
       use.forEach((opt, idx)=>{
         const maker = window.createUltimateBeatpadButton || ((label)=>{ const btn=document.createElement('button'); btn.className='pixel-btn beatpad-btn'; btn.textContent=label; return { btn, style:{ isPerfect:false, color:'#a594f9' } }; });
         const { btn } = maker(opt, idx, (text, element, style)=> onSelect(text, element, style, correct));
@@ -116,7 +118,6 @@
       if (fbEl) fbEl.style.color='#2b2b44';
       score++; if (scoreEl) scoreEl.textContent = String(score);
       if (chatEl){ say(text,'you'); setTimeout(()=> say('やった！正解だよ！','miku'), 200); }
-      try{ SFX.play('quiz.ok'); }catch(_){ }
       streak++; if (streakEl) streakEl.textContent = String(streak); try{ if (streak>1) loveToast && loveToast(`Combo x${streak}!`); createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak); }catch(_){ }
       const mult = (function(){ try{ return diffParams().mult; }catch(_){ return 1; } })();
       const rmult = (function(){ try{ return getRhythmMult(); }catch(_){ return 1; } })();
@@ -128,11 +129,11 @@
       try{ createRingEffect && createRingEffect(element,false); }catch(_){ }
       if (fbEl){ fbEl.textContent = `❌ ${correct}`; fbEl.style.color='#c00'; }
       if (chatEl){ say(text,'you'); setTimeout(()=> say(`残念… 正解は「${correct}」だよ。`,'miku'), 200); }
-      try{ SFX.play('quiz.bad'); }catch(_){ }
       streak=0; if (streakEl) streakEl.textContent=String(streak);
       try{ HUD&&HUD.counts&&(HUD.counts.SAD++); flashJudge && flashJudge('kotobaCard','SAD'); addVoltage && addVoltage(-5,'kotobaCard'); resetCombo && resetCombo(); loseLife && loseLife('kotobaCard'); }catch(_){ }
     }
     setTimeout(loadRound, 900);
+    return isCorrect;
   }
 
   function start({ timed }){ if (typeof timed==='boolean') setTimed(timed); if (timerWrap) timerWrap.style.display = isTimed() ? 'inline-flex' : 'none'; loadRound(); }
