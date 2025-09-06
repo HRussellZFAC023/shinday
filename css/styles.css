@@ -233,16 +233,36 @@ body {
   font-size: 0.9rem;
   padding: 6px 12px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.5);
+  background: linear-gradient(45deg, var(--pastel-blue), var(--pastel-pink));
   border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
   transition: all 0.3s ease;
+}
+
+.status-nav a::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+  transform: skewX(-25deg);
+}
+
+.status-nav a:hover::after {
+  animation: navShimmer 0.75s forwards;
 }
 
 .status-nav a:hover,
 .status-nav a.active {
-  background: var(--accent);
   color: white;
   transform: translateY(-2px);
+}
+
+@keyframes navShimmer {
+  100% { left: 150%; }
 }
 
 .status-item {
