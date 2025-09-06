@@ -25,7 +25,7 @@ if (
 const yearsAgo = age - 25;
 
 window.SITE_CONTENT = {
-    images: {
+  images: {
     favicon: "./assets/icon.jpg",
     ogImage: "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png",
     splashMiku: "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png",
@@ -33,12 +33,11 @@ window.SITE_CONTENT = {
     shrineMiku: "./assets/hatsune-miku-happy-birthday-xa3kasez005ghjih.webp",
     headerBg: "./assets/pt_top.png",
     // Optional: add extra Miku image URLs (singing/idle sprites) to show in floating Mikus
-    extraMikus: [
-    ],
+    extraMikus: [],
     // Miku emoji/icon replacements
     mikuIcons: {
       admiring: "./assets/icons/Admiring.png",
-      ahaha: "./assets/icons/ahaha.png", 
+      ahaha: "./assets/icons/ahaha.png",
       cheering: "./assets/icons/cheering.png",
       chuuu: "./assets/icons/chuuu.png",
       innocent: "./assets/icons/innocent.png",
@@ -49,13 +48,13 @@ window.SITE_CONTENT = {
       okHands: "./assets/icons/ok hands.png",
       okSign: "./assets/icons/ok sign.png",
       pow: "./assets/icons/pow!.png",
-      sad: "./assets/pixel-miku/Hatsune Miku @illufinch 42.png", // Sad Miku for dislikes
-      sparkle: "./assets/pixel-miku/Hatsune Miku @illufinch 100.png", // Special sparkly Miku for magical moments
+      sad: "./assets/pixel-miku/014 - Rolling Girl Miku.png",
+      sparkle: "./assets/pixel-miku/088 - Tell your world.png",
       stage: "./assets/icons/stage.png",
       starUwu: "./assets/icons/star uwu.png",
       thumbsUp: "./assets/icons/Thumbs Up!.png",
       vibing: "./assets/icons/vibing.png",
-      wallHide: "./assets/icons/wall hide.png"
+      wallHide: "./assets/icons/wall hide.png",
     },
     // Optional swallow gif path for the swallow mascot
     swallowGif: "./assets/swallow.gif",
@@ -63,7 +62,7 @@ window.SITE_CONTENT = {
     menuCovers: {
       vocab: "./assets/Gamer.png",
       kanji: "./assets/win.jpg",
-      kotoba: "./assets/miku beam.gif"
+      kotoba: "./assets/miku beam.gif",
     },
     // All badges appear only in the Web Badges sidebar
     statsBadges: [],
@@ -74,60 +73,61 @@ window.SITE_CONTENT = {
         alt: "Baby Belle's Pixel Garden",
         link: "https://babybelle.neocities.org/",
         isOurBadge: true,
-        style: "width: 88px; height: 31px; object-fit: cover; object-position: center; border-radius: 6px; box-shadow: 0 2px 6px rgba(43,43,68,0.15);"
+        style:
+          "width: 88px; height: 31px; object-fit: cover; object-position: center; border-radius: 6px; box-shadow: 0 2px 6px rgba(43,43,68,0.15);",
       },
       // Hosted on Neocities (cute pink variant)
       {
         src: "https://cyber.dabamos.de/88x31/neocities-pink.gif",
         alt: "Hosted on Neocities",
-        link: "https://neocities.org/"
+        link: "https://neocities.org/",
       },
       // Cute Neocities creators/sites (on-theme pastels/kawaii)
       {
         src: "https://cementgarden.neocities.org/images/button/cementgarden7.gif",
         alt: "Cement Garden",
-        link: "https://cementgarden.neocities.org/"
+        link: "https://cementgarden.neocities.org/",
       },
       {
         src: "https://melokaji.neocities.org/images/melobutton.gif",
         alt: "melokaji",
-        link: "https://melokaji.neocities.org/"
+        link: "https://melokaji.neocities.org/",
       },
       {
         src: "https://cloverbell.neocities.org/buttons/2cherrishbutton.gif",
         alt: "2Cherrish",
-        link: "https://2cherrish.neocities.org/"
+        link: "https://2cherrish.neocities.org/",
       },
       {
         src: "https://cloverbell.neocities.org/buttons/cherrylotusbutton.png",
         alt: "CherryLotus",
-        link: "https://cherrylotus.neocities.org/"
+        link: "https://cherrylotus.neocities.org/",
       },
       {
         src: "https://cabbagesorter.neocities.org/buttons/cabbagesorter.gif",
         alt: "cabbagesorter",
-        link: "https://cabbagesorter.neocities.org/"
+        link: "https://cabbagesorter.neocities.org/",
       },
       {
         src: "https://cloverbell.neocities.org/buttons/vivarism_01.gif",
         alt: "Vivarism",
-        link: "https://vivarism.neocities.org/"
+        link: "https://vivarism.neocities.org/",
       },
       {
         src: "https://cloverbell.neocities.org/buttons/tomboyish.gif",
         alt: "tomboyish",
-        link: "https://tomboyish.neocities.org/"
+        link: "https://tomboyish.neocities.org/",
       },
       {
         src: "https://cloverbell.neocities.org/buttons/mn1ca.gif",
         alt: "mn1ca",
-        link: "https://mn1ca.neocities.org/"
+        link: "https://mn1ca.neocities.org/",
       },
       {
         src: "https://cloverbell.neocities.org/buttons/amivicky-5.gif",
         alt: "amivicky",
-        link: "https://amivicky.neocities.org/"
-      }
+        link: "https://amivicky.neocities.org/",
+      },
     ],
   },
   site: {
@@ -146,16 +146,16 @@ window.SITE_CONTENT = {
   },
 
   nav: [
-    { id: "home", label: "🏠 Garden", mikuIcon: "innocent" },
-    { id: "socials", label: "💫 Links", mikuIcon: "cheering" },
+    { id: "home", label: "Garden", mikuIcon: "innocent" },
+    { id: "socials", label: "Links", mikuIcon: "cheering" },
     { id: "study", label: "🎌 日本語", mikuIcon: "thumbsUp" },
-    { id: "games", label: "🎮 Games", mikuIcon: "vibing" },
-    { id: "shrine", label: "⛩️ Shrine", mikuIcon: "stage" },
+    { id: "games", label: "Games", mikuIcon: "vibing" },
+    { id: "shrine", label: "Shrine", mikuIcon: "stage" },
   ],
 
   status: {
     onlineLabel: "Online",
-    radioOffLabel: "Radio Off", 
+    radioOffLabel: "Radio Off",
     radioOnLabel: "Playing",
     nowPlayingPlaceholder: "Enter current mood/song...",
     heartsLabel: "Hearts collected:",
@@ -184,7 +184,7 @@ window.SITE_CONTENT = {
     ],
     heartButton: "Send Love",
     heartButtonIcon: "love",
-    
+
     // Unified presentation slides
     presentationTitle: "Getting to Know Baby Belle",
     presentationIcon: "sparkle",
@@ -198,23 +198,25 @@ window.SITE_CONTENT = {
           "꒰ঌ Internet angel ໒꒱ • Professional NEET • Super cute! 💖",
           "Baby Belle used to be an e-girl and YouTube content creator with their cat maid persona called Shin.",
           "Baby Belle is of Finnish and Swedish descent but is currently living in Japan.",
-          "Baby Belle spends most of her days online as she has no friends irl."
+          "Baby Belle spends most of her days online as she has no friends irl.",
         ],
-        decorativeIcons: ["sparkle", "innocent", "love"]
+        decorativeIcons: ["sparkle", "innocent", "love"],
       },
       {
         title: "Belle's Stats",
         titleIcon: "starUwu",
         theme: "stats",
         content: [
-          "Age: Her frontal lobes have stopped growing " + yearsAgo + " years ago",
+          "Age: Her frontal lobes have stopped growing " +
+            yearsAgo +
+            " years ago",
           "Height: 169 cm 📏",
           "Birthday: September 22nd 🎂",
           "Jobby: No 💸",
           "Location: Pixel Garden, Japan 🏡",
-          "Energy Level: Powered by Monster Energy ⚡"
+          "Energy Level: Powered by Monster Energy ⚡",
         ],
-        decorativeIcons: ["starUwu", "cheering", "vibing"]
+        decorativeIcons: ["starUwu", "cheering", "vibing"],
       },
       {
         title: "Belle's Heart",
@@ -225,9 +227,9 @@ window.SITE_CONTENT = {
           "Sometimes I get sad... so if it's all right with you, can you cheer me up too?",
           "I dont want to feel lonely or be bullied.",
           "",
-          "Thank you for visiting my garden! 💙"
+          "Thank you for visiting my garden! 💙",
         ],
-        decorativeIcons: ["love", "innocent", "sparkle"]
+        decorativeIcons: ["love", "innocent", "sparkle"],
       },
       {
         title: "Things I Love",
@@ -239,9 +241,9 @@ window.SITE_CONTENT = {
           "Coffee ☕ & Sweets 🍰",
           "Cats 🐱 & Sanrio (Cinnamoroll!)",
           "Japanese fashion 👘",
-          "Tomato ketchup 🍝 (Don't judge!)"
+          "Tomato ketchup 🍝 (Don't judge!)",
         ],
-        decorativeIcons: ["love", "cheering", "vibing"]
+        decorativeIcons: ["love", "cheering", "vibing"],
       },
       {
         title: "Things That Make Me Hide",
@@ -254,7 +256,7 @@ window.SITE_CONTENT = {
           "Rude behavior ❌ (Be nice to Belle!)",
           "Being ignored 😔 (Notice me!)",
         ],
-        decorativeIcons: ["wallHide", "sad", "innocent"]
+        decorativeIcons: ["wallHide", "sad", "innocent"],
       },
       {
         title: "My Kawaii Dreams",
@@ -266,9 +268,9 @@ window.SITE_CONTENT = {
           "Stream on Twitch! 📺 (Be internet famous!)",
           "Get a gaming PC 🖥️ (Mac struggles)",
           "Try Japanese food/drinks! 🍜 (Living the dream)",
-          "Cosplay! 👗 (Miku cosplay when?)"
+          "Cosplay! 👗 (Miku cosplay when?)",
         ],
-        decorativeIcons: ["jumpingStars", "vibing", "stage"]
+        decorativeIcons: ["jumpingStars", "vibing", "stage"],
       },
       {
         title: "Thank You for Visiting! ♡",
@@ -281,12 +283,11 @@ window.SITE_CONTENT = {
           "🌸 Remember to send hearts and be kind! 🌸",
           "💙 Let's be the best of friends forever! 💙",
           "",
-          "Come back anytime to my pixel garden! 💙"
+          "Come back anytime to my pixel garden! 💙",
         ],
-        decorativeIcons: ["sparkle", "love", "cheering", "innocent"]
-      }
+        decorativeIcons: ["sparkle", "love", "cheering", "innocent"],
+      },
     ],
-    
   },
 
   socials: {
@@ -335,7 +336,7 @@ window.SITE_CONTENT = {
     titleIcon: "jumpingMusic",
     radioName: "Kawaii FM",
     radioIcon: "vibing",
-    playlistTitle: "Current Favorites", 
+    playlistTitle: "Current Favorites",
     playlistIcon: "love",
     songs: [
       { title: "World is Mine", artist: "Hatsune Miku (ryo)", mood: "✨" },
@@ -385,7 +386,7 @@ window.SITE_CONTENT = {
     heartsZoneIcon: "chuuu",
     heartsReset: "Reset",
     gachaTitle: "🎰 Miku Collection Gacha",
-    gachaIcon: "starUwu", 
+    gachaIcon: "starUwu",
     gachaOpenDex: "📱 Open MikuDex",
   },
 
@@ -404,10 +405,30 @@ window.SITE_CONTENT = {
     // these entries; otherwise it falls back to the plain strings below.
     // youtubeId is preferred when known; otherwise search is used.
     favoriteSongsData: [
-      { title: "World is Mine", artist: "ryo (supercell)", youtubeId: "jhl5afLEKdo", search: "Hatsune Miku World is Mine ryo official" },
-      { title: "Senbonzakura", artist: "Kurousa-P (WhiteFlame)", youtubeId: "shs0rAiwsGQ", search: "Hatsune Miku Senbonzakura official Kurousa-P" },
-      { title: "Tell Your World", artist: "kz (livetune)", youtubeId: "PqJNc9KVIZE", search: "livetune Tell Your World official" },
-      { title: "Love is War", artist: "ryo (supercell)", youtubeId: "jDop41Bxq2A", search: "Hatsune Miku Love is War ryo official" }
+      {
+        title: "World is Mine",
+        artist: "ryo (supercell)",
+        youtubeId: "jhl5afLEKdo",
+        search: "Hatsune Miku World is Mine ryo official",
+      },
+      {
+        title: "Senbonzakura",
+        artist: "Kurousa-P (WhiteFlame)",
+        youtubeId: "shs0rAiwsGQ",
+        search: "Hatsune Miku Senbonzakura official Kurousa-P",
+      },
+      {
+        title: "Tell Your World",
+        artist: "kz (livetune)",
+        youtubeId: "PqJNc9KVIZE",
+        search: "livetune Tell Your World official",
+      },
+      {
+        title: "Love is War",
+        artist: "ryo (supercell)",
+        youtubeId: "jDop41Bxq2A",
+        search: "Hatsune Miku Love is War ryo official",
+      },
     ],
     favoriteSongs: [
       "World is Mine - ryo",

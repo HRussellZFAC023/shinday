@@ -3902,8 +3902,10 @@ console.log("🌸 Main.js starting execution...");
               </div>
             `;
 
-            // Initialize the enhanced presentation system
-            initBellePresentation();
+            // Initialize the enhanced presentation system (guard if unavailable)
+            if (typeof initBellePresentation === "function") {
+              initBellePresentation();
+            }
           } else {
             // Fallback to old system
             const likes = (C.home.likes || [])
@@ -5374,8 +5376,8 @@ console.log("🌸 Main.js starting execution...");
           /@illufinch/i.test(u)
       );
 
-      // Always include PixieBel surprise slot (hidden '?' until won)
-      const pixieUrl = "./assets/pixiebel.gif";
+  // Always include PixieBel surprise slot (hidden '?' until won)
+  const pixieUrl = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
       const coll = collectionMap();
       const pixieOwned = !!coll[pixieUrl];
 
@@ -5384,7 +5386,7 @@ console.log("🌸 Main.js starting execution...");
 
       mikuGallery.innerHTML = galleryItems
         .map((img, index) => {
-          const isPixieSlot = /pixiebel\.gif$/i.test(img);
+          const isPixieSlot = /PixieBel \(bonus\)\.gif$/i.test(img);
           const coverClass = isPixieSlot && !pixieOwned ? "mystery-cover" : "";
           const coverText = isPixieSlot && !pixieOwned ? '<div class="mystery-text">?</div>' : "";
           const r =
