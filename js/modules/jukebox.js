@@ -6,17 +6,15 @@
     hard:    { key:'hard',    label:'Hard',    options:6, baseTime:12, travelMs:1600, judge:{cool:120, great:180, fine:260} },
     extreme: { key:'extreme', label:'Extreme', options:8, baseTime:10, travelMs:1200, judge:{cool:90,  great:150, fine:220} }
   };
-  const baseSongs = [
-    { id:'senbonzakura',   title:'千本桜 (Senbonzakura)',         yt:'Mqpsf84m_b0', bpm:154, req:1, jacket:'./assets/pixel-miku/018 - Senbonzakura Miku.png', theme:'#00aa88', recommend:{game:'kanji', mode:'meaning'} },
-    { id:'world-is-mine',  title:'ワールドイズマイン (World is Mine)', yt:'R7gUdbH0Le8', bpm:150, req:2, jacket:'./assets/pixel-miku/013 - World Is Mine Miku.png', theme:'#ff66aa', recommend:{game:'vocab', direction:'jp-en'} },
-    { id:'tell-your-world',title:'Tell Your World',               yt:'PqJNc9KVIZE', bpm:128, req:3, jacket:'./assets/pixel-miku/003 - Hatsune Miku Append.png', theme:'#66bbff', recommend:{game:'vocab', direction:'en-jp'} },
-    { id:'rolling-girl',   title:'ローリンガール (Rolling Girl)',   yt:'9wSx-sLkGm4', bpm:135, req:4, jacket:'./assets/pixel-miku/014 - Rolling Girl Miku.png', theme:'#4444aa', recommend:{game:'kanji', mode:'reading'} },
-    { id:'meltdown',       title:'メルト (Melt)',                  yt:'FMD6-5qWCSM', bpm:180, req:5, jacket:'./assets/pixel-miku/034 - Love Is War.png', theme:'#ffaa00', recommend:{game:'vocab', direction:'jp-en'} },
-    { id:'romeo-cinderella',title:'ロミオとシンデレラ',            yt:'n4gC7gqFCvM', bpm:170, req:6, jacket:'./assets/pixel-miku/086 - Romeo and Cinderella (vintage dress module).png', theme:'#cc66ff', recommend:{game:'vocab', direction:'en-jp'} },
-    { id:'love-is-war',    title:'恋は戦争 (Love is War)',         yt:'AgA2wE8xmFQ', bpm:160, req:7, jacket:'./assets/pixel-miku/034 - Love Is War.png', theme:'#ff4444', recommend:{game:'kanji', mode:'reading'} },
-    { id:'popipo',         title:'ぽっぴっぽー (PoPiPo)',          yt:'cQKGUgOfD8U', bpm:140, req:8, jacket:'./assets/pixel-miku/007 - Seifuku Miku (Sailor School Uniform).png', theme:'#22cc22', recommend:{game:'kotoba'} },
-    { id:'weekender-girl', title:'Weekender Girl',                 yt:'0u9P4kzT0W8', bpm:128, req:9, jacket:'./assets/pixel-miku/021 - Alien Alien Miku.png', theme:'#00bcd4', recommend:{game:'vocab', direction:'jp-en'} }
-  ];
+  // Default local BGM card
+  function defaultSongs(){
+    return [{
+      id:'default-bgm', title:'Default BGM', bpm:120, req:0,
+      audio:'./assets/background.ogg', fallback:'./assets/bgm.ogg',
+      jacket:'./assets/pt_top.png', theme:'#66bbff',
+      recommend:{ game:'vocab', direction:'jp-en' }
+    }];
+  }
 
   function gachaSongs(){
     try{
@@ -33,12 +31,14 @@
       return list;
     }catch(_){return [];} 
   }
-  const allSongs = () => baseSongs.concat(gachaSongs());
-  function level(){ return (window.Progression && Progression.getLevel()) || parseInt(localStorage.getItem('study.level')||'1',10) || 1; }
-  function unlocked(){ const lvl = level(); return allSongs().filter(s => s.req <= lvl); }
+  function allSongs(){ return defaultSongs().concat(gachaSongs()); }
+  let SONGS = allSongs();
+  function refresh(){ SONGS = allSongs(); try{ if (window.Jukebox) window.Jukebox.songs = SONGS; }catch(_){} return SONGS; }
+  function unlocked(){ return refresh(); }
 
   function ensurePlayer(){
-    if (document.getElementById('jukeboxPlayer')) return;
+    const existing = document.getElementById('jukeboxPlayer');
+    if (existing) return existing;
     const wrap = document.createElement('div');
     wrap.id = 'jukeboxPlayer';
     wrap.style.cssText = 'position:fixed;right:16px;bottom:16px;width:360px;z-index:9999;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border:2px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(43,43,68,.25)';
@@ -51,31 +51,48 @@
   <iframe id="jukeboxIframe" style="width:100%;height:100%;border:0;display:block" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
       </div>`;
     document.body.appendChild(wrap);
-    document.getElementById('jukeboxClose').onclick = () => { document.getElementById('jukeboxIframe').src='about:blank'; wrap.style.display='none'; };
+    document.getElementById('jukeboxClose').onclick = () => {
+      try{ document.getElementById('jukeboxIframe').src='about:blank'; }catch(_){ }
+      wrap.style.display='none';
+      try{ if (window.__resumeBgm) window.__resumeBgm(); }catch(_){ }
+    };
+    return wrap;
   }
 
   function play(song){
-    ensurePlayer();
+    if (!song) return;
+    const wrap = ensurePlayer();
     const iframe = document.getElementById('jukeboxIframe');
     const now = document.getElementById('jukeboxNow');
-    if (!song) return;
-    const vid = song.yt || '';
-    const url = vid ? `https://www.youtube.com/embed/${encodeURIComponent(vid)}?autoplay=1&rel=0&playsinline=1&modestbranding=1&color=white` : `about:blank`;
-    iframe.src = url;
+    // Theme accent
+    try { if (song.theme) document.documentElement.style.setProperty('--jukebox-accent', song.theme); } catch(_){}
+    // Sync rhythm
+    try { window.__rhythmBpm = song.bpm|0; localStorage.setItem('rhythm.bpm', String(window.__rhythmBpm)); } catch(_){ }
+    try { window.__rhythmMet = true; localStorage.setItem('rhythm.met','1'); } catch(_){ }
+    if (song.audio){
+      // Use site BGM, no mini-player
+      try{
+        if (iframe) iframe.src = 'about:blank';
+        if (wrap) wrap.style.display = 'none';
+        if (window.AudioMod && typeof AudioMod.setBgmSource==='function'){
+          AudioMod.setBgmSource(song.audio, song.fallback || './assets/bgm.ogg');
+        }
+        // Resume bgm
+        if (window.__resumeBgm) window.__resumeBgm(); else if (window.AudioMod && AudioMod.ensureBgm) { const a=AudioMod.ensureBgm(); try{a.play().catch(()=>{});}catch(_){}};
+      }catch(_){ }
+    } else if (song.yt){
+      // Pause bgm and show mini-player
+      try { if (window.__pauseBgm) window.__pauseBgm(); } catch(_){}
+      const vid = song.yt || '';
+      const url = `https://www.youtube.com/embed/${encodeURIComponent(vid)}?autoplay=1&rel=0&playsinline=1&modestbranding=1&color=white`;
+      if (iframe) iframe.src = url;
+      if (wrap) wrap.style.display = 'block';
+    }
     if (now) now.textContent = song.title;
-    // Apply theme accent for HUD/results
-    try {
-      if (song.theme) {
-        // Apply only a scoped custom property to avoid clobbering global accents
-        document.documentElement.style.setProperty('--jukebox-accent', song.theme);
-      }
-  } catch(_){}
-    // Sync rhythm BPM to song
-    try { window.__rhythmBpm = song.bpm|0; localStorage.setItem('rhythm.bpm', String(window.__rhythmBpm)); } catch(_){}
-    try { window.__rhythmMet = true; localStorage.setItem('rhythm.met','1'); } catch(_){}
   }
 
   function attachHudSelect(){
+    refresh();
     const hud = document.querySelector('#jpHudWidget .jp-hud-widget');
     if (!hud || hud.querySelector('#jukeboxOpen')) return;
     const wrap = document.createElement('div');
@@ -97,7 +114,7 @@
   }
 
   function getCurrentSong(){
-    try{ const id = localStorage.getItem('jukebox.song') || ''; return allSongs().find(s=>s.id===id) || null; }catch(_){ return null; }
+    try{ const id = localStorage.getItem('jukebox.song') || ''; return refresh().find(s=>s.id===id) || null; }catch(_){ return null; }
   }
 
   function saveSelection(song, preset){
@@ -119,16 +136,14 @@
       ov = document.createElement('div');
       ov.id = 'songSelectOverlay';
       ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:10000;';
-      const list = allSongs();
+      const list = refresh();
       const grid = list.map(s => {
-        const locked = level() < s.req;
         const jacket = s.jacket || './assets/root.png';
-        const tip = locked ? `Reach Lv ${s.req} to unlock` : `BPM ${s.bpm}`;
+        const tip = `BPM ${s.bpm}`;
         return `
-        <div class="song-tile ${locked?'locked':''}" data-id="${s.id}" title="${tip}" style="position:relative;border:2px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;cursor:${locked?'not-allowed':'pointer'}">
+        <div class="song-tile" data-id="${s.id}" title="${tip}" style="position:relative;border:2px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;cursor:pointer">
           <img src="${jacket}" alt="${s.title}" style="width:100%;height:120px;object-fit:cover;display:block" />
           <div style="padding:8px;font-weight:800;color:#2b2b44">${s.title}</div>
-          ${locked?`<div style=\"position:absolute;inset:0;background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;font-weight:900;color:#596286\">🔒 Lv ${s.req}</div>`:''}
         </div>`
       }).join('');
       ov.innerHTML = `
@@ -154,13 +169,12 @@
   ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.remove(); });
   document.addEventListener('keydown', function escClose(e){ if(e.key==='Escape'){ ov.remove(); document.removeEventListener('keydown', escClose);} });
       ov.querySelector('#songClose').onclick = ()=> ov.remove();
-        ov.__selected = list.find(s=>level()>=s.req) || list[0];
+        ov.__selected = list.find(s=>s.id===(localStorage.getItem('jukebox.song')||'')) || list[0];
       ov.addEventListener('click',(e)=>{
         const t = e.target.closest('.song-tile');
         if (!t) return;
         const s = list.find(x=>x.id===t.getAttribute('data-id'));
         if (!s) return;
-        if (level() < s.req) return; // locked
         ov.__selected = s;
         // Visual focus
         ov.querySelectorAll('.song-tile').forEach(el=>el.style.outline='none');
@@ -215,5 +229,5 @@
     }
   }
 
-  window.Jukebox = { songs: allSongs, unlocked, play, attachHudSelect, openSongSelect, getPreset };
+  window.Jukebox = { songs: SONGS, unlocked, play, attachHudSelect, openSongSelect, getPreset, refresh };
 })();

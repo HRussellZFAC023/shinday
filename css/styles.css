@@ -229,22 +229,101 @@ body {
 .status-nav a {
   color: var(--ink);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.9rem;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, var(--pastel-pink), var(--pastel-blue), var(--pastel-mint));
-  background-size: 300% 100%;
-  border: 1px solid var(--border);
-  transition: all 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(45deg, var(--pastel-mint), var(--pastel-blue));
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.status-nav a::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.status-nav a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, var(--pastel-pink), var(--pastel-purple));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.status-nav a span,
+.status-nav a img {
+  position: relative;
+  z-index: 2;
 }
 
 .status-nav a:hover,
 .status-nav a.active {
-  background: var(--pastel-pink);
-  transform: translateY(-2px);
-  animation: none;
+  background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-purple));
+  transform: translateY(-3px) scale(1.02);
+  text-decoration: none;
+  color: var(--ink);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  border-color: var(--accent);
 }
+
+.status-nav a:hover::before,
+.status-nav a.active::before {
+  left: 100%;
+}
+
+.status-nav a:hover::after,
+.status-nav a.active::after {
+  opacity: 1;
+}
+
+.status-nav a:active {
+  transform: translateY(-1px) scale(1.02);
+  transition-duration: 0.1s;
+}
+
+/* Summon preview styles */
+.summon-preview {
+  display:flex;
+  justify-content:center;
+  margin-bottom:10px;
+}
+.preview-reel {
+  width: 140px;
+  height: 140px;
+  border: 3px solid var(--border);
+  border-radius: 14px;
+  overflow:hidden;
+  background: #fff;
+  box-shadow: var(--shadow);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation: slotMachineGlow 2s ease-in-out infinite;
+}
+.preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  image-rendering: pixelated;
+  transition: transform 0.1s linear;
+}
+
+
+
 
 
 .status-item {
@@ -1020,9 +1099,10 @@ main {
   background: linear-gradient(145deg, #ffffff, #f3f3ff);
   border: 2px solid var(--border);
   box-shadow: var(--shadow);
-  transition: transform .12s ease, box-shadow .12s ease, outline .12s ease;
+  transition: transform .12s ease, box-shadow .12s ease, outline .12s ease, background-position .5s ease;
   position: relative;
   overflow: hidden;
+  background-size: 200% 100%;
 }
 .menu-tile.active,
 .menu-tile:focus-visible {
@@ -1044,6 +1124,13 @@ main {
   border-radius: 10px;
   padding: 8px 12px;
   font-weight: 800;
+}
+
+/* shiny swipe on menu tile */
+.menu-tile:hover {
+  background-image: linear-gradient(145deg, #ffffff, #f3f3ff), linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+  background-blend-mode: overlay;
+  background-position: 100% 0;
 }
 
 .menu-tile .corner-badge {
@@ -1571,6 +1658,43 @@ main {
 .dex-rarity { font-weight: 800; color: #ffb300; margin-bottom: 6px; }
 .dex-desc { font-size: 12px; color: #596286; }
 .dex-video iframe { width: 100%; aspect-ratio: 16/9; border: 0; border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+
+/* Video container and error handling */
+.video-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.video-container iframe {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-error {
+  padding: 20px;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255, 182, 193, 0.2), rgba(255, 192, 203, 0.2));
+  border: 2px dashed rgba(255, 182, 193, 0.6);
+  border-radius: 8px;
+  color: #ff69b4;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.video-error a {
+  color: #ff1493;
+  text-decoration: none;
+  border-bottom: 1px dotted #ff1493;
+  transition: all 0.2s ease;
+}
+
+.video-error a:hover {
+  color: #ff69b4;
+  border-bottom-style: solid;
+  text-shadow: 0 0 4px rgba(255, 20, 147, 0.4);
+}
 .dex-links { display:flex; gap:8px; margin-top:6px; }
 .dex-link { font-weight:800; color:#596286; text-decoration:none; background:rgba(255,255,255,.9); border:2px solid var(--border); padding:4px 8px; border-radius:8px; }
 .dex-link:hover { color:#2b2b44; }
@@ -1775,6 +1899,154 @@ main {
   will-change: transform, opacity;
   backface-visibility: hidden;
   transform: translateZ(0);
+}
+/* Gacha slot machine styles */
+.gacha-card.slot-machine {
+  background: linear-gradient(45deg, #f0f8ff, #ffd1ec, #e6f3ff);
+  border: 3px solid #6bc3ff;
+  animation: slotMachineGlow 0.5s ease-in-out infinite alternate;
+  overflow: hidden;
+}
+
+.slot-reel {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(255,255,255,0.9) 20%, rgba(107,195,255,0.3) 100%);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.reel-image {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  animation: reelSpin 0.15s linear infinite;
+  filter: blur(1px) brightness(1.2);
+}
+
+.slot-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 12px;
+  animation: sparkleFloat 0.8s ease-out forwards;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.gacha-card.revealing {
+  animation: revealPulse 0.6s ease-out;
+}
+
+.reveal-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  image-rendering: pixelated;
+  animation: revealZoom 0.5s ease-out;
+}
+
+@keyframes slotMachineGlow {
+  0% { 
+    box-shadow: 0 0 10px rgba(107,195,255,0.5);
+    transform: scale(1);
+  }
+  100% { 
+    box-shadow: 0 0 20px rgba(107,195,255,0.8), 0 0 30px rgba(255,107,157,0.3);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes reelSpin {
+  0% { transform: translateY(0) scale(1) rotate(0deg); }
+  25% { transform: translateY(-3px) scale(1.05) rotate(5deg); }
+  50% { transform: translateY(0) scale(0.95) rotate(0deg); }
+  75% { transform: translateY(3px) scale(1.05) rotate(-5deg); }
+  100% { transform: translateY(0) scale(1) rotate(0deg); }
+}
+
+@keyframes sparkleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.5) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.2) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.8) rotate(360deg);
+  }
+}
+
+@keyframes revealPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes revealZoom {
+  0% { 
+    opacity: 0;
+    transform: scale(0.5) rotate(10deg);
+    filter: brightness(2);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
+  }
+}
+
+@keyframes legendaryGlow {
+  0%, 100% {
+    filter: brightness(1) hue-rotate(0deg);
+    box-shadow: 0 0 15px rgba(255,215,0,0.6);
+  }
+  33% {
+    filter: brightness(1.2) hue-rotate(60deg);
+    box-shadow: 0 0 25px rgba(255,107,157,0.8);
+  }
+  66% {
+    filter: brightness(1.2) hue-rotate(240deg);
+    box-shadow: 0 0 25px rgba(107,195,255,0.8);
+  }
+}
+
+.gacha-card.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.gacha-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(180deg, #f6f9ff, #eaeffd);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  color: #a8b5d1;
+}
+.gacha-card.placeholder.spin .gacha-placeholder {
+  animation: slotSpin 600ms ease-in-out infinite;
+}
+@keyframes slotSpin {
+  0% { filter: brightness(1); transform: translateY(0); }
+  50% { filter: brightness(1.2); transform: translateY(-6px); }
+  100% { filter: brightness(1); transform: translateY(0); }
 }
 .gacha-card img {
   width: 100%;
@@ -2107,6 +2379,7 @@ main {
   height: 100%;
   pointer-events: none;
   z-index: 0;
+  overflow: visible;
 }
 
 .floating-hearts {
@@ -2128,7 +2401,7 @@ main {
 .heart-trail {
   position: absolute;
   font-size: 1rem;
-  animation: heartFloat 2s ease-out forwards;
+  animation: heartPop 2s ease-out forwards;
   pointer-events: none;
 }
 
@@ -2444,7 +2717,7 @@ main {
 }
 
 /* small pop used for click bursts */
-@keyframes heartFloat {
+@keyframes heartPop {
   0% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -2453,6 +2726,17 @@ main {
     opacity: 0;
     transform: translateY(-60px) scale(1.2);
   }
+}
+
+/* Grey tint for not-owned gallery images */
+.gallery-item.not-owned .gallery-image {
+  filter: grayscale(0.7) brightness(0.9);
+  opacity: 0.8;
+  cursor: default;
+}
+.gallery-item.not-owned .gallery-image:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 @keyframes speechBubbleIn {
@@ -3202,3 +3486,35 @@ main {
   }
 
 }
+
+/* Diva game */
+.diva-wrap { display:flex; flex-direction:column; gap:10px; }
+.diva-stage { position:relative; border:2px solid var(--border); border-radius:12px; overflow:hidden; background:#e8f5ff center/cover no-repeat; min-height:260px; background-image: var(--diva-bg, url('./assets/root.png')); }
+.diva-stage::before { content:''; position:absolute; inset:0; background:rgba(255,255,255,0.2); pointer-events:none; }
+.diva-singer { position:absolute; left:10px; bottom:10px; width:140px; max-width:25vw; z-index:2; image-rendering: pixelated; }
+.diva-singer.stunned { filter: grayscale(1) brightness(0.8); transform: translateY(6px) rotate(-3deg); transition: all .2s ease; }
+.diva-judge { position:absolute; top:8px; left:50%; transform:translateX(-50%); font-weight:900; font-size:22px; color:#333; text-shadow:0 2px 6px rgba(0,0,0,0.15); opacity:0; transition:opacity .15s ease; z-index:3; }
+.diva-judge.show { opacity:1; }
+.diva-lanes { position:absolute; right:6%; top:8%; bottom:12%; width:40%; display:grid; grid-template-columns:1fr; grid-template-rows: repeat(4, 1fr); gap:10px; z-index:1; }
+.diva-lane { position:relative; border:2px dashed rgba(89,98,134,0.25); border-radius:10px; overflow:hidden; }
+.diva-dot { position:absolute; left:50%; transform:translateX(-50%); top:-20px; width:18px; height:18px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #fff, #7dd3fc); box-shadow:0 2px 8px rgba(0,0,0,0.25); animation: divaFall linear forwards; cursor:pointer; }
+@keyframes divaFall { from{ top:-20px; } to { top: calc(100% - 14px); } }
+
+.diva-ui { display:flex; gap:12px; align-items:stretch; }
+.diva-left { flex:1; display:flex; flex-direction:column; gap:10px; }
+.diva-options { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:8px; }
+.gamepad-opt { font-size:.95rem; }
+
+.diva-items { display:flex; align-items:center; gap:8px; }
+.diva-item-status { font-weight:800; color:#596286; }
+
+.diva-chat { flex:1; display:flex; flex-direction:column; border:2px solid var(--border); border-radius:12px; background:#fff; padding:8px; min-width:280px; }
+.chat-log { flex:1; overflow:auto; display:flex; flex-direction:column; gap:6px; }
+.chat-entry { padding:6px 10px; border-radius:10px; max-width:80%; }
+.chat-entry.user { align-self:flex-end; background: #e0f2fe; border: 2px solid #7dd3fc; }
+.chat-entry.miku { align-self:flex-start; background: #fce7f3; border: 2px solid #f472b6; }
+#divaChatForm { display:flex; gap:8px; margin-top:8px; }
+
+.diva-kirby { position:absolute; width:64px; height:auto; z-index:2; pointer-events:none; }
+.diva-bait { position:absolute; font-size:22px; animation: baitBlink 1s ease-in-out infinite; z-index:1; }
+@keyframes baitBlink { 0%,100%{ transform:scale(1); opacity:.9;} 50%{ transform:scale(1.2); opacity:1; } }

@@ -251,30 +251,6 @@
                 </div>
 
                 <div class="game-widget">
-                  <h3>🕹️ Miku RPG</h3>
-                  <p>
-                    <a
-                      href="https://mikusquared.itch.io/rpg"
-                      target="_blank"
-                      rel="noopener"
-                      >Play on itch.io (opens in new window)</a
-                    >
-                  </p>
-                </div>
-
-                <div class="game-widget">
-                  <h3>🕹️ Miku Jetpack</h3>
-                  <p>
-                    <a
-                      href="https://mikusquared.itch.io/ttj2"
-                      target="_blank"
-                      rel="noopener"
-                      >Play on itch.io (opens in new window)</a
-                    >
-                  </p>
-                </div>
-
-                <div class="game-widget">
                   <div
                     class="social-embed"
                     style="
@@ -293,6 +269,25 @@
                     ></iframe>
                   </div>
                 </div>
+
+                <div class="game-widget">
+                  <p>
+                    <a
+                      href="https://mikusquared.itch.io/rpg"
+                      target="_blank"
+                      rel="noopener"
+                      >🕹️ Miku RPG (opens in new window)</a
+                    >
+                  </p>
+                  <p>
+                    <a
+                      href="https://mikusquared.itch.io/ttj2"
+                      target="_blank"
+                      rel="noopener"
+                      >🕹️ Miku Jetpack (opens in new window)</a
+                    >
+                  </p>
+                </div>
               </div>
             </section>
 
@@ -306,9 +301,15 @@
                     </div>
                     <div class="gacha-actions">
                       <button id="gachaPull1" class="pixel-btn">Pull x1</button>
-                      <button id="gachaPull10" class="pixel-btn">Pull x10</button>
-                      <button id="gachaDaily" class="pixel-btn">Daily Ticket</button>
-                      <button id="gachaConvert" class="pixel-btn">100💖 → +1</button>
+                      <button id="gachaPull10" class="pixel-btn">
+                        Pull x10
+                      </button>
+                      <button id="gachaDaily" class="pixel-btn">
+                        Daily Ticket
+                      </button>
+                      <button id="gachaConvert" class="pixel-btn">
+                        100💖 → +1
+                      </button>
                     </div>
                   </div>
                   <div id="gachaResults" class="gacha-results"></div>
@@ -358,13 +359,15 @@
                 </div>
               </div>
 
-                <div class="gallery">
-                  <h3>🖼️ Miku Gallery</h3><br />
-                  <div class="image-gallery" id="mikuGallery">
+              <div class="gallery">
+                <h3>🖼️ Miku Gallery</h3>
+                <br />
+                <div class="image-gallery" id="mikuGallery">
                   <!-- Will be populated by JS -->
                 </div>
               </div>
-              <div class="external-gallery">
+              <br />
+              <div class="game-widget">
                 <iframe
                   src="https://www.mikucollection.com/en/art-gallery"
                   title="Miku Collection Art Gallery"
@@ -502,7 +505,7 @@
     <script src="./js/modules/games/kotoba.js"></script>
     <!-- Centralized editable copy -->
     <script src="./js/content.js"></script>
-  <!-- Load remaining modules before main.js -->
+    <!-- Load remaining modules before main.js -->
     <script src="./js/modules/effects.js"></script>
     <script src="./js/modules/quests.js"></script>
     <script src="./js/modules/cursor.js"></script>

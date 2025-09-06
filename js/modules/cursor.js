@@ -107,35 +107,43 @@
         ]).catch(()=>{});
         if (window.requestIdleCallback) requestIdleCallback(() => applyLater());
         else setTimeout(applyLater, 1500);
-        window.setBusyCursor = (on) => {
-          const id = "ani-busy-toggle";
-          let busyStyle = document.getElementById(id);
-          if (on){
-            if (!busyStyle){
-              busyStyle = document.createElement('style');
-              busyStyle.id = id;
-              document.head.appendChild(busyStyle);
+        // Ensure mode CSS is generated once and toggled via classes
+        let _busyCssReady = false;
+        let _workingCssReady = false;
+        const BUSY_SEL = '.is-busy, .is-busy *';
+        const WORK_SEL = '.is-working, .is-working *';
+
+        window.setBusyCursor = async (on) => {
+          try {
+            if (!_busyCssReady) {
+              await applyAni(BUSY_SEL, roleToFile.busy);
+              _busyCssReady = true;
             }
-            busyStyle.textContent = `html, body, * { cursor: auto !important; }`;
-            applyAni('html, body, *', roleToFile.busy);
-          } else if (busyStyle){
-            busyStyle.remove();
-          }
+            const root = document.documentElement;
+            if (on) {
+              root.classList.add('is-busy');
+              // Safety auto-clear after 6s
+              clearTimeout(window.__busyClearT);
+              window.__busyClearT = setTimeout(() => {
+                try { document.documentElement.classList.remove('is-busy'); } catch(_) {}
+              }, 6000);
+            } else {
+              root.classList.remove('is-busy');
+              clearTimeout(window.__busyClearT);
+            }
+          } catch(_) {}
         };
-        window.setWorkingCursor = (on) => {
-          const id = "ani-working-toggle";
-          let w = document.getElementById(id);
-          if (on){
-            if (!w){
-              w = document.createElement('style');
-              w.id = id;
-              document.head.appendChild(w);
+
+        window.setWorkingCursor = async (on) => {
+          try {
+            if (!_workingCssReady) {
+              await applyAni(WORK_SEL, roleToFile.working);
+              _workingCssReady = true;
             }
-            w.textContent = `html, body, * { cursor: auto !important; }`;
-            applyAni('html, body, *', roleToFile.working);
-          } else if (w){
-            w.remove();
-          }
+            const root = document.documentElement;
+            if (on) root.classList.add('is-working');
+            else root.classList.remove('is-working');
+          } catch(_) {}
         };
         window.setGameCursor = (mode) => {
           const id = "ani-game-cursor";
