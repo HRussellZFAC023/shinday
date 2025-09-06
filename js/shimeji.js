@@ -104,7 +104,7 @@ window.addEventListener("DOMContentLoaded", () => {
     ],
     // Interaction settings
     mouseReactionDistance: 100,
-    multiplyChance: 0.03, // 3% chance to multiply on certain actions
+    multiplyChance: 0.1, // 3% chance to multiply on certain actions
     maxCreatures: 8,
   };
 
@@ -206,7 +206,7 @@ window.addEventListener("DOMContentLoaded", () => {
       "multiply",
     ],
     mouseReactionDistance: 100,
-    multiplyChance: 0.03,
+    multiplyChance: 0.1,
     maxCreatures: 8,
   };
 
@@ -308,7 +308,7 @@ window.addEventListener("DOMContentLoaded", () => {
       "multiply",
     ],
     mouseReactionDistance: 100,
-    multiplyChance: 0.03,
+    multiplyChance: 0.1,
     maxCreatures: 8,
   };
 
@@ -409,7 +409,7 @@ window.addEventListener("DOMContentLoaded", () => {
       "multiply",
     ],
     mouseReactionDistance: 80,
-    multiplyChance: 0.03,
+    multiplyChance: 0.1,
     maxCreatures: 6,
   };
 

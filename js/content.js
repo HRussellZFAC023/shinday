@@ -149,9 +149,9 @@ window.SITE_CONTENT = {
     { id: "home", label: "Garden", mikuIcon: "innocent" },
     { id: "socials", label: "Links", mikuIcon: "cheering" },
     { id: "study", label: "🎌 日本語", mikuIcon: "thumbsUp" },
-    { id: "games", label: "🎮 Games", mikuIcon: "vibing" },
-    { id: "gacha", label: "🎰 Gacha", mikuIcon: "pow" },
-    { id: "shrine", label: "⛩️ Shrine", mikuIcon: "stage" },
+    { id: "games", label: "Games", mikuIcon: "vibing" },
+    { id: "shrine", label: "Shrine", mikuIcon: "stage" },
+    { id: "gacha", label: "Gacha", mikuIcon: "pow" },
   ],
 
   status: {
