@@ -120,6 +120,14 @@
     showResults(urls);
   }
 
+  function resetUI() {
+    const { results, rotation, dex, dexBtn } = els();
+    if (results) results.hidden = true;
+    if (rotation) rotation.hidden = false;
+    if (dex) dex.classList.add("hidden");
+    if (dexBtn) dexBtn.textContent = "Open MikuDex";
+  }
+
   function wire() {
     const e = els();
     if (!Object.values(e).every(Boolean)) return;
@@ -165,5 +173,6 @@
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", wire);
   else wire();
+  window.__resetWish = resetUI;
   window.Wish = { renderDex };
 })();

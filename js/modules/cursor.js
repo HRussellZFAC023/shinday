@@ -41,11 +41,8 @@
 
   async function initAniCursors() {
     const smallScreen = Math.min(window.innerWidth, window.innerHeight) < 500;
-    const prefersReduce =
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const saveData = navigator.connection && navigator.connection.saveData;
-    if (smallScreen || prefersReduce || saveData) return;
+  const saveData = navigator.connection && navigator.connection.saveData;
+  if (smallScreen || saveData) return;
 
     const roleToFile = {
       normal: "Normal.ani",

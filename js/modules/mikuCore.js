@@ -44,7 +44,6 @@ window.MikuCore = (function () {
 
   // ========== SETTINGS SYSTEM ==========
   const SETTING_KEYS = {
-    reduceMotion: "settings.reduceMotion",
     vfx: "settings.vfx",
     swallower: "settings.swallowerRate",
     typing: "settings.typingAids",
@@ -59,16 +58,7 @@ window.MikuCore = (function () {
     localStorage.setItem(key, value);
   }
 
-  function isReducedMotion() {
-    const setting = getStorageItem(SETTING_KEYS.reduceMotion, "");
-    if (setting === "1") return true;
-    if (setting === "0") return false;
-
-    // Check system preference
-    return (
-      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches || false
-    );
-  }
+  // reduced-motion support removed
 
   function isVfxEnabled() {
     return getStorageItem(SETTING_KEYS.vfx, "1") !== "0";
@@ -165,7 +155,6 @@ window.MikuCore = (function () {
     byId,
     mikuIcon,
     settings: {
-      isReducedMotion,
       isVfxEnabled,
       getSwallowerRate,
       isTypingAidsEnabled,

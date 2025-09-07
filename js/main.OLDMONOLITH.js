@@ -1507,7 +1507,6 @@ function initMikuWish() {
 
   // ====== SITE SETTINGS (helpers) ======
   const SETTINGS_KEYS = {
-    reduceMotion: "settings.reduceMotion", // '1' | '0'
     vfx: "settings.vfx", // '1' | '0'
     swallower: "settings.swallowerRate", // 'off' | 'low' | 'normal' | 'high'
     typing: "settings.typingAids", // '1' | '0'
@@ -1523,19 +1522,7 @@ function initMikuWish() {
       localStorage.setItem(k, v);
     
   }
-  function isReducedMotion() {
-    
-      const pref = lsGet(SETTINGS_KEYS.reduceMotion, "");
-      if (pref === "1") return true;
-      if (pref === "0") return false;
-    
-    
-      return (
-        window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      );
-    
-  }
+  // reduced-motion support removed
   function isVfxEnabled() {
     return lsGet(SETTINGS_KEYS.vfx, "1") !== "0";
   }
@@ -1551,7 +1538,6 @@ function initMikuWish() {
   }
   
     window.Settings = {
-      isReducedMotion,
       isVfxEnabled,
       swallowerRate,
       isTypingAids,
@@ -1721,8 +1707,8 @@ function initMikuWish() {
     `;
     ov.appendChild(panel);
     document.body.appendChild(ov);
-    // Rainbow confetti (respect settings)
-    if (!isReducedMotion() && isVfxEnabled()) {
+  // Rainbow confetti (respect settings)
+  if (isVfxEnabled()) {
       const host = document.createElement("div");
       host.style.cssText =
         "position:fixed;inset:0;pointer-events:none;z-index:10002";
@@ -5585,6 +5571,7 @@ function wireRadioUI() {
   }
   function startMetadataPolling() {
     if (metaTimer) return; // already polling
+    
     metaTimer = setInterval(async () => {
       if (!audio || audio.paused || audio.ended) {
         clearInterval(metaTimer);
@@ -6702,7 +6689,7 @@ function initShop() {
                 setTimeout(() => {
                   if (inner && inner.textContent === "active") {
                     inner.textContent = "";
-                    ob.style.opacity = isReducedMotion() ? "0" : "0";
+                    ob.style.opacity = "0";
                   }
                 }, 9000);
               }
@@ -6802,8 +6789,8 @@ function initShop() {
     const chip = document.getElementById("itemsOverlayShield");
     if (chip) {
       const inner = chip.querySelector(".label");
-      if (inner) inner.textContent = el.textContent.replace(/^shield:\s*/, "");
-      chip.style.opacity = isReducedMotion() ? "1" : "1";
+  if (inner) inner.textContent = el.textContent.replace(/^shield:\s*/, "");
+  chip.style.opacity = "1";
     }
   }
   // Tick while page is open
@@ -6824,10 +6811,9 @@ function ensureItemsOverlay() {
     ov.id = "itemsStatusOverlay";
     ov.style.cssText =
       "position:fixed;right:10px;top:10px;z-index:9998;background:rgba(255,255,255,0.85);border:2px solid var(--border);border-radius:10px;padding:6px 10px;display:flex;gap:12px;align-items:center;backdrop-filter:saturate(1.1) blur(2px)";
-    const rm = isReducedMotion();
     const base =
       "transition:opacity .35s ease;opacity:0;display:inline-flex;gap:6px;align-items:center;font-weight:800;color:#2b2b44;";
-    const vis = rm ? "" : base;
+    const vis = base;
     ov.innerHTML =
       '<span id="itemsOverlayShield" style="' +
       vis +
