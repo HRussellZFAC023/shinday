@@ -490,7 +490,7 @@ const SITE_CONTENT = {
   },
 
   footer: {
-    text: "Hand-crafted for Baby Belle • ✨ This site is always under construction! ✨ • Cinnamoroll Approved",
+    text: "Hand-crafted  • ✨ This site is always under construction! ✨ • Cinnamoroll Approved",
   },
 
   love: {
