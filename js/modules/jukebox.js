@@ -45,8 +45,11 @@
     wrap.style.cssText = 'position:fixed;right:16px;bottom:16px;width:360px;z-index:9999;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border:2px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(43,43,68,.25)';
     wrap.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border)">
-        <div style=\"font-weight:900;display:flex;align-items:center;gap:8px\">🎵 Miku Jukebox • <span id=\"jukeboxNow\">Ready</span> <span title=\"hearts\" aria-label=\"hearts\">💖</span></div>
-        <button id="jukeboxClose" class="pixel-btn" style="padding:4px 8px">✖</button>
+        <div style=\"font-weight:900;display:flex;align-items:center;gap:8px\">🎵 Miku Jukebox • <span id=\"jukeboxNow\">Ready</span></div>
+        <div style=\"display:flex;align-items:center;gap:6px\">
+          <button id=\"jukeboxLove\" title=\"send love\" class=\"pixel-btn\" style=\"padding:4px 8px;line-height:1\">💖</button>
+          <button id=\"jukeboxClose\" class=\"pixel-btn\" style=\"padding:4px 8px\">✖</button>
+        </div>
       </div>
       <div style="width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;border-bottom-left-radius:12px;border-bottom-right-radius:12px">
   <iframe id="jukeboxIframe" style="width:100%;height:100%;border:0;display:block" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
@@ -57,6 +60,10 @@
       wrap.style.display='none';
       try{ if (window.__resumeBgm) window.__resumeBgm(); }catch(_){ }
     };
+    const loveBtn = document.getElementById('jukeboxLove');
+    if (loveBtn) loveBtn.addEventListener('click', () => {
+      try{ addHearts(1); }catch(_){ }
+    });
     return wrap;
   }
 
