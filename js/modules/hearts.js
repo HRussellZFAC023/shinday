@@ -94,6 +94,10 @@ window.hearts = (function () {
     }
   }
 
+  function getHeartCount() {
+    return heartCount;
+  }
+
   function addHearts(amount) {
     heartCount = Math.max(0, heartCount + amount);
     localStorage.setItem("pixelbelle-hearts", heartCount);
@@ -223,5 +227,6 @@ window.hearts = (function () {
     burstHeartsAndStars,
     shimejiCelebrate,
     shimejiBroadcastLove,
+    getHeartCount,
   };
 })();

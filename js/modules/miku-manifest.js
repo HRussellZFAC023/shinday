@@ -3,19 +3,17 @@
   if (window.MIKU_IMAGES) return;
   const C = window.SITE_CONTENT || {};
   const MIKU_IMAGES = [];
+  const MIKU_META = Object.create(null);
+  window.MIKU_META = MIKU_META;
   let resolveReady;
   window.MIKU_IMAGES_READY = new Promise((r) => (resolveReady = r));
 
-  function preloadImages(list, limit = (C.preloadLimit || 30)) {
+  function preloadImages(list) {
     if (!Array.isArray(list) || !list.length) return;
-    list.slice(0, limit).forEach((u) => {
-      try {
+    list.slice(0, list.length).forEach((u) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.src = u;
-      } catch (e) {
-        // noop
-      }
     });
   }
 
@@ -31,6 +29,8 @@
         list.forEach((m) => {
           const url = `./assets/pixel-miku/${m.filename}`;
           MIKU_IMAGES.push(url);
+          // preserve manifest metadata for compatibility with code that expects MIKU_META
+          MIKU_META[url] = { ...m };
         });
       })
       .catch(() => {})
@@ -44,9 +44,8 @@
       });
   }
 
-  window.getMikuMeta = function () {
-    // classification/meta removed — return null for compatibility.
-    return null;
+  window.getMikuMeta = function (url) {
+    return MIKU_META[url] || null;
   };
 
   window.MIKU_IMAGES = MIKU_IMAGES;

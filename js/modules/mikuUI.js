@@ -678,16 +678,41 @@ window.MikuUI = (function () {
           galTitle.textContent = C.shrine.galleryTitle;
       }
 
-      // Friends title (by widget containing #friendsList)
-      if (C.friends?.title) {
-        const friendsListEl = document.getElementById("friendsList");
-        if (friendsListEl) {
-          const widget = friendsListEl.closest(".widget");
+      // Friends section and sidebar widget
+      if (C.friends) {
+        const friendsIcon = C.friends.titleIcon
+         ? window.MikuCore.mikuIcon(C.friends.titleIcon, "👥")
+          : "👥";
+
+        const lists = [];
+        const sidebarList = document.getElementById("friendsList");
+        if (sidebarList) {
+          const widget = sidebarList.closest(".widget");
           const h3 = widget ? widget.querySelector("h3") : null;
-          const friendsIcon = C.friends.titleIcon
-           ? window.MikuCore.mikuIcon(C.friends.titleIcon, "👥")
-            : "👥";
-          if (h3) h3.innerHTML = /*html*/ `${friendsIcon} ${C.friends.title}`;
+          if (h3 && C.friends.title)
+            h3.innerHTML = /*html*/ `${friendsIcon} ${C.friends.title}`;
+          lists.push(sidebarList);
+        }
+
+        const section = document.getElementById("friends");
+        if (section) {
+          const h2 = section.querySelector("h2");
+          if (h2 && C.friends.title)
+            h2.innerHTML = /*html*/ `${friendsIcon} ${C.friends.title}`;
+          const mainList = section.querySelector("#friendsSectionList");
+          if (mainList) lists.push(mainList);
+        }
+
+        if (lists.length && Array.isArray(C.friends.items)) {
+          const markup = C.friends.items
+            .map((friend) => {
+              const icon = friend.mikuIcon
+               ? window.MikuCore.mikuIcon(friend.mikuIcon, friend.emoji || "")
+                : friend.emoji || "";
+              return `<a href="${friend.url}" class="friend-button" target="_blank" rel="noopener">${icon} ${friend.name}</a>`;
+            })
+            .join("");
+          lists.forEach((el) => (el.innerHTML = markup));
         }
       }
 
