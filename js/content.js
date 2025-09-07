@@ -413,26 +413,26 @@ window.SITE_CONTENT = {
       {
         title: "World is Mine",
         artist: "ryo (supercell)",
-        youtubeId: "jhl5afLEKdo",
-        search: "Hatsune Miku World is Mine ryo official",
+        youtubeId: "Ut-vNvGlvLA",
+
       },
       {
         title: "Senbonzakura",
         artist: "Kurousa-P (WhiteFlame)",
         youtubeId: "shs0rAiwsGQ",
-        search: "Hatsune Miku Senbonzakura official Kurousa-P",
+
       },
       {
         title: "Tell Your World",
         artist: "kz (livetune)",
-        youtubeId: "PqJNc9KVIZE",
-        search: "livetune Tell Your World official",
+        youtubeId: "iu4PL7iRFQM",
+
       },
       {
         title: "Love is War",
         artist: "ryo (supercell)",
-        youtubeId: "jDop41Bxq2A",
-        search: "Hatsune Miku Love is War ryo official",
+        youtubeId: "SmX5cnQ1YAg",
+
       },
     ],
     favoriteSongs: [

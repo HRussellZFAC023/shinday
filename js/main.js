@@ -1013,7 +1013,8 @@ console.log("🌸 Main.js starting execution...");
       } catch (_) {}
       if (!prev.multiplier) prev.multiplier = card.rarity;
       collection[id] = prev;
-      localStorage.setItem(LS_COLL, JSON.stringify(collection));
+  localStorage.setItem(LS_COLL, JSON.stringify(collection));
+  try { (window.Diva && typeof window.Diva.updateUnlockProgress==='function') && window.Diva.updateUnlockProgress(); } catch(_){}
       try {
         // If this card grants a song, hint to the player that Jukebox updated
         if (prev.song) {
@@ -1022,6 +1023,7 @@ console.log("🌸 Main.js starting execution...");
             // Refresh HUD label with current selection
             setTimeout(()=>{ try{ Jukebox.attachHudSelect(); }catch(_){ } }, 200);
           }
+          try { (window.Diva && typeof window.Diva.updateUnlockProgress==='function') && window.Diva.updateUnlockProgress(); } catch(_){}
         }
       } catch(_){}
       return prev.count === 1;
@@ -1743,6 +1745,10 @@ console.log("🌸 Main.js starting execution...");
       </div>
       <div class="study-card" id="kotobaCard" style="display:none">
         <div id="kotobaChat" style="display:flex;flex-direction:column;gap:8px;min-height:90px"></div>
+        <form id="kotobaChatForm" style="display:flex;gap:8px;align-items:center">
+          <input id="kotobaChatInput" class="pixel-input" type="text" placeholder="Look up a word (Jisho)" style="flex:1;min-width:0" />
+          <button class="pixel-btn" type="submit">Search</button>
+        </form>
         <div id="kotobaChoices" class="rhythm-grid" style="display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);gap:12px;margin-top:12px;min-height:200px;"></div>
         <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px">
           <button id="kotobaStart" class="pixel-btn">Start</button>
@@ -2115,13 +2121,23 @@ console.log("🌸 Main.js starting execution...");
       const cardId = which + "Card";
       const card = document.getElementById(cardId);
       if (!card) return;
-      // Set jacket or root.png as background on the game card
+      // Layer root.png + current singer as background
       try {
-        let jacket = (window.Jukebox && Jukebox.songs && (function(){ try{ const curId = localStorage.getItem('jukebox.song'); const s = Jukebox.songs.find(x=>x.id===curId); return s && s.jacket; }catch(_){ return null; } })()) || './assets/root.png';
-        card.style.backgroundImage = `url('${jacket}')`;
-        card.style.backgroundSize = "cover";
-        card.style.backgroundPosition = "center";
-        card.style.backgroundRepeat = "no-repeat";
+        const jacket = (window.Jukebox && Jukebox.songs && (function(){ try{ const curId = localStorage.getItem('jukebox.song'); const s = (Jukebox.songs||[]).find(x=>x.id===curId); return s && s.jacket; }catch(_){ return null; } })()) || '';
+        const root = './assets/root.png';
+        // Use multiple backgrounds: root behind, singer (jacket or selected singer) on top with slight transparency
+        const singer = (function(){ try{ const url = localStorage.getItem('singer.current')||''; return url || jacket || ''; }catch(_){ return jacket||''; } })();
+        if (singer) {
+          card.style.backgroundImage = `url('${root}'), url('${singer}')`;
+          card.style.backgroundRepeat = 'no-repeat, no-repeat';
+          card.style.backgroundSize = 'cover, contain';
+          card.style.backgroundPosition = 'center, left bottom';
+        } else {
+          card.style.backgroundImage = `url('${root}')`;
+          card.style.backgroundRepeat = 'no-repeat';
+          card.style.backgroundSize = 'cover';
+          card.style.backgroundPosition = 'center';
+        }
       } catch (_) {}
       // Soft stage floor to keep visuals cute but unobtrusive
       let floor = card.querySelector('.stage-floor');
@@ -2132,22 +2148,22 @@ console.log("🌸 Main.js starting execution...");
         card.style.position = card.style.position || 'relative';
         card.appendChild(floor);
       }
-      // Ensure idol.png is on stage (bottom-left, out of the way)
+      // Ensure singer render appears inside question area left-aligned (not covering HUD)
       let idol = card.querySelector('.stage-idol');
       if (!idol) {
         idol = document.createElement('img');
         idol.className = 'stage-idol';
-        idol.src = './assets/idol.png';
-        idol.alt = 'Miku';
+        idol.alt = 'Singer';
         idol.style.cssText = `
           position: absolute;
-          left: 10px;
-          bottom: 8px;
-          width: 92px;
+          left: 12px;
+          top: 58px;
+          width: 110px;
           height: auto;
-          image-rendering: pixelated;
+          object-fit: contain;
+          image-rendering: auto;
           pointer-events: none;
-          z-index: 2;
+          z-index: 3; /* above bg, below HUD */
           animation: idolBreathe 3s ease-in-out infinite;
           filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.25));
           transform-origin: bottom center;
@@ -2155,8 +2171,9 @@ console.log("🌸 Main.js starting execution...");
         card.style.position = card.style.position || 'relative';
         card.appendChild(idol);
       }
+      try { applySingerTo(`#${cardId} .stage-idol`); } catch(_) {}
       
-      // Add stage lighting effects and theme
+    // Add stage lighting effects and theme (keep below HUD, above backgrounds)
       let lighting = card.querySelector('.stage-lighting');
       if (!lighting) {
         lighting = document.createElement('div');
@@ -2174,7 +2191,7 @@ console.log("🌸 Main.js starting execution...");
             ${theme}22 40%,
             transparent 70%);
           pointer-events: none;
-          z-index: 1;
+      z-index: 2;
           animation: stageLighting 4s ease-in-out infinite alternate;
         `;
         card.appendChild(lighting);
@@ -2314,7 +2331,7 @@ console.log("🌸 Main.js starting execution...");
       combo: 0,
       maxCombo: 0,
       voltage: 0,
-      lives: parseInt(localStorage.getItem("jp.lives") || "5", 10),
+  lives: 5,
       maxLives: 5,
       score: 0,
       notes: 0,
@@ -2416,6 +2433,55 @@ console.log("🌸 Main.js starting execution...");
     })();
     try { if (window.Jukebox && typeof window.Jukebox.attachHudSelect === 'function') window.Jukebox.attachHudSelect(); } catch(_) {}
 
+    // Ensure top HUD has judge label and rings indicator placeholders
+    (function ensureTopHudJudges(){
+      try{
+        const hud = document.querySelector('#jpHudWidget .jp-hud-widget') || document.querySelector('.jp-hud-widget');
+        if (!hud) return;
+        if (!document.getElementById('hudJudge')){
+          const line = document.createElement('div');
+          line.className = 'hud-line';
+          line.innerHTML = `<strong>Judge:</strong> <span id="hudJudge" data-judge="-">-</span> <div class="spacer"></div><span id="hudRingsState">Rings ON</span>`;
+          hud.appendChild(line);
+        }
+      }catch(_){ }
+    })();
+
+    // Ensure HUD has quick items (bait + shield) for easy purchase
+    (function ensureHudItems(){
+      try{
+        const hud = document.querySelector('#jpHudWidget .jp-hud-widget') || document.querySelector('.jp-hud-widget');
+        if (!hud) return;
+        if (!document.getElementById('hudItemsRow')){
+          const line = document.createElement('div');
+          line.className = 'hud-line';
+          line.id = 'hudItemsRow';
+          line.innerHTML = `
+            <strong>Items:</strong>
+            <button id="hudBuyBait" class="pixel-btn" title="Drop bait to distract the swallower (10💖)">Bait 10💖</button>
+            <button id="hudBuyShield" class="pixel-btn" title="Protect hearts from swallower for 5 minutes (50💖)">Shield 5m</button>
+          `;
+          hud.appendChild(line);
+          const getHearts = () => {
+            try { return (window.getHeartCount && getHeartCount()) || window.heartCount || parseInt(localStorage.getItem('pixelbelle-hearts')||'0',10) || 0; } catch(_) { return 0; }
+          };
+          const pay = (cost) => {
+            const have = getHearts();
+            if (have < cost) { try{ SFX.play('ui.unavailable'); }catch(_){ } window.loveToast?.(`💖が足りないよ！(${cost}必要)`); return false; }
+            try { window.Hearts?.add?.(-cost); } catch(_) {
+              const left = have - cost; window.heartCount = left; try{ localStorage.setItem('pixelbelle-hearts', String(left)); window.updateCounters?.(); }catch(_){}
+            }
+            try{ SFX.play('ui.select'); }catch(_){ }
+            return true;
+          };
+          const baitBtn = line.querySelector('#hudBuyBait');
+          const shieldBtn = line.querySelector('#hudBuyShield');
+          baitBtn?.addEventListener('click', ()=>{ if (pay(10)) { try{ spawnDecoyTreats(2 + Math.floor(Math.random()*3)); }catch(_){} } });
+          shieldBtn?.addEventListener('click', ()=>{ if (pay(50)) { try{ activateHeartShield(1000*60*5); }catch(_){} } });
+        }
+      }catch(_){ }
+    })();
+
     function startSong(game, mode, timed) {
       try { SFX.play('sega.tag'); } catch (_) {}
       HUD.combo = 0;
@@ -2427,9 +2493,15 @@ console.log("🌸 Main.js starting execution...");
       HUD.start = Date.now();
       HUD.game = game;
       HUD.gameOver = false;
-      HUD.maxLives = 5; // ensure known cap
-      // Keep current lives; do not auto-reset to max
-      try { localStorage.setItem('jp.lives', String(HUD.lives)); } catch (_) {}
+  HUD.maxLives = 5; // ensure known cap
+  // Always reset lives to 5 at song start
+  HUD.lives = 5;
+      // Compute clear goal based on difficulty preset
+      try {
+        const p = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { key:'normal' };
+        const map = { easy: 10, normal: 15, hard: 20, extreme: 25 };
+        HUD.goal = map[p.key] || 15;
+      } catch(_) { HUD.goal = 15; }
       renderLives("vocabCard");
       renderLives("kanjiCard");
       // Route to selected game and set mode/timed
@@ -2562,7 +2634,7 @@ console.log("🌸 Main.js starting execution...");
       document.body.appendChild(ov);
       ov.querySelector("#resClose").addEventListener(
         "click",
-        () => (ov.style.display = "none")
+        () => { ov.style.display = "none"; try{ HUD.lives = 5; renderLives('vocabCard'); renderLives('kanjiCard'); }catch(_){} }
       );
       return ov;
     }
@@ -2610,6 +2682,38 @@ console.log("🌸 Main.js starting execution...");
       if (!el) return;
       el.className = /*html*/ `diva-judge judge-${label}`;
       el.textContent = label;
+      // Mirror to top HUD
+      try {
+        const hudJ = document.getElementById('hudJudge');
+        if (hudJ) { hudJ.textContent = label; hudJ.setAttribute('data-judge', label); }
+        const hudR = document.getElementById('hudRingsState');
+        if (hudR) { const on = (localStorage.getItem('rhythm.rings') !== '0'); hudR.textContent = on ? 'Rings ON' : 'Rings OFF'; }
+      } catch(_) {}
+      // Shimeji reactions
+      try {
+        const s = window.shimejiFunctions;
+        if (s) {
+          const pickPhrase = () => {
+            try {
+              const C = window.SITE_CONTENT || {};
+              const pool = [];
+              if (C.study?.wordOfDay?.japanese) pool.push(String(C.study.wordOfDay.japanese));
+              if (Array.isArray(C.home?.heroParagraphs)) pool.push(...C.home.heroParagraphs.map(String));
+              const filtered = pool.filter(x => x && x.length <= 22);
+              if (filtered.length) return filtered[Math.floor(Math.random()*filtered.length)];
+            } catch(_) {}
+            return 'すごい！';
+          };
+          if (label === 'COOL' || label === 'GREAT') {
+            s.exciteAll && s.exciteAll();
+            s.makeAllSpeak && s.makeAllSpeak(pickPhrase(), 1800);
+          } else if (label === 'FINE') {
+            s.makeAllSpeak && s.makeAllSpeak('いいね！', 1400);
+          } else if (label === 'SAD' || label === 'MISS') {
+            s.makeAllSpeak && s.makeAllSpeak('あっ…', 1200);
+          }
+        }
+      } catch(_) {}
     }
     function party(cardId) {
       const host = document.getElementById(cardId);
@@ -2627,7 +2731,6 @@ console.log("🌸 Main.js starting execution...");
     function gainLife(cardId) {
       if (HUD.lives < HUD.maxLives) {
         HUD.lives++;
-        localStorage.setItem("jp.lives", String(HUD.lives));
         renderLives(cardId);
       }
     }
@@ -2635,7 +2738,6 @@ console.log("🌸 Main.js starting execution...");
       if (window.__noFail) { renderLives(cardId); return; }
       if (HUD.lives > 0) {
         HUD.lives--;
-        localStorage.setItem("jp.lives", String(HUD.lives));
         renderLives(cardId);
         // Diva-like feedback: grey idol + miss SFX
         try {
@@ -2653,6 +2755,13 @@ console.log("🌸 Main.js starting execution...");
         }
       }
     }
+    function maybeComplete() {
+      try {
+        if (HUD && !HUD.gameOver && typeof HUD.goal === 'number' && HUD.combo >= HUD.goal) {
+          endSong('Song Clear');
+        }
+      } catch(_){}
+    }
     function addVoltage(amount, cardId) {
       HUD.voltage = clamp(HUD.voltage + amount, 0, 100);
       updateVoltage(cardId);
@@ -2664,6 +2773,8 @@ console.log("🌸 Main.js starting execution...");
         gainLife(cardId);
         showVoltageBurst(cardId);
       }
+      // Check for song clear by consecutive corrects
+      maybeComplete();
     }
     function resetCombo() {
       HUD.combo = 0;
@@ -3456,7 +3567,25 @@ console.log("🌸 Main.js starting execution...");
       const cEl = document.getElementById("kotobaChoices");
       const start = document.getElementById("kotobaStart");
       const scoreEl = document.getElementById("kotobaScore");
+  const chatForm = document.getElementById('kotobaChatForm');
+  const chatInput = document.getElementById('kotobaChatInput');
       if (!chat || !cEl || !start || !scoreEl) return;
+      async function handleChatLookup(q){
+        if (!q) return;
+        const entry = document.createElement('div'); entry.className='chat-entry user'; entry.textContent = `You: ${q}`; chat.appendChild(entry);
+        try{
+          const res = await fetch(`https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(q)}`);
+          const data = await res.json();
+          const first = data?.data?.[0];
+          const def = first?.senses?.[0]?.english_definitions?.join(', ');
+          const jp = first?.japanese?.[0];
+          const reply = document.createElement('div'); reply.className='chat-entry miku';
+          reply.textContent = def ? `Miku: ${jp?.word||jp?.reading||''} → ${def}` : 'Miku: (no result)';
+          chat.appendChild(reply); chat.scrollTop = chat.scrollHeight;
+          if (Math.random()<0.3) try{ window.shimejiFunctions?.makeAllSpeak?.('勉強しよう！',2500);}catch(_){ }
+        } catch(e){ const reply = document.createElement('div'); reply.className='chat-entry miku'; reply.textContent = 'Miku: Lookup failed.'; chat.appendChild(reply); }
+      }
+      chatForm?.addEventListener('submit', (e)=>{ e.preventDefault(); const q = chatInput?.value?.trim(); if (chatInput) chatInput.value=''; handleChatLookup(q); });
       let score = 0,
         lock = false;
 
@@ -5439,13 +5568,14 @@ console.log("🌸 Main.js starting execution...");
   }
 
   // Temporary shield prevents swallow from eating hearts
-  let __heartShieldUntil = 0;
+  let __heartShieldUntil = parseInt(localStorage.getItem('diva.shield.until')||'0',10) || 0;
   function activateHeartShield(ms = 3000) {
     __heartShieldUntil = Date.now() + ms;
+    try{ localStorage.setItem('diva.shield.until', String(__heartShieldUntil)); }catch(_){ }
     const zone = document.getElementById("heartZone");
     if (zone) {
-      zone.classList.add("warded");
-      setTimeout(() => zone.classList.remove("warded"), ms);
+  zone.classList.add("warded");
+  setTimeout(() => zone.classList.remove("warded"), ms);
     }
     try {
       SFX.play("extra.fx1");
@@ -5457,20 +5587,36 @@ console.log("🌸 Main.js starting execution...");
     try{
       const src = (window.SITE_CONTENT && window.SITE_CONTENT.images && window.SITE_CONTENT.images.swallowGif) || './assets/swallow.gif';
       const img = document.createElement('img');
-      img.src = src; img.alt = 'swallow';
-      img.style.cssText = 'position:fixed; top:20%; left:-120px; width:96px; height:auto; z-index:9998; pointer-events:none; filter: drop-shadow(2px 2px 4px rgba(0,0,0,.35));';
+  img.src = src; img.alt = 'swallow';
+  img.style.cssText = 'position:fixed; top:20%; left:-120px; width:96px; height:auto; z-index:9998; pointer-events:none; filter: hue-rotate(90deg) saturate(1.25) drop-shadow(2px 2px 4px rgba(0,0,0,.35));';
       img.onerror = ()=>{ img.remove(); };
       document.body.appendChild(img);
       const W = Math.max(document.documentElement.clientWidth, window.innerWidth||0);
       const start = performance.now();
-      const dur = 3600 + Math.random()*1200;
-      const dir = Math.random()<0.5 ? 1 : -1;
-      if (dir<0){ img.style.left = (W+120)+'px'; img.style.transform='scaleX(-1)'; }
+  const dur = 8000 + Math.random()*1500;
+      // Always left-facing slowly drifting from left to right
+      const dir = 1; // left -> right
+      img.style.left = '-120px';
       function step(ts){
         const p = Math.min(1,(ts-start)/dur);
-        const x = dir>0 ? -120 + (W+240)*p : (W+120) - (W+240)*p;
+        const x = -120 + (W+240)*p;
         const y = Math.sin(p*Math.PI)*30; // gentle arc
-        img.style.transform = (dir>0? '' : 'scaleX(-1) ') + `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+        img.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+        // Check collision with stage idol to stun (incapacitate) when studying
+        try {
+          if ((window.location?.hash||'').includes('study') || document.getElementById('jpGames')){
+            const idol = document.querySelector('.stage-idol');
+            if (idol){
+              const kr = img.getBoundingClientRect();
+              const sr = idol.getBoundingClientRect();
+              if (kr.left < sr.right && kr.right > sr.left && kr.top < sr.bottom && kr.bottom > sr.top){
+                idol.classList.add('stunned'); idol.style.filter='grayscale(1) brightness(.9)';
+                setTimeout(()=>{ idol.classList.remove('stunned'); idol.style.filter=''; }, 1000);
+                try{ SFX.play('ui.unavailable'); }catch(_){ }
+              }
+            }
+          }
+        } catch(_){}
         if (p<1 && img.isConnected) requestAnimationFrame(step); else img.remove();
       }
       requestAnimationFrame(step);
@@ -5483,7 +5629,7 @@ console.log("🌸 Main.js starting execution...");
     const btnShield = document.getElementById('shopShield');
     const status = document.getElementById('shopStatus');
     if (btnDecoy) btnDecoy.addEventListener('click', ()=>{
-      const cost = 5;
+      const cost = 10;
       try{
         if (window.Hearts && typeof window.Hearts.add==='function'){
           if ((window.getHeartCount && getHeartCount()>=cost) || (!window.getHeartCount && (heartCount||0)>=cost)){
@@ -5501,7 +5647,7 @@ console.log("🌸 Main.js starting execution...");
         if (have>=cost){
           if (window.Hearts && typeof window.Hearts.add==='function') window.Hearts.add(-cost);
           else { heartCount = have - cost; localStorage.setItem('pixelbelle-hearts', heartCount); updateCounters && updateCounters(); }
-          activateHeartShield(5000);
+          activateHeartShield(1000*60*5);
           status && (status.textContent = 'Shield activated!');
           try{ SFX.play('extra.fx2'); }catch(_){ }
         } else { status && (status.textContent = 'Not enough 💖'); try{ SFX.play('ui.unavailable'); }catch(_){ } }
@@ -6350,23 +6496,27 @@ console.log("🌸 Main.js starting execution...");
         const leftPos = rect.left - containerRect.left + rect.width / 2 - 8;
         
         beat.style.left = leftPos + 'px';
-        beat.style.top = '-20px';
-        
-        // Store timing for perfect hit detection
-        const fallTime = performance.now();
-        let travel = 800;
-        try { const p = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()); if (p && p.travelMs) travel = p.travelMs; } catch(_){}
-        targetBtn.dataset.lastBeatTime = fallTime + travel; // fall time by preset
-        
+        beat.style.top = '-60px';
+
+        // Compute full travel so the note reaches the button center
+        const fallStart = performance.now();
+        let travel = 1200;
+        try { const p = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()); if (p && p.travelMs) travel = p.travelMs; } catch(_){ }
+        const distance = (rect.top - containerRect.top) + rect.height * 0.5 + 60; // from -60 to center
+        const speedFactor = 1; // keep duration mapping from preset
+        const durationMs = Math.max(400, Math.round(travel * speedFactor));
+        // Expected hit at end of travel
+        targetBtn.dataset.lastBeatTime = String(fallStart + durationMs);
+
         beatsLayer.appendChild(beat);
         
         // Animate fall
         beat.animate([
-          { transform: 'translateY(-20px) scale(0.8)', opacity: 0.8 },
-          { transform: 'translateY(120px) scale(1)', opacity: 1 }
-        ], { duration: (function(){ try{ const p = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()); return (p && p.travelMs) ? p.travelMs : 800; }catch(_){ return 800; } })(), easing: 'ease-in' });
-        
-        setTimeout(() => beat.remove(), (function(){ try{ const p=(window.Jukebox&&Jukebox.getPreset&&Jukebox.getPreset()); return (p&&p.travelMs)?p.travelMs:800; }catch(_){ return 800; } })());
+          { transform: 'translateY(0px) scale(0.9)', opacity: 0.85 },
+          { transform: `translateY(${distance}px) scale(1)`, opacity: 1 }
+        ], { duration: durationMs, easing: 'cubic-bezier(.2,.8,.3,1)' });
+
+        setTimeout(() => beat.remove(), durationMs + 60);
       }
     }
     

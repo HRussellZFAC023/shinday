@@ -1,10 +1,11 @@
 // Jukebox module: hit Miku songs + unlocking by level
 (function(){
   const PRESETS = {
+    // Enforce 4-option UI across all difficulties; tune timing windows only
     easy:    { key:'easy',    label:'Easy',    options:4, baseTime:18, travelMs:2400, judge:{cool:180, great:260, fine:340} },
     normal:  { key:'normal',  label:'Normal',  options:4, baseTime:15, travelMs:2000, judge:{cool:150, great:230, fine:300} },
-    hard:    { key:'hard',    label:'Hard',    options:6, baseTime:12, travelMs:1600, judge:{cool:120, great:180, fine:260} },
-    extreme: { key:'extreme', label:'Extreme', options:8, baseTime:10, travelMs:1200, judge:{cool:90,  great:150, fine:220} }
+    hard:    { key:'hard',    label:'Hard',    options:4, baseTime:12, travelMs:1600, judge:{cool:120, great:180, fine:260} },
+    extreme: { key:'extreme', label:'Extreme', options:4, baseTime:10, travelMs:1200, judge:{cool:90,  great:150, fine:220} }
   };
   // Default local BGM card
   function defaultSongs(){
