@@ -96,12 +96,12 @@
           applyAni("html, body", roleToFile.normal),
           applyAni("a, button, .pixel-btn, .heart-btn, .radio-btn, .enter-btn, .quick-links a", roleToFile.link),
           applyAni('input, textarea, [contenteditable="true"], .editable', roleToFile.text),
-          applyAni('.memory-card, .gacha-card, .dex-card, .memory-grid, canvas, svg', roleToFile.precision),
+          applyAni('.memory-card, .Wish-card, .dex-card, .memory-grid, canvas, svg', roleToFile.precision),
         ]);
         const applyLater = () => Promise.all([
           applyAni('.hero-miku, .splash-miku, .float-miku, .shrine-image, #shrineMiku, #heroMiku, #splashMiku, .avatar, .friend-avatar', roleToFile.person),
           applyAni('.help, [title], .widget h3, .status-item, .hud-line', roleToFile.help),
-          applyAni('[draggable="true"], .draggable, .movable, .gacha-card.matched', roleToFile.move),
+          applyAni('[draggable="true"], .draggable, .movable, .Wish-card.matched', roleToFile.move),
           applyAni('button:disabled, .pixel-btn:disabled, [aria-disabled="true"], .disabled, .unavailable', roleToFile.unavailable),
           applyAni('.badge, .pin, .pinned, .candle, .blink, #statusDot', roleToFile.pin),
         ]).catch(()=>{});
@@ -154,8 +154,8 @@
               gameStyle.id = id;
               document.head.appendChild(gameStyle);
             }
-            gameStyle.textContent = `.memory-card, .gacha-card, .heart-zone { cursor: auto !important; }`;
-            applyAni('.memory-card, .gacha-card, .heart-zone', roleToFile[mode]);
+            gameStyle.textContent = `.memory-card, .Wish-card, .heart-zone { cursor: auto !important; }`;
+            applyAni('.memory-card, .Wish-card, .heart-zone', roleToFile[mode]);
           } else if (gameStyle){
             gameStyle.remove();
           }

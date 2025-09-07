@@ -151,7 +151,7 @@ window.SITE_CONTENT = {
     { id: "study", label: "🎌 日本語", mikuIcon: "thumbsUp" },
     { id: "games", label: "Games", mikuIcon: "vibing" },
     { id: "shrine", label: "Shrine", mikuIcon: "stage" },
-    { id: "gacha", label: "Gacha", mikuIcon: "pow" },
+    { id: "Wish", label: "Wish", mikuIcon: "pow" },
   ],
 
   status: {
@@ -172,11 +172,11 @@ window.SITE_CONTENT = {
     playingStatus: "Now Playing",
     stoppedStatus: "Radio Stopped",
     playButton: "▶️",
-  stopButton: "⏸️",
-  // Optional: if your radio host exposes JSON metadata for now playing, set it here
-  // Example (Radio.co public status): "https://public.radio.co/stations/{station_id}/status"
-  // Example (Shoutcast/Icecast): a proxy that returns { title: "Artist - Track" }
-  metaUrl: "",
+    stopButton: "⏸️",
+    // Optional: if your radio host exposes JSON metadata for now playing, set it here
+    // Example (Radio.co public status): "https://public.radio.co/stations/{station_id}/status"
+    // Example (Shoutcast/Icecast): a proxy that returns { title: "Artist - Track" }
+    metaUrl: "https://vocaloid.radioca.st/status-json.xsl",
   },
 
   home: {
@@ -390,9 +390,9 @@ window.SITE_CONTENT = {
     heartsZone: "Tap to grow more hearts! (੭ˊ꒳ˋ)੭",
     heartsZoneIcon: "chuuu",
     heartsReset: "Reset",
-    gachaTitle: "🎰 Miku Collection Gacha",
-    gachaIcon: "starUwu",
-    gachaOpenDex: "📱 Open MikuDex",
+    WishTitle: "Miku Collection Wish",
+    WishIcon: "starUwu",
+    WishOpenDex: "📱 Open MikuDex",
   },
 
   shrine: {

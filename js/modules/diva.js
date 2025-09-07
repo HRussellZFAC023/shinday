@@ -47,7 +47,7 @@
 
   function updateUnlockProgress(){
     try{
-      const coll = JSON.parse(localStorage.getItem('gacha.collection')||'{}');
+      const coll = JSON.parse(localStorage.getItem('Wish.collection')||'{}');
       const owned = Object.keys(coll).length;
       const total = Array.isArray(window.MIKU_IMAGES) ? window.MIKU_IMAGES.length : 100;
       const pct = Math.min(100, Math.round((owned/Math.max(1,total))*100));
@@ -91,7 +91,7 @@
       const j = judgeHit(delta);
       if (j){
         // Correct-ish answers: play GOOD only for truly correct; others map accordingly
-        if (j.key === 'good') playSfx('gacha.mid');
+        if (j.key === 'good') playSfx('Wish.mid');
         else if (j.key === 'cool') playSfx('extra.fx1');
         else if (j.key === 'fine') playSfx('ui.move');
         else if (j.key === 'sad') playSfx('ui.unavailable');
@@ -100,14 +100,14 @@
         if (j.key === 'good' || j.key === 'cool') { try{ window.Hearts?.add?.(1); }catch(_){ } }
       } else {
         // Miss
-        playSfx('gacha.fail');
+        playSfx('Wish.fail');
         showJudge(stage, 'miss', '#ef4444');
         setLives(lives-1);
       }
       dot.remove();
     };
     dot.addEventListener('click', onHit, { once: true });
-    setTimeout(()=>{ if (!hit){ playSfx('gacha.fail'); showJudge(stage,'miss','#ef4444'); setLives(lives-1); dot.remove(); } }, speed+60);
+    setTimeout(()=>{ if (!hit){ playSfx('Wish.fail'); showJudge(stage,'miss','#ef4444'); setLives(lives-1); dot.remove(); } }, speed+60);
   }
 
   function startSong(stage){
@@ -301,8 +301,8 @@
       btn.addEventListener('click',()=>{
         // Treat a specific letter as correct to drive SFX alignment demo
         const correct = choices[0];
-        if (btn.textContent === correct){ playSfx('gacha.mid'); showJudge(document.querySelector('.diva-stage'),'good','#86efac'); try{ window.Hearts?.add?.(1); }catch(_){ } }
-        else { playSfx('gacha.fail'); showJudge(document.querySelector('.diva-stage'),'miss','#ef4444'); setLives(lives-1); }
+        if (btn.textContent === correct){ playSfx('Wish.mid'); showJudge(document.querySelector('.diva-stage'),'good','#86efac'); try{ window.Hearts?.add?.(1); }catch(_){ } }
+        else { playSfx('Wish.fail'); showJudge(document.querySelector('.diva-stage'),'miss','#ef4444'); setLives(lives-1); }
       });
     });
   }

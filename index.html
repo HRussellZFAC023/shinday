@@ -8,7 +8,26 @@
       name="description"
       content="A cozy pastel web home for Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) - links, music, games, study corner, and interactive Miku companions!"
     />
-    <meta property="og:title" content="Baby Belle - Pastel Miku Garden" />
+    <meta property="og:title"            <div class="widget">
+              <h3>🛒 Shop</h3>
+              <div class="shop-panel">
+                <div class="shop-keeper">
+                  <img src="./assets/idol.png" alt="Shopkeeping Miku" class="shop-keeper-image" style="width: 48px; height: auto; margin-bottom: 8px;">
+                  <p class="shop-keeper-text">いらっしゃいませ！✨</p>
+                </div>
+                <div class="shop-item">
+                  <button id="shopShield" class="pixel-btn" title="Ward hearts briefly">
+                    <span class="shop-icon-placeholder"></span>⛨ Shield (50💖)
+                  </button>
+                </div>
+                <div class="shop-item">
+                  <button id="shopDecoy" class="pixel-btn" title="Distract the swallower">
+                    <span class="shop-icon-placeholder"></span>🍪 Decoy (10💖)
+                  </button>
+                </div>
+                <div id="shopStatus" class="shop-status" aria-live="polite"></div>
+              </div>
+            </div>by Belle - Pastel Miku Garden" />
     <meta
       property="og:description"
       content="A magical retro website with interactive Miku friends and kawaii vibes"
@@ -90,7 +109,7 @@
               <li><a href="#socials" data-section="socials">🔗 Socials</a></li>
               <li><a href="#study" data-section="study">📚 日本語</a></li>
               <li><a href="#games" data-section="games">🎮 Games</a></li>
-              <li><a href="#gacha" data-section="gacha">🎰 Gacha</a></li>
+              <li><a href="#Wish" data-section="Wish">🎰 Wish</a></li>
               <li>
                 <a href="#shrine" data-section="shrine">Shrine</a>
               </li>
@@ -268,43 +287,43 @@
               </div>
             </section>
 
-            <section id="gacha" class="content-section">
-              <h2>🎰 Miku Gacha</h2>
+            <section id="Wish" class="content-section">
+              <h2>🎰 Miku Wish</h2>
               <div class="game-widget">
-                <div class="gacha precision" id="mikuGacha">
-                  <div class="gacha-header">
-                    <div class="gacha-tokens">
-                      🎟️ Tickets: <span id="gachaTokens">0</span>
+                <div class="Wish precision" id="mikuWish">
+                  <div class="Wish-header">
+                    <div class="Wish-tokens">
+                      🎟️ Tickets: <span id="WishTokens">0</span>
                     </div>
-                    <div class="gacha-actions">
-                      <button id="gachaPull1" class="pixel-btn">Pull x1</button>
-                      <button id="gachaPull10" class="pixel-btn">
+                    <div class="Wish-actions">
+                      <button id="WishPull1" class="pixel-btn">Pull x1</button>
+                      <button id="WishPull10" class="pixel-btn">
                         Pull x10
                       </button>
-                      <button id="gachaDaily" class="pixel-btn">
+                      <button id="WishDaily" class="pixel-btn">
                         Daily Ticket
                       </button>
-                      <button id="gachaConvert" class="pixel-btn">
+                      <button id="WishConvert" class="pixel-btn">
                         100💖 → +1
                       </button>
                     </div>
                   </div>
-                  <!-- Persistent summon preview slot machine (idle state) -->
-                  <div id="gachaRotation" class="gacha-rotation">
-                    <div class="summon-preview">
+                  <!-- Persistent Wish preview slot machine (idle state) -->
+                  <div id="WishRotation" class="Wish-rotation">
+                    <div class="Wish-preview">
                       <div class="preview-reel">
-                        <img class="preview-image" src="" alt="Summon preview" />
+                        <img class="preview-image" src="" alt="Wish preview" />
                       </div>
                     </div>
                   </div>
                   <!-- Results panel replaces rotation after a pull -->
-                  <div id="gachaResults" class="gacha-results" hidden></div>
-                  <div class="gacha-footer">
-                    <button id="gachaCollectionBtn" class="pixel-btn">
+                  <div id="WishResults" class="Wish-results" hidden></div>
+                  <div class="Wish-footer">
+                    <button id="WishCollectionBtn" class="pixel-btn">
                       Open MikuDex
                     </button>
                   </div>
-                  <div id="mikuDex" class="gacha-collection hidden"></div>
+                  <div id="mikuDex" class="Wish-collection hidden"></div>
                 </div>
               </div>
             </section>

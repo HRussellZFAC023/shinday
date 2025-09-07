@@ -17,9 +17,9 @@
     }];
   }
 
-  function gachaSongs(){
+  function WishSongs(){
     try{
-      const coll = JSON.parse(localStorage.getItem('gacha.collection')||'{}');
+      const coll = JSON.parse(localStorage.getItem('Wish.collection')||'{}');
       const list=[];
       for(const url in coll){
         const meta = typeof window.getMikuMeta==='function'? window.getMikuMeta(url,true):null;
@@ -32,7 +32,7 @@
       return list;
     }catch(_){return [];} 
   }
-  function allSongs(){ return defaultSongs().concat(gachaSongs()); }
+  function allSongs(){ return defaultSongs().concat(WishSongs()); }
   let SONGS = allSongs();
   function refresh(){ SONGS = allSongs(); try{ if (window.Jukebox) window.Jukebox.songs = SONGS; }catch(_){} return SONGS; }
   function unlocked(){ return refresh(); }
