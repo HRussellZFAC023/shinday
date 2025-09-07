@@ -78,7 +78,7 @@
     // Sync rhythm
     try { window.__rhythmBpm = song.bpm|0; localStorage.setItem('rhythm.bpm', String(window.__rhythmBpm)); } catch(_){ }
     try { window.__rhythmMet = true; localStorage.setItem('rhythm.met','1'); } catch(_){ }
-    if (song.audio){
+  if (song.audio){
       // Use site BGM, no mini-player
       try{
         if (iframe) iframe.src = 'about:blank';
@@ -97,7 +97,10 @@
       if (iframe) iframe.src = url;
       if (wrap) wrap.style.display = 'block';
     }
-    if (now) now.textContent = song.title;
+  if (now) now.textContent = song.title;
+  // Update status bar Now Playing
+  try { if (!song.artist) song.artist = 'Miku'; } catch(_){}
+  try { if (window.updateNowPlaying) window.updateNowPlaying(song); } catch(_){}
   }
 
   function attachHudSelect(){
@@ -133,6 +136,7 @@
     try{ window.__rhythmBpm = song.bpm|0; localStorage.setItem('rhythm.bpm', String(window.__rhythmBpm)); }catch(_){ }
     try{ window.__rhythmMet = true; localStorage.setItem('rhythm.met','1'); }catch(_){ }
     try{ localStorage.setItem('rhythm.travel', String(preset.travelMs)); }catch(_){ }
+  try{ window.MikuNowPlaying && window.MikuNowPlaying.refresh(); }catch(_){ }
   }
 
   function getPreset(){
@@ -189,4 +193,9 @@
   }
 
   window.Jukebox = { songs: SONGS, unlocked, play, attachHudSelect, openSongSelect, getPreset, refresh };
+  // Initialize status bar state at startup
+  try{
+    const cur = (function(){ try{ const id = localStorage.getItem('jukebox.song')||''; return refresh().find(s=>s.id===id); }catch(_){ return null; } })();
+    if (window.updateNowPlaying) window.updateNowPlaying(cur);
+  }catch(_){}
 })();

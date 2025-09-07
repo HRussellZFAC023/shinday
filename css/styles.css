@@ -78,7 +78,7 @@ body {
   width: 200px;
   height: auto;
   margin-bottom: 20px;
-  animation: float 3s ease-in-out infinite;
+  animation: float 4.5s ease-in-out infinite;
 }
 
 .glitch {
@@ -94,6 +94,17 @@ body {
   color: var(--ink-soft);
   margin: 20px 0;
   animation: typing 2s steps(30) infinite;
+}
+
+/* Hero Miku gentle loop */
+.hero-miku {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
 }
 
 .enter-btn {
@@ -116,6 +127,46 @@ body {
 
 .hidden {
   display: none;
+}
+
+/* Typing × DIVA visuals */
+#typingDivaOverlay .typing-panel { position: relative; }
+.typing-highway {
+  position: relative;
+  height: 200px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.9), rgba(233,238,255,0.7));
+  overflow: hidden;
+}
+.typing-hitbar {
+  position: relative;
+  margin-top: 6px;
+  height: 22px;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: #596286; font-weight: 900;
+}
+.typing-note {
+  position: absolute;
+  left: 10px; /* x-offset grows with index via inline transform */
+  top: 0;
+  width: 20px; height: 20px;
+  display: grid; place-items: center;
+  font-weight: 900; color: #2b2b44;
+  text-shadow: 0 1px 0 #fff;
+  transition: transform 0.08s linear;
+}
+.typing-note.hit {
+  color: #00a97f;
+  filter: drop-shadow(0 0 6px rgba(0,169,127,0.35));
+}
+
+/* Judge echo when using flashJudge with id 'typingHighway' */
+#typingHighway + #typingHitbar[aria-live]::after {
+  content: attr(data-judge);
 }
 
 /* Main site */
@@ -192,6 +243,11 @@ body {
 
 .float-miku:nth-child(2) {
   animation-delay: 2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-miku { animation: none !important; }
+  .blink { animation: none !important; }
 }
 
 /* Status bar with integrated navigation */
@@ -2177,6 +2233,28 @@ main {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Highlight active/selected buttons */
+.pixel-btn.active {
+  box-shadow: 0 0 0 3px var(--border), 0 0 8px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(45deg, var(--pastel-purple), var(--pastel-pink));
+}
+
+/* Kotoba chat option styling */
+.chat-option {
+  align-self: flex-start;
+  text-align: left;
+}
+
+.chat-option.correct {
+  background: linear-gradient(45deg, #a7f3d0, #6ee7b7);
+  color: #065f46;
+}
+
+.chat-option.wrong {
+  background: linear-gradient(45deg, #fecaca, #fca5a5);
+  color: #7f1d1d;
+}
+
 /* Shrine section */
 .shrine-content {
   display: flex;
@@ -2314,6 +2392,54 @@ main {
 .gallery-item.rarity-3 .rarity-ring { border-color: #a594f9; box-shadow: 0 0 0 3px rgba(165,148,249,0.18) inset; }
 .gallery-item.rarity-4 .rarity-ring { border-color: #ffb347; box-shadow: 0 0 0 3px rgba(255,179,71,0.22) inset; }
 .gallery-item.rarity-5 .rarity-ring { border-color: #ffd700; box-shadow: 0 0 0 3px rgba(255,215,0,0.25) inset; }
+
+/* ★6: PixieBel — rainbow accent ring */
+.gallery-item.rarity-6 .rarity-ring {
+  border: 3px solid transparent;
+  border-radius: 12px;
+  /* Ring-only gradient using masks */
+  background: conic-gradient(
+      from 0deg,
+      #ff6ec7,
+      #ffd700,
+      #6bc3ff,
+      #a594f9,
+      #ffb347,
+      #ff6ec7
+    ) border-box;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6) inset, 0 0 20px #ff6ec733;
+  animation: rainbowSpin 6s linear infinite;
+}
+
+/* Dex card ★6 accent */
+.Wish-collection .dex-card.owned.rarity-6 {
+  border-color: transparent;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    conic-gradient(
+      #ff6ec7,
+      #ffd700,
+      #6bc3ff,
+      #a594f9,
+      #ffb347,
+      #ff6ec7
+    ) border-box;
+  border: 2px solid transparent;
+  box-shadow: 0 6px 18px rgba(255, 110, 199, 0.25);
+  animation: rainbowSpin 8s linear infinite;
+}
+
+@keyframes rainbowSpin {
+  to { transform: rotate(1turn); }
+}
 
 @keyframes ringGlow {
   0%, 100% { opacity: 0.85; }
@@ -2963,6 +3089,127 @@ main {
   }
 }
 
+/* Enhanced floating animations for splash and hero Miku */
+.splash-miku, .hero-miku {
+  animation: gentleFloat 3s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.splash-miku:hover, .hero-miku:hover {
+  transform: scale(1.05) translateY(-2px);
+  animation-play-state: paused;
+}
+
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(1deg); }
+  50% { transform: translateY(-12px) rotate(0deg); }
+  75% { transform: translateY(-8px) rotate(-1deg); }
+}
+
+/* Enhanced Project DIVA vocab feedback styling that persists */
+.vocab-feedback, .kanji-feedback, .kotoba-feedback, .diva-feedback-enhanced {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(1.2) !important;
+  font-size: 1.8rem !important;
+  font-weight: 900 !important;
+  padding: 20px 32px !important;
+  border-radius: 25px !important;
+  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%) !important;
+  color: white !important;
+  text-shadow: 0 3px 6px rgba(0,0,0,0.8) !important;
+  box-shadow: 
+    0 0 25px rgba(255, 107, 157, 0.9),
+    0 0 50px rgba(255, 107, 157, 0.7),
+    0 0 75px rgba(255, 107, 157, 0.5),
+    inset 0 2px 0 rgba(255,255,255,0.3) !important;
+  animation: divaGlow 2s ease-in-out infinite, feedbackPulse 0.8s ease-out !important;
+  z-index: 9999 !important;
+  pointer-events: none !important;
+  border: 4px solid #fff !important;
+  backdrop-filter: blur(4px) !important;
+  display: block !important;
+  opacity: 1 !important;
+  transition: opacity 0.3s ease !important;
+}
+
+.diva-feedback-enhanced.incorrect {
+  background: linear-gradient(135deg, #ff4757 0%, #c44569 100%) !important;
+  box-shadow: 
+    0 0 25px rgba(255, 71, 87, 0.9),
+    0 0 50px rgba(255, 71, 87, 0.7),
+    0 0 75px rgba(255, 71, 87, 0.5),
+    inset 0 2px 0 rgba(255,255,255,0.3) !important;
+}
+
+.diva-feedback-enhanced.correct {
+  background: linear-gradient(135deg, #2ed573 0%, #1e90ff 100%) !important;
+  box-shadow: 
+    0 0 25px rgba(46, 213, 115, 0.9),
+    0 0 50px rgba(46, 213, 115, 0.7),
+    0 0 75px rgba(46, 213, 115, 0.5),
+    inset 0 2px 0 rgba(255,255,255,0.3) !important;
+}
+
+@keyframes divaGlow {
+  0%, 100% { 
+    box-shadow: 
+      0 0 20px rgba(255, 107, 157, 0.8),
+      0 0 40px rgba(255, 107, 157, 0.6),
+      0 0 60px rgba(255, 107, 157, 0.4);
+  }
+  50% { 
+    box-shadow: 
+      0 0 30px rgba(255, 107, 157, 1),
+      0 0 60px rgba(255, 107, 157, 0.8),
+      0 0 90px rgba(255, 107, 157, 0.6);
+  }
+}
+
+@keyframes feedbackPulse {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+  20% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+}
+
+/* Shop keeper styling with cute animations */
+.shop-keeper {
+  text-align: center;
+  padding: 12px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #fce7f3 100%);
+  border-radius: 16px;
+  border: 3px solid var(--accent);
+  animation: shopKeeperFloat 4s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.shop-keeper::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #ff6b9d, #4ecdc4, #45b7d1, #96ceb4);
+  border-radius: 16px;
+  z-index: -1;
+  animation: rainbowBorder 3s linear infinite;
+}
+
+@keyframes shopKeeperFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes rainbowBorder {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* Miku Icon Styling */
 .miku-icon {
   width: 24px !important;
@@ -2975,8 +3222,91 @@ main {
   image-rendering: pixelated;
 }
 
-.miku-icon:hover {
-  transform: scale(1.2);
+/* Responsive 4-grid layout for Japanese games */
+.study-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+@media (min-width: 768px) {
+  .study-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .study-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 1000px;
+  }
+}
+
+/* Hide unlock progress bars in Japanese games */
+.jp-unlock-bar, .unlock-progress, #hudLevelWrap {
+  display: none !important;
+}
+
+/* Enhanced cute animations everywhere */
+.widget {
+  animation: gentleFloat 6s ease-in-out infinite;
+  animation-delay: calc(var(--widget-index, 0) * 0.5s);
+}
+
+.pixel-btn {
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.pixel-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 16px rgba(255, 107, 157, 0.3);
+}
+
+.pixel-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Cute sparkle effects */
+.game-widget::before {
+  content: '✨';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 14px;
+  animation: sparkleFloat 2s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+@keyframes sparkleFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+  50% { transform: translateY(-3px) rotate(180deg); opacity: 1; }
+}
+
+/* Enhanced reveal image styling */
+.Wish-results img {
+  margin-bottom: 16px !important;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  animation: revealPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes revealPop {
+  0% { transform: scale(0.8) rotateY(90deg); opacity: 0; }
+  50% { transform: scale(1.1) rotateY(0deg); opacity: 0.8; }
+  100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+}
+
+/* More Miku icons everywhere with cute hover effects */
+.content-section h2::before {
+  content: '🎵';
+  margin-right: 8px;
+  animation: bounceIcon 2s ease-in-out infinite;
+}
+
+@keyframes bounceIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
 }
 
 /* Special styling for navigation icons */

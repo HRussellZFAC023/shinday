@@ -110,7 +110,11 @@
 
   async function loadRound(){
     if (!qEl || !cEl) return;
-    lock = false; if (fbEl) fbEl.textContent = ''; cEl.innerHTML = ''; qEl.textContent = 'Loading…';
+  lock = false;
+  // Clear previous persistent feedback if enhanced UI is present
+  try{ if (window.clearDivaFeedback) clearDivaFeedback('vocabFeedback'); }catch(_){ }
+  if (fbEl) fbEl.textContent = '';
+  cEl.innerHTML = ''; qEl.textContent = 'Loading…';
     // advance notes count if HUD exists
     try { if (window.HUD) HUD.notes++; } catch(_){ }
     try{
@@ -149,7 +153,14 @@
     const isCorrect = text === correct;
     if (isCorrect){
       try{ createRingEffect && createRingEffect(element,true); }catch(_){ }
-      if (style && style.isPerfect){ try{ createPerfectHitEffect && createPerfectHitEffect(element, style.color); }catch(_){ } if (fbEl) fbEl.textContent='✨ PERFECT! ✨'; try{ awardHearts && awardHearts(2); }catch(_){ } } else { if (fbEl){ fbEl.textContent='✅ Correct!'; } try{ awardHearts && awardHearts(1); }catch(_){ } }
+      if (style && style.isPerfect){
+        try{ createPerfectHitEffect && createPerfectHitEffect(element, style.color); }catch(_){ }
+        if (window.showDivaFeedback) showDivaFeedback('vocabFeedback','✨ PERFECT! ✨', true); else if (fbEl) fbEl.textContent='✨ PERFECT! ✨';
+        try{ awardHearts && awardHearts(2); }catch(_){ }
+      } else {
+        if (window.showDivaFeedback) showDivaFeedback('vocabFeedback','✅ Correct!', true); else if (fbEl){ fbEl.textContent='✅ Correct!'; }
+        try{ awardHearts && awardHearts(1); }catch(_){ }
+      }
       if (fbEl) fbEl.style.color = '#2b2b44';
       score++; if (scoreEl) scoreEl.textContent = String(score);
       streak++; if (streakEl) streakEl.textContent = String(streak);
@@ -162,13 +173,15 @@
       if ((style && style.isPerfect) || dt<=600){ judge='COOL'; v=4; sc=100; try{ HUD && HUD.counts && (HUD.counts.COOL++); party && party('vocabCard'); }catch(_){ } }
       else if (dt<=1400){ judge='GREAT'; v=3; sc=70; try{ HUD && HUD.counts && (HUD.counts.GREAT++); }catch(_){ } }
       else { try{ HUD && HUD.counts && (HUD.counts.FINE++); }catch(_){ } }
-      try{ flashJudge && flashJudge('vocabCard', judge); addVoltage && addVoltage(v,'vocabCard'); addCombo && addCombo('vocabCard'); HUD && (HUD.score += Math.round(sc*mult*rmult)); }catch(_){ }
+  try{ flashJudge && flashJudge('vocabCard', judge); addVoltage && addVoltage(v,'vocabCard'); addCombo && addCombo('vocabCard'); HUD && (HUD.score += Math.round(sc*mult*rmult)); }catch(_){ }
+  // Zap any active swallower on correct
+  try{ window.zapSwallower && window.zapSwallower(); }catch(_){ }
       if (isTimed()){
         const elapsed = Date.now()-startAt; if (!bestTime || elapsed < bestTime){ bestTime = elapsed; try{ localStorage.setItem('vocab.bestTime', String(bestTime)); }catch(_){ } if (bestTimeEl) bestTimeEl.textContent = `${(bestTime/1000).toFixed(1)}s`; }
       }
     } else {
       try{ createRingEffect && createRingEffect(element,false); }catch(_){ }
-      if (fbEl){ fbEl.textContent = `❌ ${correct}`; fbEl.style.color = '#c00'; }
+      if (window.showDivaFeedback) showDivaFeedback('vocabFeedback', `❌ ${correct}`, false); else if (fbEl){ fbEl.textContent = `❌ ${correct}`; fbEl.style.color = '#c00'; }
       streak=0; if (streakEl) streakEl.textContent = String(streak);
       try{ HUD && HUD.counts && (HUD.counts.SAD++); flashJudge && flashJudge('vocabCard','SAD'); addVoltage && addVoltage(-5,'vocabCard'); resetCombo && resetCombo(); loseLife && loseLife('vocabCard'); }catch(_){ }
     }

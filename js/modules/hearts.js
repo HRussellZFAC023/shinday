@@ -76,7 +76,7 @@
   }
 
   function addHearts(amount){
-    heartCount += amount;
+    heartCount = Math.max(0, heartCount + amount);
     localStorage.setItem('pixelbelle-hearts', heartCount);
     updateCounters();
   try{ const el=document.getElementById('gameHeartCount'); if (el) el.textContent=String(heartCount);}catch(_){}

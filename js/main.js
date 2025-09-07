@@ -438,6 +438,50 @@ window.setTimeoutTracked = (fn, delay) =>
 // Cleanup on page unload
 window.addEventListener("beforeunload", () => GLOBAL_TIMERS.clearAll());
 
+// Friendly error renderer with retry (used by quizzes/WOTD)
+function friendlyError(container, retryFn, opts = {}) {
+  try {
+    if (!container) return;
+    const { message = "can't load right now. try again?", label = "retry", small = false } = opts;
+    container.innerHTML = /*html*/ `
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;${small ? 'font-size:12px' : 'font-size:14px'};color:#596286;padding:8px 0">
+        <span>⚠️ ${message}</span>
+        <button class="pixel-btn" id="_retryBtn">${label}</button>
+      </div>`;
+    const btn = container.querySelector('#_retryBtn');
+    if (btn && typeof retryFn === 'function') {
+      btn.addEventListener('click', () => retryFn());
+    }
+    try { window.shimejiFunctions?.makeRandomSpeak?.(["awww", "oops", "reload?"], 1400); } catch(_) {}
+  } catch(_) {}
+}
+
+// Tiny fetch with timeout helper
+async function fetchWithTimeout(resource, { timeout = 8000, ...options } = {}) {
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), timeout);
+  try {
+    const res = await fetch(resource, { ...options, signal: ctrl.signal });
+    return res;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+// Minimal telemetry (off by default). Enable with localStorage 'telemetry.on' = '1'
+function logEvent(name, delta = 1) {
+  try {
+    if (localStorage.getItem('telemetry.on') !== '1') return;
+    const key = `telemetry.${name}`;
+    const n = parseInt(localStorage.getItem(key) || '0', 10) || 0;
+    localStorage.setItem(key, String(n + delta));
+    // record last timestamp
+  const ts = Date.now();
+  localStorage.setItem(`${key}.ts`, String(ts))
+  try { console.debug('[telemetry]', name, { delta, ts }); } catch(_){ }
+  } catch(_){}
+}
+
 // (Removed duplicate byId; using the lightweight `$`/`byId` declared above)
 
 // ====== OPTIMIZED IMAGE LOADING ======
@@ -768,7 +812,7 @@ localStorage.setItem("pixelbelle-visitors", visitorCount);
 function initSplash() {
   console.log("initSplash called!");
   const splash = byId("splash");
-  const enterBtn = byId("enterSite");
+    const enterBtn = document.getElementById("enterSite");
   const mainSite = byId("mainSite");
   let isEntering = false;
 
@@ -931,17 +975,17 @@ function initMikuWish() {
   const poolReady = () => Array.isArray(MIKU_IMAGES) && MIKU_IMAGES.length > 0;
 
   // Cached DOM elements
-  const elements = {
-    tokens: byId("WishTokens"),
-    pull1: byId("WishPull1"),
-    pull10: byId("WishPull10"),
-    daily: byId("WishDaily"),
-    convert: byId("WishConvert"),
-    rotation: byId("WishRotation"),
-    results: byId("WishResults"),
-    dexBtn: byId("WishCollectionBtn"),
-    dex: byId("mikuDex"),
-  };
+    const elements = {
+      tokens: document.getElementById("WishTokens"),
+      pull1: document.getElementById("WishPull1"),
+      pull10: document.getElementById("WishPull10"),
+      daily: document.getElementById("WishDaily"),
+      convert: document.getElementById("WishConvert"),
+      rotation: document.getElementById("WishRotation"),
+      results: document.getElementById("WishResults"),
+      dexBtn: document.getElementById("WishCollectionBtn"),
+      dex: document.getElementById("mikuDex"),
+    };
 
   // Early return if elements missing
   if (!Object.values(elements).every((el) => el)) return;
@@ -1025,6 +1069,50 @@ function initMikuWish() {
     return "★".repeat(n);
   }
 
+  // Rarity mechanics constants (single source of truth)
+  const RARITY_EFFECTS = {
+    scorePerStep: 0.10,   // +10% per rarity step above 1★
+    scoreCap: 0.40,       // cap at +40%
+    rareDropBonus: 0.05,  // +5% bias toward 4★+ in Wish
+  };
+  try { window.RARITY_EFFECTS = RARITY_EFFECTS; } catch(_){}
+  
+  // ====== SITE SETTINGS (helpers) ======
+  const SETTINGS_KEYS = {
+    reduceMotion: 'settings.reduceMotion', // '1' | '0'
+    vfx: 'settings.vfx',                   // '1' | '0'
+    swallower: 'settings.swallowerRate',   // 'off' | 'low' | 'normal' | 'high'
+    typing: 'settings.typingAids'          // '1' | '0'
+  };
+  function lsGet(k, d='') { try{ const v = localStorage.getItem(k); return v==null? d : v; }catch(_){ return d; } }
+  function lsSet(k, v) { try{ localStorage.setItem(k, v); }catch(_){} }
+  function isReducedMotion(){
+    try{
+      const pref = lsGet(SETTINGS_KEYS.reduceMotion, '');
+      if (pref === '1') return true; if (pref === '0') return false;
+    }catch(_){ }
+    try{ return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(_){ return false; }
+  }
+  function isVfxEnabled(){ return lsGet(SETTINGS_KEYS.vfx, '1') !== '0'; }
+  function swallowerRate(){
+    const v = lsGet(SETTINGS_KEYS.swallower, 'normal');
+    if (v === 'off') return 0;
+    if (v === 'low') return 0.5;
+    if (v === 'high') return 1.5;
+    return 1; // normal
+  }
+  function isTypingAids(){ return lsGet(SETTINGS_KEYS.typing, '0') === '1'; }
+  try{ window.Settings = { isReducedMotion, isVfxEnabled, swallowerRate, isTypingAids, set:lsSet, get:lsGet, KEYS:SETTINGS_KEYS }; }catch(_){ }
+
+  // NEW badge LS-backed set
+  const LS_NEW = "Wish.newIds";
+  function getNewSet(){
+    try { return new Set(JSON.parse(localStorage.getItem(LS_NEW)||'[]')); } catch(_){ return new Set(); }
+  }
+  function saveNewSet(s){ try { localStorage.setItem(LS_NEW, JSON.stringify(Array.from(s))); } catch(_){} }
+  function addNew(url){ const s=getNewSet(); s.add(url); saveNewSet(s); }
+  function removeNew(url){ const s=getNewSet(); if (s.has(url)){ s.delete(url); saveNewSet(s);} }
+
   function ensurePool(cb) {
     if (poolReady()) {
       cb();
@@ -1069,7 +1157,10 @@ function initMikuWish() {
     const isFirst = prev.count === 0;
     prev.count += 1;
     prev.rarity = card.rarity;
-    if (isFirst) prev.new = true;
+    if (isFirst) {
+      prev.new = true; // legacy field for backward-compat
+      try { addNew(id); } catch(_){}
+    }
     try {
       const meta =
         typeof window.getMikuMeta === "function"
@@ -1108,6 +1199,58 @@ function initMikuWish() {
     return isFirst;
   }
 
+  // ====== PixieBel ★6 Unlock Ceremony ======
+  const PIXIE_URL = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
+  function hasPixieBel(){ try{ const coll = JSON.parse(localStorage.getItem(LS_COLL)||'{}'); return !!coll[PIXIE_URL]; }catch(_){ return false; } }
+  function ceremonyShown(){ return localStorage.getItem('pixiebelUnlocked') === '1'; }
+  function markCeremony(){ try{ localStorage.setItem('pixiebelUnlocked','1'); }catch(_){} }
+  function awardPixieBel(){
+    if (ceremonyShown()) return; // idempotent
+    try{ SFX.play('extra.thanks'); }catch(_){ }
+    // Add to collection if missing
+    try{
+      const coll = JSON.parse(localStorage.getItem(LS_COLL)||'{}');
+      if (!coll[PIXIE_URL]) coll[PIXIE_URL] = { count:1, rarity:6, new:true, multiplier:6 };
+      localStorage.setItem(LS_COLL, JSON.stringify(coll));
+    }catch(_){ }
+    markCeremony();
+    // Celebration overlay
+    const ov = document.createElement('div');
+    ov.id = 'pixiebelCeremony';
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:10001;';
+    const panel = document.createElement('div');
+    panel.style.cssText = 'background:#fff;border:3px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:16px;max-width:520px;width:92%;text-align:center;position:relative;overflow:hidden';
+    panel.innerHTML = `
+      <div style="font-size:18px;font-weight:900;margin-bottom:8px">Legendary Unlocked!</div>
+      <div style="font-size:14px;color:#596286;margin-bottom:10px">You discovered <strong>PixieBel</strong> ★6 — a secret companion joins your garden.</div>
+      <div style="display:flex;align-items:center;justify-content:center;margin-bottom:10px">
+        <img src="${PIXIE_URL}" alt="PixieBel" style="width:160px;height:auto;image-rendering:pixelated;border:2px solid var(--border);border-radius:10px" />
+      </div>
+      <button class="pixel-btn" id="pixieClose">Celebrate ✨</button>
+    `;
+    ov.appendChild(panel);
+    document.body.appendChild(ov);
+    // Rainbow confetti (respect settings)
+    if (!isReducedMotion() && isVfxEnabled()){
+      const host = document.createElement('div');
+      host.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:10002';
+      document.body.appendChild(host);
+      for(let i=0;i<140;i++){
+        const p=document.createElement('div');
+        const size=4+Math.random()*6; const colors=['#ff7eb6','#ffd166','#a0e7e5','#b4f8c8','#a594f9','#66bbff'];
+        p.style.cssText=`position:absolute;left:${Math.random()*100}vw;top:-8px;width:${size}px;height:${size}px;background:${colors[i%colors.length]};opacity:.95;border-radius:2px`;
+        host.appendChild(p);
+        const dx=(Math.random()*2-1)*200, dy=160+Math.random()*280;
+        p.animate([{transform:'translate(0,0)'},{transform:`translate(${dx}px, ${dy}px)`,opacity:0}],{duration:1200+Math.random()*900,easing:'ease-out'});
+        setTimeout(()=>p.remove(), 1900);
+      }
+      setTimeout(()=>host.remove(), 1800);
+    }
+    const close = ()=>{ try{ SFX.play('ui.back'); }catch(_){ } ov.remove(); try{ if (typeof renderDex==='function') renderDex(); }catch(_){ } };
+    ov.addEventListener('click',(e)=>{ if(e.target===ov) close(); });
+    const btn = panel.querySelector('#pixieClose'); if (btn) btn.addEventListener('click', close);
+  }
+
   function pickRandom() {
     // Weight by rarity with slight bias toward higher rarity cards
     const weights = { 1: 10, 2: 15, 3: 30, 4: 25, 5: 19, 6: 1 };
@@ -1116,6 +1259,16 @@ function initMikuWish() {
       const r = rarityFor(url);
       (buckets[r] ||= []).push(url);
     }
+    // Apply rare-drop bias if a singer is set
+    try {
+      const singer = typeof singerGet === 'function' ? singerGet() : '';
+      if (singer) {
+        const b = RARITY_EFFECTS.rareDropBonus || 0;
+        if (weights[4]) weights[4] = Math.round(weights[4] * (1 + b));
+        if (weights[5]) weights[5] = Math.round(weights[5] * (1 + b));
+        if (weights[6]) weights[6] = Math.round(weights[6] * (1 + b));
+      }
+    } catch(_){}
     let total = 0;
     for (const k of Object.keys(weights)) {
       const num = Number(k);
@@ -1357,7 +1510,7 @@ function initMikuWish() {
       return true;
     });
 
-    const tiles = pool
+  const tiles = pool
       .map((url) => {
         const entry = collection[url];
         const owned = !!entry;
@@ -1373,7 +1526,8 @@ function initMikuWish() {
             ? ""
             : `<span class=\"dex-count\">x${entry.count}</span>`
           : `<span class=\"dex-locked\">?</span>`;
-        const newBadge = entry?.new ? '<div class="Wish-new">NEW!</div>' : "";
+    const isNew = (function(){ try{ return getNewSet().has(url) || !!entry?.new; }catch(_){ return !!entry?.new; }})();
+    const newBadge = isNew ? '<div class="Wish-new">NEW!</div>' : "";
         const vid =
           (meta &&
             meta.song &&
@@ -1535,12 +1689,17 @@ function initMikuWish() {
       elements.dex.classList.add("hidden");
       elements.dexBtn.textContent = C.games?.WishOpenDex || "Open MikuDex";
     } catch (_) {}
+    // Clear any lingering pull busy lock
+    try { pull._busy = false; } catch(_){}
   }
   try {
     window.__resetWish = resetWishUI;
+    window.resetWishPreview = resetWishUI; // alias
   } catch (_) {}
 
   function pull(n) {
+  // Anti-spam: simple in-progress lock
+  if (pull._busy) return;
     if (!poolReady()) {
       loveToast("画像の読み込み中…");
       try {
@@ -1571,7 +1730,10 @@ function initMikuWish() {
         window.shimejiFunctions.exciteAll("gacha");
       }
     } catch (_) {}
-    updateTokens(tokens - n);
+  // lock during pull animation
+  pull._busy = true;
+  updateTokens(tokens - n);
+  logEvent('wish_pull', n);
     const cards = Array.from({ length: n }, () => pickRandom());
     if (n >= 10) guaranteeAtLeast(3, cards);
     renderResults(cards);
@@ -1581,6 +1743,9 @@ function initMikuWish() {
       try {
         window.setBusyCursor && window.setBusyCursor(false);
       } catch (_) {}
+      pull._busy = false;
+      window.Diva.updateUnlockProgress();
+    
     }, totalAnimTime);
   }
 
@@ -1606,7 +1771,12 @@ function initMikuWish() {
   });
   elements.convert.addEventListener("click", () => {
     const convertCost = 100;
-    if (heartCount < convertCost) {
+    const haveHearts = (typeof window.getHeartCount === 'function' ? window.getHeartCount() : heartCount) || 0;
+      // PixieBel ceremony trigger after results settle
+      try{
+        setTimeout(()=>{ try{ if (typeof hasPixieBel==='function' && typeof awardPixieBel==='function'){ if (hasPixieBel() && localStorage.getItem('pixiebelUnlocked')!=='1') awardPixieBel(); } }catch(_){ } }, 400);
+      }catch(_){ }
+    if (haveHearts < convertCost) {
       loveToast(`💖が足りないよ！(${convertCost}必要)`);
       try {
         SFX.play("ui.unavailable");
@@ -1618,12 +1788,12 @@ function initMikuWish() {
       if (window.Hearts && typeof window.Hearts.add === "function") {
         window.Hearts.add(-convertCost);
       } else {
-        heartCount -= convertCost;
+        heartCount = Math.max(0, haveHearts - convertCost);
         localStorage.setItem("pixelbelle-hearts", heartCount);
         updateCounters && updateCounters();
       }
     } catch (_) {
-      heartCount -= convertCost;
+      heartCount = Math.max(0, haveHearts - convertCost);
       localStorage.setItem("pixelbelle-hearts", heartCount);
       updateCounters && updateCounters();
     }
@@ -1979,12 +2149,12 @@ function initJpGames() {
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="font-weight:800">Score: <span id="kanjiScore">0</span></div><button id="kanjiBack" class="pixel-btn">⟵ Menu</button></div>
       </div>
       <div class="study-card" id="kotobaCard" style="display:none">
-        <div id="kotobaChat" style="display:flex;flex-direction:column;gap:8px;min-height:90px"></div>
-        <form id="kotobaChatForm" style="display:flex;gap:8px;align-items:center">
+        <div id="kotobaChat" style="display:flex;flex-direction:column;gap:8px;min-height:140px;max-height:240px;overflow-y:auto"></div>
+        <div id="kotobaChoices" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"></div>
+        <form id="kotobaChatForm" style="display:flex;gap:8px;align-items:center;margin-top:8px">
           <input id="kotobaChatInput" class="pixel-input" type="text" placeholder="Look up a word (Jisho)" style="flex:1;min-width:0" />
           <button class="pixel-btn" type="submit">Search</button>
         </form>
-        <div id="kotobaChoices" class="rhythm-grid" style="display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);gap:12px;margin-top:12px;min-height:200px;"></div>
         <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px">
           <button id="kotobaStart" class="pixel-btn">Start</button>
           <div style="font-weight:800">Score: <span id="kotobaScore">0</span></div>
@@ -2058,6 +2228,7 @@ function initJpGames() {
       ov.innerHTML = /*html*/ `
           <div class="settings-panel" style="background:#fff;border:3px solid var(--border);border-radius:12px;box-shadow:var(--shadow);max-width:640px;width:92%;padding:14px 16px;position:relative;">
             <h3 style="margin:0 0 8px 0">Game Settings</h3>
+            <p style="font-size:12px;color:#596286;margin:0 0 8px 0">Configure how each study game behaves.</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
               <div>
                 <label style="font-weight:700;display:block;margin-bottom:4px">Game</label>
@@ -2066,6 +2237,7 @@ function initJpGames() {
                   <button class="pixel-btn" data-game="kanji" id="setGameKanji">Kanji</button>
                   <button class="pixel-btn" data-game="kotoba" id="setGameKotoba">Kotoba</button>
                 </div>
+                <div style="font-size:12px;color:#596286;margin-top:4px">Select which mode to play.</div>
               </div>
               <div style="margin-left:auto">
                 <button class="pixel-btn" id="closeSettings">✕</button>
@@ -2076,6 +2248,7 @@ function initJpGames() {
                 <label style="font-weight:700">Difficulty: <span id="setDiffLabel">3</span></label>
                 <input id="setDifficulty" type="range" min="1" max="9" step="1" value="3" style="width:100%" />
                 <div id="kanjiDiffNote" style="font-size:12px;color:#596286;margin-top:4px">Kanji Grade: <span id="kanjiGradeLabel">-</span></div>
+                <div style="font-size:12px;color:#596286;margin-top:4px">Higher difficulty means tougher questions.</div>
               </div>
               <div id="vocabRow">
                 <label style="font-weight:700">Vocab Direction</label>
@@ -2083,6 +2256,7 @@ function initJpGames() {
                   <label><input type="radio" name="vdir" value="jp-en" checked /> JP → EN</label>
                   <label><input type="radio" name="vdir" value="en-jp" /> EN → JP</label>
                 </div>
+                <div style="font-size:12px;color:#596286;margin-top:4px">Choose which way cards are shown.</div>
               </div>
               <div id="kanjiRow" style="display:none">
                 <label style="font-weight:700">Kanji Mode</label>
@@ -2090,12 +2264,16 @@ function initJpGames() {
                   <label><input type="radio" name="kmode" value="meaning" checked /> Meaning → Kanji</label>
                   <label><input type="radio" name="kmode" value="reading" /> Kanji → Reading</label>
                 </div>
+                <div style="font-size:12px;color:#596286;margin-top:4px">Switch question style.</div>
               </div>
               <div id="rhythmRow" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
                 <button class="pixel-btn" id="setRhythmBtn" data-on="1">Rhythm Effects: ON</button>
                 <button class="pixel-btn" id="setRingsBtn" data-on="1">Stage Rings: ON</button>
+                <button class="pixel-btn" id="setAssistBtn" data-on="0">Assist: OFF</button>
+                <button class="pixel-btn" id="setNoFailBtn" data-on="0">No-Fail: OFF</button>
                 <button class="pixel-btn" id="setTimedBtn" data-on="0">Timed: OFF</button>
               </div>
+              <div style="font-size:12px;color:#596286;margin-top:-6px">Rhythm adds beat helpers, Rings show stage decorations, Assist gives hints, No‑Fail prevents game over, Timed adds a countdown.</div>
             </div>
             <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
               <button class="pixel-btn" id="cancelSettings">Cancel</button>
@@ -2119,6 +2297,8 @@ function initJpGames() {
       const timedBtn = ov.querySelector("#setTimedBtn");
       const rhythmBtn = ov.querySelector("#setRhythmBtn");
       const ringsBtn = ov.querySelector("#setRingsBtn");
+      const assistBtn = ov.querySelector("#setAssistBtn");
+      const nofailBtn = ov.querySelector("#setNoFailBtn");
 
       function gradeFromDiff(v) {
         // Map 1-9 difficulty to school grades 1-6
@@ -2176,47 +2356,52 @@ function initJpGames() {
       if (rhythmBtn) {
         rhythmBtn.setAttribute("data-on", savedRhythm ? "1" : "0");
         rhythmBtn.textContent = `Rhythm Effects: ${savedRhythm ? "ON" : "OFF"}`;
+        rhythmBtn.classList.toggle("active", savedRhythm);
         rhythmBtn.addEventListener("click", () => {
           const on = rhythmBtn.getAttribute("data-on") !== "1";
           rhythmBtn.setAttribute("data-on", on ? "1" : "0");
           rhythmBtn.textContent = `Rhythm Effects: ${on ? "ON" : "OFF"}`;
+          rhythmBtn.classList.toggle("active", on);
         });
       }
       if (ringsBtn) {
         ringsBtn.setAttribute("data-on", savedRings ? "1" : "0");
         ringsBtn.textContent = `Stage Rings: ${savedRings ? "ON" : "OFF"}`;
+        ringsBtn.classList.toggle("active", savedRings);
         ringsBtn.addEventListener("click", () => {
           const on = ringsBtn.getAttribute("data-on") !== "1";
           ringsBtn.setAttribute("data-on", on ? "1" : "0");
           ringsBtn.textContent = `Stage Rings: ${on ? "ON" : "OFF"}`;
+          ringsBtn.classList.toggle("active", on);
         });
+      }
+      if (assistBtn) {
+        assistBtn.setAttribute("data-on", savedAssist ? "1" : "0");
+        assistBtn.textContent = `Assist: ${savedAssist ? "ON" : "OFF"}`;
+        assistBtn.classList.toggle("active", savedAssist);
+        assistBtn.onclick = () => {
+          const on = assistBtn.getAttribute("data-on") !== "1";
+          assistBtn.setAttribute("data-on", on ? "1" : "0");
+          assistBtn.textContent = `Assist: ${on ? "ON" : "OFF"}`;
+          assistBtn.classList.toggle("active", on);
+        };
+      }
+      if (nofailBtn) {
+        nofailBtn.setAttribute("data-on", savedNoFail ? "1" : "0");
+        nofailBtn.textContent = `No‑Fail: ${savedNoFail ? "ON" : "OFF"}`;
+        nofailBtn.classList.toggle("active", savedNoFail);
+        nofailBtn.onclick = () => {
+          const on = nofailBtn.getAttribute("data-on") !== "1";
+          nofailBtn.setAttribute("data-on", on ? "1" : "0");
+          nofailBtn.textContent = `No‑Fail: ${on ? "ON" : "OFF"}`;
+          nofailBtn.classList.toggle("active", on);
+        };
       }
       // Apply globals immediately so effects align with saved state
       window.__rhythmMet = !!savedRhythm;
       window.__rhythmRings = !!savedRings;
       window.__assistMode = !!savedAssist;
       window.__noFail = !!savedNoFail;
-      // Create Assist/No-Fail toggles if missing
-      const assistBtn = document.getElementById("setAssistBtn");
-      if (assistBtn) {
-        assistBtn.setAttribute("data-on", savedAssist ? "1" : "0");
-        assistBtn.textContent = `Assist: ${savedAssist ? "ON" : "OFF"}`;
-        assistBtn.onclick = () => {
-          const on = assistBtn.getAttribute("data-on") !== "1";
-          assistBtn.setAttribute("data-on", on ? "1" : "0");
-          assistBtn.textContent = `Assist: ${on ? "ON" : "OFF"}`;
-        };
-      }
-      const nofailBtn = document.getElementById("setNoFailBtn");
-      if (nofailBtn) {
-        nofailBtn.setAttribute("data-on", savedNoFail ? "1" : "0");
-        nofailBtn.textContent = `No‑Fail: ${savedNoFail ? "ON" : "OFF"}`;
-        nofailBtn.onclick = () => {
-          const on = nofailBtn.getAttribute("data-on") !== "1";
-          nofailBtn.setAttribute("data-on", on ? "1" : "0");
-          nofailBtn.textContent = `No‑Fail: ${on ? "ON" : "OFF"}`;
-        };
-      }
       // Timed uses per-game key; we'll update when opening
       function openWith(game) {
         selectGame(game);
@@ -2229,10 +2414,12 @@ function initJpGames() {
         const tSaved = localStorage.getItem(key) === "1";
         timedBtn.setAttribute("data-on", tSaved ? "1" : "0");
         timedBtn.textContent = `Timed: ${tSaved ? "ON" : "OFF"}`;
+        timedBtn.classList.toggle("active", tSaved);
         timedBtn.onclick = () => {
           const on = timedBtn.getAttribute("data-on") !== "1";
           timedBtn.setAttribute("data-on", on ? "1" : "0");
           timedBtn.textContent = `Timed: ${on ? "ON" : "OFF"}`;
+          timedBtn.classList.toggle("active", on);
         };
         ov.style.display = "flex";
       }
@@ -2275,8 +2462,6 @@ function initJpGames() {
         try {
           localStorage.setItem("rhythm.rings", ringsOn ? "1" : "0");
         } catch (_) {}
-        const assistBtn = document.getElementById("setAssistBtn");
-        const nofailBtn = document.getElementById("setNoFailBtn");
         const assistOn = assistBtn
           ? assistBtn.getAttribute("data-on") === "1"
           : false;
@@ -2331,7 +2516,7 @@ function initJpGames() {
     }
   })();
 
-  // Populate static study info & WOD from API
+  // Populate static study info & WOD from API (hardened with timeout+proxy+cache)
   try {
     // Word-of-day fields live in a separate card with class .word-of-day
     const wod = document.querySelector(".word-of-day");
@@ -2341,55 +2526,143 @@ function initJpGames() {
       const me = wod.querySelector(".meaning");
       const nextBtn = wod.querySelector("#nextWod");
 
-      const loadWod = async () => {
+      const WOD_LS_V = "wod.v2"; // { ts, etag, payload: { word, reading, meaning } }
+      const WOD_OLD = "wod.lastGood"; // migrate forward if seen
+  // Enforce proxy in production. Dev (localhost/file) can fall back direct.
+  const href = (location && location.href) || '';
+  const isDev = /localhost|127\.0\.0\.1|file:\/\//i.test(href);
+  const configuredProxy = (C.api && C.api.proxyBase) || localStorage.getItem('api.proxyBase') || '';
+  const PROXY = configuredProxy;
+      const logEvent = (name, delta = 1) => {
         try {
-          // Show loading state
-          if (nextBtn) {
-            nextBtn.textContent = "Loading...";
-            nextBtn.disabled = true;
-            nextBtn.style.opacity = "0.6";
+          if (localStorage.getItem('telemetry.on') !== '1') return;
+          const key = `telemetry.${name}`;
+          const n = parseInt(localStorage.getItem(key) || '0', 10) || 0;
+          localStorage.setItem(key, String(n + delta));
+        } catch(_){}
+      };
+      // one-time migrate old cache
+      try {
+        if (!localStorage.getItem(WOD_LS_V) && localStorage.getItem(WOD_OLD)) {
+          const old = JSON.parse(localStorage.getItem(WOD_OLD) || 'null');
+          if (old && (old.word || old.reading || old.meaning)) {
+            localStorage.setItem(WOD_LS_V, JSON.stringify({ ts: Date.now(), etag: '', payload: old }));
           }
+          localStorage.removeItem(WOD_OLD);
+        }
+      } catch(_){}
 
-          const page = Math.floor(Math.random() * 50) + 1;
-          const j = await (async () => {
-            try {
-              const r = await fetch(
-                `https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`,
-                { cache: "no-store" }
-              );
-              if (r.ok) return r.json();
-            } catch (_) {}
-            const rr = await fetch(
-              `https://api.allorigins.win/raw?url=${encodeURIComponent(
-                `https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`
-              )}`
-            );
-            if (rr.ok) return rr.json();
-            throw new Error("fail");
-          })();
-          const arr = Array.isArray(j?.data) ? j.data : [];
-          if (arr.length) {
-            const pick = arr[Math.floor(Math.random() * arr.length)];
-            const word =
-              (pick.japanese &&
-                (pick.japanese[0].word || pick.japanese[0].reading)) ||
-              "";
-            const reading = (pick.japanese && pick.japanese[0].reading) || "";
-            const meaning =
-              (pick.senses && pick.senses[0]?.english_definitions?.[0]) || "";
-            if (jp) jp.textContent = word || "";
-            if (ro) ro.textContent = reading || "";
-            if (me) me.textContent = meaning || "";
-          }
-        } catch (_) {
-          /* ignore */
-        } finally {
-          // Restore button state
+      const loadWod = async () => {
+        // Show loading state
+        if (nextBtn) {
+          nextBtn.textContent = "Loading...";
+          nextBtn.disabled = true;
+          nextBtn.style.opacity = "0.6";
+        }
+        const done = () => {
           if (nextBtn) {
             nextBtn.textContent = "Next Word";
             nextBtn.disabled = false;
             nextBtn.style.opacity = "1";
           }
+        };
+  const applyWord = (pick) => {
+          if (!pick) return false;
+          const word =
+            (pick.japanese &&
+              (pick.japanese[0].word || pick.japanese[0].reading)) ||
+            "";
+          const reading = (pick.japanese && pick.japanese[0].reading) || "";
+          const meaning =
+            (pick.senses && pick.senses[0]?.english_definitions?.[0]) || "";
+          if (!word && !reading && !meaning) return false;
+          if (jp) jp.textContent = word || "";
+          if (ro) ro.textContent = reading || "";
+          if (me) me.textContent = meaning || "";
+          try {
+            const prev = JSON.parse(localStorage.getItem(WOD_LS_V) || 'null') || {};
+            const etag = prev.etag || '';
+            localStorage.setItem(WOD_LS_V, JSON.stringify({ ts: Date.now(), etag, payload: { word, reading, meaning } }));
+          } catch (_) {}
+          return true;
+        };
+
+        try {
+          const page = Math.floor(Math.random() * 50) + 1;
+          const url = `https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`;
+          let data = null;
+          // Prefer configured private proxy with ETag support
+          if (PROXY) {
+            try {
+              const prev = JSON.parse(localStorage.getItem(WOD_LS_V) || 'null') || {};
+              const lastTs = prev.ts || 0;
+              const within24h = Date.now() - lastTs < 24*60*60*1000;
+              const headers = {};
+              if (within24h && prev.etag) headers['If-None-Match'] = prev.etag;
+              const res = await fetchWithTimeout(`${PROXY}/jisho?url=${encodeURIComponent(url)}`, { timeout: 8000, headers });
+              if (res.status === 304 && prev.payload) {
+                // reuse cache
+                data = { data: await (async() => prev.payloadRaw || [])() }; // will fallback to payload route below
+                // We stored only single pick in payload, so just apply directly
+                if (applyWord(prev.payload)) { logEvent('wotd_fetch_ok'); done(); return; }
+              } else if (res.ok) {
+                const et = res.headers.get('etag') || '';
+                const json = await res.json();
+                data = json;
+                if (Array.isArray(json?.data) && json.data.length) {
+                  try {
+                    localStorage.setItem(WOD_LS_V, JSON.stringify({ ts: Date.now(), etag: et, payload: null, payloadRaw: json.data }));
+                  } catch(_){}
+                }
+              }
+            } catch(_){}
+          }
+          // Fallback (direct) only in dev; production requires proxy
+          if (!data && isDev) {
+            try {
+              const r = await fetchWithTimeout(url, { timeout: 7000, cache: "no-store" });
+              if (r.ok) data = await r.json();
+            } catch (_) {}
+          }
+          const arr = Array.isArray(data?.data) ? data.data : [];
+          if (arr.length) {
+            const pick = arr[Math.floor(Math.random() * arr.length)];
+            if (applyWord(pick)) {
+              logEvent('wotd_fetch_ok');
+              done();
+              return;
+            }
+          }
+          // No data: try cached last good
+          try {
+            const cached = JSON.parse(localStorage.getItem(WOD_LS_V) || "null");
+            if (cached && cached.payload) {
+              if (jp) jp.textContent = cached.payload.word || "";
+              if (ro) ro.textContent = cached.payload.reading || "";
+              if (me) me.textContent = cached.payload.meaning || "";
+              logEvent('wotd_fetch_cached');
+              done();
+              return;
+            }
+          } catch (_) {}
+          // Show friendly error inline with retry
+          const cEl = me?.parentElement || wod;
+          friendlyError(cEl, loadWod, {
+            message: "word api is shy rn",
+            label: "try again",
+            small: true,
+          });
+          logEvent('wotd_fetch_fail');
+        } catch (_) {
+          const cEl = me?.parentElement || wod;
+          friendlyError(cEl, loadWod, {
+            message: "can't fetch word right now",
+            label: "retry",
+            small: true,
+          });
+          logEvent('wotd_fetch_fail');
+        } finally {
+          done();
         }
       };
 
@@ -2464,6 +2737,7 @@ function initJpGames() {
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
       }
+  try { window.MikuNowPlaying && window.MikuNowPlaying.refresh(); } catch(_){}
     } catch (_) {}
     // Soft stage floor to keep visuals cute but unobtrusive
     let floor = card.querySelector(".stage-floor");
@@ -2795,123 +3069,7 @@ function initJpGames() {
       window.Jukebox.attachHudSelect();
   } catch (_) {}
 
-  // Ensure top HUD has judge label and rings indicator placeholders
-  (function ensureTopHudJudges() {
-    try {
-      const hud =
-        document.querySelector("#jpHudWidget .jp-hud-widget") ||
-        document.querySelector(".jp-hud-widget");
-      if (!hud) return;
-      if (!document.getElementById("hudJudge")) {
-        const line = document.createElement("div");
-        line.className = "hud-line";
-        line.innerHTML = `<strong>Judge:</strong> <span id="hudJudge" data-judge="-">-</span> <div class="spacer"></div><span id="hudRingsState">Rings ON</span>`;
-        hud.appendChild(line);
-      }
-    } catch (_) {}
-  })();
-
-  // Ensure HUD has quick items (bait + shield) for easy purchase
-  (function ensureHudItems() {
-    try {
-      const hud =
-        document.querySelector("#jpHudWidget .jp-hud-widget") ||
-        document.querySelector(".jp-hud-widget");
-      if (!hud) return;
-      if (!document.getElementById("hudItemsRow")) {
-        const line = document.createElement("div");
-        line.className = "hud-line";
-        line.id = "hudItemsRow";
-        line.innerHTML = `
-            <strong>Items:</strong>
-            <button id="hudBuyBait" class="pixel-btn" title="Drop bait to distract the swallower (10💖)">
-              <span class="hud-bait-icon"></span>Bait 10💖
-            </button>
-            <button id="hudBuyShield" class="pixel-btn" title="Protect hearts from swallower for 5 minutes (50💖)">
-              <span class="hud-shield-icon"></span>Shield 5m
-            </button>
-          `;
-        hud.appendChild(line);
-        
-        // Add Miku icons to HUD buttons
-        try {
-          const baitIcon = line.querySelector(".hud-bait-icon");
-          const shieldIcon = line.querySelector(".hud-shield-icon");
-          if (baitIcon && window.mikuIcon) {
-            baitIcon.innerHTML = mikuIcon("love letter", "🍪");
-          }
-          if (shieldIcon && window.mikuIcon) {
-            shieldIcon.innerHTML = mikuIcon("ok sign", "⛨");
-          }
-        } catch (_) {}
-        
-        const getHearts = () => {
-          try {
-            return (
-              (window.getHeartCount && getHeartCount()) ||
-              window.heartCount ||
-              parseInt(localStorage.getItem("pixelbelle-hearts") || "0", 10) ||
-              0
-            );
-          } catch (_) {
-            return 0;
-          }
-        };
-        const pay = (cost) => {
-          const have = getHearts();
-          if (have < cost) {
-            try {
-              SFX.play("ui.unavailable");
-              if (window.shimejiFunctions?.makeRandomSpeak) {
-                window.shimejiFunctions.makeRandomSpeak(`💖が${cost}必要だよ〜`, 1500);
-              }
-            } catch (_) {}
-            window.loveToast?.(`💖が足りないよ！(${cost}必要)`);
-            return false;
-          }
-          try {
-            window.Hearts?.add?.(-cost);
-          } catch (_) {
-            const left = have - cost;
-            window.heartCount = left;
-            try {
-              localStorage.setItem("pixelbelle-hearts", String(left));
-              window.updateCounters?.();
-            } catch (_) {}
-          }
-          try {
-            SFX.play("ui.select");
-            if (window.shimejiFunctions?.makeRandomSpeak) {
-              window.shimejiFunctions.makeRandomSpeak("購入したよ！✨", 1200);
-            }
-          } catch (_) {}
-          return true;
-        };
-        const baitBtn = line.querySelector("#hudBuyBait");
-        const shieldBtn = line.querySelector("#hudBuyShield");
-        baitBtn?.addEventListener("click", () => {
-          if (pay(10)) {
-            try {
-              spawnDecoyTreats(2 + Math.floor(Math.random() * 3));
-              if (window.shimejiFunctions?.exciteAll) {
-                window.shimejiFunctions.exciteAll("bait");
-              }
-            } catch (_) {}
-          }
-        });
-        shieldBtn?.addEventListener("click", () => {
-          if (pay(50)) {
-            try {
-              activateHeartShield(1000 * 60 * 5);
-              if (window.shimejiFunctions?.exciteAll) {
-                window.shimejiFunctions.exciteAll("shield");
-              }
-            } catch (_) {}
-          }
-        });
-      }
-    } catch (_) {}
-  })();
+  // Judge/Items rows removed from HUD (consolidated into sidebar shop)
 
   function startSong(game, mode, timed) {
     try {
@@ -3206,6 +3364,21 @@ function initJpGames() {
       }
     } catch (_) {}
   }
+  // Expose a small helper so other modules can dismiss active game swallowers
+  try {
+    if (!window.zapSwallower) {
+      window.zapSwallower = function(){
+        try{
+          const list = document.querySelectorAll('.swallow-game-mode');
+          list.forEach(el=>{
+            el.style.animation = 'zapAway 0.5s ease-out forwards';
+            setTimeout(()=>{ try{ el.remove(); }catch(_){ } }, 520);
+          });
+          if (list.length){ try{ SFX.play('extra.fx1'); }catch(_){ } }
+        }catch(_){ }
+      };
+    }
+  } catch(_){}
   function party(cardId) {
     const host = document.getElementById(cardId);
     if (!host) return;
@@ -3650,7 +3823,10 @@ function initJpGames() {
 
       async function load() {
         lock = false;
+        // Clear previous feedback and apply Project DIVA styling
         fb.textContent = "";
+        fb.className = "vocab-feedback diva-feedback-persist";
+        fb.style.display = 'block';
         cEl.innerHTML = "";
         qEl.textContent = "Loading…";
         HUD.notes++;
@@ -5200,7 +5376,7 @@ function initNavigation() {
       }
     });
 
-    // Add entrance animation
+  // Add entrance animation
     if (targetSection) targetSection.style.animation = "fadeInUp 0.5s ease-out";
 
     // UI change SFX
@@ -5238,6 +5414,9 @@ function initNavigation() {
         try {
           window.__resetWish && window.__resetWish();
         } catch (_) {}
+      }
+      if (sectionId === 'Wish') {
+        try { window.__resetWish && window.__resetWish(); } catch(_){}
       }
     } catch (_) {}
   }
@@ -6291,6 +6470,14 @@ function spawnDecoyTreats(n = 2) {
 let __heartShieldUntil =
   parseInt(localStorage.getItem("diva.shield.until") || "0", 10) || 0;
 function activateHeartShield(ms = 3000) {
+  // Extend duration based on current singer rarity multiplier (if available)
+  try {
+    if (typeof window.getSingerScoreMult === "function") {
+      const mult = Math.max(1, getSingerScoreMult());
+      ms = Math.round(ms * mult);
+      try { logEvent && logEvent('shield.buff_applied'); } catch(_) {}
+    }
+  } catch(_) {}
   __heartShieldUntil = Date.now() + ms;
   try {
     localStorage.setItem("diva.shield.until", String(__heartShieldUntil));
@@ -6337,12 +6524,20 @@ function activateHeartShield(ms = 3000) {
     }
   }
   
+  // Respect reduced motion for glow animation
+  try {
+    const mql = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mql && mql.matches) {
+      glowOverlay.style.animation = 'none';
+    }
+  } catch(_){}
   glowOverlay.style.display = "block";
+  const hideAfter = Math.max(100, ms);
   setTimeout(() => {
     if (glowOverlay) {
       glowOverlay.style.display = "none";
     }
-  }, ms);
+  }, hideAfter);
   
   // Audio and shimeji feedback
   try {
@@ -6350,7 +6545,7 @@ function activateHeartShield(ms = 3000) {
     if (window.shimejiFunctions?.makeAllSpeak) {
       window.shimejiFunctions.makeAllSpeak("シールドアクティブ！⛨✨", 2000);
     }
-    if (window.shimejiFunctions?.exciteAll) {
+    if (isVfxEnabled() && window.shimejiFunctions?.exciteAll) {
       window.shimejiFunctions.exciteAll("shield");
     }
   } catch (_) {}
@@ -6588,8 +6783,18 @@ function startSwallowerTimers() {
   // Clear any existing timers
   if (__swallowerGameTimer) clearInterval(__swallowerGameTimer);
   if (__swallowerAmbientTimer) clearInterval(__swallowerAmbientTimer);
-  
-  // Game mode swallower: every 15-25 seconds during study sessions
+  // Be robust to load order: prefer Settings.swallowerRate, fall back to local helper, then default 1
+  const rate = (function(){
+    try{ if (window.Settings && typeof Settings.swallowerRate==='function') return Settings.swallowerRate(); }catch(_){ }
+    try{ if (typeof swallowerRate==='function') return swallowerRate(); }catch(_){ }
+    return 1;
+  })();
+  if (rate === 0) return; // disabled
+  const gmMin = Math.max(8000, 15000/Math.max(0.25, rate));
+  const gmSpan = Math.max(4000, 10000/Math.max(0.25, rate));
+  const amMin = Math.max(12000, 30000/Math.max(0.25, rate));
+  const amSpan = Math.max(6000, 30000/Math.max(0.25, rate));
+  // Game mode swallower: adaptive cadence during study sessions
   __swallowerGameTimer = setInterval(() => {
     if (
       (window.location?.hash || "").includes("study") ||
@@ -6597,9 +6802,9 @@ function startSwallowerTimers() {
     ) {
       showSwallowMascotGame();
     }
-  }, 15000 + Math.random() * 10000);
+  }, gmMin + Math.random() * gmSpan);
   
-  // Ambient mode swallower: every 30-60 seconds when not in games
+  // Ambient mode swallower: adaptive cadence when not in games
   __swallowerAmbientTimer = setInterval(() => {
     if (
       !(window.location?.hash || "").includes("study") &&
@@ -6607,7 +6812,7 @@ function startSwallowerTimers() {
     ) {
       showSwallowMascotAmbient();
     }
-  }, 30000 + Math.random() * 30000);
+  }, amMin + Math.random() * amSpan);
 }
 
 // Start timers when page loads
@@ -6733,6 +6938,24 @@ function initShop() {
   const btnDecoy = document.getElementById("shopDecoy");
   const btnShield = document.getElementById("shopShield");
   const status = document.getElementById("shopStatus");
+  const shopPanel = document.querySelector(".shop-panel");
+  
+  // Add shop keeper with idol.png and Irasshaimase greeting
+  if (shopPanel && !shopPanel.querySelector(".shop-keeper")) {
+    const keeper = document.createElement("div");
+    keeper.className = "shop-keeper";
+    keeper.innerHTML = `
+      <img src="./assets/idol.png" alt="Shop Miku" class="shop-keeper-image" width="48" height="48">
+      <p class="shop-keeper-text">いらっしゃいませ〜！💖<br><small>Welcome to Miku's Item Shop!</small></p>
+    `;
+    shopPanel.insertBefore(keeper, shopPanel.firstChild);
+  }
+  
+  // Hide status overlay initially
+  const statusOverlay = document.getElementById('itemsStatusOverlay');
+  if (statusOverlay) {
+    statusOverlay.style.display = 'none';
+  }
   
   // Add Miku icons to shop buttons
   try {
@@ -6749,7 +6972,7 @@ function initShop() {
   
   if (btnDecoy)
     btnDecoy.addEventListener("click", () => {
-      const cost = 10; // Fixed to match HUD items
+      const cost = 5; // Lower cost as specified
       try {
         if (window.Hearts && typeof window.Hearts.add === "function") {
           if (
@@ -6758,7 +6981,22 @@ function initShop() {
           ) {
             window.Hearts.add(-cost);
             spawnDecoyTreats(2 + Math.floor(Math.random() * 3));
-            status && (status.textContent = "Dropped a decoy!");
+            // Show status overlay when item is used
+            const statusOverlay = document.getElementById('itemsStatusOverlay');
+            if (statusOverlay) {
+              statusOverlay.style.display = 'block';
+            }
+            // Mirror bait status into micro overlay
+            try {
+              ensureItemsOverlay();
+              const ob = document.getElementById('itemsOverlayBait');
+              if (ob){
+                const inner = ob.querySelector('.label');
+                if (inner) inner.textContent = 'active';
+                ob.style.opacity = '1';
+                setTimeout(() => { if (inner && inner.textContent === 'active'){ inner.textContent=''; ob.style.opacity = isReducedMotion()? '0' : '0'; } }, 9000);
+              }
+            } catch(_) {}
             try {
               SFX.play("ui.select");
               if (window.shimejiFunctions?.makeRandomSpeak) {
@@ -6766,7 +7004,6 @@ function initShop() {
               }
             } catch (_) {}
           } else {
-            status && (status.textContent = "Not enough 💖");
             try {
               SFX.play("ui.unavailable");
               if (window.shimejiFunctions?.makeRandomSpeak) {
@@ -6795,6 +7032,8 @@ function initShop() {
           }
           activateHeartShield(1000 * 60 * 5);
           status && (status.textContent = "Shield activated!");
+          // Update shield timer immediately
+          try { updateShieldTimerLabel(); } catch(_) {}
           try {
             SFX.play("extra.fx2");
             if (window.shimejiFunctions?.makeAllSpeak) {
@@ -6812,6 +7051,53 @@ function initShop() {
         }
       } catch (_) {}
     });
+
+  // Live countdown for shield
+  function updateShieldTimerLabel() {
+    const el = document.getElementById("shieldTimer");
+    if (!el) return;
+    const left = Math.max(0, __heartShieldUntil - Date.now());
+    if (left <= 0) {
+      el.textContent = "";
+  // Mirror into micro-overlay
+  ensureItemsOverlay();
+  const chip = document.getElementById('itemsOverlayShield');
+  if (chip){ const inner = chip.querySelector('.label'); if (inner) inner.textContent = ''; chip.style.opacity = '0'; }
+  return;
+    }
+    const mm = Math.floor(left / 60000);
+    const ss = Math.floor((left % 60000) / 1000);
+    if (mm > 0) el.textContent = `shield: ${mm}m ${ss}s`;
+    else el.textContent = `shield: ${ss}s`;
+  // Mirror into micro-overlay
+  ensureItemsOverlay();
+  const chip = document.getElementById('itemsOverlayShield');
+  if (chip){ const inner = chip.querySelector('.label'); if (inner) inner.textContent = el.textContent.replace(/^shield:\s*/,''); chip.style.opacity = isReducedMotion()? '1' : '1'; }
+  }
+  // Tick while page is open
+  try {
+    if (!window.__shieldTick) {
+      window.__shieldTick = setInterval(updateShieldTimerLabel, 1000);
+    }
+  } catch(_) {}
+  // Initial render after load
+  setTimeout(updateShieldTimerLabel, 0);
+}
+
+// Small HUD overlay for items status (display-only)
+function ensureItemsOverlay(){
+  let ov = document.getElementById('itemsStatusOverlay');
+  if (!ov){
+    ov = document.createElement('div');
+    ov.id = 'itemsStatusOverlay';
+  ov.style.cssText = 'position:fixed;right:10px;top:10px;z-index:9998;background:rgba(255,255,255,0.85);border:2px solid var(--border);border-radius:10px;padding:6px 10px;display:flex;gap:12px;align-items:center;backdrop-filter:saturate(1.1) blur(2px)';
+  const rm = isReducedMotion();
+  const base = 'transition:opacity .35s ease;opacity:0;display:inline-flex;gap:6px;align-items:center;font-weight:800;color:#2b2b44;';
+  const vis = rm? '' : base;
+  ov.innerHTML = '<span id="itemsOverlayShield" style="'+vis+'">⛨ <span class="label"></span></span><span id="itemsOverlayBait" style="'+vis+'">🍪 <span class="label"></span></span>';
+    document.body.appendChild(ov);
+  }
+  return ov;
 }
 
 function initRandomMiku() {
@@ -6833,6 +7119,141 @@ function initRandomMiku() {
     }, 600);
   });
 }
+
+// Nav info bar updaters
+function updateNowPlaying(song){
+  try{
+    const el = document.getElementById('nowPlaying');
+    if (!el) return;
+    if (!song){ el.textContent = '—'; return; }
+    const artist = song.artist || 'Miku';
+    const title = song.title || '—';
+    el.textContent = `${title} — ${artist}`;
+  }catch(_){ }
+}
+function updateCurrentMiku(){
+  try{
+    const el = document.getElementById('currentMiku');
+    if (!el) return;
+    const url = localStorage.getItem('singer.current') || '';
+    if (!url){ el.textContent = '—'; return; }
+    const meta = typeof window.getMikuMeta==='function'? window.getMikuMeta(url,true):null;
+    el.textContent = meta?.name || 'Hatsune Miku';
+  }catch(_){ }
+}
+try{ window.updateNowPlaying = updateNowPlaying; window.updateCurrentMiku = updateCurrentMiku; }catch(_){}
+// Initial status bar population on load
+try{
+  window.addEventListener('DOMContentLoaded', ()=>{ try{ updateCurrentMiku(); }catch(_){} });
+}catch(_){ }
+
+// ====== Global Settings Panel ======
+(function ensureGlobalSettings(){
+  // Add a gear button to status bar
+  try{
+    const bar = document.getElementById('statusBar');
+    if (bar && !document.getElementById('settingsBtn')){
+      const btn = document.createElement('button');
+      btn.id='settingsBtn'; btn.className='pixel-btn'; btn.textContent='⚙ Settings';
+      btn.style.marginLeft='8px';
+      const nav = bar.querySelector('.status-nav');
+      if (nav && nav.parentElement){ nav.parentElement.appendChild(btn); } else { bar.appendChild(btn); }
+      btn.addEventListener('click', openSettingsOverlay);
+    }
+  }catch(_){ }
+
+  function openSettingsOverlay(){
+    let ov = document.getElementById('globalSettingsOverlay');
+    if (!ov){
+      ov = document.createElement('div');
+      ov.id='globalSettingsOverlay';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:10010;';
+  const vSfx = parseFloat(localStorage.getItem('pixelbelle-sfx-volume')||'0.6')||0.6;
+    // Use Settings.get if available to avoid ReferenceErrors; fallback to local lsGet
+    const GET = (window.Settings && Settings.get) ? Settings.get : (typeof lsGet==='function'? lsGet : (k,d='')=>{ try{ const v=localStorage.getItem(k); return v==null? d : v; }catch(_){ return d; } });
+    const KEYS = (window.Settings && Settings.KEYS) ? Settings.KEYS : SETTINGS_KEYS;
+    const rm = GET(KEYS.reduceMotion,'') === '1';
+    const vfx = GET(KEYS.vfx,'1') !== '0';
+    const sw = GET(KEYS.swallower,'normal');
+    const ta = GET(KEYS.typing,'0') === '1';
+  const tele = (localStorage.getItem('telemetry.on')||'0') === '1';
+      ov.innerHTML = `
+        <div class="settings-panel" style="background:#fff;border:3px solid var(--border);border-radius:14px;box-shadow:var(--shadow);width:min(560px,95vw);padding:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
+            <h3 style="margin:0">Settings</h3>
+            <button id="gsClose" class="pixel-btn">✕</button>
+          </div>
+          <div style="display:grid;gap:10px">
+            <div>
+              <label style="font-weight:800">SFX Volume: <span id="sfxVolLabel">${Math.round(vSfx*100)}%</span></label>
+              <input id="sfxVol" type="range" min="0" max="1" step="0.01" value="${vSfx}" style="width:100%" />
+            </div>
+            <div>
+              <label><input type="checkbox" id="setReduce" ${rm?'checked':''}/> Prefer Reduced Motion</label>
+            </div>
+            <div>
+              <label><input type="checkbox" id="setVfx" ${vfx?'checked':''}/> Visual FX (confetti, glow)</label>
+            </div>
+            <div>
+              <label>Swallower Spawn Rate</label>
+              <select id="setSwallower" class="pixel-btn">
+                <option value="off" ${sw==='off'?'selected':''}>Off</option>
+                <option value="low" ${sw==='low'?'selected':''}>Low</option>
+                <option value="normal" ${sw==='normal'?'selected':''}>Normal</option>
+                <option value="high" ${sw==='high'?'selected':''}>High</option>
+              </select>
+            </div>
+            <div>
+              <label><input type="checkbox" id="setTyping" ${ta?'checked':''}/> Typing Aids (hints/helpers)</label>
+            </div>
+            <div>
+              <label><input type="checkbox" id="setTelemetry" ${tele?'checked':''}/> Telemetry (dev only)</label>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px">
+              <button id="gsReset" class="pixel-btn">Reset Defaults</button>
+              <button id="gsDone" class="pixel-btn">Done</button>
+            </div>
+          </div>
+        </div>`;
+      document.body.appendChild(ov);
+      const close = ()=>{ try{ SFX.play('ui.back'); }catch(_){ } ov.remove(); };
+      ov.addEventListener('click',(e)=>{ if(e.target===ov) close(); });
+      ov.querySelector('#gsClose').onclick = close;
+      ov.querySelector('#gsDone').onclick = close;
+      const vol = ov.querySelector('#sfxVol');
+      const volLabel = ov.querySelector('#sfxVolLabel');
+      vol.addEventListener('input', ()=>{ try{ SFX.setVolume(parseFloat(vol.value)||0); }catch(_){ } volLabel.textContent = `${Math.round((parseFloat(vol.value)||0)*100)}%`; });
+      vol.addEventListener('change', ()=>{ try{ SFX.setVolume(parseFloat(vol.value)||0); }catch(_){ } });
+  const rmCk = ov.querySelector('#setReduce');
+  rmCk.addEventListener('change', ()=>{ const SET=(window.Settings&&Settings.set)?Settings.set: (typeof lsSet==='function'? lsSet : (k,v)=>{ try{ localStorage.setItem(k,v); }catch(_){ } }); const KEYS=(window.Settings&&Settings.KEYS)?Settings.KEYS:SETTINGS_KEYS; SET(KEYS.reduceMotion, rmCk.checked?'1':'0'); try{ updateReducedMotion(); }catch(_){ } });
+  const vfxCk = ov.querySelector('#setVfx');
+  vfxCk.addEventListener('change', ()=>{ const SET=(window.Settings&&Settings.set)?Settings.set: (typeof lsSet==='function'? lsSet : (k,v)=>{ try{ localStorage.setItem(k,v); }catch(_){ } }); const KEYS=(window.Settings&&Settings.KEYS)?Settings.KEYS:SETTINGS_KEYS; SET(KEYS.vfx, vfxCk.checked?'1':'0'); });
+  const swSel = ov.querySelector('#setSwallower');
+  swSel.addEventListener('change', ()=>{ const SET=(window.Settings&&Settings.set)?Settings.set: (typeof lsSet==='function'? lsSet : (k,v)=>{ try{ localStorage.setItem(k,v); }catch(_){ } }); const KEYS=(window.Settings&&Settings.KEYS)?Settings.KEYS:SETTINGS_KEYS; SET(KEYS.swallower, swSel.value); startSwallowerTimers(); });
+  const tyCk = ov.querySelector('#setTyping');
+  tyCk.addEventListener('change', ()=>{ const SET=(window.Settings&&Settings.set)?Settings.set: (typeof lsSet==='function'? lsSet : (k,v)=>{ try{ localStorage.setItem(k,v); }catch(_){ } }); const KEYS=(window.Settings&&Settings.KEYS)?Settings.KEYS:SETTINGS_KEYS; SET(KEYS.typing, tyCk.checked?'1':'0'); });
+      const teCk = ov.querySelector('#setTelemetry');
+      teCk.addEventListener('change', ()=>{ try{ localStorage.setItem('telemetry.on', teCk.checked?'1':'0'); if (teCk.checked) console.log('[telemetry] enabled'); else console.log('[telemetry] disabled'); }catch(_){ } });
+      ov.querySelector('#gsReset').addEventListener('click', ()=>{
+  const SET=(window.Settings&&Settings.set)?Settings.set: (typeof lsSet==='function'? lsSet : (k,v)=>{ try{ localStorage.setItem(k,v); }catch(_){ } }); const KEYS=(window.Settings&&Settings.KEYS)?Settings.KEYS:SETTINGS_KEYS;
+  SET(KEYS.reduceMotion,'');
+  SET(KEYS.vfx,'1');
+  SET(KEYS.swallower,'normal');
+  SET(KEYS.typing,'0');
+        try{ localStorage.setItem('telemetry.on','0'); }catch(_){}
+        try{ SFX.setVolume(0.6); }catch(_){ }
+        close(); setTimeout(openSettingsOverlay, 0);
+      });
+    } else {
+      document.body.appendChild(ov);
+    }
+  }
+
+  function updateReducedMotion(){
+    // Re-render overlays to pick new visibility; animations use CSS media where possible
+    try{ const o = document.getElementById('itemsStatusOverlay'); if (o){ o.remove(); ensureItemsOverlay(); } }catch(_){ }
+  }
+})();
 
 // Swallower special event: swallows 100 hearts with noticeable SFX and shimeji reactions
 window.triggerSwallowEvent = function () {
@@ -6882,7 +7303,7 @@ function initShrine() {
     // Always include PixieBel surprise slot (hidden '?' until won)
     const pixieUrl = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
     const coll = collectionMap();
-    const pixieOwned = !!coll[pixieUrl];
+  const pixieOwned = !!coll[pixieUrl];
 
     const galleryItems = pixelOnly.slice();
     if (galleryItems.indexOf(pixieUrl) === -1) galleryItems.push(pixieUrl);
@@ -6900,9 +7321,9 @@ function initShrine() {
             : typeof rarityForGlobal === "function"
             ? rarityForGlobal(img)
             : 1;
-        const rClass = `rarity-${r}`;
+  const rClass = `rarity-${r}`;
         const clickable = !(isPixieSlot && !pixieOwned);
-        const onClick = clickable ? `onclick=\"openImageModal('${img}')\"` : "";
+  const onClick = clickable ? `onclick=\"openImageModal('${img}')\"` : "";
         const ownClass = owned ? "" : "not-owned";
         return `
           <div class="gallery-item ${coverClass} ${rClass} ${ownClass}">
@@ -6946,6 +7367,10 @@ function initShrine() {
       document.addEventListener("miku-images-ready", renderGallery, {
         once: true,
       });
+    // Fire PixieBel ceremony if conditions met and not yet shown
+    try{
+      setTimeout(()=>{ try{ if (typeof hasPixieBel==='function' && typeof awardPixieBel==='function'){ if (hasPixieBel() && localStorage.getItem('pixiebelUnlocked')!=='1') awardPixieBel(); } }catch(_){ } }, 1200);
+    }catch(_){ }
   }
 
   // Lightweight Miku mini-player for favorites (YouTube)
@@ -7199,6 +7624,7 @@ function singerSet(url) {
   }
   localStorage.setItem("singer.current", url);
   applySinger();
+  try { if (window.MikuNowPlaying) window.MikuNowPlaying.refresh(); } catch(_){}
   loveToast("Singer set! 🎤");
   try {
     SFX.play("ui.select");
@@ -7238,6 +7664,7 @@ function applySinger() {
     typeof window.refreshFloatingMikus === "function" &&
       window.refreshFloatingMikus();
   } catch (_) {}
+  try { if (typeof window.updateCurrentMiku === 'function') window.updateCurrentMiku(); } catch(_){}
 }
 function applySingerTheme() {
   try {
@@ -7377,6 +7804,7 @@ window.openImageModal = function (url) {
   const info = m.querySelector("#imageModalInfo");
   const songDiv = m.querySelector("#imageModalSong");
   const setBtn = m.querySelector("#imageModalSetSinger");
+  const tooltipId = 'imageModalRarityTip';
 
   const meta =
     typeof window.getMikuMeta === "function"
@@ -7423,6 +7851,18 @@ window.openImageModal = function (url) {
   const r =
     typeof rarityFor === "function" ? rarityFor(url) : rarityForGlobal(url);
   rar.textContent = "Rarity: " + "★".repeat(r);
+  // Tooltip with enforced effects (score/shield/rare-drop)
+  try {
+    const eff = window.RARITY_EFFECTS || { scorePerStep:.10, scoreCap:.40, rareDropBonus:.05 };
+    const steps = Math.max(0, r-1);
+    const scoreBonus = Math.min(eff.scoreCap, steps*eff.scorePerStep);
+    const shieldPct = Math.round(scoreBonus*100);
+    const rarePct = Math.round((eff.rareDropBonus||0)*100);
+    const tip = `Effects: +${Math.round(scoreBonus*100)}% score, +${shieldPct}% shield time, +${rarePct}% rare drop`;
+    let tipEl = document.getElementById(tooltipId);
+    if (!tipEl){ tipEl = document.createElement('div'); tipEl.id=tooltipId; tipEl.style.cssText='margin-top:6px;font-size:12px;color:#596286'; rar.parentElement.appendChild(tipEl); }
+    tipEl.textContent = tip;
+  } catch(_){}
 
   const coll = collectionMap();
   const entry = coll[url];
@@ -7440,6 +7880,31 @@ window.openImageModal = function (url) {
     SFX.play("extra.camera");
   } catch (_) {}
   m.classList.add("open");
+  // Clear NEW badge persistence once viewed
+  try {
+    const LS_COLL = 'Wish.collection';
+    const coll2 = JSON.parse(localStorage.getItem(LS_COLL)||'{}');
+    if (coll2[url] && coll2[url].new){ delete coll2[url].new; localStorage.setItem(LS_COLL, JSON.stringify(coll2)); }
+  } catch(_){ }
+  try { if (typeof removeNew==='function') removeNew(url); } catch(_){ }
+  try {
+    const dex = document.getElementById('mikuDex');
+    if (dex && !dex.classList.contains('hidden')) { if (typeof renderDex==='function') renderDex(); }
+  } catch(_){ }
+  // Clear NEW flag when viewing details
+  try {
+    const LS_COLL = "Wish.collection";
+    const coll = JSON.parse(localStorage.getItem(LS_COLL) || "{}");
+    if (coll[url] && coll[url].new) {
+      delete coll[url].new;
+      localStorage.setItem(LS_COLL, JSON.stringify(coll));
+      const dex = document.getElementById('mikuDex');
+      if (dex && !dex.classList.contains('hidden')) {
+        // re-render Dex to remove NEW badge
+        try { if (typeof renderDex === 'function') renderDex(); } catch(_){}
+      }
+    }
+  } catch(_){}
 };
 
 // Helper function for video error handling
@@ -7927,8 +8392,8 @@ function createRingEffect(element, isCorrect = true) {
 
     // Extra sparkle for correct answers with PS-style burst
     if (isCorrect) {
-      party();
-      createConfettiBurst(element.closest(".rhythm-grid") || element, 8);
+      party("rhythmGrid");
+      createConfettiBurst(element.closest(".rhythm-grid") || element, 4);
     }
   } catch (e) {
     console.log("Ring effect error:", e);

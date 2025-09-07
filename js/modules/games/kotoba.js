@@ -79,33 +79,48 @@
   }
 
   async function loadRound(){
-    if (!cEl) return; lock=false; if (fbEl) fbEl.textContent=''; cEl.innerHTML=''; if (chatEl) chatEl.innerHTML=''; try{ HUD && HUD.notes++; }catch(_){ }
+    if (!cEl) return;
+  lock=false;
+  try{ if (window.clearDivaFeedback) clearDivaFeedback('kotobaFeedback'); }catch(_){ }
+  if (fbEl) fbEl.textContent='';
+    cEl.innerHTML='';
+    if (chatEl) chatEl.innerHTML='';
+    try{ HUD && HUD.notes++; }catch(_){ }
     try{
-      const q = await getQuestion(); const correct = q.correct; if (chatEl) say(`「${q.promptHtml.replace(/<[^>]+>/g,'')}」って、どういう意味？`,'miku');
+      const q = await getQuestion();
+      const correct = q.correct;
+      if (chatEl) say(`「${q.promptHtml.replace(/<[^>]+>/g,'')}」って、どういう意味？`,'miku');
       const PRESET = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { baseTime:20, options:4 };
       const maxOpts = Math.min(PRESET.options || 4, 4);
-      try{ const cols = maxOpts>=6?3:2; cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`; cEl.style.gridTemplateRows = `repeat(${Math.ceil(maxOpts/cols)},1fr)`; }catch(_){ }
+      cEl.style.display='flex';
+      cEl.style.flexDirection='column';
       if (isTimed()){
         const baseTime = (function(){ try{ return (window.diffParams && diffParams().baseTime) || 20; } catch(_){ return 20; } })();
-        countdown = PRESET.baseTime || baseTime; if (timerEl) timerEl.textContent = String(countdown);
+        countdown = PRESET.baseTime || baseTime;
+        if (timerEl) timerEl.textContent = String(countdown);
         startAt = Date.now(); if (tId) clearInterval(tId);
         tId = setInterval(()=>{
           countdown--; if (timerEl) timerEl.textContent = String(Math.max(0,countdown));
-          if (countdown<=0){ clearInterval(tId); tId=null; lock=true; if (fbEl){ fbEl.textContent = `⏰ Time!`; fbEl.style.color = '#c00'; }
-            try{ SFX.play('quiz.timeup'); }catch(_){ } try{ flashJudge && flashJudge('kotobaCard','MISS'); addVoltage && addVoltage(-5,'kotobaCard'); loseLife && loseLife('kotobaCard'); }catch(_){ }
+          if (countdown<=0){
+            clearInterval(tId); tId=null; lock=true;
+            if (fbEl){ fbEl.textContent = `⏰ Time!`; fbEl.style.color = '#c00'; }
+            try{ SFX.play('quiz.timeup'); }catch(_){ }
+            try{ flashJudge && flashJudge('kotobaCard','MISS'); addVoltage && addVoltage(-5,'kotobaCard'); loseLife && loseLife('kotobaCard'); }catch(_){ }
             streak=0; if (streakEl) streakEl.textContent=String(streak); setTimeout(loadRound, 900);
           }
         }, 1000);
       }
       const use = q.options.slice(0, maxOpts);
-      use.forEach((opt, idx)=>{
-        const maker = window.createUltimateBeatpadButton || ((label)=>{ const btn=document.createElement('button'); btn.className='pixel-btn beatpad-btn'; btn.textContent=label; return { btn, style:{ isPerfect:false, color:'#a594f9' } }; });
-        const { btn } = maker(opt, idx, (text, element, style)=> onSelect(text, element, style, correct));
+      use.forEach((opt)=>{
+        const btn=document.createElement('button');
+        btn.className='pixel-btn chat-option';
+        btn.textContent=opt;
+        btn.addEventListener('click',()=> onSelect(opt, btn, { isPerfect:false, color:'#a594f9' }, correct));
         cEl.appendChild(btn);
       });
-      try{ createFallingBeatsSystem && createFallingBeatsSystem(cEl); }catch(_){ }
-      try{ setupUltimateBeatpadKeyboard && setupUltimateBeatpadKeyboard(cEl, (text)=>{ const target = Array.from(cEl.querySelectorAll('.beatpad-btn')).find(b=>b.textContent===text); if (target) target.click(); }); }catch(_){ }
-    }catch(e){ if (cEl){ cEl.textContent = 'Offline. Try again.'; } }
+    }catch(e){
+      if (cEl){ cEl.textContent = 'Offline. Try again.'; }
+    }
   }
 
   function onSelect(text, element, style, correct){
@@ -113,8 +128,9 @@
     const isCorrect = text === correct;
     if (isCorrect){
       try{ createRingEffect && createRingEffect(element,true); }catch(_){ }
-      if (style && style.isPerfect){ try{ createPerfectHitEffect && createPerfectHitEffect(element, style.color); }catch(_){ } if (fbEl) fbEl.textContent='✨ PERFECT! ✨'; try{ awardHearts && awardHearts(2); }catch(_){ } }
-      else { if (fbEl) fbEl.textContent='✅ Correct!'; try{ awardHearts && awardHearts(1); }catch(_){ } }
+      element.classList.add('correct');
+      if (style && style.isPerfect){ try{ createPerfectHitEffect && createPerfectHitEffect(element, style.color); }catch(_){ } if (window.showDivaFeedback) showDivaFeedback('kotobaFeedback','✨ PERFECT! ✨', true); else if (fbEl) fbEl.textContent='✨ PERFECT! ✨'; try{ awardHearts && awardHearts(2); }catch(_){ } }
+      else { if (window.showDivaFeedback) showDivaFeedback('kotobaFeedback','✅ Correct!', true); else if (fbEl) fbEl.textContent='✅ Correct!'; try{ awardHearts && awardHearts(1); }catch(_){ } }
       if (fbEl) fbEl.style.color='#2b2b44';
       score++; if (scoreEl) scoreEl.textContent = String(score);
       if (chatEl){ say(text,'you'); setTimeout(()=> say('やった！正解だよ！','miku'), 200); }
@@ -123,15 +139,27 @@
       const rmult = (function(){ try{ return getRhythmMult(); }catch(_){ return 1; } })();
       const gain=(12 + Math.min(15,(streak-1)*2))*mult*rmult; try{ addXP && addXP(Math.round(style && style.isPerfect ? gain*1.5 : gain)); }catch(_){ }
       const dt = Date.now()-startAt; let judge='FINE', v=2, sc=60; if ((style && style.isPerfect) || dt<=700){ judge='COOL'; v=5; sc=120; try{ HUD&&HUD.counts&&(HUD.counts.COOL++); party && party('kotobaCard'); }catch(_){ } } else if (dt<=1600){ judge='GREAT'; v=3; sc=80; try{ HUD&&HUD.counts&&(HUD.counts.GREAT++); }catch(_){ } } else { try{ HUD&&HUD.counts&&(HUD.counts.FINE++); }catch(_){ } }
-      try{ flashJudge && flashJudge('kotobaCard',judge); addVoltage && addVoltage(v,'kotobaCard'); addCombo && addCombo('kotobaCard'); HUD && (HUD.score += Math.round(sc*mult*rmult)); }catch(_){ }
+  try{ flashJudge && flashJudge('kotobaCard',judge); addVoltage && addVoltage(v,'kotobaCard'); addCombo && addCombo('kotobaCard'); HUD && (HUD.score += Math.round(sc*mult*rmult)); }catch(_){ }
+  try{ window.zapSwallower && window.zapSwallower(); }catch(_){ }
       if (isTimed()){ const elapsed=Date.now()-startAt; if (!bestTime || elapsed<bestTime){ bestTime = elapsed; try{ localStorage.setItem('kotoba.bestTime', String(bestTime)); }catch(_){ } if (bestTimeEl) bestTimeEl.textContent = `${(bestTime/1000).toFixed(1)}s`; } }
     } else {
       try{ createRingEffect && createRingEffect(element,false); }catch(_){ }
-      if (fbEl){ fbEl.textContent = `❌ ${correct}`; fbEl.style.color='#c00'; }
+      element.classList.add('wrong');
+      if (window.showDivaFeedback) showDivaFeedback('kotobaFeedback', `❌ ${correct}`, false); else if (fbEl){ fbEl.textContent = `❌ ${correct}`; fbEl.style.color='#c00'; }
       if (chatEl){ say(text,'you'); setTimeout(()=> say(`残念… 正解は「${correct}」だよ。`,'miku'), 200); }
       streak=0; if (streakEl) streakEl.textContent=String(streak);
       try{ HUD&&HUD.counts&&(HUD.counts.SAD++); flashJudge && flashJudge('kotobaCard','SAD'); addVoltage && addVoltage(-5,'kotobaCard'); resetCombo && resetCombo(); loseLife && loseLife('kotobaCard'); }catch(_){ }
+      // Highlight correct answer
+      try{
+        Array.from(cEl.querySelectorAll('.chat-option')).forEach((b)=>{
+          b.disabled=true;
+          if (b.textContent===correct) b.classList.add('correct');
+        });
+      }catch(_){ }
     }
+    try{
+      Array.from(cEl.querySelectorAll('.chat-option')).forEach((b)=> (b.disabled=true));
+    }catch(_){ }
     setTimeout(loadRound, 900);
     return isCorrect;
   }

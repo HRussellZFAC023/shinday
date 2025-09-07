@@ -60,7 +60,9 @@
   }
 
   async function loadRound(){
-    if (!qEl || !cEl) return; lock=false; if (fbEl) fbEl.textContent=''; cEl.innerHTML=''; qEl.textContent='Loading…'; try{ HUD && HUD.notes++; }catch(_){ }
+  if (!qEl || !cEl) return; lock=false;
+  try{ if (window.clearDivaFeedback) clearDivaFeedback('kanjiFeedback'); }catch(_){ }
+  if (fbEl) fbEl.textContent=''; cEl.innerHTML=''; qEl.textContent='Loading…'; try{ HUD && HUD.notes++; }catch(_){ }
     try{
       const q = await getQuestion(curMode); const correct = q.correct; qEl.innerHTML = q.promptHtml;
       const PRESET = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { baseTime:15, options:4 };
@@ -94,8 +96,8 @@
     const isCorrect = text === correct;
     if (isCorrect){
       try{ createRingEffect && createRingEffect(element,true); }catch(_){ }
-      if (style && style.isPerfect){ try{ createPerfectHitEffect && createPerfectHitEffect(element, style.color); }catch(_){ } if (fbEl) fbEl.textContent='✨ PERFECT! 正解! ✨'; try{ awardHearts && awardHearts(2); }catch(_){ } }
-      else { if (fbEl) fbEl.textContent='✅ 正解!'; try{ awardHearts && awardHearts(1); }catch(_){ } }
+      if (style && style.isPerfect){ try{ createPerfectHitEffect && createPerfectHitEffect(element, style.color); }catch(_){ } if (window.showDivaFeedback) showDivaFeedback('kanjiFeedback','✨ PERFECT! 正解! ✨', true); else if (fbEl) fbEl.textContent='✨ PERFECT! 正解! ✨'; try{ awardHearts && awardHearts(2); }catch(_){ } }
+      else { if (window.showDivaFeedback) showDivaFeedback('kanjiFeedback','✅ 正解!', true); else if (fbEl) fbEl.textContent='✅ 正解!'; try{ awardHearts && awardHearts(1); }catch(_){ } }
       if (fbEl) fbEl.style.color='#2b2b44';
       score++; if (scoreEl) scoreEl.textContent = String(score);
       streak++; if (streakEl) streakEl.textContent = String(streak); try{ if (streak>1) loveToast && loveToast(`コンボ x${streak}!`); createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak); }catch(_){ }
@@ -103,11 +105,12 @@
       const rmult = (function(){ try{ return getRhythmMult(); }catch(_){ return 1; } })();
       const base = (curMode==='reading'?16:12); const gain=(base + Math.min(15,(streak-1)*2))*mult*rmult; try{ addXP && addXP(Math.round(style && style.isPerfect ? gain*1.5 : gain)); }catch(_){ }
       const dt = Date.now()-startAt; let judge='FINE', v=2, sc=60; if ((style && style.isPerfect) || dt<=700){ judge='COOL'; v=5; sc=120; try{ HUD&&HUD.counts&&(HUD.counts.COOL++); party && party('kanjiCard'); }catch(_){ } } else if (dt<=1600){ judge='GREAT'; v=3; sc=80; try{ HUD&&HUD.counts&&(HUD.counts.GREAT++); }catch(_){ } } else { try{ HUD&&HUD.counts&&(HUD.counts.FINE++); }catch(_){ } }
-      try{ flashJudge && flashJudge('kanjiCard',judge); addVoltage && addVoltage(v,'kanjiCard'); addCombo && addCombo('kanjiCard'); HUD && (HUD.score += Math.round(sc*mult*rmult)); }catch(_){ }
+  try{ flashJudge && flashJudge('kanjiCard',judge); addVoltage && addVoltage(v,'kanjiCard'); addCombo && addCombo('kanjiCard'); HUD && (HUD.score += Math.round(sc*mult*rmult)); }catch(_){ }
+  try{ window.zapSwallower && window.zapSwallower(); }catch(_){ }
       if (isTimed()){ const elapsed=Date.now()-startAt; if (!bestTime || elapsed<bestTime){ bestTime = elapsed; try{ localStorage.setItem('kanji.bestTime', String(bestTime)); }catch(_){ } if (bestTimeEl) bestTimeEl.textContent = `${(bestTime/1000).toFixed(1)}s`; } }
     } else {
       try{ createRingEffect && createRingEffect(element,false); }catch(_){ }
-      if (fbEl){ fbEl.textContent = `❌ ${correct}`; fbEl.style.color='#c00'; }
+      if (window.showDivaFeedback) showDivaFeedback('kanjiFeedback', `❌ ${correct}`, false); else if (fbEl){ fbEl.textContent = `❌ ${correct}`; fbEl.style.color='#c00'; }
       streak=0; if (streakEl) streakEl.textContent=String(streak);
       try{ HUD&&HUD.counts&&(HUD.counts.SAD++); flashJudge && flashJudge('kanjiCard','SAD'); addVoltage && addVoltage(-5,'kanjiCard'); resetCombo && resetCombo(); loseLife && loseLife('kanjiCard'); }catch(_){ }
     }
