@@ -743,10 +743,12 @@ window.MikuUI = (function () {
 
         // Friends heading handled above
 
-        // Stats heading
-        const statBadge1 = document.getElementById("statBadge1");
-        if (statBadge1 && left.stats) {
-          const w = statBadge1.closest(".widget");
+        // Stats heading (robust: prefer visitorCount anchor; fallback statBadge1)
+        const statsAnchor =
+          document.getElementById("visitorCount") ||
+          document.getElementById("statBadge1");
+        if (statsAnchor && left.stats) {
+          const w = statsAnchor.closest(".widget");
           const h = w ? w.querySelector("h3") : null;
           const statsIcon = left.statsIcon
            ? window.MikuCore.mikuIcon(left.statsIcon, "🌸")
@@ -755,9 +757,12 @@ window.MikuUI = (function () {
 
           // Also update visitor counter label with icon
           const visitorLabel = w ? w.querySelector(".counter-label") : null;
-          if (visitorLabel && C.status?.visitorIcon) {
-            const visitorIcon =window.MikuCore.mikuIcon(C.status.visitorIcon, "");
-            visitorLabel.innerHTML = /*html*/ `${visitorIcon}Visitors:`;
+          if (visitorLabel) {
+            const icon = C.status?.visitorIcon
+             ? window.MikuCore.mikuIcon(C.status.visitorIcon, "")
+              : "";
+            const label = (C.status && C.status.visitorsLabel) || "Visitors:";
+            visitorLabel.innerHTML = /*html*/ `${icon}${label}`;
           }
         }
 
@@ -779,6 +784,29 @@ window.MikuUI = (function () {
            ? window.MikuCore.mikuIcon(right.badgesIcon, "💫")
             : "💫";
           if (h) h.innerHTML = /*html*/ `${badgesIcon} ${right.badges}`;
+        }
+
+        // Shop title
+        const shopPanel = document.querySelector(".shop-panel");
+        if (shopPanel && right.shop) {
+          const w = shopPanel.closest(".widget");
+          const h = w ? w.querySelector("h3") : null;
+          const shopIcon = right.shopIcon
+           ? window.MikuCore.mikuIcon(right.shopIcon, "🛍️")
+            : "🛍️";
+          if (h) h.innerHTML = /*html*/ `${shopIcon} ${right.shop}`;
+        }
+
+        // Diva HUD title
+        const divaWidget = document.getElementById("jpHudWidget");
+        if (divaWidget && right.diva) {
+          const h = divaWidget.querySelector("h3");
+          if (h) {
+            const divaIcon = right.divaIcon
+             ? window.MikuCore.mikuIcon(right.divaIcon, "🎤")
+              : ""; // content may already include emoji
+            h.innerHTML = divaIcon ? /*html*/ `${divaIcon} ${right.diva}` : right.diva;
+          }
         }
 
         // Vibe title

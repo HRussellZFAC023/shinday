@@ -2913,68 +2913,15 @@ main {
 .made-by-gif {
   position: absolute;
   right: 5px;
-  bottom: -30px;
+  bottom: -50px;
   width: 200px;
   height: auto;
  
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-.made-by-gif {
-  position: relative;
-  cursor: default;
-}
 
-/* tooltip */
-.made-by-gif::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + 10px);
-  background: rgba(43, 43, 68, 0.92);
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-  transform: translateY(6px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.18s ease, transform 0.18s ease;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-  z-index: 10001;
-}
-
-/* small arrow */
-.made-by-gif::before {
-  content: "";
-  position: absolute;
-  right: 12px;
-  bottom: calc(100% + 4px);
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid rgba(43, 43, 68, 0.92);
-  opacity: 0;
-  transition: opacity 0.18s ease, transform 0.18s ease;
-  pointer-events: none;
-  z-index: 10001;
-}
-
-/* show tooltip on hover or keyboard focus, keep existing hover transform */
-.made-by-gif:hover,
-.made-by-gif:focus-visible {
+.made-by-gif:hover {
   transform: translateY(-2px) scale(1.02);
-  outline: none;
-}
-
-.made-by-gif:hover::after,
-.made-by-gif:focus-visible::after,
-.made-by-gif:hover::before,
-.made-by-gif:focus-visible::before {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* Background animations */
@@ -3815,8 +3762,10 @@ main {
 .Wish-results img {
   margin-bottom: 16px !important;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   animation: revealPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.Wish-footer {
+  margin-top: 12px !important;
 }
 
 @keyframes revealPop {

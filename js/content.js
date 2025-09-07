@@ -162,6 +162,8 @@ const SITE_CONTENT = {
     heartsLabel: "Hearts collected:",
     heartIcon: "love",
     visitorIcon: "cheering",
+  // Label used in the Site Stats widget for the visitor counter
+  visitorsLabel: "Visitors:",
     statusIcon: "starUwu",
   },
 
@@ -395,6 +397,26 @@ const SITE_CONTENT = {
     WishOpenDex: "📱 Open MikuDex",
   },
 
+  // Shop UI copy, titles, and item configs
+  shop: {
+    headerWelcome: "いらっしゃいませ〜！",
+    headerSubtitle: "Welcome to my shop! ✨",
+    items: {
+      shield: {
+        title: "Heart Shield",
+        description: "Protect your precious hearts for 5 minutes!",
+        cost: 50,
+        icon: "⛨",
+      },
+      decoy: {
+        title: "Sweet Decoys",
+        description: "Distract threats with delicious treats!",
+        cost: 5,
+        icon: "🍪",
+      },
+    },
+  },
+
   shrine: {
     title: "Miku Shrine",
     titleIcon: "stage",
@@ -490,7 +512,7 @@ const SITE_CONTENT = {
   },
 
   footer: {
-    text: "Hand-crafted  • ✨ This site is always under construction! ✨ • Cinnamoroll Approved",
+    text: "hand-crafted for you • ✨ this site is always under construction! ✨ • cinnamoroll approved",
   },
 
   love: {
@@ -552,8 +574,11 @@ const SITE_CONTENT = {
       statsIcon: "okSign",
     },
     right: {
+      diva: "🎤 Diva HUD",
       quickLinks: "quick links",
       quickLinksIcon: "cheering",
+      shop: "Shop",
+      shopIcon: "okHands",
       badges: "pin badges",
       badgesIcon: "starUwu",
       vibe: "today's vibe",

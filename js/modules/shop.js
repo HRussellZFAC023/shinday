@@ -83,6 +83,9 @@ window.shop = (function () {
   }
   function initShop() {
     const shopPanel = document.querySelector(".shop-panel");
+  const C = window.SITE_CONTENT || {};
+  const ShopC = C.shop || {};
+  const ItemsC = (ShopC && ShopC.items) || {};
 
     // Inject beautiful Miku-themed shop styles
     injectShopStyles();
@@ -96,7 +99,7 @@ window.shop = (function () {
       // Create stunning shop header with Miku and speech bubble
       const shopHeader = document.createElement("div");
       shopHeader.className = "miku-shop-header";
-      shopHeader.innerHTML = `
+  shopHeader.innerHTML = `
         <div class="miku-character">
           <img src="./assets/idol.png" alt="Shop Miku" class="miku-standalone">
           <div class="miku-sparkles">✨</div>
@@ -105,8 +108,8 @@ window.shop = (function () {
         </div>
         <div class="miku-speech-bubble">
           <div class="speech-content">
-            <div class="welcome-text">いらっしゃいませ〜！</div>
-            <div class="welcome-subtitle">Welcome to my shop! ✨</div>
+    <div class="welcome-text">${ShopC.headerWelcome || "いらっしゃいませ〜！"}</div>
+    <div class="welcome-subtitle">${ShopC.headerSubtitle || "Welcome to my shop! ✨"}</div>
           </div>
           <div class="speech-tail"></div>
         </div>
@@ -121,12 +124,12 @@ window.shop = (function () {
       shieldCard.className = "miku-item-card shield-card";
       shieldCard.id = "shopShield";
       shieldCard.innerHTML = `
-        <div class="item-icon">⛨</div>
+        <div class="item-icon">${(ItemsC.shield && ItemsC.shield.icon) || "⛨"}</div>
         <div class="item-info">
-          <h3>Heart Shield</h3>
-          <p>Protect your precious hearts for 5 minutes!</p>
+          <h3>${(ItemsC.shield && ItemsC.shield.title) || "Heart Shield"}</h3>
+          <p>${(ItemsC.shield && ItemsC.shield.description) || "Protect your precious hearts for 5 minutes!"}</p>
           <div class="item-cost">
-            <span class="cost-amount">50</span>
+            <span class="cost-amount">${(ItemsC.shield && ItemsC.shield.cost) || 50}</span>
             <span class="cost-hearts">💖</span>
           </div>
         </div>
@@ -139,12 +142,12 @@ window.shop = (function () {
       decoyCard.className = "miku-item-card decoy-card";
       decoyCard.id = "shopDecoy";
       decoyCard.innerHTML = `
-        <div class="item-icon">🍪</div>
+        <div class="item-icon">${(ItemsC.decoy && ItemsC.decoy.icon) || "🍪"}</div>
         <div class="item-info">
-          <h3>Sweet Decoys</h3>
-          <p>Distract threats with delicious treats!</p>
+          <h3>${(ItemsC.decoy && ItemsC.decoy.title) || "Sweet Decoys"}</h3>
+          <p>${(ItemsC.decoy && ItemsC.decoy.description) || "Distract threats with delicious treats!"}</p>
           <div class="item-cost">
-            <span class="cost-amount">5</span>
+            <span class="cost-amount">${(ItemsC.decoy && ItemsC.decoy.cost) || 5}</span>
             <span class="cost-hearts">💖</span>
           </div>
         </div>
@@ -179,9 +182,9 @@ window.shop = (function () {
     }
 
     // Enhanced click handlers with state management and animations
-    if (newBtnDecoy) {
+  if (newBtnDecoy) {
       newBtnDecoy.addEventListener("click", () => {
-        const cost = 5;
+    const cost = (ItemsC.decoy && ItemsC.decoy.cost) || 5;
         const now = Date.now();
 
         // Check if any item is currently active (Miku says finish your vegetables!)
@@ -234,9 +237,9 @@ window.shop = (function () {
       });
     }
 
-    if (newBtnShield) {
+  if (newBtnShield) {
       newBtnShield.addEventListener("click", () => {
-        const cost = 50;
+    const cost = (ItemsC.shield && ItemsC.shield.cost) || 50;
         const now = Date.now();
 
         // Check if any item is currently active
