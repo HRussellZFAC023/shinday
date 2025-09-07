@@ -2760,7 +2760,7 @@ main {
   box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.25) inset;
 }
 
-/* ★6: PixieBel — rainbow accent ring */
+/* ★6: PixieBel • rainbow accent ring */
 .gallery-item.rarity-6 .rarity-ring {
   border: 3px solid transparent;
   border-radius: 12px;
@@ -3506,7 +3506,7 @@ main {
   }
 }
 
-/* Enhanced floating animations for splash and hero Miku */
+/* Enhanced floating animations for splash and hero Miku
 .splash-miku,
 .hero-miku {
   animation: gentleFloat 3s ease-in-out infinite;
@@ -3517,7 +3517,7 @@ main {
 .hero-miku:hover {
   transform: scale(1.05) translateY(-2px);
   animation-play-state: paused;
-}
+} */
 
 @keyframes gentleFloat {
   0%,
@@ -3704,11 +3704,7 @@ main {
   display: none !important;
 }
 
-/* Enhanced cute animations everywhere */
-.widget {
-  animation: gentleFloat 6s ease-in-out infinite;
-  animation-delay: calc(var(--widget-index, 0) * 0.5s);
-}
+
 
 .pixel-btn {
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -3769,12 +3765,7 @@ main {
   }
 }
 
-/* More Miku icons everywhere with cute hover effects */
-.content-section h2::before {
-  content: "🎵";
-  margin-right: 8px;
-  animation: bounceIcon 2s ease-in-out infinite;
-}
+
 
 @keyframes bounceIcon {
   0%,

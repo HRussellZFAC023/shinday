@@ -1,10 +1,435 @@
+  // Economy tie-in: earn small hearts over time when companions are active
+  (function shimejiEconomy() {
+    let grantAt = Date.now() + 180000; // 3 minutes
+    setInterval(() => {
+      
+        if (creatures.length > 0 && Date.now() >= grantAt) {
+          if (
+            window.pixelBelleGarden &&
+            typeof window.pixelBelleGarden.addHearts === "function"
+          ) {
+            window.pixelBelleGarden.addHearts(1);
+          }
+          grantAt = Date.now() + 180000;
+        }
+      
+    }, 15000);
+  })();
+
+
+  // Enhanced UI module for Project DIVA-style feedback and cute animations
+(function () {
+  // Enhanced feedback system with persistent DIVA styling
+  function enhanceFeedback() {
+    const feedbackElements = [
+      "vocabFeedback",
+      "kanjiFeedback",
+      "kotobaFeedback",
+      "typingFeedback",
+    ];
+
+    feedbackElements.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.classList.add("diva-feedback-enhanced");
+        element.style.position = "absolute";
+        element.style.zIndex = "9999";
+        element.style.pointerEvents = "none";
+      }
+    });
+  }
+
+  // Add Miku icons throughout the interface
+  function addMikuIconsEverywhere() {
+    // Add icons to section headings
+    const headings = document.querySelectorAll("h2, h3");
+    headings.forEach((heading, index) => {
+      if (!heading.querySelector(".miku-icon") && window.mikuIcon) {
+        const icons = [
+          "star uwu",
+          "jumping with music notes",
+          "vibing",
+          "cheering",
+          "love letter",
+        ];
+        const iconName = icons[index % icons.length];
+        heading.innerHTML = `${window.MikuCore.mikuIcon(iconName, "✨")} ${heading.innerHTML}`;
+      }
+    });
+
+    // Add icons to buttons that don't have them
+    const buttons = document.querySelectorAll(
+      ".pixel-btn:not([data-has-icon])",
+    );
+    buttons.forEach((btn, index) => {
+      if (window.mikuIcon && !btn.querySelector(".miku-icon")) {
+        const icons = [
+          "ok hands",
+          "thumbs up",
+          "pow!",
+          "love",
+          "jumping with stars",
+        ];
+        const iconName = icons[index % icons.length];
+        btn.setAttribute("data-has-icon", "true");
+        btn.innerHTML = `${window.MikuCore.mikuIcon(iconName, "✨")} ${btn.textContent}`;
+      }
+    });
+
+    // Add floating icons to widgets
+    const widgets = document.querySelectorAll(".widget");
+    widgets.forEach((widget, index) => {
+      widget.style.setProperty("--widget-index", index);
+      if (!widget.querySelector(".widget-sparkle")) {
+        const sparkle = document.createElement("div");
+        sparkle.className = "widget-sparkle";
+        sparkle.innerHTML = "✨";
+        sparkle.style.cssText = `
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          font-size: 12px;
+          animation: sparkleFloat 3s ease-in-out infinite;
+          z-index: 1;
+        `;
+        widget.style.position = "relative";
+        widget.appendChild(sparkle);
+      }
+    });
+  }
+
+  // Enhance status overlay behavior
+  function enhanceStatusOverlay() {
+    const overlay = document.getElementById("itemsStatusOverlay");
+    if (overlay) {
+      // Initially hide the overlay
+      overlay.style.display = "none";
+      overlay.style.opacity = "0";
+      overlay.style.transition = "opacity 0.3s ease";
+
+      // Show overlay when items are active
+      window.showStatusOverlay = function () {
+        overlay.style.display = "block";
+        setTimeout(() => (overlay.style.opacity = "1"), 10);
+      };
+
+      // Hide overlay when no items are active
+      window.hideStatusOverlay = function () {
+        overlay.style.opacity = "0";
+        setTimeout(() => (overlay.style.display = "none"), 300);
+      };
+    }
+  }
+
+  // Enhanced DIVA-style feedback that persists
+  window.showDivaFeedback = function (elementId, message, isCorrect = true) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    element.textContent = message;
+    element.className = `diva-feedback-enhanced ${isCorrect ? "correct" : "incorrect"}`;
+    element.style.display = "block";
+    element.style.opacity = "1";
+
+    // Don't auto-hide - let the next question clear it
+    element.setAttribute("data-persistent", "true");
+  };
+
+  // Clear feedback only when starting new question
+  window.clearDivaFeedback = function (elementId) {
+    const element = document.getElementById(elementId);
+    if (element && element.getAttribute("data-persistent") === "true") {
+      element.style.opacity = "0";
+      setTimeout(() => {
+        element.textContent = "";
+        element.style.display = "none";
+        element.removeAttribute("data-persistent");
+      }, 300);
+    }
+  };
+
+  // Initialize enhancements
+  function init() {
+    enhanceFeedback();
+    addMikuIconsEverywhere();
+    enhanceStatusOverlay();
+    // Auto-enhance future DOM changes
+    const mainContent = document.getElementById("mainContent") || document.body;
+    if (window._enhanceObserver) return; // idempotent
+    const observer = new MutationObserver(() => {
+      clearTimeout(window._enhanceDebounce);
+      window._enhanceDebounce = setTimeout(() => {
+        addMikuIconsEverywhere();
+      }, 60);
+    });
+    window._enhanceObserver = observer;
+    observer.observe(mainContent, { childList: true, subtree: true });
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  // Expose module
+  window.EnhancedUI = {
+    enhanceFeedback,
+    addMikuIconsEverywhere,
+    enhanceStatusOverlay,
+    init,
+  };
+})();
+/* Project Diva-style mini game */
+(function () {
+  const ASSETS = {
+    bg: "./assets/root.png",
+    kirby: "./assets/swallow.gif",
+  };
+
+  const LS = {
+    shieldUntil: "diva.shield.until",
+  };
+
+  const JUDGES = [
+    { key: "cool", window: 80, color: "#7dd3fc" },
+    { key: "good", window: 140, color: "#86efac" },
+    { key: "fine", window: 200, color: "#fde68a" },
+    { key: "sad", window: 260, color: "#fca5a5" },
+  ];
+
+  let lives = 5;
+  let maxLives = 5;
+  let running = false;
+  let shieldTimer = null;
+  let kirbyTimer = null;
+  let spawnTimer = null;
+  let difficulty = "normal";
+
+  function now() {
+    return performance.now();
+  }
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+  function getSinger() {
+    // Attempt to use current singer; fall back to heroMiku
+    
+      if (window.__currentSingerUrl) return window.__currentSingerUrl;
+    
+    
+      const img = document.getElementById("heroMiku");
+      if (img && img.src) return img.src;
+    
+    return "./assets/pixel-miku/001 - Hatsune Miku (Original).png";
+  }
+
+  function setLives(n) {
+    lives = Math.max(0, Math.min(maxLives, n));
+    
+      const el = byId("hudLives");
+      const maxEl = byId("hudMaxLives");
+      if (el) el.textContent = String(lives);
+      if (maxEl) maxEl.textContent = String(maxLives);
+    
+    if (lives <= 0) songOver();
+  }
+
+  function updateUnlockProgress() {
+    
+      const coll = JSON.parse(localStorage.getItem("Wish.collection") || "{}");
+      const owned = Object.keys(coll).length;
+      const total = Array.isArray(window.MIKU_IMAGES)
+        ? window.MIKU_IMAGES.length
+        : 100;
+      const pct = Math.min(100, Math.round((owned / Math.max(1, total)) * 100));
+      const wrap = byId("hudUnlockBar");
+      const fill = byId("hudUnlockProgress");
+      const text = byId("hudUnlockText");
+      if (fill) fill.style.width = pct + "%";
+      if (text) text.textContent = `Unlocks: ${owned}/${total}`;
+      if (wrap) wrap.title = text ? text.textContent : "";
+    
+  }
+
+  function playSfx(key) {
+    
+      window.SFX && SFX.play(key);
+    
+  }
+
+  function judgeHit(delta) {
+    const ad = Math.abs(delta);
+    for (const j of JUDGES) {
+      if (ad <= j.window) return j;
+    }
+    return null;
+  }
+
+  function showJudge(stage, key, color) {
+    const banner = stage.querySelector(".diva-judge");
+    if (!banner) return;
+    banner.textContent = key.toUpperCase();
+    banner.style.color = color || "#333";
+    banner.classList.add("show");
+    setTimeout(() => banner.classList.remove("show"), 600);
+  }
+
+  function spawnDot(stage, laneEl, speed) {
+    const dot = document.createElement("div");
+    dot.className = "diva-dot";
+    dot.style.animationDuration = `${speed}ms`;
+    laneEl.appendChild(dot);
+    const hitTime = now() + speed;
+    let hit = false;
+    const onHit = (e) => {
+      if (hit) return;
+      hit = true;
+      const delta = hitTime - now();
+      const j = judgeHit(delta);
+      if (j) {
+        // Correct-ish answers: play GOOD only for truly correct; others map accordingly
+        if (j.key === "good") playSfx("Wish.mid");
+        else if (j.key === "cool") playSfx("extra.fx1");
+        else if (j.key === "fine") playSfx("ui.move");
+        else if (j.key === "sad") playSfx("ui.unavailable");
+        showJudge(stage, j.key, j.color);
+        // hearts bonus on good/cool
+        if (j.key === "good" || j.key === "cool") {
+          
+            window.Hearts?.add?.(1);
+          
+        }
+      } else {
+        // Miss
+        playSfx("Wish.fail");
+        showJudge(stage, "miss", "#ef4444");
+        setLives(lives - 1);
+      }
+      dot.remove();
+    };
+    dot.addEventListener("click", onHit, { once: true });
+    setTimeout(() => {
+      if (!hit) {
+        playSfx("Wish.fail");
+        showJudge(stage, "miss", "#ef4444");
+        setLives(lives - 1);
+        dot.remove();
+      }
+    }, speed + 60);
+  }
+
+  function startSong(stage) {
+    running = true;
+    setLives(5);
+    const lanes = Array.from(stage.querySelectorAll(".diva-lane"));
+    const baseSpeed =
+      difficulty === "easy" ? 2200 : difficulty === "hard" ? 1400 : 1800;
+    let t = 0;
+    spawnTimer = setInterval(() => {
+      if (!running) return;
+      const lane = lanes[Math.floor(Math.random() * lanes.length)];
+      spawnDot(stage, lane, baseSpeed + Math.floor(Math.random() * 400 - 200));
+      t++;
+      if (t > 64) completeSong(stage);
+    }, 500);
+
+    // Kirby spawns occasionally
+    kirbyTimer = setInterval(() => spawnKirby(stage), 4500);
+  }
+
+  function stopSong() {
+    running = false;
+    clearInterval(spawnTimer);
+    spawnTimer = null;
+    clearInterval(kirbyTimer);
+    kirbyTimer = null;
+  }
+
+  function completeSong(stage) {
+    stopSong();
+    // Reset lives for next song
+    setLives(5);
+    
+      playSfx("extra.thanks");
+    
+    const banner = stage.querySelector(".diva-judge");
+    if (banner) {
+      banner.textContent = "SONG CLEAR!";
+      banner.style.color = "#22c55e";
+      banner.classList.add("show");
+      setTimeout(() => banner.classList.remove("show"), 1200);
+    }
+  }
+
+  function songOver() {
+    stopSong();
+    const stage = document.querySelector(".diva-stage");
+    const banner = stage && stage.querySelector(".diva-judge");
+    if (banner) {
+      banner.textContent = "SONG OVER";
+      banner.style.color = "#ef4444";
+      banner.classList.add("show");
+    }
+  }
+
+  function isShieldActive() {
+    const until = parseInt(localStorage.getItem(LS.shieldUntil) || "0", 10);
+    return Date.now() < until;
+  }
+
+  function spawnKirby(stage) {
+    const k = document.createElement("img");
+    k.src = ASSETS.kirby;
+    k.alt = "swallow";
+    k.className = "diva-kirby";
+    k.style.left = Math.random() < 0.5 ? "-80px" : "calc(100% + 80px)";
+    k.style.top = Math.random() * 60 + 20 + "%";
+    stage.appendChild(k);
+    const singer = stage.querySelector(".diva-singer");
+    const speed = 5000;
+    const dir = k.style.left.startsWith("-") ? 1 : -1;
+    const start = performance.now();
+    function step(ts) {
+      const p = Math.min(1, (ts - start) / speed);
+      const x =
+        (dir > 0 ? -80 : stage.clientWidth + 80) +
+        dir * (stage.clientWidth + 160) * p;
+      k.style.transform = `translateX(${x}px)`;
+      // collision
+      if (singer && !isShieldActive()) {
+        const kr = k.getBoundingClientRect();
+        const sr = singer.getBoundingClientRect();
+        if (
+          kr.left < sr.right &&
+          kr.right > sr.left &&
+          kr.top < sr.bottom &&
+          kr.bottom > sr.top
+        ) {
+          // hit!
+          playSfx("ui.unavailable");
+          singer.classList.add("stunned");
+          setTimeout(() => singer.classList.remove("stunned"), 1000);
+          setLives(lives - 1);
+        }
+      }
+      if (p < 1 && k.isConnected) requestAnimationFrame(step);
+      else k.remove();
+    }
+    requestAnimationFrame(step);
+  }
+
+  window.Diva = { updateUnlockProgress };
+})();
 /* Main JavaScript for PixelBelle's Garden */
 console.log("🌸 Main.js starting execution...");
 // Fail-safe splash bootstrap: ensures Enter/click transitions even if later code fails
 (function failsafeSplashBootstrap() {
-  try {
+  
     const wire = () => {
-      try {
+      
         const splash = document.getElementById("splash");
         const btn = document.getElementById("enterSite");
         const main = document.getElementById("mainSite");
@@ -14,23 +439,23 @@ console.log("🌸 Main.js starting execution...");
         const enter = () => {
           if (window.__entered) return;
           window.__entered = true;
-          try {
+          
             btn.disabled = true;
-          } catch (_) {}
-          try {
+          
+          
             splash.style.animation = "none";
-          } catch (_) {}
-          try {
+          
+          
             splash.style.display = "none";
-          } catch (_) {}
-          try {
+          
+          
             main.classList.remove("hidden");
-          } catch (_) {}
+          
           // Try to start the site if available
-          try {
+          
             if (typeof initSite === "function") initSite();
             else if (typeof window.initSite === "function") window.initSite();
-          } catch (_) {}
+          
         };
         btn.addEventListener("click", enter, { once: true });
         document.addEventListener(
@@ -40,12 +465,12 @@ console.log("🌸 Main.js starting execution...");
           },
           { capture: true },
         );
-      } catch (_) {}
+      
     };
     if (document.readyState === "loading")
       document.addEventListener("DOMContentLoaded", wire);
     else wire();
-  } catch (_) {}
+  
 })();
 const C = window.SITE_CONTENT || {};
 
@@ -60,6 +485,7 @@ function mikuIcon(iconName, alt = "", className = "miku-icon") {
 
 // Make mikuIcon globally available
 window.mikuIcon = mikuIcon;
+if (window.MikuCore) window.MikuCore.mikuIcon = mikuIcon;
 
 // Lightweight DOM helpers
 const $ = (id) => document.getElementById(id);
@@ -68,9 +494,9 @@ const byId = $;
 // ====== SFX AUDIO ENGINE (asset-based) ======
 // Loads and plays high-quality SFX from assets/SFX. Minimal, lazy-loaded, and shared.
 (function initSfxEngine() {
-  try {
+  
     if (window.SFX) return;
-  } catch (_) {}
+  
   const BASE = "./assets/SFX";
   const p = (sub) => `${BASE}/${sub}`;
   const MAP = {
@@ -274,7 +700,7 @@ const byId = $;
 
   function ensureCtx() {
     if (!ctxState.ctx) {
-      try {
+      
         ctxState.ctx = new (window.AudioContext || window.webkitAudioContext)();
         ctxState.master = ctxState.ctx.createGain();
         ctxState.master.gain.value = ctxState.volume;
@@ -286,9 +712,7 @@ const byId = $;
           window.removeEventListener("pointerdown", unlock);
         };
         window.addEventListener("pointerdown", unlock);
-      } catch (e) {
-        // no audio
-      }
+    
     }
     return ctxState.ctx;
   }
@@ -301,7 +725,7 @@ const byId = $;
       .then(
         (ab) => new Promise((res, rej) => ctx.decodeAudioData(ab, res, rej)),
       )
-      .catch(() => null);
+      .then(null, () => null);
     buffers.set(path, prom);
     return prom;
   }
@@ -327,9 +751,9 @@ const byId = $;
     } else {
       src.connect(g).connect(ctxState.master);
     }
-    try {
+    
       src.start();
-    } catch (_) {}
+    
   }
   function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -358,12 +782,12 @@ const byId = $;
     localStorage.setItem("pixelbelle-sfx-volume", String(ctxState.volume));
   }
   // restore prefs
-  try {
+  
     const en = localStorage.getItem("pixelbelle-sfx-enabled");
     if (en != null) ctxState.enabled = en === "1";
     const vol = parseFloat(localStorage.getItem("pixelbelle-sfx-volume") || "");
     if (isFinite(vol)) ctxState.volume = vol;
-  } catch (_) {}
+  
 
   // Preload first source for keys gradually to avoid decode hitches
   function preloadFirst(keys = [], { perTick = 2, delay = 150 } = {}) {
@@ -425,9 +849,9 @@ const GLOBAL_TIMERS = {
   },
 };
 // Also expose globally to avoid scope issues when referenced outside
-try {
+
   window.GLOBAL_TIMERS = GLOBAL_TIMERS;
-} catch (_) {}
+
 
 // Enhanced timer functions with tracking
 window.setIntervalTracked = (fn, delay) =>
@@ -440,7 +864,7 @@ window.addEventListener("beforeunload", () => GLOBAL_TIMERS.clearAll());
 
 // Friendly error renderer with retry (used by quizzes/WOTD)
 function friendlyError(container, retryFn, opts = {}) {
-  try {
+  
     if (!container) return;
     const {
       message = "can't load right now. try again?",
@@ -456,30 +880,28 @@ function friendlyError(container, retryFn, opts = {}) {
     if (btn && typeof retryFn === "function") {
       btn.addEventListener("click", () => retryFn());
     }
-    try {
-      window.shimejiFunctions?.makeRandomSpeak?.(
+    
+      window.ShimejiFunctions?.makeRandomSpeak?.(
         ["awww", "oops", "reload?"],
         1400,
       );
-    } catch (_) {}
-  } catch (_) {}
+    
+  
 }
 
 // Tiny fetch with timeout helper
 async function fetchWithTimeout(resource, { timeout = 8000, ...options } = {}) {
   const ctrl = new AbortController();
   const id = setTimeout(() => ctrl.abort(), timeout);
-  try {
+  
     const res = await fetch(resource, { ...options, signal: ctrl.signal });
     return res;
-  } finally {
-    clearTimeout(id);
-  }
+
 }
 
 // Minimal telemetry (off by default). Enable with localStorage 'telemetry.on' = '1'
 function logEvent(name, delta = 1) {
-  try {
+  
     if (localStorage.getItem("telemetry.on") !== "1") return;
     const key = `telemetry.${name}`;
     const n = parseInt(localStorage.getItem(key) || "0", 10) || 0;
@@ -487,10 +909,10 @@ function logEvent(name, delta = 1) {
     // record last timestamp
     const ts = Date.now();
     localStorage.setItem(`${key}.ts`, String(ts));
-    try {
+    
       console.debug("[telemetry]", name, { delta, ts });
-    } catch (_) {}
-  } catch (_) {}
+    
+  
 }
 
 // (Removed duplicate byId; using the lightweight `$`/`byId` declared above)
@@ -498,14 +920,14 @@ function logEvent(name, delta = 1) {
 // ====== OPTIMIZED IMAGE LOADING ======
 const MIKU_IMAGES = [];
 const MIKU_META = Object.create(null);
-try {
+
   window.MIKU_META = MIKU_META;
-} catch (_) {}
+
 let resolveMiku;
 window.MIKU_IMAGES_READY = new Promise((res) => (resolveMiku = res));
-try {
+
   window.SITE_READY = window.MIKU_IMAGES_READY.then(() => true);
-} catch (_) {}
+
 
 // Load metadata + images from JSON manifest instead of guessing filenames
 (function loadImages() {
@@ -526,14 +948,14 @@ try {
         MIKU_META[url] = m;
       });
     })
-    .catch(() => {})
+  .then(null, () => {})
     .finally(() => {
       if (typeof resolveMiku === "function") resolveMiku(MIKU_IMAGES.slice());
-      try {
+      
         window.SITE_READY = (
           window.MIKU_IMAGES_READY || Promise.resolve()
         ).then(() => new Promise((res) => setTimeout(res, 150)));
-      } catch (_) {}
+      
       document.dispatchEvent(
         new CustomEvent("miku-images-ready", {
           detail: { images: MIKU_IMAGES.slice() },
@@ -580,7 +1002,7 @@ function analyzeImageUrl(url) {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
-      try {
+      
         const size = 24;
         const canvas = document.createElement("canvas");
         canvas.width = size;
@@ -649,10 +1071,8 @@ function analyzeImageUrl(url) {
           brightness: brightSum / inv,
         };
         resolve(ratios);
-      } catch (e) {
-        resolve(null);
-      }
-    };
+      } 
+  
     img.onerror = () => resolve(null);
     img.src = url;
   });
@@ -668,11 +1088,11 @@ function decideType(r) {
   if (r.black > 0.5 && r.blue > r.red && r.blue > 0.15) {
     type = "Black Rock Shooter Miku";
     rarity = 5;
-    description = "Dark, edgy silhouette with blue energy—an homage to BRS.";
+    description = "Dark, edgy silhouette with blue energy•an homage to BRS.";
   } else if (r.white > 0.4 && r.blue + r.cyan > r.red + r.green) {
     type = "Snow Miku";
     rarity = r.white > 0.55 ? 5 : 4;
-    description = "Wintery whites and blues—limited seasonal Snow Miku.";
+    description = "Wintery whites and blues•limited seasonal Snow Miku.";
   } else if (r.pink > 0.25) {
     type = r.pink > 0.4 ? "Sakura Miku (Blossom)" : "Sakura Miku";
     rarity = r.pink > 0.4 ? 5 : 4;
@@ -684,7 +1104,7 @@ function decideType(r) {
   } else if (r.orange > 0.2 && (r.black > 0.2 || r.purple > 0.18)) {
     type = "Halloween Miku";
     rarity = 4;
-    description = "Spooky oranges and purples—trick or treat!";
+    description = "Spooky oranges and purples•trick or treat!";
   } else if (r.cyan + r.green > 0.35 && r.black > 0.15 && r.black < 0.45) {
     type = "Racing Miku";
     rarity = 4;
@@ -706,7 +1126,7 @@ function decideType(r) {
     const hairTeal = r.cyan + r.green * 0.5;
     rarity = hairTeal > 0.25 ? 3 : 2;
     type = "Hatsune Miku";
-    description = "The original look—timeless teal twintails!";
+    description = "The original look•timeless teal twintails!";
   }
   return { type, rarity, description };
 }
@@ -747,8 +1167,7 @@ function __pumpClassify() {
         };
         MIKU_META[url] = merged;
         resolve(merged);
-      })
-      .catch(() => {
+      }, () => {
         const base = MIKU_META[url] || {};
         const merged = {
           type: base.type || "Hatsune Miku",
@@ -781,21 +1200,21 @@ function classifyAllMikus(max = 60) {
   list.forEach((u) => classifyUrl(u));
 }
 
-try {
+
   window.getMikuMeta = function (url, allowLazy = true) {
     const meta = MIKU_META[url];
     if (meta) return meta;
     if (allowLazy) classifyUrl(url);
     return MIKU_META[url] || null;
   };
-} catch (_) {}
+
 
 // Start classification once images are ready
-try {
+
   window.MIKU_CLASSIFY_READY = window.MIKU_IMAGES_READY.then(() =>
     classifyAllMikus(),
   );
-} catch (_) {}
+
 
 // ====== DATA CONFIGURATION ======
 const SOCIALS = (C.socials && C.socials.items) || [];
@@ -839,7 +1258,7 @@ function initSplash() {
 
   // Start preloading critical assets while splash is showing
   (function preloadSplashAssets() {
-    try {
+    
       const imgs = [];
       const seen = new Set();
       const pushImg = (url) => {
@@ -858,7 +1277,7 @@ function initSplash() {
       // Preload the nav/status icon sprites actually used
       const iconMap = C?.images?.mikuIcons || {};
       const iconKeys = new Set();
-      try {
+      
         (Array.isArray(C?.nav) ? C.nav : []).forEach((n) => {
           if (n?.mikuIcon) iconKeys.add(n.mikuIcon);
         });
@@ -877,28 +1296,28 @@ function initSplash() {
           iconKeys.add(C.sidebarTitles.right.badgesIcon);
         if (C?.sidebarTitles?.right?.vibeIcon)
           iconKeys.add(C.sidebarTitles.right.vibeIcon);
-      } catch (_) {}
+      
       iconKeys.forEach((k) => pushImg(iconMap[k]));
 
       // Kick off actual image preloads
       imgs.forEach((src) => {
-        try {
+        
           const i = new Image();
           i.decoding = "async";
           i.loading = "eager";
           i.src = src;
-        } catch (_) {}
+        
       });
 
       // Pet iframe can start loading in the background (hidden)
-      try {
+      
         const pet = document.getElementById("petIframe");
         if (pet && !pet.src && C?.embeds?.petIframeSrc)
           pet.src = C.embeds.petIframeSrc;
-      } catch (_) {}
+      
 
       // Prewarm SFX decode for a tiny set of keys
-      try {
+      
         if (window.SFX?.preloadFirst) {
           const keys = [
             "ui.move",
@@ -910,10 +1329,10 @@ function initSplash() {
           // small trickle to avoid main thread spikes during splash
           window.SFX.preloadFirst(keys, { perTick: 1, delay: 200 });
         }
-      } catch (_) {}
+      
 
       // Hint the browser to preload bgm audio bytes
-      try {
+      
         if (!document.getElementById("preload-bgm")) {
           const l = document.createElement("link");
           l.id = "preload-bgm";
@@ -922,8 +1341,8 @@ function initSplash() {
           l.href = "./assets/bgm.ogg";
           document.head.appendChild(l);
         }
-      } catch (_) {}
-    } catch (_) {}
+      
+    
   })();
 
   const handleEnter = () => {
@@ -931,23 +1350,23 @@ function initSplash() {
     if (isEntering) return;
     isEntering = true;
     // Best-effort cleanup to avoid duplicate triggers
-    try {
+    
       document.removeEventListener("keydown", handleKeyPress);
-    } catch (_) {}
-    try {
+    
+    
       enterBtn.removeEventListener("click", handleEnter);
-    } catch (_) {}
-    try {
+    
+    
       if (window._splashTimeout) {
         clearTimeout(window._splashTimeout);
       }
-    } catch (_) {}
-    try {
+    
+    
       enterBtn.disabled = true;
-    } catch (_) {}
-    try {
+    
+    
       SFX.play("ui.teleport");
-    } catch (_) {}
+    
     splash.style.animation = "fadeOut 0.8s ease-out forwards";
     setTimeout(() => {
       splash.style.display = "none";
@@ -1007,11 +1426,7 @@ function initMikuWish() {
 
   let tokens = parseInt(localStorage.getItem(LS_TOKENS) || "3", 10);
   let collection = {};
-  try {
-    collection = JSON.parse(localStorage.getItem(LS_COLL) || "{}");
-  } catch (e) {
-    collection = {};
-  }
+  collection = JSON.parse(localStorage.getItem(LS_COLL) || "{}");
 
   function updateTokens(n = tokens) {
     tokens = n;
@@ -1049,10 +1464,10 @@ function initMikuWish() {
   }
   // Update label every minute so countdown stays fresh
   updateDailyBtn();
-  try {
+  
     if (window.setIntervalTracked) setIntervalTracked(updateDailyBtn, 60000);
     else setInterval(updateDailyBtn, 60000);
-  } catch (_) {}
+  
 
   function hashCode(s) {
     let h = 0;
@@ -1063,12 +1478,12 @@ function initMikuWish() {
     return h >>> 0;
   }
   function rarityFor(url) {
-    try {
+    
       if (typeof window.getMikuMeta === "function") {
         const meta = window.getMikuMeta(url, true);
         if (meta && typeof meta.rarity === "number") return meta.rarity;
       }
-    } catch (_) {}
+    
     const r = hashCode(url) % 100;
     if (r < 12) return 1;
     if (r < 30) return 2;
@@ -1086,9 +1501,9 @@ function initMikuWish() {
     scoreCap: 0.4, // cap at +40%
     rareDropBonus: 0.05, // +5% bias toward 4★+ in Wish
   };
-  try {
+  
     window.RARITY_EFFECTS = RARITY_EFFECTS;
-  } catch (_) {}
+  
 
   // ====== SITE SETTINGS (helpers) ======
   const SETTINGS_KEYS = {
@@ -1098,32 +1513,28 @@ function initMikuWish() {
     typing: "settings.typingAids", // '1' | '0'
   };
   function lsGet(k, d = "") {
-    try {
+    
       const v = localStorage.getItem(k);
       return v == null ? d : v;
-    } catch (_) {
-      return d;
-    }
+    
   }
   function lsSet(k, v) {
-    try {
+    
       localStorage.setItem(k, v);
-    } catch (_) {}
+    
   }
   function isReducedMotion() {
-    try {
+    
       const pref = lsGet(SETTINGS_KEYS.reduceMotion, "");
       if (pref === "1") return true;
       if (pref === "0") return false;
-    } catch (_) {}
-    try {
+    
+    
       return (
         window.matchMedia &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
       );
-    } catch (_) {
-      return false;
-    }
+    
   }
   function isVfxEnabled() {
     return lsGet(SETTINGS_KEYS.vfx, "1") !== "0";
@@ -1138,7 +1549,7 @@ function initMikuWish() {
   function isTypingAids() {
     return lsGet(SETTINGS_KEYS.typing, "0") === "1";
   }
-  try {
+  
     window.Settings = {
       isReducedMotion,
       isVfxEnabled,
@@ -1148,21 +1559,19 @@ function initMikuWish() {
       get: lsGet,
       KEYS: SETTINGS_KEYS,
     };
-  } catch (_) {}
+  
 
   // NEW badge LS-backed set
   const LS_NEW = "Wish.newIds";
   function getNewSet() {
-    try {
+    
       return new Set(JSON.parse(localStorage.getItem(LS_NEW) || "[]"));
-    } catch (_) {
-      return new Set();
-    }
+    
   }
   function saveNewSet(s) {
-    try {
+    
       localStorage.setItem(LS_NEW, JSON.stringify(Array.from(s)));
-    } catch (_) {}
+    
   }
   function addNew(url) {
     const s = getNewSet();
@@ -1193,7 +1602,7 @@ function initMikuWish() {
 
   // Populate and animate idle Wish preview (persistent)
   ensurePool(() => {
-    try {
+    
       if (!elements.rotation) return;
       const prev = elements.rotation.querySelector(".preview-image");
       const pool = MIKU_IMAGES.filter(
@@ -1212,7 +1621,7 @@ function initMikuWish() {
           t += 100;
         }, 1000);
       }
-    } catch (_) {}
+    
   });
 
   function addToCollection(card) {
@@ -1223,78 +1632,76 @@ function initMikuWish() {
     prev.rarity = card.rarity;
     if (isFirst) {
       prev.new = true; // legacy field for backward-compat
-      try {
+      
         addNew(id);
-      } catch (_) {}
+      
     }
-    try {
+    
       const meta =
         typeof window.getMikuMeta === "function"
           ? window.getMikuMeta(card.url, true)
           : null;
       if (meta && meta.song) prev.song = meta.song;
       if (meta && meta.multiplier) prev.multiplier = meta.multiplier;
-    } catch (_) {}
+    
     if (!prev.multiplier) prev.multiplier = card.rarity;
     collection[id] = prev;
     localStorage.setItem(LS_COLL, JSON.stringify(collection));
-    try {
+    
       window.Diva &&
         typeof window.Diva.updateUnlockProgress === "function" &&
         window.Diva.updateUnlockProgress();
-    } catch (_) {}
-    try {
+    
+    
       // If this card grants a song, hint to the player that Jukebox updated
       if (prev.song) {
         loveToast("New song unlocked in Jukebox! 🎶");
         if (window.Jukebox && typeof Jukebox.attachHudSelect === "function") {
           // Refresh HUD label with current selection
           setTimeout(() => {
-            try {
+            
               Jukebox.attachHudSelect();
-            } catch (_) {}
+            
           }, 200);
         }
-        try {
+        
           window.Diva &&
             typeof window.Diva.updateUnlockProgress === "function" &&
             window.Diva.updateUnlockProgress();
-        } catch (_) {}
+        
       }
-    } catch (_) {}
+    
     return isFirst;
   }
 
   // ====== PixieBel ★6 Unlock Ceremony ======
   const PIXIE_URL = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
   function hasPixieBel() {
-    try {
+    
       const coll = JSON.parse(localStorage.getItem(LS_COLL) || "{}");
       return !!coll[PIXIE_URL];
-    } catch (_) {
-      return false;
-    }
+    
   }
   function ceremonyShown() {
     return localStorage.getItem("pixiebelUnlocked") === "1";
   }
   function markCeremony() {
-    try {
+    
       localStorage.setItem("pixiebelUnlocked", "1");
-    } catch (_) {}
+    
   }
   function awardPixieBel() {
     if (ceremonyShown()) return; // idempotent
-    try {
+    
       SFX.play("extra.thanks");
-    } catch (_) {}
+    
     // Add to collection if missing
-    try {
+    
       const coll = JSON.parse(localStorage.getItem(LS_COLL) || "{}");
       if (!coll[PIXIE_URL])
         coll[PIXIE_URL] = { count: 1, rarity: 6, new: true, multiplier: 6 };
       localStorage.setItem(LS_COLL, JSON.stringify(coll));
-    } catch (_) {}
+    
     markCeremony();
     // Celebration overlay
     const ov = document.createElement("div");
@@ -1306,7 +1713,7 @@ function initMikuWish() {
       "background:#fff;border:3px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:16px;max-width:520px;width:92%;text-align:center;position:relative;overflow:hidden";
     panel.innerHTML = `
       <div style="font-size:18px;font-weight:900;margin-bottom:8px">Legendary Unlocked!</div>
-      <div style="font-size:14px;color:#596286;margin-bottom:10px">You discovered <strong>PixieBel</strong> ★6 — a secret companion joins your garden.</div>
+      <div style="font-size:14px;color:#596286;margin-bottom:10px">You discovered <strong>PixieBel</strong> ★6 • a secret companion joins your garden.</div>
       <div style="display:flex;align-items:center;justify-content:center;margin-bottom:10px">
         <img src="${PIXIE_URL}" alt="PixieBel" style="width:160px;height:auto;image-rendering:pixelated;border:2px solid var(--border);border-radius:10px" />
       </div>
@@ -1347,13 +1754,13 @@ function initMikuWish() {
       setTimeout(() => host.remove(), 1800);
     }
     const close = () => {
-      try {
+      
         SFX.play("ui.back");
-      } catch (_) {}
+      
       ov.remove();
-      try {
+      
         if (typeof renderDex === "function") renderDex();
-      } catch (_) {}
+      
     };
     ov.addEventListener("click", (e) => {
       if (e.target === ov) close();
@@ -1371,7 +1778,7 @@ function initMikuWish() {
       (buckets[r] ||= []).push(url);
     }
     // Apply rare-drop bias if a singer is set
-    try {
+    
       const singer = typeof singerGet === "function" ? singerGet() : "";
       if (singer) {
         const b = RARITY_EFFECTS.rareDropBonus || 0;
@@ -1379,7 +1786,7 @@ function initMikuWish() {
         if (weights[5]) weights[5] = Math.round(weights[5] * (1 + b));
         if (weights[6]) weights[6] = Math.round(weights[6] * (1 + b));
       }
-    } catch (_) {}
+    
     let total = 0;
     for (const k of Object.keys(weights)) {
       const num = Number(k);
@@ -1417,12 +1824,12 @@ function initMikuWish() {
 
   function renderResults(cards) {
     // Hide idle rotation and show results container
-    try {
+    
       if (elements.rotation) elements.rotation.hidden = true;
-    } catch (_) {}
-    try {
+    
+    
       if (elements.results) elements.results.hidden = false;
-    } catch (_) {}
+    
     // Create amazing slot machine animation
     const slotDuration = 2000; // 2 seconds of spinning
     const cycleSpeed = 150; // Change image every 150ms
@@ -1451,9 +1858,9 @@ function initMikuWish() {
       .join("");
 
     // play roll SFX
-    try {
+    
       SFX.play("Wish.roll");
-    } catch (e) {}
+    
 
     // Start the magical slot machine animation for each card
     // No per-results preview; only the slot reels spin
@@ -1522,16 +1929,16 @@ function initMikuWish() {
           }
 
           // Reveal animation and SFX
-          try {
+          
             if (cardIndex === 0) SFX.play("Wish.reveal");
             SFX.play("Wish.pop");
-          } catch (e) {}
+          
 
           // Special effects for high rarity
           if (c.rarity >= 4) {
-            try {
+            
               SFX.play("Wish.high");
-            } catch (e) {}
+            }
 
             cardEl.animate(
               [
@@ -1546,9 +1953,9 @@ function initMikuWish() {
                 {
                   transform: "scale(1.02)",
                   filter: "brightness(1.1) hue-rotate(0deg)",
-                },
+                }
               ],
-              { duration: 800, easing: "ease-out" },
+              { duration: 800, easing: "ease-out" }
             );
 
             // Rainbow border for legendary cards
@@ -1558,9 +1965,8 @@ function initMikuWish() {
                 "linear-gradient(45deg, #ff6b9d, #ffd700, #6bc3ff, #a594f9) 1";
               cardEl.style.animation = "legendaryGlow 2s ease-in-out infinite";
             }
-          }
         },
-        slotDuration + cardIndex * 300,
+        slotDuration + cardIndex * 300
       ); // Stagger reveals
     });
 
@@ -1569,38 +1975,38 @@ function initMikuWish() {
       () => {
         elements.results.animate(
           [{ transform: "scale(0.98)" }, { transform: "scale(1)" }],
-          { duration: 220, easing: "ease-out" },
+          { duration: 220, easing: "ease-out" }
         );
         renderDex();
 
         // Check if pull was weak and play appropriate sound
-        try {
+        
           const maxR = Math.max(...cards.map((x) => x.rarity || 1));
           if (!isFinite(maxR) || maxR <= 2) {
             SFX.play("Wish.fail");
           } else if (maxR >= 5) {
             // Epic pull celebration!
-            try {
+            
               SFX.play("extra.thanks");
-            } catch (_) {}
+            
           }
-        } catch (_) {}
+        
       },
-      slotDuration + cards.length * 300 + 500,
+      slotDuration + cards.length * 300 + 500
     );
   }
   function renderDex() {
     const LS_FILTER = "Wish.dexFilter";
     let filters = { scope: "all", rarity: "all", search: "" };
-    try {
+    
       const f = JSON.parse(localStorage.getItem(LS_FILTER) || "{}");
       if (f && typeof f === "object") filters = { ...filters, ...f };
-    } catch (_) {}
+    
 
     const applySearch = (url) => {
       if (!filters.search) return true;
       const q = filters.search.toLowerCase();
-      try {
+      
         const meta =
           typeof window.getMikuMeta === "function"
             ? window.getMikuMeta(url, true)
@@ -1613,7 +2019,7 @@ function initMikuWish() {
           )
             return true;
         }
-      } catch (_) {}
+      
       const base = (url.split("/").pop() || url).toLowerCase();
       return base.includes(q);
     };
@@ -1644,11 +2050,9 @@ function initMikuWish() {
             : `<span class=\"dex-count\">x${entry.count}</span>`
           : `<span class=\"dex-locked\">?</span>`;
         const isNew = (function () {
-          try {
+          
             return getNewSet().has(url) || !!entry?.new;
-          } catch (_) {
-            return !!entry?.new;
-          }
+          
         })();
         const newBadge = isNew ? '<div class="Wish-new">NEW!</div>' : "";
         const vid =
@@ -1778,15 +2182,15 @@ function initMikuWish() {
       card.addEventListener("click", () => {
         const url = card.getAttribute("data-url");
         if (url) {
-          try {
+          
             SFX.play("ui.select");
-            if (window.shimejiFunctions?.makeRandomSpeak) {
-              window.shimejiFunctions.makeRandomSpeak(
+            if (window.ShimejiFunctions?.makeRandomSpeak) {
+              window.ShimejiFunctions.makeRandomSpeak(
                 "この子かわいい！✨",
                 1200,
               );
             }
-          } catch (_) {}
+          
           openImageModal(url);
           return;
         }
@@ -1796,9 +2200,9 @@ function initMikuWish() {
           e.preventDefault();
           const url = card.getAttribute("data-url");
           if (url) {
-            try {
+            
               SFX.play("ui.select");
-            } catch (_) {}
+            
             openImageModal(url);
           }
         }
@@ -1807,60 +2211,60 @@ function initMikuWish() {
   }
 
   function resetWishUI() {
-    try {
+    
       elements.results.hidden = true;
       elements.rotation.hidden = false;
-    } catch (_) {}
-    try {
+    
+    
       elements.dex.classList.add("hidden");
       elements.dexBtn.textContent = C.games?.WishOpenDex || "Open MikuDex";
-    } catch (_) {}
+    
     // Clear any lingering pull busy lock
-    try {
+    
       pull._busy = false;
-    } catch (_) {}
+    
   }
-  try {
+  
     window.__resetWish = resetWishUI;
     window.resetWishPreview = resetWishUI; // alias
-  } catch (_) {}
+  
 
   function pull(n) {
     // Anti-spam: simple in-progress lock
     if (pull._busy) return;
     if (!poolReady()) {
       loveToast("画像の読み込み中…");
-      try {
+      
         SFX.play("ui.unavailable");
-        if (window.shimejiFunctions?.makeRandomSpeak) {
-          window.shimejiFunctions.makeRandomSpeak("まだ準備中だよ〜", 1500);
+        if (window.ShimejiFunctions?.makeRandomSpeak) {
+          window.ShimejiFunctions.makeRandomSpeak("まだ準備中だよ〜", 1500);
         }
-      } catch (_) {}
+      
       return;
     }
     if (tokens < n) {
       loveToast("チケットが足りないよ！");
-      try {
+      
         SFX.play("Wish.fail");
-        if (window.shimejiFunctions?.makeRandomSpeak) {
-          window.shimejiFunctions.makeRandomSpeak(
+        if (window.ShimejiFunctions?.makeRandomSpeak) {
+          window.ShimejiFunctions.makeRandomSpeak(
             "チケットが足りません〜💦",
             1800,
           );
         }
-      } catch (_) {}
+      
       return;
     }
-    try {
+    
       window.setBusyCursor && window.setBusyCursor(true);
       SFX.play("Wish.pull");
-      if (window.shimejiFunctions?.makeAllSpeak) {
-        window.shimejiFunctions.makeAllSpeak("ガチャタイム！🎲✨", 1500);
+      if (window.ShimejiFunctions?.makeAllSpeak) {
+        window.ShimejiFunctions.makeAllSpeak("ガチャタイム！🎲✨", 1500);
       }
-      if (window.shimejiFunctions?.exciteAll) {
-        window.shimejiFunctions.exciteAll("gacha");
+      if (window.ShimejiFunctions?.exciteAll) {
+        window.ShimejiFunctions.exciteAll("gacha");
       }
-    } catch (_) {}
+    
     // lock during pull animation
     pull._busy = true;
     updateTokens(tokens - n);
@@ -1871,9 +2275,9 @@ function initMikuWish() {
     // Auto-remove busy cursor after slot animation completes
     const totalAnimTime = 2000 + n * 300 + 1000; // slot duration + stagger + buffer
     setTimeout(() => {
-      try {
+      
         window.setBusyCursor && window.setBusyCursor(false);
-      } catch (_) {}
+      
       pull._busy = false;
       window.Diva.updateUnlockProgress();
     }, totalAnimTime);
@@ -1886,17 +2290,17 @@ function initMikuWish() {
     const today = new Date().toDateString();
     if (last === today) {
       loveToast("今日はもう受け取ったよ！");
-      try {
+      
         SFX.play("ui.unavailable");
-      } catch (_) {}
+      
       return;
     }
     localStorage.setItem(LS_DAILY, today);
     updateTokens(tokens + 1);
     loveToast("デイリーチケット＋1！");
-    try {
+    
       SFX.play("ui.select");
-    } catch (_) {}
+    
     updateDailyBtn();
   });
   elements.convert.addEventListener("click", () => {
@@ -1906,9 +2310,9 @@ function initMikuWish() {
         ? window.getHeartCount()
         : heartCount) || 0;
     // PixieBel ceremony trigger after results settle
-    try {
+    
       setTimeout(() => {
-        try {
+        
           if (
             typeof hasPixieBel === "function" &&
             typeof awardPixieBel === "function"
@@ -1919,36 +2323,30 @@ function initMikuWish() {
             )
               awardPixieBel();
           }
-        } catch (_) {}
+        
       }, 400);
-    } catch (_) {}
+    
     if (haveHearts < convertCost) {
       loveToast(`💖が足りないよ！(${convertCost}必要)`);
-      try {
+      
         SFX.play("ui.unavailable");
-      } catch (_) {}
+      
       return;
     }
     // Use Hearts module to ensure counters/UI update consistently
-    try {
-      if (window.Hearts && typeof window.Hearts.add === "function") {
-        window.Hearts.add(-convertCost);
-      } else {
-        heartCount = Math.max(0, haveHearts - convertCost);
-        localStorage.setItem("pixelbelle-hearts", heartCount);
-        updateCounters && updateCounters();
-      }
-    } catch (_) {
+    if (window.Hearts && typeof window.Hearts.add === "function") {
+      window.Hearts.add(-convertCost);
+    } else {
       heartCount = Math.max(0, haveHearts - convertCost);
       localStorage.setItem("pixelbelle-hearts", heartCount);
       updateCounters && updateCounters();
     }
     updateTokens(tokens + 1);
     loveToast("💖→チケット +1");
-    try {
+    
       SFX.play("ui.scoreTally");
       SFX.play("extra.kick", { volume: 0.4 });
-    } catch (_) {}
+    
   });
   elements.dexBtn.addEventListener("click", () => {
     elements.dex.classList.toggle("hidden");
@@ -1963,10 +2361,10 @@ function initMikuWish() {
         500,
       );
     }
-    try {
+    
       SFX.play("ui.change");
       if (Math.random() < 0.3) SFX.play("extra.fx1");
-    } catch (_) {}
+    
   });
 
   ensurePool(() => renderDex());
@@ -1977,25 +2375,25 @@ function initSite() {
   initNavigation();
   initStatusBar();
   // Start BGM first; radio will override if user plays it
-  try {
+  
     if (window.AudioMod) {
       AudioMod.initBgm();
       AudioMod.initRadio && AudioMod.initRadio();
     } else {
-      try {
+      
         initBgm && initBgm();
-      } catch (_) {}
+      
     }
-  } catch (_) {}
+  
   // Wire the visible radio widget controls
-  try {
+  
     wireRadioUI && wireRadioUI();
-  } catch (_) {}
+  
   initSocials();
   initJpGames();
   // Ensure Unlock progress bar exists in HUD (merge from diva)
   (function ensureHudUnlock() {
-    try {
+    
       if (!document.getElementById("hudUnlockBar")) {
         const hud = document.querySelector(".jp-hud-widget");
         if (hud) {
@@ -2008,7 +2406,7 @@ function initSite() {
       }
       // Update with current collection
       (function updateUnlockProgress() {
-        try {
+        
           const coll = JSON.parse(
             localStorage.getItem("Wish.collection") || "{}",
           );
@@ -2024,13 +2422,13 @@ function initSite() {
           const text = document.getElementById("hudUnlockText");
           if (fill) fill.style.width = pct + "%";
           if (text) text.textContent = `Unlocks: ${owned}/${total}`;
-        } catch (_) {}
+        
       })();
-    } catch (_) {}
+    
   })();
-  try {
+  
     window.Diva && Diva.init && Diva.init();
-  } catch (_) {}
+  
   initGames();
   initShrine();
   initFriends();
@@ -2041,14 +2439,14 @@ function initSite() {
   updateCounters();
   loadSavedData();
   initEnhancedCursors();
-  try {
+  
     applySinger();
-  } catch (_) {}
+  
   // Safe Diva stub for backward compatibility (module merged)
   (function () {
-    try {
+    
       const up = function () {
-        try {
+        
           const coll = JSON.parse(
             localStorage.getItem("Wish.collection") || "{}",
           );
@@ -2064,29 +2462,29 @@ function initSite() {
           const text = document.getElementById("hudUnlockText");
           if (fill) fill.style.width = pct + "%";
           if (text) text.textContent = `Unlocks: ${owned}/${total}`;
-        } catch (_) {}
+        
       };
       window.Diva = window.Diva || {};
       window.Diva.updateUnlockProgress = up;
       window.Diva.init = window.Diva.init || function () {}; // merged into main flow
-    } catch (_) {}
+    
   })();
   console.log("PixelBelle's Garden initialized! 🌸");
   // Global ESC for overlays: image modal and song select
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      try {
+      
         const m = document.getElementById("imageModal");
         if (m && m.classList.contains("open")) m.classList.remove("open");
-      } catch (_) {}
-      try {
+      
+      
         const ov = document.getElementById("songSelectOverlay");
         if (ov) ov.remove();
-      } catch (_) {}
+      
     }
   });
   // Preload a minimal set of critical SFX buffers in the background
-  try {
+  
     if (window.SFX && typeof window.SFX.preloadFirst === "function") {
       const keys = [
         "ui.move",
@@ -2105,12 +2503,12 @@ function initSite() {
           2000,
         );
     }
-  } catch (_) {}
+  
 }
 
 // ====== BGM (Autoplay on load, stops when radio starts) ======
 function initBgm() {
-  try {
+  
     // Preference: set localStorage 'pixelbelle-auto-music' = '0' to disable
     const AUTO_KEY = "pixelbelle-auto-music";
     const autoPref = localStorage.getItem(AUTO_KEY);
@@ -2129,9 +2527,7 @@ function initBgm() {
 
     function tryPlay() {
       if (window.__bgmKilled) return;
-      bgm.play().catch(() => {
-        // Autoplay may be blocked; wait for first gesture
-      });
+  void bgm.play();
     }
 
     // Attempt immediately after site enter
@@ -2144,7 +2540,7 @@ function initBgm() {
         return;
       }
       if (bgm.paused) {
-        bgm.play().catch(() => {});
+        void bgm.play();
       }
       cleanupResume();
     };
@@ -2161,15 +2557,15 @@ function initBgm() {
 
     // Expose a stopper for radio to call
     window.__stopBgm = (permanent = true) => {
-      try {
+      
         bgm.pause();
-      } catch (_) {}
-      try {
+      
+      
         bgm.currentTime = 0;
-      } catch (_) {}
+      
       if (permanent) window.__bgmKilled = true;
     };
-  } catch (_) {}
+  
 }
 
 // ====== ENHANCED CURSOR INTERACTIONS ======
@@ -2183,9 +2579,9 @@ function initEnhancedCursors() {
       if (now - lastHoverTime > 50) {
         // Throttle hover events
         if (e.target.classList.contains("memory-card")) {
-          try {
+          
             window.setGameCursor && window.setGameCursor("precision");
-          } catch (_) {}
+          
         }
         lastHoverTime = now;
       }
@@ -2208,25 +2604,25 @@ function initEnhancedCursors() {
 
         // Heart zone gets special cursor
         if (target.id === "heartZone") {
-          try {
+          
             window.setGameCursor && window.setGameCursor("alternate");
-          } catch (_) {}
+          
           setTimeout(() => {
-            try {
+            
               window.setGameCursor && window.setGameCursor(null);
-            } catch (_) {}
+            
           }, 300);
         }
 
         // Memory cards get precision
         if (target.classList.contains("memory-card")) {
-          try {
+          
             window.setGameCursor && window.setGameCursor("precision");
-          } catch (_) {}
+          
           setTimeout(() => {
-            try {
+            
               window.setGameCursor && window.setGameCursor(null);
-            } catch (_) {}
+            
           }, 500);
         }
         lastClickTime = now;
@@ -2328,30 +2724,30 @@ function initJpGames() {
     `;
 
   // Mount modular game logic onto newly created DOM cards
-  try {
+  
     window.Games &&
       Games.vocab &&
       typeof Games.vocab.mount === "function" &&
       Games.vocab.mount();
-  } catch (_) {}
-  try {
+  
+  
     window.Games &&
       Games.kanji &&
       typeof Games.kanji.mount === "function" &&
       Games.kanji.mount();
-  } catch (_) {}
-  try {
+  
+  
     window.Games &&
       Games.kotoba &&
       typeof Games.kotoba.mount === "function" &&
       Games.kotoba.mount();
-  } catch (_) {}
+  
 
   // Pre-start settings overlay (centralizes difficulty, timer, metronome, BPM, and game mode)
   // Provide a global reset hook to restore JP card state when leaving the tab
-  try {
+  
     window.__resetStudy = function () {
-      try {
+      
         const ids = ["vocabCard", "kanjiCard", "kotobaCard"];
         ids.forEach((id) => {
           const el = document.getElementById(id);
@@ -2359,9 +2755,9 @@ function initJpGames() {
         });
         const start = document.getElementById("startCard");
         if (start) start.style.display = "";
-      } catch (_) {}
+      
     };
-  } catch (_) {}
+  
 
   // Pre-start settings overlay (centralizes difficulty, timer, metronome, BPM, and game mode)
   (function ensureSettingsOverlay() {
@@ -2587,12 +2983,12 @@ function initJpGames() {
           ov.querySelector("#setTimedBtn").getAttribute("data-on") === "1";
         // Persist difficulty + rhythm
         const dval = parseInt(diffInput.value || "3", 10);
-        try {
+        
           localStorage.setItem("jp.difficulty", String(dval));
-        } catch (_) {}
-        try {
+        
+        
           applyDiff(dval);
-        } catch (_) {}
+        
         // Rhythm globals (no BPM setter in UI)
         const rhythmOn = rhythmBtn
           ? rhythmBtn.getAttribute("data-on") === "1"
@@ -2601,13 +2997,13 @@ function initJpGames() {
           ? ringsBtn.getAttribute("data-on") === "1"
           : true;
         window.__rhythmMet = !!rhythmOn;
-        try {
+        
           localStorage.setItem("rhythm.met", rhythmOn ? "1" : "0");
-        } catch (_) {}
+        
         window.__rhythmRings = !!ringsOn;
-        try {
+        
           localStorage.setItem("rhythm.rings", ringsOn ? "1" : "0");
-        } catch (_) {}
+        
         const assistOn = assistBtn
           ? assistBtn.getAttribute("data-on") === "1"
           : false;
@@ -2615,28 +3011,28 @@ function initJpGames() {
           ? nofailBtn.getAttribute("data-on") === "1"
           : false;
         window.__assistMode = assistOn;
-        try {
+        
           localStorage.setItem("assist.on", assistOn ? "1" : "0");
-        } catch (_) {}
+        
         window.__noFail = nofailOn;
-        try {
+        
           localStorage.setItem("nofail.on", nofailOn ? "1" : "0");
-        } catch (_) {}
+        
         // Gate start until site ready
         const startBtn = ov.querySelector("#startGameBtn");
         if (startBtn) {
           startBtn.disabled = true;
           const prev = startBtn.textContent;
           startBtn.textContent = "Loading…";
-          try {
+          
             await (window.SITE_READY || Promise.resolve());
-          } catch (_) {}
+          
           startBtn.textContent = prev;
           startBtn.disabled = false;
         } else {
-          try {
+          
             await (window.SITE_READY || Promise.resolve());
-          } catch (_) {}
+          
         }
         // Per-game options
         if (game === "vocab") {
@@ -2663,7 +3059,7 @@ function initJpGames() {
   })();
 
   // Populate static study info & WOD from API (hardened with timeout+proxy+cache)
-  try {
+  
     // Word-of-day fields live in a separate card with class .word-of-day
     const wod = document.querySelector(".word-of-day");
     if (wod) {
@@ -2683,15 +3079,15 @@ function initJpGames() {
         "";
       const PROXY = configuredProxy;
       const logEvent = (name, delta = 1) => {
-        try {
+        
           if (localStorage.getItem("telemetry.on") !== "1") return;
           const key = `telemetry.${name}`;
           const n = parseInt(localStorage.getItem(key) || "0", 10) || 0;
           localStorage.setItem(key, String(n + delta));
-        } catch (_) {}
+        
       };
       // one-time migrate old cache
-      try {
+      
         if (!localStorage.getItem(WOD_LS_V) && localStorage.getItem(WOD_OLD)) {
           const old = JSON.parse(localStorage.getItem(WOD_OLD) || "null");
           if (old && (old.word || old.reading || old.meaning)) {
@@ -2702,7 +3098,7 @@ function initJpGames() {
           }
           localStorage.removeItem(WOD_OLD);
         }
-      } catch (_) {}
+      
 
       const loadWod = async () => {
         // Show loading state
@@ -2731,29 +3127,30 @@ function initJpGames() {
           if (jp) jp.textContent = word || "";
           if (ro) ro.textContent = reading || "";
           if (me) me.textContent = meaning || "";
-          try {
+          
             const prev =
-              JSON.parse(localStorage.getItem(WOD_LS_V) || "null") || {};
-            const etag = prev.etag || "";
-            localStorage.setItem(
-              WOD_LS_V,
-              JSON.stringify({
-                ts: Date.now(),
-                etag,
-                payload: { word, reading, meaning },
-              }),
-            );
-          } catch (_) {}
+                  JSON.parse(localStorage.getItem(WOD_LS_V) || "null") || {};
+                  const etag = prev.etag || "";
+                  localStorage.setItem(
+                    WOD_LS_V,
+                    JSON.stringify({
+                      ts: Date.now(),
+                      etag,
+                      payload: { word, reading, meaning },
+                    }),
+                  );
+          
           return true;
         };
 
-        try {
-          const page = Math.floor(Math.random() * 50) + 1;
+        
+      try {
+      const page = Math.floor(Math.random() * 50) + 1;
           const url = `https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`;
           let data = null;
           // Prefer configured private proxy with ETag support
           if (PROXY) {
-            try {
+            
               const prev =
                 JSON.parse(localStorage.getItem(WOD_LS_V) || "null") || {};
               const lastTs = prev.ts || 0;
@@ -2778,30 +3175,28 @@ function initJpGames() {
                 const json = await res.json();
                 data = json;
                 if (Array.isArray(json?.data) && json.data.length) {
-                  try {
-                    localStorage.setItem(
-                      WOD_LS_V,
-                      JSON.stringify({
-                        ts: Date.now(),
-                        etag: et,
-                        payload: null,
-                        payloadRaw: json.data,
-                      }),
-                    );
-                  } catch (_) {}
-                }
+                        localStorage.setItem(
+                          WOD_LS_V,
+                          JSON.stringify({
+                            ts: Date.now(),
+                            etag: et,
+                            payload: null,
+                            payloadRaw: json.data,
+                          }),
+                        );
+                      }
               }
-            } catch (_) {}
+            
           }
           // Fallback (direct) only in dev; production requires proxy
           if (!data && isDev) {
-            try {
+            
               const r = await fetchWithTimeout(url, {
                 timeout: 7000,
                 cache: "no-store",
               });
-              if (r.ok) data = await r.json();
-            } catch (_) {}
+                  if (r.ok) data = await r.json();
+            
           }
           const arr = Array.isArray(data?.data) ? data.data : [];
           if (arr.length) {
@@ -2813,7 +3208,7 @@ function initJpGames() {
             }
           }
           // No data: try cached last good
-          try {
+          
             const cached = JSON.parse(localStorage.getItem(WOD_LS_V) || "null");
             if (cached && cached.payload) {
               if (jp) jp.textContent = cached.payload.word || "";
@@ -2823,20 +3218,12 @@ function initJpGames() {
               done();
               return;
             }
-          } catch (_) {}
+          
           // Show friendly error inline with retry
           const cEl = me?.parentElement || wod;
           friendlyError(cEl, loadWod, {
             message: "word api is shy rn",
             label: "try again",
-            small: true,
-          });
-          logEvent("wotd_fetch_fail");
-        } catch (_) {
-          const cEl = me?.parentElement || wod;
-          friendlyError(cEl, loadWod, {
-            message: "can't fetch word right now",
-            label: "retry",
             small: true,
           });
           logEvent("wotd_fetch_fail");
@@ -2848,14 +3235,14 @@ function initJpGames() {
       loadWod(); // Initial load
       if (nextBtn) {
         nextBtn.addEventListener("click", () => {
-          try {
+          
             SFX.play("ui.select");
-          } catch (_) {}
+          
           loadWod();
         });
       }
     }
-  } catch (_) {}
+  
 
   const startCard = document.getElementById("startCard");
   const startMenu = document.getElementById("startMenu");
@@ -2872,38 +3259,30 @@ function initJpGames() {
     vocabCard.style.display = "none";
     kanjiCard.style.display = "none";
     kotobaCard.style.display = "none";
-    try {
+    
       SFX.play("ui.select");
-    } catch (_) {}
+    
   }
   function ensureStageVisuals(which) {
     const cardId = which + "Card";
     const card = document.getElementById(cardId);
     if (!card) return;
     // Layer root.png + current singer as background
-    try {
+    
       const jacket =
         (window.Jukebox &&
           Jukebox.songs &&
           (function () {
-            try {
-              const curId = localStorage.getItem("jukebox.song");
-              const s = (Jukebox.songs || []).find((x) => x.id === curId);
-              return s && s.jacket;
-            } catch (_) {
-              return null;
-            }
+            const curId = localStorage.getItem("jukebox.song");
+            const s = (Jukebox.songs || []).find((x) => x.id === curId);
+            return s && s.jacket;
           })()) ||
         "";
       const root = "./assets/root.png";
       // Use multiple backgrounds: root behind, singer (jacket or selected singer) on top with slight transparency
       const singer = (function () {
-        try {
-          const url = localStorage.getItem("singer.current") || "";
-          return url || jacket || "";
-        } catch (_) {
-          return jacket || "";
-        }
+        const url = localStorage.getItem("singer.current") || "";
+        return url || jacket || "";
       })();
       if (singer) {
         card.style.backgroundImage = `url('${root}'), url('${singer}')`;
@@ -2916,10 +3295,10 @@ function initJpGames() {
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
       }
-      try {
+      
         window.MikuNowPlaying && window.MikuNowPlaying.refresh();
-      } catch (_) {}
-    } catch (_) {}
+      
+    
     // Soft stage floor to keep visuals cute but unobtrusive
     let floor = card.querySelector(".stage-floor");
     if (!floor) {
@@ -2953,9 +3332,9 @@ function initJpGames() {
       card.style.position = card.style.position || "relative";
       card.appendChild(idol);
     }
-    try {
+    
       applySingerTo(`#${cardId} .stage-idol`);
-    } catch (_) {}
+    
 
     // Add stage lighting effects and theme (keep below HUD, above backgrounds)
     let lighting = card.querySelector(".stage-lighting");
@@ -2963,15 +3342,11 @@ function initJpGames() {
       lighting = document.createElement("div");
       lighting.className = "stage-lighting";
       const theme = (function () {
-        try {
-          const curId = localStorage.getItem("jukebox.song");
-          const s = ((Jukebox && Jukebox.songs) || []).find(
-            (x) => x.id === curId,
-          );
-          return (s && s.theme) || "#a594f9";
-        } catch (_) {
-          return "#a594f9";
-        }
+        const curId = localStorage.getItem("jukebox.song");
+        const s = ((Jukebox && Jukebox.songs) || []).find(
+          (x) => x.id === curId,
+        );
+        return (s && s.theme) || "#a594f9";
       })();
       lighting.style.cssText = `
           position: absolute;
@@ -3006,20 +3381,16 @@ function initJpGames() {
     if (!grid) return;
     const tiles = Array.from(grid.querySelectorAll(".menu-tile"));
     // Apply cover art from SITE_CONTENT.images.menuCovers
-    try {
+    
       const covers = (C.images && C.images.menuCovers) || {};
       // Ensure URLs resolve correctly when used inside CSS variables (which resolve relative to the stylesheet)
       const toAbs = (p) => {
-        try {
-          if (!p) return p;
-          // If already absolute (http/https/data), return as-is
-          if (/^(?:https?:|data:)/i.test(p)) return p;
-          // Normalize leading "./" to "/" and build an absolute URL against the site origin
-          const norm = p.replace(/^\.\//, "/");
-          return new URL(norm, window.location.origin).href;
-        } catch (_) {
-          return p;
-        }
+        if (!p) return p;
+        // If already absolute (http/https/data), return as-is
+        if (/^(?:https?:|data:)/i.test(p)) return p;
+  // Normalize leading "./" to "/" and build an absolute URL against the site origin
+  const norm = p.replace(/^\.\//, "/");
+  return new URL(norm, window.location.origin).href;
       };
       const map = {
         startVocab: toAbs(covers.vocab),
@@ -3042,7 +3413,7 @@ function initJpGames() {
           t.appendChild(badge);
         }
       });
-    } catch (_) {}
+    
     let focus = 0;
     const setFocus = (i) => {
       focus = (i + tiles.length) % tiles.length;
@@ -3050,9 +3421,9 @@ function initJpGames() {
         if (idx === focus) t.classList.add("active");
         else t.classList.remove("active");
       });
-      try {
+      
         SFX.play("ui.move");
-      } catch (_) {}
+      
     };
     setFocus(parseInt(localStorage.getItem("jp.menu.focus") || "0", 10) || 0);
     grid.addEventListener("keydown", (e) => {
@@ -3083,39 +3454,39 @@ function initJpGames() {
   const startKotoba = document.getElementById("startKotoba");
   if (startVocab)
     startVocab.addEventListener("click", () => {
-      try {
+      
         SFX.play("ui.select");
-      } catch (_) {}
+      
       const ov = document.getElementById("jpSettingsOverlay");
       if (ov && ov.__openWith) ov.__openWith("vocab");
     });
   if (startKanji)
     startKanji.addEventListener("click", () => {
-      try {
+      
         SFX.play("ui.select");
-      } catch (_) {}
+      
       const ov = document.getElementById("jpSettingsOverlay");
       if (ov && ov.__openWith) ov.__openWith("kanji");
     });
   if (startKotoba)
     startKotoba.addEventListener("click", () => {
-      try {
+      
         SFX.play("ui.select");
-      } catch (_) {}
+      
       const ov = document.getElementById("jpSettingsOverlay");
       if (ov && ov.__openWith) ov.__openWith("kotoba");
     });
   const openSongSelectBtn = document.getElementById("openSongSelect");
   if (openSongSelectBtn)
     openSongSelectBtn.addEventListener("click", () => {
-      try {
+      if (window.Jukebox && typeof Jukebox.openSongSelect === "function") {
         Jukebox.openSongSelect();
-      } catch (_) {
+      } else {
         alert("Song Select unavailable");
       }
     });
   // Unlock progress bar
-  try {
+  
     const maxReq = (Jukebox.songs || []).reduce(
       (m, s) => Math.max(m, s.req || 1),
       1,
@@ -3127,7 +3498,7 @@ function initJpGames() {
     const pct = Math.min(100, Math.round((lvl / maxReq) * 100));
     const fill = document.getElementById("unlockFill");
     if (fill) fill.style.width = pct + "%";
-  } catch (_) {}
+  
   if (vocabBack()) vocabBack().addEventListener("click", showMenu);
   if (kanjiBack()) kanjiBack().addEventListener("click", showMenu);
   if (kotobaBack()) kotobaBack().addEventListener("click", showMenu);
@@ -3172,20 +3543,20 @@ function initJpGames() {
     }
     if (leveled) {
       loveToast("レベルアップ！Level " + level + " ✨");
-      try {
+      
         SFX.play("ui.scoreTally");
         SFX.play("extra.clap");
-      } catch (_) {}
-      try {
+      
+      
         addHearts(1);
-      } catch (_) {}
+      
     }
     localStorage.setItem("study.level", String(level));
     localStorage.setItem("study.xp", String(xp));
     updateLevelUi();
-    try {
+    
       if (window.Achievements) Achievements.check();
-    } catch (_) {}
+    
   }
   updateLevelUi();
 
@@ -3245,17 +3616,17 @@ function initJpGames() {
     // Rhythm and timed controls moved into Settings overlay
     // HUD singer image removed
   })();
-  try {
+  
     if (window.Jukebox && typeof window.Jukebox.attachHudSelect === "function")
       window.Jukebox.attachHudSelect();
-  } catch (_) {}
+  
 
   // Judge/Items rows removed from HUD (consolidated into sidebar shop)
 
   function startSong(game, mode, timed) {
-    try {
+    
       SFX.play("sega.tag");
-    } catch (_) {}
+    
     HUD.combo = 0;
     HUD.maxCombo = 0;
     HUD.voltage = 0;
@@ -3269,15 +3640,12 @@ function initJpGames() {
     // Always reset lives to 5 at song start
     HUD.lives = 5;
     // Compute clear goal based on difficulty preset
-    try {
+    
       const p = (window.Jukebox &&
         Jukebox.getPreset &&
         Jukebox.getPreset()) || { key: "normal" };
-      const map = { easy: 10, normal: 15, hard: 20, extreme: 25 };
-      HUD.goal = map[p.key] || 15;
-    } catch (_) {
-      HUD.goal = 15;
-    }
+  const map = { easy: 10, normal: 15, hard: 20, extreme: 25 };
+  HUD.goal = map[p.key] || 15;
     renderLives("vocabCard");
     renderLives("kanjiCard");
     // Route to selected game and set mode/timed
@@ -3308,9 +3676,9 @@ function initJpGames() {
       );
     }
   }
-  try {
+  
     window.__startSong = startSong;
-  } catch (_) {}
+  
   function gradeFromStats() {
     const acc =
       (HUD.counts.COOL + HUD.counts.GREAT + HUD.counts.FINE) / (HUD.notes || 1);
@@ -3340,7 +3708,7 @@ function initJpGames() {
     const rank = gradeFromStats();
     ov.querySelector("#resRank").textContent = rank;
     // Tint result with current song theme
-    try {
+    
       const curId = localStorage.getItem("jukebox.song");
       const s = ((window.Jukebox && Jukebox.songs) || []).find(
         (x) => x.id === curId,
@@ -3349,9 +3717,9 @@ function initJpGames() {
         const panelEl = ov.querySelector(".result-panel");
         if (panelEl) panelEl.style.borderColor = s.theme;
       }
-    } catch (_) {}
+    
     // Show preset thresholds
-    try {
+    
       const preset = (window.Jukebox &&
         Jukebox.getPreset &&
         Jukebox.getPreset()) || { key: "normal" };
@@ -3362,7 +3730,7 @@ function initJpGames() {
         extreme: { clear: 1200, great: 1800, perfect: 2400 },
       };
       let th = table[preset.key] || table.normal;
-      try {
+      
         // Mode-based multipliers (kanji slightly stricter than vocab)
         const g =
           typeof HUD !== "undefined" && HUD.game
@@ -3374,18 +3742,18 @@ function initJpGames() {
           great: Math.round(th.great * mult),
           perfect: Math.round(th.perfect * mult),
         };
-      } catch (_) {}
+      
       const tEl = ov.querySelector("#resThresholds");
       if (tEl)
         tEl.textContent = `Stage Clear: ${th.clear} • Great: ${th.great} • Perfect: ${th.perfect}`;
-    } catch (_) {}
+    
     const panel = ov.querySelector(".result-panel");
     if (panel) {
       panel.classList.remove("win", "gamer");
       if (rank === "S" || rank === "A") panel.classList.add("win");
       else if (rank === "B") panel.classList.add("gamer");
       // Apply theme accent from current song
-      try {
+      
         const s =
           (window.Jukebox &&
             Jukebox.songs &&
@@ -3398,16 +3766,16 @@ function initJpGames() {
           panel.style.borderColor = s.theme;
           panel.style.boxShadow = `0 10px 30px ${s.theme}33`;
         }
-      } catch (_) {}
+      
     }
     // Result voice line based on performance
-    try {
+    
       if (rank === "S") SFX.play("result.perfect");
       else if (rank === "A") SFX.play("result.great");
       else if (rank === "B") SFX.play("result.standard");
       else if (rank === "C") SFX.play("result.cheap");
       else SFX.play("result.miss");
-    } catch (_) {}
+    
     ov.style.display = "flex";
   }
   function ensureResultOverlay() {
@@ -3434,11 +3802,11 @@ function initJpGames() {
     document.body.appendChild(ov);
     ov.querySelector("#resClose").addEventListener("click", () => {
       ov.style.display = "none";
-      try {
+      
         HUD.lives = 5;
         renderLives("vocabCard");
         renderLives("kanjiCard");
-      } catch (_) {}
+      
     });
     return ov;
   }
@@ -3460,9 +3828,9 @@ function initJpGames() {
     renderLives(cardId);
     updateVoltage(cardId);
     // set singer avatar
-    try {
+    
       applySingerTo(`#${cardId}-singer`);
-    } catch (_) {}
+    
   }
   function renderLives(cardId) {
     const el = document.getElementById(`${cardId}-lives`);
@@ -3487,7 +3855,7 @@ function initJpGames() {
     el.className = /*html*/ `diva-judge judge-${label}`;
     el.textContent = label;
     // Mirror to top HUD
-    try {
+    
       const hudJ = document.getElementById("hudJudge");
       if (hudJ) {
         hudJ.textContent = label;
@@ -3498,11 +3866,11 @@ function initJpGames() {
         const on = localStorage.getItem("rhythm.rings") !== "0";
         hudR.textContent = on ? "Rings ON" : "Rings OFF";
       }
-    } catch (_) {}
+    
 
     // Zap away swallowers on correct answers
     if (label === "COOL" || label === "GREAT" || label === "FINE") {
-      try {
+      
         const activeSwallowers =
           document.querySelectorAll(".swallow-game-mode");
         activeSwallowers.forEach((swallower) => {
@@ -3515,15 +3883,15 @@ function initJpGames() {
         if (activeSwallowers.length > 0) {
           SFX.play("extra.fx1");
         }
-      } catch (_) {}
+      
     }
 
     // Shimeji reactions
-    try {
-      const s = window.shimejiFunctions;
+    
+      const s = window.ShimejiFunctions;
       if (s) {
         const pickPhrase = () => {
-          try {
+          
             const C = window.SITE_CONTENT || {};
             const pool = [];
             if (C.study?.wordOfDay?.japanese)
@@ -3533,7 +3901,7 @@ function initJpGames() {
             const filtered = pool.filter((x) => x && x.length <= 22);
             if (filtered.length)
               return filtered[Math.floor(Math.random() * filtered.length)];
-          } catch (_) {}
+          
           return "すごい！";
         };
         if (label === "COOL" || label === "GREAT") {
@@ -3545,31 +3913,31 @@ function initJpGames() {
           s.makeAllSpeak && s.makeAllSpeak("あっ…", 1200);
         }
       }
-    } catch (_) {}
+    
   }
   // Expose a small helper so other modules can dismiss active game swallowers
-  try {
+  
     if (!window.zapSwallower) {
       window.zapSwallower = function () {
-        try {
+        
           const list = document.querySelectorAll(".swallow-game-mode");
           list.forEach((el) => {
             el.style.animation = "zapAway 0.5s ease-out forwards";
             setTimeout(() => {
-              try {
+              
                 el.remove();
-              } catch (_) {}
+              
             }, 520);
           });
           if (list.length) {
-            try {
+            
               SFX.play("extra.fx1");
-            } catch (_) {}
+            
           }
-        } catch (_) {}
+        
       };
     }
-  } catch (_) {}
+  
   function party(cardId) {
     const host = document.getElementById(cardId);
     if (!host) return;
@@ -3598,7 +3966,7 @@ function initJpGames() {
       HUD.lives--;
       renderLives(cardId);
       // Diva-like feedback: grey idol + miss SFX
-      try {
+      
         const c = document.getElementById(cardId);
         const idol = c && c.querySelector(".stage-idol");
         if (idol) {
@@ -3610,14 +3978,14 @@ function initJpGames() {
           }, 700);
         }
         SFX.play("result.miss");
-      } catch (_) {}
+      
       if (HUD.lives === 0) {
         endSong("Out of Lives");
       }
     }
   }
   function maybeComplete() {
-    try {
+    
       if (
         HUD &&
         !HUD.gameOver &&
@@ -3626,7 +3994,7 @@ function initJpGames() {
       ) {
         endSong("Song Clear");
       }
-    } catch (_) {}
+    
   }
   function addVoltage(amount, cardId) {
     HUD.voltage = clamp(HUD.voltage + amount, 0, 100);
@@ -3658,9 +4026,9 @@ function initJpGames() {
     card.appendChild(b);
     const grant = () => {
       awardHearts(3);
-      try {
+      
         SFX.play("ui.scoreTally");
-      } catch (_) {}
+      
       b.remove();
     };
     b.addEventListener("click", grant);
@@ -3682,17 +4050,17 @@ function initJpGames() {
   }
 
   async function fetchJsonWithProxy(url) {
-    try {
+    
       const r = await fetch(url, { cache: "no-store" });
       if (r.ok) return await r.json();
-    } catch (_) {}
-    try {
+    
+    
       const prox = /*html*/ `https://api.allorigins.win/raw?url=${encodeURIComponent(
         url,
       )}`;
       const r2 = await fetch(prox, { cache: "no-store" });
       if (r2.ok) return await r2.json();
-    } catch (_) {}
+    
     throw new Error("Network error");
   }
 
@@ -3974,9 +4342,9 @@ function initJpGames() {
           optionBtns.forEach((x) => x.classList.remove("active"));
           b.classList.add("active");
           // Auto-start on first mode selection
-          try {
+          
             SFX.play("ui.select");
-          } catch (_) {}
+          
           beginVocab();
         });
       });
@@ -3990,9 +4358,9 @@ function initJpGames() {
       });
       // Expose a stop hook for navigation cleanup
       window.__vocabStop = () => {
-        try {
+        
           if (tId) clearInterval(tId);
-        } catch (_) {}
+        
         tId = null;
       };
       document.addEventListener("vocab-start", (ev) => {
@@ -4021,7 +4389,7 @@ function initJpGames() {
         cEl.innerHTML = "";
         qEl.textContent = "Loading…";
         HUD.notes++;
-        try {
+        
           const q = await getVocabQuestion(direction);
           const correct = q.correct;
           qEl.innerHTML = q.promptHtml;
@@ -4031,13 +4399,13 @@ function initJpGames() {
             Jukebox.getPreset()) || { baseTime: 15, options: 4 };
           const maxOpts = Math.min(PRESET.options || 4, 4);
           // If options != 4, adjust grid layout
-          try {
+          
             const cols = maxOpts >= 6 ? 3 : 2;
             cEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
             cEl.style.gridTemplateRows = `repeat(${Math.ceil(
               maxOpts / cols,
             )}, 1fr)`;
-          } catch (_) {}
+          
 
           if (timed) {
             const { baseTime } = diffParams();
@@ -4054,9 +4422,9 @@ function initJpGames() {
                 lock = true;
                 fb.textContent = /*html*/ `⏰ Time! Correct: ${correct}`;
                 fb.style.color = "#c00";
-                try {
+                
                   SFX.play("quiz.timeup");
-                } catch (_) {}
+                
                 streak = 0;
                 streakEl.textContent = String(streak);
                 HUD.counts.MISS++;
@@ -4092,9 +4460,9 @@ function initJpGames() {
                     // Bonus rewards for perfect timing
                     awardHearts(2);
                     addXP(Math.round(gain * 1.5));
-                    try {
+                    
                       SFX.play("result.perfect");
-                    } catch (_) {}
+                    
                   } else {
                     fb.textContent = "✅ Correct!";
                     awardHearts(1);
@@ -4104,9 +4472,9 @@ function initJpGames() {
                   score++;
                   scoreEl.textContent = String(score);
 
-                  try {
+                  
                     SFX.play("quiz.ok");
-                  } catch (_) {}
+                  
 
                   // Enhanced streak system
                   streak++;
@@ -4157,9 +4525,9 @@ function initJpGames() {
                   fb.textContent = `❌ ${correct}`;
                   fb.style.color = "#c00";
 
-                  try {
+                  
                     SFX.play("quiz.bad");
-                  } catch (_) {}
+                  
 
                   streak = 0;
                   streakEl.textContent = String(streak);
@@ -4195,10 +4563,7 @@ function initJpGames() {
             ).find((b) => b.textContent === text);
             if (targetBtn) targetBtn.click();
           });
-        } catch (e) {
-          friendlyError(cEl, load);
-          qEl.textContent = "";
-        }
+        
       }
       // Start flow waits for overlay
     }
@@ -4249,9 +4614,9 @@ function initJpGames() {
           optionBtns.forEach((x) => x.classList.remove("active"));
           b.classList.add("active");
           // Auto-start on first mode selection
-          try {
+          
             SFX.play("ui.select");
-          } catch (_) {}
+          
           beginKanji();
         });
       });
@@ -4265,9 +4630,9 @@ function initJpGames() {
       });
       // Expose a stop hook for navigation cleanup
       window.__kanjiStop = () => {
-        try {
+        
           if (tId) clearInterval(tId);
-        } catch (_) {}
+        
         tId = null;
       };
       document.addEventListener("kanji-start", (ev) => {
@@ -4295,7 +4660,7 @@ function initJpGames() {
         cEl.innerHTML = "";
         qEl.textContent = "Loading…";
         HUD.notes++;
-        try {
+        
           const q = await getKanjiQuestion(mode);
           const correct = q.correct;
           qEl.innerHTML = q.promptHtml;
@@ -4303,13 +4668,13 @@ function initJpGames() {
             Jukebox.getPreset &&
             Jukebox.getPreset()) || { baseTime: 15, options: 4 };
           const maxOpts2 = Math.min(PRESET2.options || 4, 4);
-          try {
+          
             const cols2 = maxOpts2 >= 6 ? 3 : 2;
             cEl.style.gridTemplateColumns = `repeat(${cols2}, 1fr)`;
             cEl.style.gridTemplateRows = `repeat(${Math.ceil(
               maxOpts2 / cols2,
             )}, 1fr)`;
-          } catch (_) {}
+          
           if (timed) {
             const { baseTime } = diffParams();
             countdown = PRESET2.baseTime || baseTime;
@@ -4325,9 +4690,9 @@ function initJpGames() {
                 lock = true;
                 fb.textContent = /*html*/ `⏰ Time! Correct: ${correct}`;
                 fb.style.color = "#c00";
-                try {
+                
                   SFX.play("quiz.timeup");
-                } catch (_) {}
+                
                 streak = 0;
                 streakEl.textContent = String(streak);
                 HUD.counts.MISS++;
@@ -4359,9 +4724,9 @@ function initJpGames() {
                     createPerfectHitEffect(element, style.color);
                     fb.textContent = "✨ PERFECT! 正解! ✨";
                     awardHearts(2);
-                    try {
+                    
                       SFX.play("result.perfect");
-                    } catch (_) {}
+                    
                   } else {
                     fb.textContent = "✅ 正解!";
                     awardHearts(1);
@@ -4370,9 +4735,9 @@ function initJpGames() {
                   score++;
                   scoreEl.textContent = String(score);
 
-                  try {
+                  
                     SFX.play("quiz.ok");
-                  } catch (_) {}
+                  
 
                   streak++;
                   streakEl.textContent = String(streak);
@@ -4447,9 +4812,9 @@ function initJpGames() {
                   fb.textContent = `❌ ${correct}`;
                   fb.style.color = "#c00";
 
-                  try {
+                  
                     SFX.play("quiz.bad");
-                  } catch (_) {}
+                  
 
                   streak = 0;
                   streakEl.textContent = String(streak);
@@ -4475,10 +4840,7 @@ function initJpGames() {
             ).find((b) => b.textContent === text);
             if (targetBtn) targetBtn.click();
           });
-        } catch (e) {
-          friendlyError(cEl, load);
-          qEl.textContent = "";
-        }
+        
       }
       // Start flow waits for overlay
     }
@@ -4500,7 +4862,7 @@ function initJpGames() {
         entry.className = "chat-entry user";
         entry.textContent = `You: ${q}`;
         chat.appendChild(entry);
-        try {
+        
           const res = await fetch(
             `https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(
               q,
@@ -4518,15 +4880,10 @@ function initJpGames() {
           chat.appendChild(reply);
           chat.scrollTop = chat.scrollHeight;
           if (Math.random() < 0.3)
-            try {
-              window.shimejiFunctions?.makeAllSpeak?.("勉強しよう！", 2500);
-            } catch (_) {}
-        } catch (e) {
-          const reply = document.createElement("div");
-          reply.className = "chat-entry miku";
-          reply.textContent = "Miku: Lookup failed.";
-          chat.appendChild(reply);
-        }
+            
+              window.ShimejiFunctions?.makeAllSpeak?.("勉強しよう！", 2500);
+            
+        
       }
       chatForm?.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -4556,138 +4913,54 @@ function initJpGames() {
       async function round() {
         lock = false;
         cEl.innerHTML = "";
-        try {
-          const q = await getVocabQuestion("jp-en");
-          const correct = q.correct;
-          chat.innerHTML = "";
-          say(
-            `「${q.promptHtml.replace(/<[^>]+>/g, "")}」って、どういう意味？`,
-          );
-          const PRESET3 = (window.Jukebox &&
-            Jukebox.getPreset &&
-            Jukebox.getPreset()) || { options: 4 };
-          const maxOpts3 = Math.min(PRESET3.options || 4, 4);
-          const use = q.options.slice(0, maxOpts3);
-          use.forEach((opt, idx) => {
-            const { btn } = createUltimateBeatpadButton(
-              opt,
-              idx,
-              (text, element, style) => {
-                if (lock) return;
-                lock = true;
 
-                const isCorrect = text === correct;
+        // Fetch a vocab question and render choices
+        const q = await getVocabQuestion("jp-en");
+        const correct = q.correct;
+        chat.innerHTML = "";
+        say(`「${q.promptHtml.replace(/<[^>]+>/g, "")}」って、どういう意味？`);
 
-                if (isCorrect) {
-                  createRingEffect(element, true);
-                  if (style.isPerfect) {
-                    createPerfectHitEffect(element, style.color);
-                    say("✨ PERFECT! 正解だよ! ✨");
-                    addXP(15); // Bonus XP for perfect
-                    try {
-                      SFX.play("result.perfect");
-                    } catch (_) {}
-                  } else {
-                    say("正解だよ！");
-                    addXP(10);
-                  }
+        const PRESET3 = (window.Jukebox && Jukebox.getPreset && Jukebox.getPreset()) || { options: 4 };
+        const maxOpts3 = Math.min(PRESET3.options || 4, 4);
+        const use = q.options.slice(0, maxOpts3);
 
-                  try {
-                    SFX.play("quiz.ok");
-                  } catch (_) {}
+        use.forEach((opt, idx) => {
+          const { btn } = createUltimateBeatpadButton(opt, idx, (text, element, style) => {
+            if (lock) return;
+            lock = true;
 
-                  score++;
-                  scoreEl.textContent = String(score);
-
-                  // Create celebration effect
-                  createComboMilestoneEffect(cEl, score);
-                } else {
-                  createRingEffect(element, false);
-                  say(`残念！正解は「${correct}」`);
-
-                  try {
-                    SFX.play("quiz.bad");
-                  } catch (_) {}
-                }
-                setTimeout(round, 900);
-                return isCorrect;
-              },
-            );
-
-            cEl.appendChild(btn);
+            const isCorrect = text === correct;
+            if (isCorrect) {
+              createRingEffect(element, true);
+              if (style.isPerfect) {
+                createPerfectHitEffect(element, style.color);
+                say("✨ PERFECT! 正解だよ! ✨");
+                addXP(15);
+              } else {
+                say("正解だよ！");
+                addXP(10);
+              }
+              SFX.play("quiz.ok");
+              score++;
+              scoreEl.textContent = String(score);
+              createComboMilestoneEffect(cEl, score);
+            } else {
+              createRingEffect(element, false);
+              say(`残念！正解は「${correct}」`);
+              SFX.play("quiz.bad");
+            }
+            setTimeout(round, 900);
+            return isCorrect;
           });
+          cEl.appendChild(btn);
+        });
 
-          // Initialize falling beats system
-          createFallingBeatsSystem(cEl);
-          setupUltimateBeatpadKeyboard(cEl, (text, element, style) => {
-            const targetBtn = Array.from(
-              cEl.querySelectorAll(".beatpad-btn"),
-            ).find((b) => b.textContent === text);
-            if (targetBtn) targetBtn.click();
-          });
-        } catch (_) {
-          // Offline fallback
-          const fallback = {
-            promptHtml:
-              '<div style="font-size:22px;font-weight:900">こんにちは</div>',
-            correct: "hello",
-            options: shuffle(["hello", "goodbye", "thank you", "please"]),
-          };
-          const q = fallback;
-          const correct = q.correct;
-          chat.innerHTML = "";
-          say(`「こんにちは」って、どういう意味？`);
-          q.options.forEach((opt, idx) => {
-            const { btn } = createUltimateBeatpadButton(
-              opt,
-              idx,
-              (text, element, style) => {
-                if (lock) return;
-                lock = true;
-
-                const isCorrect = text === correct;
-
-                if (isCorrect) {
-                  createRingEffect(element, true);
-                  if (style.isPerfect) {
-                    createPerfectHitEffect(element, style.color);
-                    say("✨ PERFECT! 正解だよ! ✨");
-                    addXP(9); // Bonus XP for perfect
-                  } else {
-                    say("正解だよ！");
-                    addXP(6);
-                  }
-
-                  SFX.play("quiz.ok");
-
-                  score++;
-                  scoreEl.textContent = String(score);
-
-                  // Create celebration effect
-                  createComboMilestoneEffect(cEl, score);
-                } else {
-                  createRingEffect(element, false);
-                  say(`残念！正解は「${correct}」`);
-
-                  SFX.play("quiz.bad");
-                }
-                setTimeout(round, 900);
-                return isCorrect;
-              },
-            );
-
-            cEl.appendChild(btn);
-          });
-
-          // Initialize falling beats system
-          createFallingBeatsSystem(cEl);
-          setupUltimateBeatpadKeyboard(cEl, (text, element, style) => {
-            const targetBtn = Array.from(
-              cEl.querySelectorAll(".beatpad-btn"),
-            ).find((b) => b.textContent === text);
-            if (targetBtn) targetBtn.click();
-          });
-        }
+        // Initialize falling beats system and keyboard handler
+        createFallingBeatsSystem(cEl);
+        setupUltimateBeatpadKeyboard(cEl, (text) => {
+          const targetBtn = Array.from(cEl.querySelectorAll(".beatpad-btn")).find((b) => b.textContent === text);
+          if (targetBtn) targetBtn.click();
+        });
       }
       start.addEventListener("click", () => {
         start.style.display = "none";
@@ -4747,784 +5020,7 @@ function showConfetti(cardId, count = 24) {
 }
 
 // ====== APPLY CONTENT (copy from SITE_CONTENT) ======
-function applyContent() {
-  try {
-    if (C.site?.htmlTitle) document.title = C.site.htmlTitle;
-    if (C.site?.title) {
-      const t = document.getElementById("siteTitle");
-      if (t) t.textContent = C.site.title;
-    }
-    if (C.site?.subtitle) {
-      const s = document.getElementById("siteSub");
-      if (s) s.textContent = C.site.subtitle;
-    }
 
-    // Meta and icons
-    if (C.images?.ogImage) {
-      const og = document.getElementById("metaOgImage");
-      if (og) og.setAttribute("content", C.images.ogImage);
-    }
-    if (C.images?.favicon) {
-      const fav = document.getElementById("faviconLink");
-      if (fav) fav.setAttribute("href", C.images.favicon);
-    }
-
-    // Header background image (override)
-    if (C.images?.headerBg) {
-      const header = document.getElementById("header");
-      if (header)
-        header.style.backgroundImage = /*html*/ `linear-gradient(135deg, rgba(189,227,255,.9), rgba(255,209,236,.9)), url('${C.images.headerBg}')`;
-    }
-
-    // Splash/hero/shrine images
-    const splashImg = document.getElementById("splashMiku");
-    if (splashImg)
-      splashImg.src =
-        C.images?.splashMiku ||
-        "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png";
-    const heroMiku = document.getElementById("heroMiku");
-    if (heroMiku)
-      heroMiku.src =
-        C.images?.heroMiku ||
-        "./assets/hatsune_miku_render_by_jimmyisaac_d68ibgy-pre.png";
-    const shrineMiku = document.getElementById("shrineMiku");
-    if (shrineMiku)
-      shrineMiku.src =
-        C.images?.shrineMiku ||
-        "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png";
-
-    // Pet iframe
-    const pet = document.getElementById("petIframe");
-    if (pet && C.embeds?.petIframeSrc) pet.src = C.embeds.petIframeSrc;
-
-    // Stats badges
-    if (Array.isArray(C.images?.statsBadges)) {
-      const b1 = document.getElementById("statBadge1");
-      const b2 = document.getElementById("statBadge2");
-      if (b1 && C.images.statsBadges[0]) b1.src = C.images.statsBadges[0];
-      if (b2 && C.images.statsBadges[1]) b2.src = C.images.statsBadges[1];
-    }
-
-    // Web badges (right sidebar)
-    if (Array.isArray(C.images?.webBadges)) {
-      const wrap = document.getElementById("webBadges");
-      if (wrap) {
-        wrap.innerHTML = C.images.webBadges
-          .map((badge) => {
-            if (typeof badge === "object" && badge.src) {
-              // Special badge object (like our own badge)
-              const link = badge.link || "#";
-              const style = badge.style || "";
-              const classes = badge.isOurBadge
-                ? "badge our-own-badge"
-                : "badge";
-              return `<a href="${link}" target="_blank" rel="noopener"><img src="${
-                badge.src
-              }" class="${classes}" alt="${
-                badge.alt || "badge"
-              }" style="${style}"/></a>`;
-            } else {
-              // Simple URL string
-              return `<img src="${badge}" class="badge" alt="badge"/>`;
-            }
-          })
-          .join("");
-      }
-    }
-
-    // Splash copy
-    const splashTitle = document.querySelector("#splash .glitch");
-    if (splashTitle && C.splash?.title) {
-      splashTitle.textContent = C.splash.title;
-      splashTitle.setAttribute("data-text", C.splash.title);
-    }
-    const splashSub = document.querySelector("#splash .typing-text");
-    if (splashSub && C.splash?.subtitle)
-      splashSub.textContent = C.splash.subtitle;
-    const splashBtn = document.getElementById("enterSite");
-    if (splashBtn && C.splash?.button) splashBtn.textContent = C.splash.button;
-
-    // Nav build: use C.nav to ensure order and labels (e.g., shrine then Wish)
-    try {
-      const ul = document.querySelector("#navbar ul");
-      if (ul && Array.isArray(C.nav) && C.nav.length) {
-        ul.innerHTML = C.nav
-          .map((n) => {
-            const icon = n.mikuIcon
-              ? mikuIcon(n.mikuIcon, n.emoji || "")
-              : n.emoji || "";
-            return `<li><a href="#${n.id}" data-section="${n.id}">${icon} ${n.label}</a></li>`;
-          })
-          .join("");
-      }
-    } catch (_) {}
-
-    // (Removed old nowPlaying placeholder: using radioStatus/radioDisplayStatus instead)
-    // Status labels
-    const onlineStatus = document.getElementById("onlineStatus");
-    if (onlineStatus && C.status?.onlineLabel) {
-      const statusIcon = C.status.statusIcon
-        ? mikuIcon(C.status.statusIcon, "")
-        : "";
-      onlineStatus.innerHTML = /*html*/ `${statusIcon}${C.status.onlineLabel}`;
-    }
-    const heartCountLbl = document.querySelector(".status-item:nth-child(3)");
-    if (heartCountLbl && C.status?.heartsLabel) {
-      const span = heartCountLbl.querySelector("span");
-      if (span) {
-        const heartIcon = C.status.heartIcon
-          ? mikuIcon(C.status.heartIcon, "💖")
-          : "💖";
-        span.previousSibling &&
-          (span.previousSibling.innerHTML = /*html*/ ` ${heartIcon} ${C.status.heartsLabel} `);
-      }
-    }
-
-    // Home hero + cards
-    if (C.home) {
-      const h2 = document.querySelector("#home .hero-text h2");
-      if (h2 && C.home.heroTitle) h2.textContent = C.home.heroTitle;
-      const p = document.querySelector("#home .hero-text p");
-      if (p && Array.isArray(C.home.heroParagraphs)) {
-        p.innerHTML = C.home.heroParagraphs
-          .map((line, idx, arr) => {
-            // Add love letter icon to the final line
-            if (idx === arr.length - 1) {
-              const ll = mikuIcon("loveLetter", "💌");
-              return `${line} ${ll}`;
-            }
-            return line;
-          })
-          .join(" <br />");
-      }
-      const heartBtn = document.getElementById("heartBtn");
-      if (heartBtn && C.home.heartButton) {
-        const heartIcon = C.home.heartButtonIcon
-          ? mikuIcon(C.home.heartButtonIcon, "💖")
-          : "💖";
-        heartBtn.innerHTML = /*html*/ `${heartIcon} ${C.home.heartButton}`;
-      }
-
-      // Rebuild the grid with unified presentation system
-      const grid = document.querySelector("#home .content-grid");
-      if (grid) {
-        // Check if we have the new presentation slides
-        if (C.home.presentationSlides && C.home.presentationSlides.length > 0) {
-          const presentationIcon = C.home.presentationIcon
-            ? mikuIcon(C.home.presentationIcon, "✨")
-            : "✨";
-          const presentationTitle =
-            C.home.presentationTitle || "Getting to Know Baby Belle";
-
-          // Build unified presentation
-          const slidesHtml = C.home.presentationSlides
-            .map((slide, index) => {
-              const titleIcon = slide.titleIcon
-                ? mikuIcon(slide.titleIcon, "")
-                : "";
-              const decorativeIconsHtml = slide.decorativeIcons
-                ? slide.decorativeIcons
-                    .map((iconName) => mikuIcon(iconName, ""))
-                    .join("")
-                : "";
-
-              return `
-                <div class="presentation-slide ${index === 0 ? "active" : ""}" 
-                     data-slide="${index}" 
-                     data-theme="${slide.theme || "default"}">
-                  <div class="slide-header">
-                    <h3>${titleIcon}${slide.title}</h3>
-                    <div class="slide-decorations">${decorativeIconsHtml}</div>
-                  </div>
-                  <div class="slide-content">
-                    ${slide.content
-                      .map((line) => (line ? `<p>${line}</p>` : "<br>"))
-                      .join("")}
-                  </div>
-                  <div class="slide-number">${index + 1} / ${
-                    C.home.presentationSlides.length
-                  }</div>
-                </div>
-              `;
-            })
-            .join("");
-
-          grid.innerHTML = /*html*/ `
-              <div class="belle-presentation">
-                <div class="presentation-header">
-                  <h2>${presentationIcon}${presentationTitle}</h2>
-                  <div class="presentation-controls">
-                    <button class="presentation-btn prev-slide" data-direction="prev">
-                      ${mikuIcon("wallHide", "◀")} Previous
-                    </button>
-                    <div class="slide-indicator">
-                      <span class="current-slide">1</span> / ${
-                        C.home.presentationSlides.length
-                      }
-                    </div>
-                    <button class="presentation-btn next-slide" data-direction="next">
-                      Next ${mikuIcon("cheering", "▶")}
-                    </button>
-                  </div>
-                  <div class="presentation-progress">
-                    <div class="progress-bar">
-                      <div class="progress-fill" style="width: ${
-                        100 / C.home.presentationSlides.length
-                      }%"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="presentation-content">
-                  ${slidesHtml}
-                </div>
-                <div class="floating-decorations"></div>
-              </div>
-            `;
-
-          // Initialize the enhanced presentation system (guard if unavailable)
-          if (typeof initBellePresentation === "function") {
-            initBellePresentation();
-          }
-        } else {
-          // Fallback to old system
-          const likes = (C.home.likes || [])
-            .map((li) => `<li>${li}</li>`)
-            .join("");
-          const dislikes = (C.home.dislikes || [])
-            .map((li) => `<li>${li}</li>`)
-            .join("");
-          const dreams = (C.home.dreams || [])
-            .map((li, idx) => {
-              const dreamIcon = C.home.dreamItemIcons?.[idx]
-                ? mikuIcon(C.home.dreamItemIcons[idx], "")
-                : "";
-              return `<li>${dreamIcon}${li}</li>`;
-            })
-            .join("");
-
-          // Build paginated about content
-          const aboutPages = C.home.aboutPages || [
-            C.home.aboutParagraphs || [],
-          ];
-          const aboutPageHtml = aboutPages
-            .map(
-              (page, index) =>
-                `<div class="card-page ${
-                  index === 0 ? "active" : ""
-                }" data-page="${index}">
-                ${page.map((txt) => `<p>${txt}</p>`).join("")}
-              </div>`,
-            )
-            .join("");
-
-          // Build paginated dislikes content
-          const dislikesPages = C.home.dislikesPages || [C.home.dislikes || []];
-          const dislikesPageHtml = dislikesPages
-            .map(
-              (page, index) =>
-                `<div class="card-page ${
-                  index === 0 ? "active" : ""
-                }" data-page="${index}">
-                <ul>${page.map((item) => `<li>${item}</li>`).join("")}</ul>
-              </div>`,
-            )
-            .join("");
-
-          // Build paginated dreams content
-          const dreamsPages = C.home.dreamsPages || [C.home.dreams || []];
-          const dreamsPageHtml = dreamsPages
-            .map(
-              (page, index) =>
-                `<div class="card-page ${
-                  index === 0 ? "active" : ""
-                }" data-page="${index}">
-                <ul>${page
-                  .map((item, idx) => {
-                    const dreamIcon = C.home.dreamItemIcons?.[idx]
-                      ? mikuIcon(C.home.dreamItemIcons[idx], "")
-                      : "";
-                    return `<li>${dreamIcon}${item}</li>`;
-                  })
-                  .join("")}</ul>
-              </div>`,
-            )
-            .join("");
-
-          const pieces = [];
-          const aboutTitleIcon = C.home.aboutIcon
-            ? mikuIcon(C.home.aboutIcon, "")
-            : "";
-          const aboutTitle = /*html*/ `${aboutTitleIcon}${
-            C.home.aboutTitle || "About Me"
-          }`;
-
-          // About card with pagination
-          pieces.push(`
-              <div class="card paginated-card" data-card="about">
-                <div class="card-header">
-                  <h3>${aboutTitle}</h3>
-                  ${
-                    aboutPages.length > 1
-                      ? `
-                    <div class="card-nav">
-                      <button class="card-nav-btn prev-btn" data-direction="prev">${mikuIcon(
-                        "wallHide",
-                        "←",
-                      )}</button>
-                      <span class="page-indicator">1/${aboutPages.length}</span>
-                      <button class="card-nav-btn next-btn" data-direction="next">${mikuIcon(
-                        "cheering",
-                        "→",
-                      )}</button>
-                    </div>
-                  `
-                      : ""
-                  }
-                </div>
-                <div class="card-content">
-                  ${aboutPageHtml}
-                </div>
-              </div>
-            `);
-
-          // Likes card with icon
-          if (likes) {
-            const likesIcon = C.home.likesIcon
-              ? mikuIcon(C.home.likesIcon, "")
-              : "";
-            pieces.push(`
-                <div class="card">
-                  <h3>${likesIcon}${C.home.likesTitle || "Likes"}</h3>
-                  <ul>${likes}</ul>
-                </div>
-              `);
-          }
-
-          // Dislikes card with pagination
-          if (C.home.dislikesPages && C.home.dislikesPages.length > 0) {
-            const dislikesIcon = C.home.dislikesIcon
-              ? mikuIcon(C.home.dislikesIcon, "")
-              : "";
-            pieces.push(`
-                <div class="card paginated-card" data-card="dislikes">
-                  <div class="card-header">
-                    <h3>${dislikesIcon}${
-                      C.home.dislikesTitle || "Dislikes"
-                    }</h3>
-                    ${
-                      dislikesPages.length > 1
-                        ? `
-                      <div class="card-nav">
-                        <button class="card-nav-btn prev-btn" data-direction="prev">${mikuIcon(
-                          "wallHide",
-                          "←",
-                        )}</button>
-                        <span class="page-indicator">1/${
-                          dislikesPages.length
-                        }</span>
-                        <button class="card-nav-btn next-btn" data-direction="next">${mikuIcon(
-                          "innocent",
-                          "→",
-                        )}</button>
-                      </div>
-                    `
-                        : ""
-                    }
-                  </div>
-                  <div class="card-content">
-                    ${dislikesPageHtml}
-                  </div>
-                </div>
-              `);
-          } else if (dislikes) {
-            const dislikesIcon = C.home.dislikesIcon
-              ? mikuIcon(C.home.dislikesIcon, "")
-              : "";
-            pieces.push(`
-                <div class="card">
-                  <h3>${dislikesIcon}${C.home.dislikesTitle || "Dislikes"}</h3>
-                  <ul>${dislikes}</ul>
-                </div>
-              `);
-          }
-
-          // Dreams card with pagination
-          if (C.home.dreamsPages && C.home.dreamsPages.length > 0) {
-            const dreamsTitleIcon = C.home.dreamsIcon
-              ? mikuIcon(C.home.dreamsIcon, "")
-              : "";
-            const dreamsTitle = /*html*/ `${dreamsTitleIcon}${
-              C.home.dreamsTitle || "Dreams"
-            }`;
-            pieces.push(`
-                <div class="card paginated-card" data-card="dreams">
-                  <div class="card-header">
-                    <h3>${dreamsTitle}</h3>
-                    ${
-                      dreamsPages.length > 1
-                        ? `
-                      <div class="card-nav">
-                        <button class="card-nav-btn prev-btn" data-direction="prev">${mikuIcon(
-                          "wallHide",
-                          "←",
-                        )}</button>
-                        <span class="page-indicator">1/${
-                          dreamsPages.length
-                        }</span>
-                        <button class="card-nav-btn next-btn" data-direction="next">${mikuIcon(
-                          "starUwu",
-                          "→",
-                        )}</button>
-                      </div>
-                    `
-                        : ""
-                    }
-                  </div>
-                  <div class="card-content">
-                    ${dreamsPageHtml}
-                  </div>
-                </div>
-              `);
-          } else if (dreams) {
-            const dreamsTitleIcon = C.home.dreamsIcon
-              ? mikuIcon(C.home.dreamsIcon, "")
-              : "";
-            const dreamsTitle = /*html*/ `${dreamsTitleIcon}${
-              C.home.dreamsTitle || "Dreams"
-            }`;
-            pieces.push(`
-                <div class="card">
-                  <h3>${dreamsTitle}</h3>
-                  <ul>${dreams}</ul>
-                </div>
-              `);
-          }
-
-          grid.innerHTML = pieces.join("");
-
-          // Initialize card pagination
-          initCardPagination();
-        }
-      }
-    }
-
-    // Socials section title
-    if (C.socials?.title) {
-      const h2 = document.querySelector("#socials h2");
-      const titleIcon = C.socials.titleIcon
-        ? mikuIcon(C.socials.titleIcon, "🔗")
-        : "🔗";
-      if (h2) h2.innerHTML = /*html*/ `${titleIcon} ${C.socials.title}`;
-    }
-
-    // Quick Links in left sidebar
-    if (C.quickLinks) {
-      const h3 = document.getElementById("quickLinksTitle");
-      const ul = document.getElementById("quickLinksList");
-      if (h3 && C.quickLinks.title) h3.textContent = C.quickLinks.title;
-      if (ul && Array.isArray(C.quickLinks.items)) {
-        ul.innerHTML = C.quickLinks.items
-          .map(
-            (i) =>
-              `<li><a href="${i.url}" target="_blank" rel="noopener" ${
-                i.cls ? `class="${i.cls}"` : ""
-              }>${i.label}</a></li>`,
-          )
-          .join("");
-      }
-    } else {
-      // Fallback if content not ready yet: render a basic set from defaults later
-      setTimeout(() => {
-        try {
-          if (window.SITE_CONTENT && window.SITE_CONTENT.quickLinks)
-            applyContent();
-        } catch (_) {}
-      }, 100);
-    }
-
-    // Study copy
-    if (C.study) {
-      const h2 = document.querySelector("#study h2");
-      const studyIcon = C.study.titleIcon
-        ? mikuIcon(C.study.titleIcon, "🎌")
-        : "🎌";
-      if (h2) h2.innerHTML = /*html*/ `${studyIcon} ${C.study.title}`;
-      // Update HUD Level text/progress if provided by content
-      const hudProg = document.getElementById("hudLevelProgress");
-      const hudText = document.getElementById("hudLevelText");
-      if (hudProg && Number.isFinite(C.study.progressPercent))
-        hudProg.style.width = /*html*/ `${C.study.progressPercent}%`;
-      if (hudText && C.study.levelText) hudText.textContent = C.study.levelText;
-      const wodCard = document.getElementById("wodCard");
-      const wodInline = document.querySelector(".word-of-day");
-      if (C.study.wordOfDay) {
-        const setWod = (root) => {
-          if (!root) return;
-          const jp = root.querySelector(".japanese");
-          const romaji = root.querySelector(".romaji");
-          const meaning = root.querySelector(".meaning");
-          if (jp) jp.textContent = C.study.wordOfDay.japanese || "";
-          if (romaji) romaji.textContent = C.study.wordOfDay.romaji || "";
-          if (meaning) meaning.textContent = C.study.wordOfDay.meaning || "";
-        };
-        setWod(wodCard);
-        setWod(wodInline);
-      }
-      const goalsCard = document.getElementById("goalsCard");
-      if (goalsCard) {
-        const h3 = goalsCard.querySelector("h3");
-        const ul = goalsCard.querySelector("ul");
-        if (h3 && C.study.goalsTitle) {
-          const goalsIcon = C.study.goalsIcon
-            ? mikuIcon(C.study.goalsIcon, "")
-            : "";
-          h3.innerHTML = /*html*/ `${goalsIcon}${C.study.goalsTitle}`;
-        }
-        if (ul && Array.isArray(C.study.goals))
-          ul.innerHTML = C.study.goals
-            .map((g, idx) => {
-              const goalIcon = C.study.goalItemIcons?.[idx]
-                ? mikuIcon(C.study.goalItemIcons[idx], "")
-                : "";
-              return `<li>${goalIcon}${g}</li>`;
-            })
-            .join("");
-      }
-    }
-
-    // Games titles/buttons
-    if (C.games) {
-      const h2 = document.querySelector("#games h2");
-      if (h2) h2.textContent = C.games.title;
-      const cards = document.querySelectorAll("#games .game-widget");
-      const mem = cards[0],
-        heart = cards[1];
-      if (mem) {
-        const h3 = mem.querySelector("h3");
-        if (h3 && C.games.memoryTitle) {
-          const memoryIcon = C.games.memoryIcon
-            ? mikuIcon(C.games.memoryIcon, "🧩")
-            : "🧩";
-          h3.innerHTML = /*html*/ `${memoryIcon} ${C.games.memoryTitle}`;
-        }
-        const reset = document.getElementById("resetMemory");
-        if (reset && C.games.memoryReset)
-          reset.textContent = C.games.memoryReset;
-      }
-      if (heart) {
-        const h3 = heart.querySelector("h3");
-        if (h3 && C.games.heartsTitle) {
-          const heartsIcon = C.games.heartsIcon
-            ? mikuIcon(C.games.heartsIcon, "💖")
-            : "💖";
-          h3.innerHTML = /*html*/ `${heartsIcon} ${C.games.heartsTitle}`;
-        }
-        const zone = document.getElementById("heartZone");
-        if (zone && C.games.heartsZone) {
-          const zoneIcon = C.games.heartsZoneIcon
-            ? mikuIcon(C.games.heartsZoneIcon, "💖")
-            : "💖";
-          zone.innerHTML = /*html*/ `Click to collect hearts! ${zoneIcon}`;
-        }
-        const btn = document.getElementById("resetHearts");
-        if (btn && C.games.heartsReset) btn.textContent = C.games.heartsReset;
-      }
-      const WishSection = document.getElementById("Wish");
-      if (WishSection) {
-        const WishHeader = WishSection.querySelector("h2");
-        if (WishHeader && C.games.WishTitle) {
-          const WishIcon = C.games.WishIcon
-            ? mikuIcon(C.games.WishIcon, "🎰")
-            : "🎰";
-          WishHeader.innerHTML = /*html*/ `${WishIcon} ${C.games.WishTitle}`;
-        }
-        const dexBtn = document.getElementById("WishCollectionBtn");
-        if (dexBtn && C.games.WishOpenDex)
-          dexBtn.textContent = C.games.WishOpenDex;
-      }
-    }
-
-    // Shrine copy
-    if (C.shrine) {
-      const h2 = document.querySelector("#shrine h2");
-      if (h2) {
-        const titleIcon = C.shrine.titleIcon
-          ? mikuIcon(C.shrine.titleIcon, "⛩️")
-          : "⛩️";
-        h2.innerHTML = /*html*/ `${titleIcon} ${C.shrine.title}`;
-      }
-      const aboutTitle = document.querySelector("#shrine .shrine-info h3");
-      if (aboutTitle && C.shrine.aboutTitle) {
-        const aboutIcon = C.shrine.aboutIcon
-          ? mikuIcon(C.shrine.aboutIcon, "💙")
-          : "💙";
-        aboutTitle.innerHTML = /*html*/ `${aboutIcon} ${C.shrine.aboutTitle}`;
-      }
-      const aboutP = document.querySelector("#shrine .shrine-info p");
-      if (aboutP && C.shrine.aboutText) aboutP.textContent = C.shrine.aboutText;
-      const listTitle = document.querySelectorAll("#shrine .shrine-info h3")[1];
-      if (listTitle && C.shrine.favoriteSongsTitle)
-        listTitle.textContent = C.shrine.favoriteSongsTitle;
-      const ul = document.querySelector("#shrine .song-list");
-      if (ul) {
-        // Build a structured favorites list from config
-        const maxN = Number.isFinite(C.shrine.favoriteSongsMax)
-          ? C.shrine.favoriteSongsMax
-          : 999;
-        const rich = Array.isArray(C.shrine.favoriteSongsData)
-          ? C.shrine.favoriteSongsData
-          : [];
-        const simple = Array.isArray(C.shrine.favoriteSongs)
-          ? C.shrine.favoriteSongs
-          : [];
-
-        const items = [];
-        if (rich.length) {
-          for (const r of rich) {
-            if (!r || !r.title) continue;
-            items.push({
-              title: r.title,
-              artist: r.artist || "",
-              videoId: r.youtubeId || "",
-              search:
-                r.search || `${r.title} ${r.artist || "Hatsune Miku"} official`,
-            });
-            if (items.length >= maxN) break;
-          }
-        } else if (simple.length) {
-          for (const s of simple) {
-            if (typeof s !== "string") continue;
-            const parts = s.split(" - ");
-            const title = parts[0] || s;
-            const artist = parts[1] || "Hatsune Miku";
-            items.push({
-              title,
-              artist,
-              videoId: "",
-              search: `${title} ${artist} official`,
-            });
-            if (items.length >= maxN) break;
-          }
-        }
-
-        ul.innerHTML = items
-          .map((it) => {
-            const label = it.artist ? `${it.title} - ${it.artist}` : it.title;
-            const data = [
-              `data-title="${label.replace(/"/g, "&quot;")}"`,
-              it.videoId ? `data-video-id="${it.videoId}"` : "",
-              it.search
-                ? `data-search="${it.search.replace(/"/g, "&quot;")}"`
-                : "",
-            ]
-              .filter(Boolean)
-              .join(" ");
-            return `<li class="favorite-song" ${data} style="cursor:pointer">${label}</li>`;
-          })
-          .join("");
-      }
-      const galTitle = document.querySelector("#shrine .gallery h3");
-      if (galTitle && C.shrine.galleryTitle)
-        galTitle.textContent = C.shrine.galleryTitle;
-    }
-
-    // Friends title (by widget containing #friendsList)
-    if (C.friends?.title) {
-      const friendsListEl = document.getElementById("friendsList");
-      if (friendsListEl) {
-        const widget = friendsListEl.closest(".widget");
-        const h3 = widget ? widget.querySelector("h3") : null;
-        const friendsIcon = C.friends.titleIcon
-          ? mikuIcon(C.friends.titleIcon, "👥")
-          : "👥";
-        if (h3) h3.innerHTML = /*html*/ `${friendsIcon} ${C.friends.title}`;
-      }
-    }
-
-    // Sidebar widget titles (programmatically by element anchors)
-    if (C.sidebarTitles) {
-      const left = C.sidebarTitles.left || {};
-      const right = C.sidebarTitles.right || {};
-
-      // Radio heading
-      const radioWidget = document.querySelector(".radio-widget");
-      if (radioWidget && C.radio?.title) {
-        const w = radioWidget.closest(".widget");
-        const h = w ? w.querySelector("h3") : null;
-        const radioIcon = C.radio.titleIcon
-          ? mikuIcon(C.radio.titleIcon, "📻")
-          : "📻";
-        if (h) h.innerHTML = /*html*/ `${radioIcon} ${C.radio.title}`;
-      }
-
-      // Pet heading
-      const petIframe = document.getElementById("petIframe");
-      if (petIframe && left.pet) {
-        const w = petIframe.closest(".widget");
-        const h = w ? w.querySelector("h3") : null;
-        const petIcon = left.petIcon ? mikuIcon(left.petIcon, "🐾") : "🐾";
-        if (h) h.innerHTML = /*html*/ `${petIcon} ${left.pet}`;
-      }
-
-      // Friends heading handled above
-
-      // Stats heading
-      const statBadge1 = document.getElementById("statBadge1");
-      if (statBadge1 && left.stats) {
-        const w = statBadge1.closest(".widget");
-        const h = w ? w.querySelector("h3") : null;
-        const statsIcon = left.statsIcon
-          ? mikuIcon(left.statsIcon, "🌸")
-          : "🌸";
-        if (h) h.innerHTML = /*html*/ `${statsIcon} ${left.stats}`;
-
-        // Also update visitor counter label with icon
-        const visitorLabel = w ? w.querySelector(".counter-label") : null;
-        if (visitorLabel && C.status?.visitorIcon) {
-          const visitorIcon = mikuIcon(C.status.visitorIcon, "");
-          visitorLabel.innerHTML = /*html*/ `${visitorIcon}Visitors:`;
-        }
-      }
-
-      // Quick Links title (now on right)
-      const quickLinksTitle = document.getElementById("quickLinksTitle");
-      if (quickLinksTitle && right.quickLinks) {
-        const quickLinksIcon = right.quickLinksIcon
-          ? mikuIcon(right.quickLinksIcon, "🌟")
-          : "🌟";
-        quickLinksTitle.innerHTML = /*html*/ `${quickLinksIcon} ${right.quickLinks}`;
-      }
-
-      // Badges title
-      const webBadges = document.getElementById("webBadges");
-      if (webBadges && right.badges) {
-        const w = webBadges.closest(".widget");
-        const h = w ? w.querySelector("h3") : null;
-        const badgesIcon = right.badgesIcon
-          ? mikuIcon(right.badgesIcon, "💫")
-          : "💫";
-        if (h) h.innerHTML = /*html*/ `${badgesIcon} ${right.badges}`;
-      }
-
-      // Vibe title
-      const vibeMeter = document.querySelector("#rightSidebar .vibe-meter");
-      if (vibeMeter && right.vibe) {
-        const w = vibeMeter.closest(".widget");
-        const h = w ? w.querySelector("h3") : null;
-        const vibeIcon = right.vibeIcon ? mikuIcon(right.vibeIcon, "📊") : "📊";
-        if (h) h.innerHTML = /*html*/ `${vibeIcon} ${right.vibe}`;
-      }
-    }
-
-    // Footer
-    if (C.footer?.text) {
-      const p = document.querySelector("#footer p");
-      if (p) p.textContent = C.footer.text;
-    }
-  } catch (e) {
-    console.warn("applyContent failed", e);
-  }
-}
 
 // ====== NAVIGATION ======
 function initNavigation() {
@@ -5553,9 +5049,9 @@ function initNavigation() {
       currentSection = sectionId;
       // Reset JP study state each time the Study tab is opened
       if (sectionId === "study") {
-        try {
+        
           if (typeof window.__resetStudy === "function") window.__resetStudy();
-        } catch (_) {}
+        
       }
     }
 
@@ -5571,13 +5067,13 @@ function initNavigation() {
     if (targetSection) targetSection.style.animation = "fadeInUp 0.5s ease-out";
 
     // UI change SFX
-    try {
+    
       SFX.play("ui.change");
       if (Math.random() < 0.15) SFX.play("extra.fx2");
-    } catch (_) {}
+    
 
     // Pause/resume presentation autoplay and fix layout when showing Home
-    try {
+    
       if (sectionId === "home") {
         window._presentationControl &&
           window._presentationControl.onShow &&
@@ -5587,44 +5083,38 @@ function initNavigation() {
           window._presentationControl.onHide &&
           window._presentationControl.onHide();
       }
-    } catch (_) {}
+    
 
     // End any active games when navigating away from their section
-    try {
+    
       if (prevSection === "games") {
         window.__memoryStop && window.__memoryStop();
       }
       if (prevSection === "study") {
         window.__vocabStop && window.__vocabStop();
         window.__kanjiStop && window.__kanjiStop();
-        try {
+        
           if (typeof window.__resetStudy === "function") window.__resetStudy();
-        } catch (_) {}
+        
       }
       if (prevSection === "Wish") {
-        try {
+        
           window.__resetWish && window.__resetWish();
-        } catch (_) {}
+        
       }
       if (sectionId === "Wish") {
-        try {
+        
           window.__resetWish && window.__resetWish();
-        } catch (_) {}
+        
       }
-    } catch (_) {}
+    
   }
   function spawnFloatingMikus() {
     const container = document.getElementById("floatingMikusContainer");
     if (!container) return;
     container.innerHTML = "";
-    // Choose the currently active singer if set, otherwise a reasonable fallback
-    const singer = (() => {
-      try {
-        return localStorage.getItem("singer.current") || "";
-      } catch (_) {
-        return "";
-      }
-    })();
+  // Choose the currently active singer if set, otherwise a reasonable fallback
+  const singer = localStorage.getItem("singer.current") || "";
     let src = singer;
     if (!src) {
       // Prefer a pixel Miku if available, else any image
@@ -5651,9 +5141,9 @@ function initNavigation() {
   }
 
   // Expose a global refresher so singer changes can update the floating image
-  try {
+  
     window.refreshFloatingMikus = spawnFloatingMikus;
-  } catch (_) {}
+  
 
   if (MIKU_IMAGES.length) {
     spawnFloatingMikus();
@@ -5712,24 +5202,19 @@ function initSocials() {
   if (!socialsGrid) return;
 
   function ytVideoIdFromUrl(u) {
-    try {
-      const url = new URL(u);
-      if (url.hostname === "youtu.be") return url.pathname.slice(1);
-      const v = url.searchParams.get("v");
-      return v || null;
-    } catch {
-      return null;
-    }
+    // Support youtu.be short URLs and v= query param without using URL constructor
+    if (!u || typeof u !== "string") return null;
+    const short = u.match(/youtu\.be\/([^\?&\/]+)/i);
+    if (short) return short[1];
+    const vparam = u.match(/[?&]v=([^&]+)/i);
+    if (vparam) return vparam[1];
+    return null;
   }
 
   function ytHandleFromUrl(u) {
-    try {
-      const url = new URL(u);
-      const m = url.pathname.match(/@([A-Za-z0-9_\-\.]+)/);
-      return m ? m[1] : null;
-    } catch {
-      return null;
-    }
+    if (!u || typeof u !== "string") return null;
+    const m = u.match(/@([A-Za-z0-9_\-\.]+)/);
+    return m ? m[1] : null;
   }
 
   const SPOTIFY_PROFILE =
@@ -5737,11 +5222,8 @@ function initSocials() {
 
   function renderEmbed(s) {
     const { label, url, icon, color, mikuIcon: mikuIconName } = s;
-    const displayIcon = mikuIconName ? mikuIcon(mikuIconName, icon) : icon;
-    let domain = "";
-    try {
-      domain = new URL(url).hostname.replace("www.", "");
-    } catch {}
+    const displayIcon = mikuIconName? window.MikuCore.mikuIcon(mikuIconName, icon) : icon;
+  let domain = (url && (url.match(/^https?:\/\/([^\/]+)/i) || ["", ""])[1].replace(/^www\./, "")) || "";
 
     // Blocklist some sites that should not be embedded (e.g., jigsawplanet)
     if (domain.includes("jigsawplanet.com")) {
@@ -5834,13 +5316,9 @@ function initSocials() {
     // Twitch (if provided in SOCIALS)
     if (domain.includes("twitch.tv")) {
       const ch = (() => {
-        try {
-          const u = new URL(url);
-          const parts = u.pathname.split("/").filter(Boolean);
-          return parts[0] || "";
-        } catch {
-          return "";
-        }
+        if (!url || typeof url !== "string") return "";
+        const m = url.match(/twitch\.tv\/([^\/?#]+)/i);
+        return m ? m[1] : "";
       })();
       const parent = location.hostname || "localhost";
       return `
@@ -5894,7 +5372,7 @@ function wireRadioUI() {
   // Create or reuse the hidden radio audio element from AudioMod
   const STREAM_URL = "https://vocaloid.radioca.st/stream";
   let audio = null;
-  try {
+  
     if (window.AudioMod && typeof AudioMod.initRadio === "function") {
       AudioMod.initRadio();
       const a = document.getElementById("radioAudio");
@@ -5906,7 +5384,7 @@ function wireRadioUI() {
         a.volume = 0.85;
       }
     }
-  } catch (_) {}
+  
   if (!audio) {
     audio = new Audio();
     audio.src = STREAM_URL;
@@ -5916,12 +5394,12 @@ function wireRadioUI() {
   }
 
   // Expose radio controls for external pause (e.g., when playing YouTube)
-  try {
+  
     window.__radioAudio = audio;
     window.__pauseRadio = () => {
-      try {
+      
         audio.pause();
-      } catch (_) {}
+      
       const status = C.radio?.stoppedStatus || "Radio Stopped";
       if (radioStatus) radioStatus.textContent = status;
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
@@ -5930,7 +5408,7 @@ function wireRadioUI() {
       stopEqualizer();
       if (statusDot) statusDot.style.color = "#ff4d4d";
     };
-  } catch (_) {}
+  
 
   // Initialize labels
   if (onlineStatus)
@@ -5950,10 +5428,10 @@ function wireRadioUI() {
       if (radioStatus) radioStatus.textContent = status;
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
       if (onlineStatus) onlineStatus.textContent = "Playing";
-      try {
+      
         if (window.__stopBgm) window.__stopBgm(true);
-      } catch (_) {}
-      audio.play().catch(() => {});
+      
+  void audio.play();
       startEqualizer();
       if (statusDot) statusDot.style.color = "#00ff00";
       startMetadataPolling();
@@ -5974,9 +5452,9 @@ function wireRadioUI() {
     const status = C.radio?.playingStatus || "Now Playing";
     if (radioStatus) radioStatus.textContent = status;
     if (radioDisplayStatus) radioDisplayStatus.textContent = status;
-    try {
+    
       localStorage.setItem("pixelbelle-now-playing", status);
-    } catch (_) {}
+    
     startMetadataPolling();
   });
 
@@ -5997,19 +5475,16 @@ function wireRadioUI() {
   // Best-effort now playing metadata polling (CORS permitting)
   let metaTimer = null;
   function setNowPlaying(text) {
-    try {
+    
       if (radioStatus) radioStatus.textContent = text;
       if (radioDisplayStatus) radioDisplayStatus.textContent = text;
       localStorage.setItem("pixelbelle-now-playing", text);
-    } catch (_) {}
+    
   }
   function hostBaseFrom(url) {
-    try {
-      const u = new URL(url);
-      return `${u.protocol}//${u.host}`;
-    } catch (_) {
-      return null;
-    }
+  if (!url || typeof url !== "string") return null;
+  const m = url.match(/^(https?:\/\/[^\/]+)/i);
+  return m ? m[1] : null;
   }
   function buildMetaCandidates(streamUrl) {
     const base = hostBaseFrom(streamUrl);
@@ -6023,111 +5498,89 @@ function wireRadioUI() {
     ];
   }
   function titleFromJson(data) {
-    try {
-      if (!data || typeof data !== "object") return null;
-      // Icecast style
-      if (data.icestats && data.icestats.source) {
-        const src = Array.isArray(data.icestats.source)
-          ? data.icestats.source[0]
-          : data.icestats.source;
-        if (!src) return null;
-        const t =
-          src.title ||
-          src.song ||
-          src.songtitle ||
-          src.stream_title ||
-          src.streamTitle ||
-          null;
-        if (t) return t;
-        if (src.artist && src.title) return `${src.artist} - ${src.title}`;
-      }
-      // SHOUTcast v2 common
-      if (data.songtitle) return data.songtitle;
-      if (data.title) return data.title;
-      if (data.now) return data.now;
-      if (data.song) return data.song;
-      return null;
-    } catch (_) {
-      return null;
+    if (!data || typeof data !== "object") return null;
+    // Icecast style
+    if (data.icestats && data.icestats.source) {
+      const src = Array.isArray(data.icestats.source)
+        ? data.icestats.source[0]
+        : data.icestats.source;
+      if (!src) return null;
+      const t =
+        src.title ||
+        src.song ||
+        src.songtitle ||
+        src.stream_title ||
+        src.streamTitle ||
+        null;
+      if (t) return t;
+      if (src.artist && src.title) return `${src.artist} - ${src.title}`;
     }
+    // SHOUTcast v2 common
+    if (data.songtitle) return data.songtitle;
+    if (data.title) return data.title;
+    if (data.now) return data.now;
+    if (data.song) return data.song;
+    return null;
   }
   function titleFromStatusHtml(html) {
-    try {
-      // Try to find "Current Song" or "Stream Title"
-      const m =
-        html.match(/Current\s*Song.*?<td[^>]*>([^<]*)/i) ||
-        html.match(/Stream\s*Title.*?<td[^>]*>([^<]*)/i);
-      if (m && m[1]) return m[1].trim();
-      return null;
-    } catch (_) {
-      return null;
-    }
+    // Try to find "Current Song" or "Stream Title"
+    const m =
+      html.match(/Current\s*Song.*?<td[^>]*>([^<]*)/i) ||
+      html.match(/Stream\s*Title.*?<td[^>]*>([^<]*)/i);
+    if (m && m[1]) return m[1].trim();
+    return null;
   }
   function titleFromSevenHtml(text) {
-    try {
-      // Format: "OK2,xxx,xxx,xxx,xxx,Artist - Title" (take last field)
-      const parts = (text || "").trim().split(",");
-      const last = parts[parts.length - 1];
-      return last && last.length > 0 ? last.trim() : null;
-    } catch (_) {
-      return null;
-    }
+  // Format: "OK2,xxx,xxx,xxx,xxx,Artist - Title" (take last field)
+  const parts = (text || "").trim().split(",");
+  const last = parts[parts.length - 1];
+  return last && last.length > 0 ? last.trim() : null;
   }
   async function autoDetectMetaUrl() {
     // Use configured endpoint if provided
     const configured = (C.radio && C.radio.metaUrl) || "";
     if (configured) return configured;
-    try {
+    
       const cached = localStorage.getItem("radio.meta.auto");
       if (cached) return cached;
-    } catch (_) {}
+    
     const candidates = buildMetaCandidates(STREAM_URL);
     for (const url of candidates) {
-      try {
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) continue;
-        const ct = (res.headers.get("content-type") || "").toLowerCase();
-        let title = null;
-        if (ct.includes("application/json")) {
-          const data = await res.json().catch(() => null);
-          title = titleFromJson(data);
-        } else {
-          const text = await res.text();
-          if (url.endsWith("/7.html")) title = titleFromSevenHtml(text);
-          else title = titleFromStatusHtml(text);
-        }
-        if (title) {
-          try {
-            localStorage.setItem("radio.meta.auto", url);
-          } catch (_) {}
-          return url;
-        }
-      } catch (_) {
-        /* likely CORS or not available */
+  const res = await fetch(url, { cache: "no-store" }).then(null, () => null);
+      if (!res || !res.ok) continue;
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      let title = null;
+      if (ct.includes("application/json")) {
+  const data = await res.json().then(null, () => null);
+        title = titleFromJson(data);
+      } else {
+  const text = await res.text().then(null, () => "");
+        if (url.endsWith("/7.html")) title = titleFromSevenHtml(text);
+        else title = titleFromStatusHtml(text);
+      }
+      if (title) {
+        localStorage.setItem("radio.meta.auto", url);
+        return url;
       }
     }
     return "";
   }
   async function fetchIcyTitle() {
-    try {
-      const metaUrl =
-        (C.radio && C.radio.metaUrl) ||
-        localStorage.getItem("radio.meta.auto") ||
-        (await autoDetectMetaUrl());
-      if (!metaUrl) return null;
-      const res = await fetch(metaUrl, { cache: "no-store" });
-      if (!res.ok) return null;
-      const ct = (res.headers.get("content-type") || "").toLowerCase();
-      if (ct.includes("application/json")) {
-        const data = await res.json().catch(() => null);
-        return titleFromJson(data);
-      } else {
-        const text = await res.text();
-        if (metaUrl.endsWith("/7.html")) return titleFromSevenHtml(text);
-        return titleFromStatusHtml(text);
-      }
-    } catch (_) {
-      return null;
+    const metaUrl =
+      (C.radio && C.radio.metaUrl) ||
+      localStorage.getItem("radio.meta.auto") ||
+      (await autoDetectMetaUrl());
+    if (!metaUrl) return null;
+  const res = await fetch(metaUrl, { cache: "no-store" }).then(null, () => null);
+    if (!res || !res.ok) return null;
+    const ct = (res.headers.get("content-type") || "").toLowerCase();
+    if (ct.includes("application/json")) {
+  const data = await res.json().then(null, () => null);
+      return titleFromJson(data);
+    } else {
+  const text = await res.text().then(null, () => "");
+      if (metaUrl.endsWith("/7.html")) return titleFromSevenHtml(text);
+      return titleFromStatusHtml(text);
     }
   }
   function startMetadataPolling() {
@@ -6150,9 +5603,9 @@ function wireRadioUI() {
     }
   });
 }
-try {
+
   window.initRadio = wireRadioUI;
-} catch (_) {}
+
 
 // ====== GAMES SECTION ======
 function initGames() {
@@ -6302,8 +5755,8 @@ function initMemoryGame() {
     playMatch();
 
     // Enhanced feedback for matches
-    try {
-      if (window.shimejiFunctions?.makeRandomSpeak) {
+    
+      if (window.ShimejiFunctions?.makeRandomSpeak) {
         const phrases = [
           "ナイス！✨",
           "やったね！🎉",
@@ -6311,9 +5764,9 @@ function initMemoryGame() {
           "マッチ！💫",
         ];
         const phrase = phrases[Math.floor(Math.random() * phrases.length)];
-        window.shimejiFunctions.makeRandomSpeak(phrase, 1200);
+        window.ShimejiFunctions.makeRandomSpeak(phrase, 1200);
       }
-    } catch (_) {}
+    
 
     resetTurn();
 
@@ -6321,7 +5774,7 @@ function initMemoryGame() {
       setTimeout(() => {
         stopTimer(true);
         // Replace board with win image instead of alert
-        try {
+        
           const imgPath =
             (C &&
               C.images &&
@@ -6329,29 +5782,29 @@ function initMemoryGame() {
               C.images.menuCovers.kanji) ||
             "./assets/win.jpg";
           memoryGrid.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;width:100%"><img src="${imgPath}" alt="You Win!" style="max-width:100%;height:auto;border-radius:10px;box-shadow:0 6px 18px rgba(43,43,68,0.15)"/></div>`;
-        } catch (_) {}
+        
         addHearts(5);
         playWin();
 
         // Enhanced completion celebration
-        try {
+        
           SFX.play("extra.thanks");
-          if (window.shimejiFunctions?.makeAllSpeak) {
-            window.shimejiFunctions.makeAllSpeak(
+          if (window.ShimejiFunctions?.makeAllSpeak) {
+            window.ShimejiFunctions.makeAllSpeak(
               "おめでとう！完璧だよ！🎉✨",
               3000,
             );
           }
-          if (window.shimejiFunctions?.exciteAll) {
-            window.shimejiFunctions.exciteAll("victory");
+          if (window.ShimejiFunctions?.exciteAll) {
+            window.ShimejiFunctions.exciteAll("victory");
           }
           // Trigger mass celebration
           setTimeout(() => {
-            if (window.shimejiFunctions?.triggerMassDance) {
-              window.shimejiFunctions.triggerMassDance();
+            if (window.ShimejiFunctions?.triggerMassDance) {
+              window.ShimejiFunctions.triggerMassDance();
             }
           }, 500);
-        } catch (_) {}
+        
 
         setTimeout(() => {}, 900);
       }, 300);
@@ -6363,9 +5816,9 @@ function initMemoryGame() {
       [firstCard, secondCard].forEach((c) => c.classList.remove("flipped"));
       resetTurn();
     }, 700);
-    try {
+    
       SFX.play("memory.miss");
-    } catch (_) {}
+    
   }
 
   function resetTurn() {
@@ -6458,10 +5911,10 @@ function initMemoryGame() {
         Boolean,
       );
       if (imgs.length < totalPairs && window.MIKU_IMAGES_READY) {
-        try {
+        
           const ready = await window.MIKU_IMAGES_READY;
           if (Array.isArray(ready)) imgs = ready.filter(Boolean);
-        } catch (e) {}
+        
       }
       return imgs;
     };
@@ -6494,29 +5947,29 @@ function initMemoryGame() {
       if (timeEl()) timeEl().textContent = formatTime(elapsed);
     }, 100);
     // subtle tick while timing (every ~5s)
-    try {
+    
       if (window.__memoryTickId) {
         clearInterval(window.__memoryTickId);
         window.__memoryTickId = null;
       }
-    } catch (_) {}
-    try {
+    
+    
       window.__memoryTickId = setInterval(() => {
-        try {
+        
           SFX.play("memory.tick", { volume: 0.35 });
-        } catch (_) {}
+        
       }, 5000);
-    } catch (_) {}
+    
   }
   function stopTimer(finalize) {
     if (timerId) clearInterval(timerId);
     timerId = null;
-    try {
+    
       if (window.__memoryTickId) clearInterval(window.__memoryTickId);
-    } catch (_) {}
-    try {
+    
+    
       window.__memoryTickId = null;
-    } catch (_) {}
+    
     if (timerRunning && finalize) {
       const elapsed = performance.now() - startTime;
       if (timeEl()) timeEl().textContent = formatTime(elapsed);
@@ -6548,27 +6001,27 @@ function initMemoryGame() {
 
   // Expose stop hook for navigation cleanup
   window.__memoryStop = () => {
-    try {
+    
       stopTimer(false);
-    } catch (_) {}
+    
   };
   renderBest();
 
   // ------- Sound helpers (asset SFX) -------
   function playFlip() {
-    try {
+    
       SFX.play("memory.flip");
-    } catch (_) {}
+    
   }
   function playMatch() {
-    try {
+    
       SFX.play("memory.match");
-    } catch (_) {}
+    
   }
   function playWin() {
-    try {
+    
       SFX.play("memory.win");
-    } catch (_) {}
+    
   }
 }
 
@@ -6584,7 +6037,7 @@ function initHeartCollector() {
 
   // Always mirror global hearts
   const syncCollector = () => {
-    try {
+    
       const n =
         typeof window.getHeartCount === "function"
           ? window.getHeartCount()
@@ -6592,14 +6045,14 @@ function initHeartCollector() {
             ? heartCount
             : parseInt(localStorage.getItem("pixelbelle-hearts") || "0", 10);
       gameHeartCountEl.textContent = String(n);
-    } catch (_) {}
+    
   };
   syncCollector();
 
   heartZone.addEventListener("click", (e) => {
-    try {
+    
       SFX.play("hearts.click");
-    } catch (_) {}
+    
     // Always link clicks to global hearts
     addHearts(1);
     // Keep collector in sync with global count
@@ -6611,7 +6064,7 @@ function initHeartCollector() {
     // Create floating heart animation
     createFloatingHeart(e.clientX, e.clientY);
     // Plant a heart in the garden to "grow"
-    try {
+    
       const rect = heartZone.getBoundingClientRect();
       const h = document.createElement("div");
       h.className = "planted-heart";
@@ -6620,7 +6073,7 @@ function initHeartCollector() {
       h.style.top = e.clientY - rect.top - 10 + "px";
       heartZone.appendChild(h);
       setTimeout(() => h.remove(), 2600);
-    } catch (_) {}
+    
   });
 
   // Attach reset only if the button still exists (kept for dev/testing)
@@ -6656,18 +6109,18 @@ function spawnDecoyTreats(n = 2) {
     setTimeout(() => d.remove(), 8000);
   }
   // Enhanced audio feedback
-  try {
+  
     SFX.play("extra.yo");
-    if (window.shimejiFunctions?.makeRandomSpeak) {
+    if (window.ShimejiFunctions?.makeRandomSpeak) {
       const phrases = [
         "おやつタイム！🍪",
         "甘いものいかが？🍭",
         "おいしそう〜✨",
       ];
       const phrase = phrases[Math.floor(Math.random() * phrases.length)];
-      window.shimejiFunctions.makeRandomSpeak(phrase, 1500);
+      window.ShimejiFunctions.makeRandomSpeak(phrase, 1500);
     }
-  } catch (_) {}
+  
 }
 
 // Temporary shield prevents swallow from eating hearts
@@ -6675,19 +6128,19 @@ let __heartShieldUntil =
   parseInt(localStorage.getItem("diva.shield.until") || "0", 10) || 0;
 function activateHeartShield(ms = 3000) {
   // Extend duration based on current singer rarity multiplier (if available)
-  try {
+  
     if (typeof window.getSingerScoreMult === "function") {
       const mult = Math.max(1, getSingerScoreMult());
       ms = Math.round(ms * mult);
-      try {
+      
         logEvent && logEvent("shield.buff_applied");
-      } catch (_) {}
+      
     }
-  } catch (_) {}
+  
   __heartShieldUntil = Date.now() + ms;
-  try {
+  
     localStorage.setItem("diva.shield.until", String(__heartShieldUntil));
-  } catch (_) {}
+  
 
   // Heart zone protection
   const zone = document.getElementById("heartZone");
@@ -6731,14 +6184,14 @@ function activateHeartShield(ms = 3000) {
   }
 
   // Respect reduced motion for glow animation
-  try {
+  
     const mql =
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)");
     if (mql && mql.matches) {
       glowOverlay.style.animation = "none";
     }
-  } catch (_) {}
+  
   glowOverlay.style.display = "block";
   const hideAfter = Math.max(100, ms);
   setTimeout(() => {
@@ -6748,20 +6201,20 @@ function activateHeartShield(ms = 3000) {
   }, hideAfter);
 
   // Audio and shimeji feedback
-  try {
+  
     SFX.play("extra.fx1");
-    if (window.shimejiFunctions?.makeAllSpeak) {
-      window.shimejiFunctions.makeAllSpeak("シールドアクティブ！⛨✨", 2000);
+    if (window.ShimejiFunctions?.makeAllSpeak) {
+      window.ShimejiFunctions.makeAllSpeak("シールドアクティブ！⛨✨", 2000);
     }
-    if (isVfxEnabled() && window.shimejiFunctions?.exciteAll) {
-      window.shimejiFunctions.exciteAll("shield");
+    if (isVfxEnabled() && window.ShimejiFunctions?.exciteAll) {
+      window.ShimejiFunctions.exciteAll("shield");
     }
-  } catch (_) {}
+  
 }
 
 // Game Mode Swallower: appears during active gameplay every N seconds, can be zapped by correct answers or deterred by shield/bait
 function showSwallowMascotGame() {
-  try {
+  
     // Check if we're in a game context
     if (
       !(window.location?.hash || "").includes("study") &&
@@ -6799,15 +6252,15 @@ function showSwallowMascotGame() {
     const hasShield = Date.now() < __heartShieldUntil;
     if (hasShield) {
       isDeflected = true;
-      try {
+      
         SFX.play("extra.fx1");
-        if (window.shimejiFunctions?.makeRandomSpeak) {
-          window.shimejiFunctions.makeRandomSpeak(
+        if (window.ShimejiFunctions?.makeRandomSpeak) {
+          window.ShimejiFunctions.makeRandomSpeak(
             "シールドが効いてる！✨",
             1500,
           );
         }
-      } catch (_) {}
+      
     }
 
     // Check for bait on screen
@@ -6818,12 +6271,12 @@ function showSwallowMascotGame() {
       const randomDecoy = decoys[Math.floor(Math.random() * decoys.length)];
       randomDecoy.style.animation = "fadeOut 0.3s ease-out";
       setTimeout(() => randomDecoy.remove(), 300);
-      try {
+      
         SFX.play("swallow.chomp");
-        if (window.shimejiFunctions?.makeRandomSpeak) {
-          window.shimejiFunctions.makeRandomSpeak("おいしそう〜！🍪", 1200);
+        if (window.ShimejiFunctions?.makeRandomSpeak) {
+          window.ShimejiFunctions.makeRandomSpeak("おいしそう〜！🍪", 1200);
         }
-      } catch (_) {}
+      
     }
 
     img.style.left = "-120px";
@@ -6847,7 +6300,7 @@ function showSwallowMascotGame() {
         img.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
 
         // Mobile-friendly collision detection with stage idol (lose a life if no protection)
-        try {
+        
           const idol = document.querySelector(".stage-idol");
           if (idol && p > 0.3 && p < 0.8) {
             // collision window
@@ -6868,15 +6321,15 @@ function showSwallowMascotGame() {
                   window.HUD.lives > 0
                 ) {
                   window.HUD.lives--;
-                  try {
+                  
                     SFX.play("diva.miss");
-                    if (window.shimejiFunctions?.makeAllSpeak) {
-                      window.shimejiFunctions.makeAllSpeak(
+                    if (window.ShimejiFunctions?.makeAllSpeak) {
+                      window.ShimejiFunctions.makeAllSpeak(
                         "あっ！ライフが〜💦",
                         1800,
                       );
                     }
-                  } catch (_) {}
+                  
                 }
               }
 
@@ -6892,19 +6345,19 @@ function showSwallowMascotGame() {
               return;
             }
           }
-        } catch (_) {}
+        
       }
 
       if (p < 1 && img.isConnected) requestAnimationFrame(step);
       else img.remove();
     }
     requestAnimationFrame(step);
-  } catch (_) {}
+  
 }
 
 // Ambient Mode Swallower: spawns on bottom row to interact with shimejis, flipped to face right
 function showSwallowMascotAmbient() {
-  try {
+  
     // Don't spawn during active games
     if (
       (window.location?.hash || "").includes("study") ||
@@ -6948,7 +6401,7 @@ function showSwallowMascotAmbient() {
       img.style.bottom = `${10 + bobY}px`;
 
       // Check collision with shimejis
-      try {
+      
         const shimejis = document.querySelectorAll(".shimeji");
         shimejis.forEach((shimeji) => {
           const kr = img.getBoundingClientRect();
@@ -6964,21 +6417,21 @@ function showSwallowMascotAmbient() {
             setTimeout(() => {
               shimeji.style.animation = "";
             }, 600);
-            try {
+            
               SFX.play("extra.yo");
-              if (window.shimejiFunctions?.makeRandomSpeak) {
-                window.shimejiFunctions.makeRandomSpeak("きゃー！👻", 1000);
+              if (window.ShimejiFunctions?.makeRandomSpeak) {
+                window.ShimejiFunctions.makeRandomSpeak("きゃー！👻", 1000);
               }
-            } catch (_) {}
+            
           }
         });
-      } catch (_) {}
+      
 
       if (p < 1 && img.isConnected) requestAnimationFrame(step);
       else img.remove();
     }
     requestAnimationFrame(step);
-  } catch (_) {}
+  
 }
 
 // Legacy wrapper for compatibility
@@ -7004,13 +6457,13 @@ function startSwallowerTimers() {
   if (__swallowerAmbientTimer) clearInterval(__swallowerAmbientTimer);
   // Be robust to load order: prefer Settings.swallowerRate, fall back to local helper, then default 1
   const rate = (function () {
-    try {
+    
       if (window.Settings && typeof Settings.swallowerRate === "function")
         return Settings.swallowerRate();
-    } catch (_) {}
-    try {
+    
+    
       if (typeof swallowerRate === "function") return swallowerRate();
-    } catch (_) {}
+    
     return 1;
   })();
   if (rate === 0) return; // disabled
@@ -7053,14 +6506,14 @@ document.addEventListener("DOMContentLoaded", startSwallowerTimers);
 function enhanceGlobalInteractions() {
   // Add click sounds to buttons and interactive elements
   document.addEventListener("click", (e) => {
-    try {
+    
       const target = e.target;
 
       // Button clicks
       if (target.matches("button, .pixel-btn, .btn, input[type=submit]")) {
         SFX.play("ui.click");
         // Random encouraging shimeji speech for important buttons
-        if (Math.random() < 0.3 && window.shimejiFunctions?.makeRandomSpeak) {
+        if (Math.random() < 0.3 && window.ShimejiFunctions?.makeRandomSpeak) {
           const phrases = [
             "がんばって！",
             "やってみよう！",
@@ -7068,15 +6521,15 @@ function enhanceGlobalInteractions() {
             "すてき〜！",
           ];
           const phrase = phrases[Math.floor(Math.random() * phrases.length)];
-          window.shimejiFunctions.makeRandomSpeak(phrase, 1000);
+          window.ShimejiFunctions.makeRandomSpeak(phrase, 1000);
         }
       }
 
       // Navigation links
       if (target.matches("a[href*='#'], .nav-link")) {
         SFX.play("ui.switch");
-        if (window.shimejiFunctions?.makeRandomSpeak && Math.random() < 0.2) {
-          window.shimejiFunctions.makeRandomSpeak("どこに行くのかな？🌟", 1200);
+        if (window.ShimejiFunctions?.makeRandomSpeak && Math.random() < 0.2) {
+          window.ShimejiFunctions.makeRandomSpeak("どこに行くのかな？🌟", 1200);
         }
       }
 
@@ -7089,12 +6542,12 @@ function enhanceGlobalInteractions() {
       if (target.matches("input, textarea, select")) {
         SFX.play("ui.focus");
       }
-    } catch (_) {}
+    
   });
 
   // Hover sounds for interactive elements
   document.addEventListener("mouseover", (e) => {
-    try {
+    
       const target = e.target;
       if (
         target.matches("button:not(:disabled), .pixel-btn, .btn, a[href]") &&
@@ -7102,17 +6555,17 @@ function enhanceGlobalInteractions() {
       ) {
         SFX.play("ui.hover", { volume: 0.3 });
       }
-    } catch (_) {}
+    
   });
 
   // Form submission celebrations
   document.addEventListener("submit", (e) => {
-    try {
+    
       SFX.play("ui.complete");
-      if (window.shimejiFunctions?.makeRandomSpeak && Math.random() < 0.5) {
-        window.shimejiFunctions.makeRandomSpeak("送信完了！📨✨", 1500);
+      if (window.ShimejiFunctions?.makeRandomSpeak && Math.random() < 0.5) {
+        window.ShimejiFunctions.makeRandomSpeak("送信完了！📨✨", 1500);
       }
-    } catch (_) {}
+    
   });
 }
 
@@ -7128,10 +6581,10 @@ function startRandomCelebrations() {
   __celebrationTimer = setInterval(
     () => {
       // Random shimeji activities every 2-5 minutes
-      if (Math.random() < 0.3 && window.shimejiFunctions) {
+      if (Math.random() < 0.3 && window.ShimejiFunctions) {
         const activities = [
           () => {
-            if (window.shimejiFunctions.makeRandomSpeak) {
+            if (window.ShimejiFunctions.makeRandomSpeak) {
               const phrases = [
                 "がんばってるね！✨",
                 "素敵な一日だね〜🌸",
@@ -7145,17 +6598,17 @@ function startRandomCelebrations() {
               ];
               const phrase =
                 phrases[Math.floor(Math.random() * phrases.length)];
-              window.shimejiFunctions.makeRandomSpeak(phrase, 2000);
+              window.ShimejiFunctions.makeRandomSpeak(phrase, 2000);
             }
           },
           () => {
-            if (window.shimejiFunctions.triggerMassJump) {
-              window.shimejiFunctions.triggerMassJump();
+            if (window.ShimejiFunctions.triggerMassJump) {
+              window.ShimejiFunctions.triggerMassJump();
             }
           },
           () => {
-            if (window.shimejiFunctions.exciteAll) {
-              window.shimejiFunctions.exciteAll("random");
+            if (window.ShimejiFunctions.exciteAll) {
+              window.ShimejiFunctions.exciteAll("random");
             }
           },
         ];
@@ -7165,7 +6618,7 @@ function startRandomCelebrations() {
         activity();
 
         // Random sound effects
-        try {
+        
           const randomSfx = [
             "extra.yo",
             "extra.thanks",
@@ -7174,7 +6627,7 @@ function startRandomCelebrations() {
           ];
           const sfx = randomSfx[Math.floor(Math.random() * randomSfx.length)];
           SFX.play(sfx, { volume: 0.4 });
-        } catch (_) {}
+        
       }
     },
     120000 + Math.random() * 180000,
@@ -7185,206 +6638,7 @@ function startRandomCelebrations() {
 window.addEventListener("load", startRandomCelebrations);
 document.addEventListener("DOMContentLoaded", startRandomCelebrations);
 
-// Shop wiring
-function initShop() {
-  const btnDecoy = document.getElementById("shopDecoy");
-  const btnShield = document.getElementById("shopShield");
-  const status = document.getElementById("shopStatus");
-  const shopPanel = document.querySelector(".shop-panel");
 
-  // Add shop keeper with idol.png and Irasshaimase greeting
-  if (shopPanel && !shopPanel.querySelector(".shop-keeper")) {
-    const keeper = document.createElement("div");
-    keeper.className = "shop-keeper";
-    keeper.innerHTML = `
-      <img src="./assets/idol.png" alt="Shop Miku" class="shop-keeper-image" width="48" height="48">
-      <p class="shop-keeper-text">いらっしゃいませ〜！💖<br><small>Welcome to Miku's Item Shop!</small></p>
-    `;
-    shopPanel.insertBefore(keeper, shopPanel.firstChild);
-  }
-
-  // Hide status overlay initially
-  const statusOverlay = document.getElementById("itemsStatusOverlay");
-  if (statusOverlay) {
-    statusOverlay.style.display = "none";
-  }
-
-  // Add Miku icons to shop buttons
-  try {
-    const shieldIcon = btnShield?.querySelector(".shop-icon-placeholder");
-    const decoyIcon = btnDecoy?.querySelector(".shop-icon-placeholder");
-
-    if (shieldIcon && window.mikuIcon) {
-      shieldIcon.innerHTML = mikuIcon("ok sign", "⛨");
-    }
-    if (decoyIcon && window.mikuIcon) {
-      decoyIcon.innerHTML = mikuIcon("love letter", "🍪");
-    }
-  } catch (_) {}
-
-  if (btnDecoy)
-    btnDecoy.addEventListener("click", () => {
-      const cost = 5; // Lower cost as specified
-      try {
-        if (window.Hearts && typeof window.Hearts.add === "function") {
-          if (
-            (window.getHeartCount && getHeartCount() >= cost) ||
-            (!window.getHeartCount && (heartCount || 0) >= cost)
-          ) {
-            window.Hearts.add(-cost);
-            spawnDecoyTreats(2 + Math.floor(Math.random() * 3));
-            // Show status overlay when item is used
-            const statusOverlay = document.getElementById("itemsStatusOverlay");
-            if (statusOverlay) {
-              statusOverlay.style.display = "block";
-            }
-            // Mirror bait status into micro overlay
-            try {
-              ensureItemsOverlay();
-              const ob = document.getElementById("itemsOverlayBait");
-              if (ob) {
-                const inner = ob.querySelector(".label");
-                if (inner) inner.textContent = "active";
-                ob.style.opacity = "1";
-                setTimeout(() => {
-                  if (inner && inner.textContent === "active") {
-                    inner.textContent = "";
-                    ob.style.opacity = isReducedMotion() ? "0" : "0";
-                  }
-                }, 9000);
-              }
-            } catch (_) {}
-            try {
-              SFX.play("ui.select");
-              if (window.shimejiFunctions?.makeRandomSpeak) {
-                window.shimejiFunctions.makeRandomSpeak(
-                  "おとりを置いたよ！🍪",
-                  1500,
-                );
-              }
-            } catch (_) {}
-          } else {
-            try {
-              SFX.play("ui.unavailable");
-              if (window.shimejiFunctions?.makeRandomSpeak) {
-                window.shimejiFunctions.makeRandomSpeak(
-                  "💖が足りないよ〜",
-                  1200,
-                );
-              }
-            } catch (_) {}
-          }
-        }
-      } catch (_) {}
-    });
-  if (btnShield)
-    btnShield.addEventListener("click", () => {
-      const cost = 50;
-      try {
-        const have =
-          (window.getHeartCount && getHeartCount()) ||
-          heartCount ||
-          parseInt(localStorage.getItem("pixelbelle-hearts") || "0", 10);
-        if (have >= cost) {
-          if (window.Hearts && typeof window.Hearts.add === "function")
-            window.Hearts.add(-cost);
-          else {
-            heartCount = have - cost;
-            localStorage.setItem("pixelbelle-hearts", heartCount);
-            updateCounters && updateCounters();
-          }
-          activateHeartShield(1000 * 60 * 5);
-          status && (status.textContent = "Shield activated!");
-          // Update shield timer immediately
-          try {
-            updateShieldTimerLabel();
-          } catch (_) {}
-          try {
-            SFX.play("extra.fx2");
-            if (window.shimejiFunctions?.makeAllSpeak) {
-              window.shimejiFunctions.makeAllSpeak(
-                "シールドが発動したよ！⛨✨",
-                2000,
-              );
-            }
-          } catch (_) {}
-        } else {
-          status && (status.textContent = "Not enough 💖");
-          try {
-            SFX.play("ui.unavailable");
-            if (window.shimejiFunctions?.makeRandomSpeak) {
-              window.shimejiFunctions.makeRandomSpeak(
-                "💖が足りません〜😿",
-                1300,
-              );
-            }
-          } catch (_) {}
-        }
-      } catch (_) {}
-    });
-
-  // Live countdown for shield
-  function updateShieldTimerLabel() {
-    const el = document.getElementById("shieldTimer");
-    if (!el) return;
-    const left = Math.max(0, __heartShieldUntil - Date.now());
-    if (left <= 0) {
-      el.textContent = "";
-      // Mirror into micro-overlay
-      ensureItemsOverlay();
-      const chip = document.getElementById("itemsOverlayShield");
-      if (chip) {
-        const inner = chip.querySelector(".label");
-        if (inner) inner.textContent = "";
-        chip.style.opacity = "0";
-      }
-      return;
-    }
-    const mm = Math.floor(left / 60000);
-    const ss = Math.floor((left % 60000) / 1000);
-    if (mm > 0) el.textContent = `shield: ${mm}m ${ss}s`;
-    else el.textContent = `shield: ${ss}s`;
-    // Mirror into micro-overlay
-    ensureItemsOverlay();
-    const chip = document.getElementById("itemsOverlayShield");
-    if (chip) {
-      const inner = chip.querySelector(".label");
-      if (inner) inner.textContent = el.textContent.replace(/^shield:\s*/, "");
-      chip.style.opacity = isReducedMotion() ? "1" : "1";
-    }
-  }
-  // Tick while page is open
-  try {
-    if (!window.__shieldTick) {
-      window.__shieldTick = setInterval(updateShieldTimerLabel, 1000);
-    }
-  } catch (_) {}
-  // Initial render after load
-  setTimeout(updateShieldTimerLabel, 0);
-}
-
-// Small HUD overlay for items status (display-only)
-function ensureItemsOverlay() {
-  let ov = document.getElementById("itemsStatusOverlay");
-  if (!ov) {
-    ov = document.createElement("div");
-    ov.id = "itemsStatusOverlay";
-    ov.style.cssText =
-      "position:fixed;right:10px;top:10px;z-index:9998;background:rgba(255,255,255,0.85);border:2px solid var(--border);border-radius:10px;padding:6px 10px;display:flex;gap:12px;align-items:center;backdrop-filter:saturate(1.1) blur(2px)";
-    const rm = isReducedMotion();
-    const base =
-      "transition:opacity .35s ease;opacity:0;display:inline-flex;gap:6px;align-items:center;font-weight:800;color:#2b2b44;";
-    const vis = rm ? "" : base;
-    ov.innerHTML =
-      '<span id="itemsOverlayShield" style="' +
-      vis +
-      '">⛨ <span class="label"></span></span><span id="itemsOverlayBait" style="' +
-      vis +
-      '">🍪 <span class="label"></span></span>';
-    document.body.appendChild(ov);
-  }
-  return ov;
-}
 
 function initRandomMiku() {
   const randomMikuImg = document.getElementById("randomMikuImg");
@@ -7396,9 +6650,9 @@ function initRandomMiku() {
     randomMikuImg.src = randomImage;
 
     // Add bounce effect
-    try {
+    
       SFX.play("ui.change");
-    } catch (_) {}
+    
     randomMikuImg.style.animation = "bounce 0.6s ease-out";
     setTimeout(() => {
       randomMikuImg.style.animation = "";
@@ -7407,26 +6661,25 @@ function initRandomMiku() {
 }
 
 // Nav info bar updaters
-function updateNowPlaying(song) {
-  try {
-    const el = document.getElementById("nowPlaying");
-    if (!el) return;
-    if (!song) {
-      el.textContent = "—";
-      return;
-    }
-    const artist = song.artist || "Miku";
-    const title = song.title || "—";
-    el.textContent = `${title} — ${artist}`;
-  } catch (_) {}
-}
+window.MikuSystem = window.MikuSystem || {};
+window.MikuSystem.updateNowPlaying = function (song) {
+  const el = document.getElementById("nowPlaying");
+  if (!el) return;
+  if (!song) {
+    el.textContent = "•";
+    return;
+  }
+  const artist = song.artist || "Miku";
+  const title = song.title || "•";
+  el.textContent = `${title} • ${artist}`;
+};
 function updateCurrentMiku() {
-  try {
+  
     const el = document.getElementById("currentMiku");
     if (!el) return;
     const url = localStorage.getItem("singer.current") || "";
     if (!url) {
-      el.textContent = "—";
+      el.textContent = "•";
       return;
     }
     const meta =
@@ -7434,25 +6687,24 @@ function updateCurrentMiku() {
         ? window.getMikuMeta(url, true)
         : null;
     el.textContent = meta?.name || "Hatsune Miku";
-  } catch (_) {}
+  
 }
-try {
-  window.updateNowPlaying = updateNowPlaying;
+
   window.updateCurrentMiku = updateCurrentMiku;
-} catch (_) {}
+
 // Initial status bar population on load
-try {
+
   window.addEventListener("DOMContentLoaded", () => {
-    try {
+    
       updateCurrentMiku();
-    } catch (_) {}
+    
   });
-} catch (_) {}
+
 
 // ====== Global Settings Panel ======
 (function ensureGlobalSettings() {
   // Add a gear button to status bar
-  try {
+  
     const bar = document.getElementById("statusBar");
     if (bar && !document.getElementById("settingsBtn")) {
       const btn = document.createElement("button");
@@ -7468,7 +6720,7 @@ try {
       }
       btn.addEventListener("click", openSettingsOverlay);
     }
-  } catch (_) {}
+  
 
   function openSettingsOverlay() {
     let ov = document.getElementById("globalSettingsOverlay");
@@ -7487,12 +6739,9 @@ try {
           : typeof lsGet === "function"
             ? lsGet
             : (k, d = "") => {
-                try {
-                  const v = localStorage.getItem(k);
-                  return v == null ? d : v;
-                } catch (_) {
-                  return d;
-                }
+                if (typeof localStorage === "undefined") return d;
+                const v = localStorage.getItem(k);
+                return v == null ? d : v;
               };
       const KEYS =
         window.Settings && Settings.KEYS ? Settings.KEYS : SETTINGS_KEYS;
@@ -7541,9 +6790,9 @@ try {
         </div>`;
       document.body.appendChild(ov);
       const close = () => {
-        try {
+        
           SFX.play("ui.back");
-        } catch (_) {}
+        
         ov.remove();
       };
       ov.addEventListener("click", (e) => {
@@ -7554,15 +6803,15 @@ try {
       const vol = ov.querySelector("#sfxVol");
       const volLabel = ov.querySelector("#sfxVolLabel");
       vol.addEventListener("input", () => {
-        try {
+        
           SFX.setVolume(parseFloat(vol.value) || 0);
-        } catch (_) {}
+        
         volLabel.textContent = `${Math.round((parseFloat(vol.value) || 0) * 100)}%`;
       });
       vol.addEventListener("change", () => {
-        try {
+        
           SFX.setVolume(parseFloat(vol.value) || 0);
-        } catch (_) {}
+        
       });
       const rmCk = ov.querySelector("#setReduce");
       rmCk.addEventListener("change", () => {
@@ -7572,16 +6821,16 @@ try {
             : typeof lsSet === "function"
               ? lsSet
               : (k, v) => {
-                  try {
+                  
                     localStorage.setItem(k, v);
-                  } catch (_) {}
+                  
                 };
         const KEYS =
           window.Settings && Settings.KEYS ? Settings.KEYS : SETTINGS_KEYS;
         SET(KEYS.reduceMotion, rmCk.checked ? "1" : "0");
-        try {
+        
           updateReducedMotion();
-        } catch (_) {}
+        
       });
       const vfxCk = ov.querySelector("#setVfx");
       vfxCk.addEventListener("change", () => {
@@ -7591,9 +6840,9 @@ try {
             : typeof lsSet === "function"
               ? lsSet
               : (k, v) => {
-                  try {
+                  
                     localStorage.setItem(k, v);
-                  } catch (_) {}
+                  
                 };
         const KEYS =
           window.Settings && Settings.KEYS ? Settings.KEYS : SETTINGS_KEYS;
@@ -7607,9 +6856,9 @@ try {
             : typeof lsSet === "function"
               ? lsSet
               : (k, v) => {
-                  try {
+                  
                     localStorage.setItem(k, v);
-                  } catch (_) {}
+                  
                 };
         const KEYS =
           window.Settings && Settings.KEYS ? Settings.KEYS : SETTINGS_KEYS;
@@ -7624,9 +6873,9 @@ try {
             : typeof lsSet === "function"
               ? lsSet
               : (k, v) => {
-                  try {
+                  
                     localStorage.setItem(k, v);
-                  } catch (_) {}
+                  
                 };
         const KEYS =
           window.Settings && Settings.KEYS ? Settings.KEYS : SETTINGS_KEYS;
@@ -7634,11 +6883,11 @@ try {
       });
       const teCk = ov.querySelector("#setTelemetry");
       teCk.addEventListener("change", () => {
-        try {
+        
           localStorage.setItem("telemetry.on", teCk.checked ? "1" : "0");
           if (teCk.checked) console.log("[telemetry] enabled");
           else console.log("[telemetry] disabled");
-        } catch (_) {}
+        
       });
       ov.querySelector("#gsReset").addEventListener("click", () => {
         const SET =
@@ -7647,9 +6896,9 @@ try {
             : typeof lsSet === "function"
               ? lsSet
               : (k, v) => {
-                  try {
+                  
                     localStorage.setItem(k, v);
-                  } catch (_) {}
+                  
                 };
         const KEYS =
           window.Settings && Settings.KEYS ? Settings.KEYS : SETTINGS_KEYS;
@@ -7657,12 +6906,12 @@ try {
         SET(KEYS.vfx, "1");
         SET(KEYS.swallower, "normal");
         SET(KEYS.typing, "0");
-        try {
+        
           localStorage.setItem("telemetry.on", "0");
-        } catch (_) {}
-        try {
+        
+        
           SFX.setVolume(0.6);
-        } catch (_) {}
+        
         close();
         setTimeout(openSettingsOverlay, 0);
       });
@@ -7673,25 +6922,25 @@ try {
 
   function updateReducedMotion() {
     // Re-render overlays to pick new visibility; animations use CSS media where possible
-    try {
+    
       const o = document.getElementById("itemsStatusOverlay");
       if (o) {
         o.remove();
         ensureItemsOverlay();
       }
-    } catch (_) {}
+    
   }
 })();
 
 // Swallower special event: swallows 100 hearts with noticeable SFX and shimeji reactions
 window.triggerSwallowEvent = function () {
   const take = 100;
-  try {
+  
     SFX.play("swallow.swoop");
     setTimeout(() => SFX.play("swallow.chomp"), 400);
-  } catch (_) {}
+  
   showSwallowMascot();
-  try {
+  
     if (window.Hearts && typeof window.Hearts.add === "function")
       window.Hearts.add(-take);
     else {
@@ -7704,15 +6953,15 @@ window.triggerSwallowEvent = function () {
       localStorage.setItem("pixelbelle-hearts", heartCount);
       updateCounters && updateCounters();
     }
-  } catch (_) {}
-  try {
-    const s = window.shimejiFunctions;
+  
+  
+    const s = window.ShimejiFunctions;
     if (s) {
       s.triggerMassJump && s.triggerMassJump();
       setTimeout(() => s.triggerMassDance && s.triggerMassDance(), 800);
       s.makeAllSpeak && s.makeAllSpeak("あっ！💦 (100💖 たべられた…)", 2800);
     }
-  } catch (_) {}
+  
 };
 
 // ====== SHRINE SECTION ======
@@ -7797,9 +7046,9 @@ function initShrine() {
         once: true,
       });
     // Fire PixieBel ceremony if conditions met and not yet shown
-    try {
+    
       setTimeout(() => {
-        try {
+        
           if (
             typeof hasPixieBel === "function" &&
             typeof awardPixieBel === "function"
@@ -7810,24 +7059,24 @@ function initShrine() {
             )
               awardPixieBel();
           }
-        } catch (_) {}
+        
       }, 1200);
-    } catch (_) {}
+    
   }
 
   // Lightweight Miku mini-player for favorites (YouTube)
   if (songList) {
     const playFavorite = (title, videoId, search) => {
       // Stop any site audio
-      try {
+      
         if (window.__stopBgm) window.__stopBgm(true);
-      } catch (_) {}
-      try {
+      
+      
         if (window.__pauseRadio) window.__pauseRadio();
-      } catch (_) {}
-      try {
+      
+      
         if (window.SFX) SFX.play("ui.select");
-      } catch (_) {}
+      
 
       // Ensure a player exists
       ensureMikuPlayer();
@@ -7844,13 +7093,7 @@ function initShrine() {
         : `listType=search&list=${encodeURIComponent(
             query,
           )}&autoplay=1&rel=0&playsinline=1&modestbranding=1&color=white`;
-      const origin = (() => {
-        try {
-          return `&origin=${encodeURIComponent(location.origin)}`;
-        } catch {
-          return "";
-        }
-      })();
+  const origin = `&origin=${encodeURIComponent(location.origin)}`;
       const url = `${base}?${qs}${origin}`;
       // If no videoId and embed search is blocked, optionally fall back later; for now set src
       iframe.src = url;
@@ -7880,7 +7123,7 @@ function initShrine() {
       wrap.innerHTML = `
           <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px 6px 10px;border-bottom:1px solid var(--border);border-top-left-radius:12px;border-top-right-radius:12px;background:linear-gradient(90deg, rgba(189,227,255,0.4), rgba(255,255,255,0.4))">
             <div style="display:flex;align-items:center;gap:8px;font-weight:900">
-              ${mikuIcon("jumpingMusic", "🎵", "miku-icon")}
+              ${window.MikuCore.mikuIcon("jumpingMusic", "🎵", "miku-icon")}
               <span id="mikuPlayerNow">Now Playing</span>
             </div>
             <div style="display:flex;align-items:center;gap:6px">
@@ -7898,9 +7141,9 @@ function initShrine() {
         if (iframe) iframe.src = "about:blank";
         const wrap = document.getElementById("mikuPlayer");
         if (wrap) wrap.style.display = "none";
-        try {
+        
           if (window.SFX) SFX.play("ui.back");
-        } catch (_) {}
+        
       };
       const closeBtn = document.getElementById("mikuPlayerClose");
       if (closeBtn) closeBtn.addEventListener("click", stop);
@@ -7913,9 +7156,9 @@ function initShrine() {
       const loveBtn = document.getElementById("mikuPlayerLove");
       if (loveBtn)
         loveBtn.addEventListener("click", () => {
-          try {
+          
             addHearts(1);
-          } catch (_) {}
+          
         });
       window.__closeMikuPlayer = stop;
     };
@@ -7948,7 +7191,7 @@ function initFriends() {
 
   friendsList.innerHTML = FRIENDS.map((friend) => {
     const icon = friend.mikuIcon
-      ? mikuIcon(friend.mikuIcon, friend.emoji)
+     ? window.MikuCore.mikuIcon(friend.mikuIcon, friend.emoji)
       : friend.emoji;
     return `
           <a href="${friend.url}" class="friend-button" target="_blank">
@@ -7991,9 +7234,9 @@ function initCardPagination() {
       updateCard();
 
       // Play a cute sound
-      try {
+      
         SFX.play("ui.move");
-      } catch (_) {}
+      
     }
 
     function prevPage() {
@@ -8001,9 +7244,9 @@ function initCardPagination() {
       updateCard();
 
       // Play a cute sound
-      try {
+      
         SFX.play("ui.move");
-      } catch (_) {}
+      
     }
 
     if (nextBtn) nextBtn.addEventListener("click", nextPage);
@@ -8049,11 +7292,8 @@ function awardHearts(base) {
 
 // Singer system
 function collectionMap() {
-  try {
-    return JSON.parse(localStorage.getItem("Wish.collection") || "{}");
-  } catch (_) {
-    return {};
-  }
+  const v = localStorage.getItem("Wish.collection");
+  return JSON.parse(v || "{}");
 }
 function singerGet() {
   return localStorage.getItem("singer.current") || "";
@@ -8062,20 +7302,20 @@ function singerSet(url) {
   const coll = collectionMap();
   if (!coll[url]) {
     loveToast("Win this singer in Wish first!");
-    try {
+    
       SFX.play("ui.unavailable");
-    } catch (_) {}
+    
     return false;
   }
   localStorage.setItem("singer.current", url);
   applySinger();
-  try {
+  
     if (window.MikuNowPlaying) window.MikuNowPlaying.refresh();
-  } catch (_) {}
+  
   loveToast("Singer set! 🎤");
-  try {
+  
     SFX.play("ui.select");
-  } catch (_) {}
+  
   return true;
 }
 function applySingerTo(selector) {
@@ -8087,7 +7327,7 @@ function applySingerTo(selector) {
     return;
   }
   // Fallback image when no singer selected yet
-  try {
+  
     // Prefer a known hero/shrine image from content
     const fallback =
       (C.images && (C.images.heroMiku || C.images.shrineMiku)) ||
@@ -8098,7 +7338,7 @@ function applySingerTo(selector) {
       el.src = fallback;
       return;
     }
-  } catch (_) {}
+  
   el.removeAttribute("src");
 }
 function applySinger() {
@@ -8107,17 +7347,17 @@ function applySinger() {
     applySingerTo("#" + _.id);
   });
   applySingerTheme();
-  try {
+  
     typeof window.refreshFloatingMikus === "function" &&
       window.refreshFloatingMikus();
-  } catch (_) {}
-  try {
+  
+  
     if (typeof window.updateCurrentMiku === "function")
       window.updateCurrentMiku();
-  } catch (_) {}
+  
 }
 function applySingerTheme() {
-  try {
+  
     const url = singerGet();
     const r = url
       ? typeof rarityFor === "function"
@@ -8130,12 +7370,12 @@ function applySingerTheme() {
     if (prog)
       prog.style.background = `linear-gradient(45deg, ${color}, #ffffff)`;
     // HUD singer image removed
-  } catch (_) {}
+  
 }
 window.setSinger = singerSet;
 window.getSinger = singerGet;
 function getSingerScoreMult() {
-  try {
+  
     const url = singerGet();
     if (!url) return 1;
     const coll = collectionMap();
@@ -8150,13 +7390,10 @@ function getSingerScoreMult() {
     // Convert integer rarity/multiplier into a gentle bonus: 1.00 .. 1.40
     const bonus = Math.max(0, m - 1) * 0.1; // +10% per step above 1
     return 1 + Math.min(0.4, bonus);
-  } catch (_) {
-    return 1;
   }
-}
-try {
+
   window.getSingerScoreMult = getSingerScoreMult;
-} catch (_) {}
+
 
 // Image modal with card info and singer selection
 function ensureImageModal() {
@@ -8197,9 +7434,9 @@ function ensureImageModal() {
   );
   m.querySelector("#imageModalOpenDex").addEventListener("click", () => {
     // open Games -> Wish -> Dex
-    try {
+    
       document.querySelector('[data-section="games"]').click();
-    } catch (_) {}
+    
     const btn = document.getElementById("WishCollectionBtn");
     if (btn) btn.click();
   });
@@ -8208,22 +7445,22 @@ function ensureImageModal() {
 
 // Enhanced openImageModal with character identification
 function guessName(url) {
-  try {
+  
     if (typeof window.getMikuMeta === "function") {
       const meta = window.getMikuMeta(url, true);
       if (meta && meta.name) return meta.name;
     }
-  } catch (_) {}
+  
   return "Hatsune Miku";
 }
 
 function getCharacterInfo(url) {
-  try {
+  
     if (typeof window.getMikuMeta === "function") {
       const meta = window.getMikuMeta(url, true);
       if (meta && meta.description) return meta.description;
     }
-  } catch (_) {}
+  
   return "The beloved virtual singer who brings music and joy to everyone! 🎤";
 }
 function hashCode(s) {
@@ -8235,12 +7472,12 @@ function hashCode(s) {
   return h >>> 0;
 }
 function rarityForGlobal(url) {
-  try {
+  
     if (typeof window.getMikuMeta === "function") {
       const meta = window.getMikuMeta(url, true);
       if (meta && typeof meta.rarity === "number") return meta.rarity;
     }
-  } catch (_) {}
+  
   const r = hashCode(url) % 100;
   // Match local rarityFor fallback distribution
   return r < 12 ? 1 : r < 30 ? 2 : r < 60 ? 3 : r < 85 ? 4 : 5;
@@ -8302,7 +7539,7 @@ window.openImageModal = function (url) {
     typeof rarityFor === "function" ? rarityFor(url) : rarityForGlobal(url);
   rar.textContent = "Rarity: " + "★".repeat(r);
   // Tooltip with enforced effects (score/shield/rare-drop)
-  try {
+  
     const eff = window.RARITY_EFFECTS || {
       scorePerStep: 0.1,
       scoreCap: 0.4,
@@ -8321,7 +7558,7 @@ window.openImageModal = function (url) {
       rar.parentElement.appendChild(tipEl);
     }
     tipEl.textContent = tip;
-  } catch (_) {}
+  
 
   const coll = collectionMap();
   const entry = coll[url];
@@ -8330,49 +7567,34 @@ window.openImageModal = function (url) {
     setBtn.disabled = false;
     setBtn.textContent = "Set as Singer";
   } else {
-    owned.textContent = "Owned: —";
+    owned.textContent = "Owned: •";
     setBtn.disabled = true;
     setBtn.textContent = "Win in Wish";
   }
   setBtn.onclick = () => singerSet(url);
-  try {
+  
     SFX.play("extra.camera");
-  } catch (_) {}
+  
   m.classList.add("open");
   // Clear NEW badge persistence once viewed
-  try {
+  
     const LS_COLL = "Wish.collection";
     const coll2 = JSON.parse(localStorage.getItem(LS_COLL) || "{}");
     if (coll2[url] && coll2[url].new) {
       delete coll2[url].new;
       localStorage.setItem(LS_COLL, JSON.stringify(coll2));
     }
-  } catch (_) {}
-  try {
+  
+  
     if (typeof removeNew === "function") removeNew(url);
-  } catch (_) {}
-  try {
+  
+  
     const dex = document.getElementById("mikuDex");
     if (dex && !dex.classList.contains("hidden")) {
       if (typeof renderDex === "function") renderDex();
     }
-  } catch (_) {}
-  // Clear NEW flag when viewing details
-  try {
-    const LS_COLL = "Wish.collection";
-    const coll = JSON.parse(localStorage.getItem(LS_COLL) || "{}");
-    if (coll[url] && coll[url].new) {
-      delete coll[url].new;
-      localStorage.setItem(LS_COLL, JSON.stringify(coll));
-      const dex = document.getElementById("mikuDex");
-      if (dex && !dex.classList.contains("hidden")) {
-        // re-render Dex to remove NEW badge
-        try {
-          if (typeof renderDex === "function") renderDex();
-        } catch (_) {}
-      }
-    }
-  } catch (_) {}
+  
+  // Clear NEW flag when viewing details (handled above as coll2)
 };
 
 // Helper function for video error handling
@@ -8383,7 +7605,7 @@ window.handleVideoError = function (iframe, videoUrl) {
 };
 
 function setGameTheme(game) {
-  try {
+  
     const theme = (C.music && C.music.themes && C.music.themes[game]) || null;
     if (theme && theme.accent) {
       const prog = document.getElementById("hudLevelProgress");
@@ -8401,10 +7623,10 @@ function setGameTheme(game) {
       a.src = theme.src;
       a.load();
       if (wasPlaying) {
-        a.play().catch(() => {});
+        void a.play();
       }
     }
-  } catch (_) {}
+  
 }
 // Revolutionary Beatpad System - PlayStation controller style
 function createBeatpadButton(text, index, onAnswer) {
@@ -8504,10 +7726,10 @@ function createUltimateBeatpadButton(text, index, onAnswer) {
     const now = performance.now();
     const timingSinceNote = now - (btn.dataset.lastBeatTime || 0);
     let coolWindow = 150;
-    try {
+    
       const p = window.Jukebox && Jukebox.getPreset && Jukebox.getPreset();
       if (p && p.judge && p.judge.cool) coolWindow = p.judge.cool;
-    } catch (_) {}
+    
     const isPerfectTiming = timingSinceNote < coolWindow;
 
     if (isPerfectTiming) {
@@ -8516,20 +7738,13 @@ function createUltimateBeatpadButton(text, index, onAnswer) {
     }
 
     // Call original answer handler and use return value to decide SFX
-    try {
+    
       const res = onAnswer(text, btn, { ...psBtn, isPerfect: isPerfectTiming });
       if (res === true) {
-        try {
-          SFX.play("quiz.ok");
-        } catch (_) {}
+        SFX.play("quiz.ok");
       } else if (res === false) {
-        try {
-          SFX.play("quiz.bad");
-        } catch (_) {}
+        SFX.play("quiz.bad");
       }
-    } catch (_) {
-      onAnswer(text, btn, { ...psBtn, isPerfect: isPerfectTiming });
-    }
 
     // Visual feedback
     btn.style.animation = "divaHitPulse 0.3s ease";
@@ -8569,7 +7784,7 @@ function setupUltimateBeatpadKeyboard(container, onAnswer) {
 
 // Create perfect hit effect with particles and glow
 function createPerfectHitEffect(element, color) {
-  try {
+  
     // Create glow burst
     const glowBurst = document.createElement("div");
     glowBurst.style.cssText = `
@@ -8598,9 +7813,7 @@ function createPerfectHitEffect(element, color) {
 
     setTimeout(() => glowBurst.remove(), 500);
     // (Audio handled by caller: avoid double-playing perfect SFX)
-  } catch (e) {
-    console.log("Perfect hit effect error:", e);
-  }
+  
 }
 
 // Falling beats system synchronized with rhythm
@@ -8644,10 +7857,10 @@ function createFallingBeatsSystem(container) {
       // Compute full travel so the note reaches the button center
       const fallStart = performance.now();
       let travel = 1200;
-      try {
+      
         const p = window.Jukebox && Jukebox.getPreset && Jukebox.getPreset();
         if (p && p.travelMs) travel = p.travelMs;
-      } catch (_) {}
+      
       const distance = rect.top - containerRect.top + rect.height * 0.5 + 60; // from -60 to center
       const speedFactor = 1; // keep duration mapping from preset
       const durationMs = Math.max(400, Math.round(travel * speedFactor));
@@ -8716,12 +7929,12 @@ function createComboMilestoneEffect(container, combo) {
   createConfettiBurst(container, combo);
 
   // Epic sound effect
-  try {
+  
     if (combo >= 100) SFX.play("extra.legendary");
     else if (combo >= 50) SFX.play("extra.epic");
     else if (combo >= 25) SFX.play("extra.amazing");
     else SFX.play("extra.excellent");
-  } catch (_) {}
+  
 
   // Miku celebration
   mikuSpeakToast(`🌟 ${combo} COMBO! すごいよ! 🌟`);
@@ -8794,9 +8007,9 @@ function createPerfectCelebration(element) {
     { duration: 800, easing: "ease-out" },
   );
   setTimeout(() => burst.remove(), 800);
-  try {
+  
     SFX.play("result.perfect");
-  } catch (_) {}
+  
 }
 // ====== PROJECT DIVA QUALITIES THAT MAKE IT AMAZING ======
 /*
@@ -8824,7 +8037,7 @@ function createPerfectCelebration(element) {
 
 // Enhanced ring effect with PlayStation colors
 function createRingEffect(element, isCorrect = true) {
-  try {
+  
     if (window.__rhythmRings === false) return;
 
     const rings = isCorrect ? 4 : 2;
@@ -8863,12 +8076,10 @@ function createRingEffect(element, isCorrect = true) {
       party("rhythmGrid");
       createConfettiBurst(element.closest(".rhythm-grid") || element, 4);
     }
-  } catch (e) {
-    console.log("Ring effect error:", e);
-  }
+  
 } // Make Miku speak toast messages with speech bubbles
 function mikuSpeakToast(message) {
-  try {
+  
     // Find all stage idols
     const idols = document.querySelectorAll(".stage-idol");
     if (idols.length === 0) return;
@@ -8938,9 +8149,7 @@ function mikuSpeakToast(message) {
       }
       speakingIdol.style.animation = "idolBreathe 3s ease-in-out infinite";
     }, 2000);
-  } catch (e) {
-    console.log("Speech bubble error:", e);
-  }
+  
 }
 
 // Show a small floating toast message
@@ -8963,12 +8172,12 @@ function initBellePresentation() {
 
   // Kawaii sounds for interactions (asset-based)
   const playKawaiiSound = (type = "click") => {
-    try {
+    
       if (type === "prev") SFX.play("ui.back");
       else if (type === "next") SFX.play("ui.move");
       else if (type === "auto") SFX.play("ui.se_sy_24");
       else SFX.play("ui.move");
-    } catch (_) {}
+    
   };
 
   // Create floating sparkles and icons
@@ -8989,7 +8198,7 @@ function initBellePresentation() {
 
       const iconName =
         decorativeIcons[Math.floor(Math.random() * decorativeIcons.length)];
-      element.innerHTML = mikuIcon(iconName, "✨");
+      element.innerHTML =window.MikuCore.mikuIcon(iconName, "✨");
 
       element.style.left = /*html*/ `${Math.random() * 100}%`;
       element.style.animationDelay = /*html*/ `${Math.random() * 5}s`;
@@ -9233,24 +8442,24 @@ window.pixelBelleGarden = {
   addHearts: addHearts,
   sfx: {
     play: (key) => {
-      try {
+      
         SFX.play(key);
-      } catch (_) {}
+      
     },
     sega: () => {
-      try {
+      
         SFX.play("sega.tag");
-      } catch (_) {}
+      
     },
     setEnabled: (on) => {
-      try {
+      
         SFX.setEnabled(!!on);
-      } catch (_) {}
+      
     },
     setVolume: (v) => {
-      try {
+      
         SFX.setVolume(v);
-      } catch (_) {}
+      
     },
   },
   showSection: (section) => {
@@ -9264,13 +8473,13 @@ window.pixelBelleGarden = {
     currentSection: currentSection,
   }),
   spawnShimeji: () => {
-    if (window.shimejiFunctions) {
-      return window.shimejiFunctions.spawnMiku();
+    if (window.ShimejiFunctions) {
+      return window.ShimejiFunctions.spawnMiku();
     }
   },
   clearShimeji: () => {
-    if (window.shimejiFunctions) {
-      window.shimejiFunctions.removeAll();
+    if (window.ShimejiFunctions) {
+      window.ShimejiFunctions.removeAll();
     }
   },
   // Ultimate Project Diva controls
@@ -9296,9 +8505,9 @@ window.getRhythmMult = getRhythmMult;
 
 // Compatibility alias for upgraded rhythm init
 function attachRhythmLiteV2(cardId) {
-  try {
+  
     attachRhythmLite(cardId);
-  } catch (_) {}
+  
 }
 
 function attachRhythmLite(cardId) {
@@ -9366,9 +8575,9 @@ function attachRhythmLite(cardId) {
   }
   function pulse() {
     if (!window.__rhythmMet) return;
-    try {
+    
       SFX.play("quiz.tick");
-    } catch (_) {}
+    
     wrap.animate([{ opacity: 1 }, { opacity: 0.92 }, { opacity: 1 }], {
       duration: 160,
     });
@@ -9453,33 +8662,33 @@ function attachRhythmLite(cardId) {
       setRhythmMult(getRhythmMult() + 0.15);
       flashJudge(cardId, "COOL");
       showHit("COOL");
-      try {
+      
         SFX.play("memory.match");
-      } catch (_) {}
+      
       best.remove();
     } else if (bestDt <= 180) {
       setRhythmMult(getRhythmMult() + 0.08);
       flashJudge(cardId, "GREAT");
       showHit("GREAT");
-      try {
+      
         SFX.play("ui.select");
-      } catch (_) {}
+      
       best.remove();
     } else if (bestDt <= 260) {
       setRhythmMult(getRhythmMult() + 0.02);
       flashJudge(cardId, "FINE");
       showHit("FINE");
-      try {
+      
         SFX.play("ui.move");
-      } catch (_) {}
+      
       best.remove();
     } else {
       setRhythmMult(1);
       flashJudge(cardId, "MISS");
       showHit("MISS");
-      try {
+      
         SFX.play("ui.unavailable");
-      } catch (_) {}
+      
     }
     mLabel.textContent = "x" + getRhythmMult().toFixed(2);
   }

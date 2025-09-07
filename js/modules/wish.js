@@ -1,4 +1,4 @@
-// Miku Wish (gacha) system — lean version that depends on MIKU_IMAGES
+// Miku Wish (gacha) system • lean version that depends on MIKU_IMAGES
 (function () {
   function els() {
     return {
@@ -30,11 +30,9 @@
     localStorage.setItem(LS.tokens, String(Math.max(0, n)));
   }
   function getColl() {
-    try {
+    
       return JSON.parse(localStorage.getItem(LS.coll) || "{}");
-    } catch (_) {
-      return {};
-    }
+   
   }
   function setColl(c) {
     localStorage.setItem(LS.coll, JSON.stringify(c));
@@ -57,9 +55,9 @@
   function addTokens(n) {
     setTokens(getTokens() + n);
     updateTokens();
-    try {
+    
       SFX.play("extra.coin");
-    } catch (_) {}
+    
   }
   function spendTokens(n) {
     const cur = getTokens();
@@ -102,17 +100,17 @@
     results.innerHTML = urls
       .map((u) => `<div class="Wish-card"><img src="${u}" alt="miku"/></div>`)
       .join("");
-    try {
+    
       SFX.play("Wish.reveal");
-    } catch (_) {}
+    
   }
 
   function startRoll(n) {
     if (!poolReady()) return;
     if (!spendTokens(n)) {
-      try {
+      
         SFX.play("ui.unavailable");
-      } catch (_) {}
+      
       return;
     }
     const urls = pickRandom(n);
@@ -133,22 +131,22 @@
       if (h >= 100) {
         localStorage.setItem("pixelbelle-hearts", String(h - 100));
         addTokens(1);
-        try {
-          window.updateCounters && window.updateCounters();
-        } catch (_) {}
+        
+          window.hearts.updateCounters && window.hearts.updateCounters();
+        
       } else {
-        try {
+        
           SFX.play("ui.unavailable");
-        } catch (_) {}
+        
       }
     };
     e.daily.onclick = () => {
       if (canDaily()) {
         takeDaily();
       } else {
-        try {
+        
           SFX.play("ui.unavailable");
-        } catch (_) {}
+        
       }
     };
     e.dexBtn.onclick = renderDex;

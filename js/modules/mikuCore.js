@@ -133,17 +133,6 @@ window.MikuCore = (function () {
     clearTimeout(timeoutId);
     return response;
   }
-
-  // ========== TELEMETRY - KAWAII ANALYTICS ==========
-  function logMikuEvent(eventName, value = 1) {
-    if (getStorageItem("telemetry.enabled", "0") !== "1") return;
-
-    const key = `telemetry.${eventName}`;
-    const currentCount = parseInt(getStorageItem(key, "0"), 10) || 0;
-    setStorageItem(key, String(currentCount + value));
-    setStorageItem(`${key}.timestamp`, String(Date.now()));
-  }
-
   // ========== TIMER MANAGEMENT ==========
   const activeTimers = {
     intervals: new Set(),
@@ -169,31 +158,6 @@ window.MikuCore = (function () {
     activeTimers.timeouts.clear();
   }
 
-  // ========== GLOBAL ASSIGNMENTS FOR COMPATIBILITY ==========
-  window.$ = $;
-  window.byId = byId;
-  window.mikuIcon = mikuIcon;
-  window.friendlyError = createErrorDisplay;
-  window.fetchWithTimeout = fetchWithTimeout;
-  window.logEvent = logMikuEvent;
-  window.setIntervalTracked = setTrackedInterval;
-  window.setTimeoutTracked = setTrackedTimeout;
-  window.GLOBAL_TIMERS = { clearAll: clearAllTimers };
-
-  // Settings compatibility
-  window.Settings = {
-    isReducedMotion,
-    isVfxEnabled,
-    swallowerRate: getSwallowerRate,
-    isTypingAids: isTypingAidsEnabled,
-    get: getStorageItem,
-    set: setStorageItem,
-    KEYS: SETTING_KEYS,
-  };
-  window.isReducedMotion = isReducedMotion;
-
-  // Cleanup on page unload
-  window.addEventListener("beforeunload", clearAllTimers);
 
   // Public API
   return {
@@ -211,7 +175,6 @@ window.MikuCore = (function () {
     },
     error: { createDisplay: createErrorDisplay },
     network: { fetchWithTimeout },
-    telemetry: { log: logMikuEvent },
     timers: {
       setInterval: setTrackedInterval,
       setTimeout: setTrackedTimeout,

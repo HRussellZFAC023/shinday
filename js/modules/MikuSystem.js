@@ -28,7 +28,7 @@ window.MikuSystem = (function () {
       mikuList.find(
         (miku) =>
           normalizedUrl.includes(normalize(miku.filename || "")) ||
-          normalizedUrl.includes(normalize(miku.image || "")),
+          normalizedUrl.includes(normalize(miku.image || ""))
       ) || null
     );
   }
@@ -37,7 +37,7 @@ window.MikuSystem = (function () {
   function updateNowPlaying(song) {
     const title =
       song?.title || song?.name
-        ? `${song.title || song.name} — ${song.artist || "Miku"}`
+        ? `${song.title || song.name} • ${song.artist || "Miku"}`
         : "Kawaii FM 📻";
 
     const statusEl = document.getElementById("radioStatus");
@@ -59,9 +59,9 @@ window.MikuSystem = (function () {
       widget.id = "divaInfo";
       widget.className = "hud-line";
       widget.innerHTML = `
-        <strong>Miku:</strong> <span id="divaInfoMiku">—</span> 
+        <strong>Miku:</strong> <span id="divaInfoMiku">•</span> 
         <div class="spacer"></div> 
-        <strong>🎶 Song:</strong> <span id="divaInfoSong">—</span>
+        <strong>🎶 Song:</strong> <span id="divaInfoSong">•</span>
       `;
       hudContainer.insertAdjacentElement("afterbegin", widget);
       return widget;
@@ -82,8 +82,8 @@ window.MikuSystem = (function () {
         align-items:center;font-weight:800;color:#2b2b44
       `;
       widget.innerHTML = `
-        <div><strong>Miku:</strong> <span id="divaInfoMiku">—</span></div>
-        <div><strong>🎶 Song:</strong> <span id="divaInfoSong">—</span></div>
+        <div><strong>Miku:</strong> <span id="divaInfoMiku">•</span></div>
+        <div><strong>🎶 Song:</strong> <span id="divaInfoSong">•</span></div>
       `;
       fallbackContainer.insertAdjacentElement("afterbegin", widget);
     }
@@ -110,8 +110,8 @@ window.MikuSystem = (function () {
     const mikuNameEl = widget.querySelector("#divaInfoMiku");
     const songTitleEl = widget.querySelector("#divaInfoSong");
 
-    const mikuName = miku?.displayName || miku?.name || miku?.title || "—";
-    const songTitle = miku?.songTitle || miku?.title || "—";
+    const mikuName = miku?.displayName || miku?.name || miku?.title || "•";
+    const songTitle = miku?.songTitle || miku?.title || "•";
 
     if (mikuNameEl) mikuNameEl.textContent = mikuName;
     if (songTitleEl) songTitleEl.textContent = songTitle;
@@ -129,8 +129,3 @@ window.MikuSystem = (function () {
     loadMikusData,
   };
 })();
-
-// Legacy compatibility - NO MORE SCATTERED GLOBALS!
-window.updateNowPlaying = window.MikuSystem.updateNowPlaying;
-window.updateCurrentMiku = window.MikuSystem.setCurrentMiku;
-window.MikuNowPlaying = { refresh: window.MikuSystem.refresh };

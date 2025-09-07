@@ -1,5 +1,5 @@
 // Navigation module - clean and simple
-(function () {
+window.navi = (function () {
   function showSection(sectionId) {
     const sections = document.querySelectorAll("section");
     let prev = null;
@@ -30,6 +30,8 @@
         links.forEach((l) => l.classList.toggle("active", l === link));
       }),
     );
-    ion;
   }
+  return {
+    initNavigation: initNavigation,
+  };
 })();

@@ -1,23 +1,15 @@
 (function () {
   // Resolve mikus.json item from current singer image path
   async function loadMikus() {
-    try {
-      const res = await fetch("./assets/pixel-miku/mikus.json", {
-        cache: "no-store",
-      });
-      if (!res.ok) throw new Error("mikus.json");
-      return await res.json();
-    } catch (_) {
-      return [];
-    }
+    const res = await fetch("./assets/pixel-miku/mikus.json", {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("mikus.json");
+    return await res.json();
   }
 
   function selectedMikuUrl() {
-    try {
-      return localStorage.getItem("singer.current") || "";
-    } catch (_) {
-      return "";
-    }
+    return localStorage.getItem("singer.current") || "";
   }
 
   function normalize(p) {
@@ -31,7 +23,7 @@
       list.find(
         (m) =>
           u.includes(normalize(m.filename || "")) ||
-          u.includes(normalize(m.image || "")),
+          u.includes(normalize(m.image || ""))
       ) || null
     );
   }
@@ -46,7 +38,7 @@
       host.id = "divaInfo";
       host.className = "hud-line";
       host.innerHTML =
-        '<strong>Miku:</strong> <span id="divaInfoMiku">—</span> <div class="spacer"></div> <strong>🎶 Song:</strong> <span id="divaInfoSong">—</span>';
+        '<strong>Miku:</strong> <span id="divaInfoMiku">•</span> <div class="spacer"></div> <strong>🎶 Song:</strong> <span id="divaInfoSong">•</span>';
       hud.insertAdjacentElement("afterbegin", host);
       return host;
     }
@@ -60,7 +52,7 @@
     host.style.cssText =
       "margin:10px 0;padding:8px 10px;border:2px solid var(--border);border-radius:10px;background:#fff;display:flex;gap:12px;align-items:center;font-weight:800;color:#2b2b44";
     host.innerHTML =
-      '<div><strong>Miku:</strong> <span id="divaInfoMiku">—</span></div><div><strong>🎶 Song:</strong> <span id="divaInfoSong">—</span></div>';
+      '<div><strong>Miku:</strong> <span id="divaInfoMiku">•</span></div><div><strong>🎶 Song:</strong> <span id="divaInfoSong">•</span></div>';
     if (study) study.insertAdjacentElement("afterbegin", host);
     return host;
   }
@@ -69,8 +61,8 @@
     const host = ensureDivaInfo();
     const mikuEl = host.querySelector("#divaInfoMiku");
     const songEl = host.querySelector("#divaInfoSong");
-    const mikuName = m ? m.displayName || m.name || m.title || "—" : "—";
-    const songTitle = m ? m.songTitle || m.title || "—" : "—";
+    const mikuName = m ? m.displayName || m.name || m.title || "•" : "•";
+    const songTitle = m ? m.songTitle || m.title || "•" : "•";
     if (mikuEl) mikuEl.textContent = mikuName;
     if (songEl) songEl.textContent = songTitle;
   }

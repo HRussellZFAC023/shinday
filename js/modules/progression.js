@@ -25,9 +25,9 @@
   function emit() {
     const s = getProgress();
     listeners.forEach((fn) => {
-      try {
+      
         fn(s);
-      } catch (_) {}
+      
     });
   }
   function onChange(cb) {
@@ -38,29 +38,29 @@
   }
 
   function setLevel(n) {
-    try {
+    
       localStorage.setItem(LS_LEVEL, String(Math.max(1, n | 0)));
-    } catch (_) {}
+    
     emit();
   }
   function setXp(n) {
-    try {
+    
       localStorage.setItem(LS_XP, String(Math.max(0, n | 0)));
-    } catch (_) {}
+    
     emit();
   }
   function addXp(delta) {
     let xp = getXp() + (delta | 0);
     let lvl = getLevel();
     while (xp >= lvl * XP_PER_LEVEL) lvl++;
-    try {
+    
       localStorage.setItem(LS_XP, String(xp));
-    } catch (_) {}
-    try {
+    
+    
       localStorage.setItem(LS_LEVEL, String(lvl));
-    } catch (_) {}
+    
     // HUD update (if present)
-    try {
+    
       const bar = document.getElementById("hudLevelProgress");
       const txt = document.getElementById("hudLevelText");
       const pct = Math.min(
@@ -69,7 +69,7 @@
       );
       if (bar) bar.style.width = pct + "%";
       if (txt) txt.textContent = `Level ${lvl} • ${pct}%`;
-    } catch (_) {}
+    
     emit();
     return { level: lvl, xp };
   }

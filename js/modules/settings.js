@@ -8,32 +8,28 @@
     typing: "settings.typingAids",
   };
   const lsGet = (k, d = "") => {
-    try {
+    
       const v = localStorage.getItem(k);
       return v == null ? d : v;
-    } catch (_) {
-      return d;
-    }
+   
   };
   const lsSet = (k, v) => {
-    try {
+    
       localStorage.setItem(k, v);
-    } catch (_) {}
+    
   };
   function isReducedMotion() {
-    try {
+    
       const pref = lsGet(KEYS.reduceMotion, "");
       if (pref === "1") return true;
       if (pref === "0") return false;
-    } catch (_) {}
-    try {
+    
+    
       return (
         window.matchMedia &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
       );
-    } catch (_) {
-      return false;
-    }
+  
   }
   function isVfxEnabled() {
     return lsGet(KEYS.vfx, "1") !== "0";

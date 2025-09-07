@@ -3,28 +3,24 @@
   const KEY_DIR = "vocab.direction";
   const KEY_TIMED = "vocab.timed";
   function direction() {
-    try {
+    
       return localStorage.getItem(KEY_DIR) || "jp-en";
-    } catch (_) {
-      return "jp-en";
-    }
+    
   }
   function setDirection(dir) {
-    try {
+    
       localStorage.setItem(KEY_DIR, dir);
-    } catch (_) {}
+    
   }
   function isTimed() {
-    try {
+    
       return localStorage.getItem(KEY_TIMED) === "1";
-    } catch (_) {
-      return false;
-    }
+    
   }
   function setTimed(on) {
-    try {
+    
       localStorage.setItem(KEY_TIMED, on ? "1" : "0");
-    } catch (_) {}
+    
   }
 
   // DOM refs
@@ -64,17 +60,17 @@
     return a;
   }
   async function fetchJsonWithProxy(url) {
-    try {
+    
       const r = await fetch(url, { cache: "no-store" });
       if (r.ok) return await r.json();
-    } catch (_) {}
-    try {
+    
+    
       const rr = await fetch(
         `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
         { cache: "no-store" },
       );
       if (rr.ok) return await rr.json();
-    } catch (_) {}
+    
     throw new Error("network");
   }
   async function primeVocabPage(page) {
@@ -190,20 +186,20 @@
     bestTimeEl = document.getElementById("vocabBestTime");
     optionBtns = document.querySelectorAll("#vocabMeta .mode-option");
     if (!qEl || !cEl) return;
-    try {
+    
       if (typeof window.attachDivaHud === "function")
         attachDivaHud("vocabCard");
-    } catch (_) {}
+    
     // restore stats
-    try {
+    
       bestStreak =
         parseInt(localStorage.getItem("vocab.bestStreak") || "0", 10) || 0;
-    } catch (_) {}
-    try {
+    
+    
       const bt =
         parseInt(localStorage.getItem("vocab.bestTime") || "0", 10) || 0;
       bestTime = bt || null;
-    } catch (_) {}
+    
     if (bestStreakEl) bestStreakEl.textContent = String(bestStreak);
     if (bestTimeEl)
       bestTimeEl.textContent = bestTime
@@ -215,9 +211,9 @@
         curDir = b.getAttribute("data-mode") || "jp-en";
         optionBtns.forEach((x) => x.classList.remove("active"));
         b.classList.add("active");
-        try {
+        
           SFX.play("ui.select");
-        } catch (_) {}
+        
         start({ direction: curDir, timed: isTimed() });
       });
     });
@@ -227,17 +223,17 @@
     if (!qEl || !cEl) return;
     lock = false;
     // Clear previous persistent feedback if enhanced UI is present
-    try {
+    
       if (window.clearDivaFeedback) clearDivaFeedback("vocabFeedback");
-    } catch (_) {}
+    
     if (fbEl) fbEl.textContent = "";
     cEl.innerHTML = "";
     qEl.textContent = "Loading…";
     // advance notes count if HUD exists
-    try {
+    
       if (window.HUD) HUD.notes++;
-    } catch (_) {}
-    try {
+    
+    
       const q = await getVocabQuestion(curDir);
       const correct = q.correct;
       qEl.innerHTML = q.promptHtml;
@@ -245,19 +241,16 @@
         Jukebox.getPreset &&
         Jukebox.getPreset()) || { baseTime: 15, options: 4 };
       const maxOpts = Math.min(PRESET.options || 4, 4);
-      try {
+      
         const cols = maxOpts >= 6 ? 3 : 2;
         cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`;
         cEl.style.gridTemplateRows = `repeat(${Math.ceil(maxOpts / cols)},1fr)`;
-      } catch (_) {}
+      
       if (isTimed()) {
         const baseTime = (function () {
-          try {
+          
             return (window.diffParams && diffParams().baseTime) || 15;
-          } catch (_) {
-            return 15;
-          }
-        })();
+          } )();
         countdown = PRESET.baseTime || baseTime;
         if (timerEl) timerEl.textContent = String(countdown);
         startAt = Date.now();
@@ -273,14 +266,14 @@
               fbEl.textContent = `⏰ Time! Correct: ${correct}`;
               fbEl.style.color = "#c00";
             }
-            try {
+            
               SFX.play("quiz.timeup");
-            } catch (_) {}
-            try {
+            
+            
               flashJudge && flashJudge("vocabCard", "MISS");
               addVoltage && addVoltage(-5, "vocabCard");
               loseLife && loseLife("vocabCard");
-            } catch (_) {}
+            
             streak = 0;
             if (streakEl) streakEl.textContent = String(streak);
             setTimeout(loadRound, 900);
@@ -302,10 +295,10 @@
         );
         cEl.appendChild(btn);
       });
-      try {
+      
         createFallingBeatsSystem && createFallingBeatsSystem(cEl);
-      } catch (_) {}
-      try {
+      
+      
         setupUltimateBeatpadKeyboard &&
           setupUltimateBeatpadKeyboard(cEl, (text) => {
             const target = Array.from(
@@ -313,13 +306,8 @@
             ).find((b) => b.textContent === text);
             if (target) target.click();
           });
-      } catch (_) {}
-    } catch (e) {
-      if (cEl) {
-        cEl.textContent = "Offline. Try again.";
-      }
+
     }
-  }
 
   function onSelect(text, element, style, correct) {
     if (lock) return;
@@ -330,58 +318,54 @@
     }
     const isCorrect = text === correct;
     if (isCorrect) {
-      try {
+      
         createRingEffect && createRingEffect(element, true);
-      } catch (_) {}
+      
       if (style && style.isPerfect) {
-        try {
+        
           createPerfectHitEffect &&
             createPerfectHitEffect(element, style.color);
-        } catch (_) {}
+        
         if (window.showDivaFeedback)
           showDivaFeedback("vocabFeedback", "✨ PERFECT! ✨", true);
         else if (fbEl) fbEl.textContent = "✨ PERFECT! ✨";
-        try {
+        
           awardHearts && awardHearts(2);
-        } catch (_) {}
+        
       } else {
         if (window.showDivaFeedback)
           showDivaFeedback("vocabFeedback", "✅ Correct!", true);
         else if (fbEl) {
           fbEl.textContent = "✅ Correct!";
         }
-        try {
+        
           awardHearts && awardHearts(1);
-        } catch (_) {}
+        
       }
       if (fbEl) fbEl.style.color = "#2b2b44";
       score++;
       if (scoreEl) scoreEl.textContent = String(score);
       streak++;
       if (streakEl) streakEl.textContent = String(streak);
-      try {
+      
         if (streak > 1) loveToast && loveToast(`コンボ x${streak}!`);
         createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak);
-      } catch (_) {}
+      
       const mult = (function () {
-        try {
+        
           return diffParams().mult;
-        } catch (_) {
-          return 1;
-        }
+       
       })();
       const rmult = (function () {
-        try {
+        
           return getRhythmMult();
-        } catch (_) {
-          return 1;
-        }
+       
       })();
       const gain = (12 + Math.min(15, (streak - 1) * 2)) * mult * rmult;
-      try {
+      
         addXP &&
           addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
-      } catch (_) {}
+      
       const dt = Date.now() - startAt;
       let judge = "FINE",
         v = 2,
@@ -390,47 +374,47 @@
         judge = "COOL";
         v = 4;
         sc = 100;
-        try {
+        
           HUD && HUD.counts && HUD.counts.COOL++;
           party && party("vocabCard");
-        } catch (_) {}
+        
       } else if (dt <= 1400) {
         judge = "GREAT";
         v = 3;
         sc = 70;
-        try {
+        
           HUD && HUD.counts && HUD.counts.GREAT++;
-        } catch (_) {}
+        
       } else {
-        try {
+        
           HUD && HUD.counts && HUD.counts.FINE++;
-        } catch (_) {}
+        
       }
-      try {
+      
         flashJudge && flashJudge("vocabCard", judge);
         addVoltage && addVoltage(v, "vocabCard");
         addCombo && addCombo("vocabCard");
         HUD && (HUD.score += Math.round(sc * mult * rmult));
-      } catch (_) {}
+      
       // Zap any active swallower on correct
-      try {
+      
         window.zapSwallower && window.zapSwallower();
-      } catch (_) {}
+      
       if (isTimed()) {
         const elapsed = Date.now() - startAt;
         if (!bestTime || elapsed < bestTime) {
           bestTime = elapsed;
-          try {
+          
             localStorage.setItem("vocab.bestTime", String(bestTime));
-          } catch (_) {}
+          
           if (bestTimeEl)
             bestTimeEl.textContent = `${(bestTime / 1000).toFixed(1)}s`;
         }
       }
     } else {
-      try {
+      
         createRingEffect && createRingEffect(element, false);
-      } catch (_) {}
+      
       if (window.showDivaFeedback)
         showDivaFeedback("vocabFeedback", `❌ ${correct}`, false);
       else if (fbEl) {
@@ -439,13 +423,13 @@
       }
       streak = 0;
       if (streakEl) streakEl.textContent = String(streak);
-      try {
+      
         HUD && HUD.counts && HUD.counts.SAD++;
         flashJudge && flashJudge("vocabCard", "SAD");
         addVoltage && addVoltage(-5, "vocabCard");
         resetCombo && resetCombo();
         loseLife && loseLife("vocabCard");
-      } catch (_) {}
+      
     }
     setTimeout(loadRound, 900);
     return isCorrect;
@@ -461,9 +445,9 @@
     loadRound();
   }
   function stop() {
-    try {
+    
       if (tId) clearInterval(tId);
-    } catch (_) {}
+    
     tId = null;
   }
 

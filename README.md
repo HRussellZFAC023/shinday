@@ -86,9 +86,9 @@ pixelBelleGarden.showSection("shrine");
 pixelBelleGarden.getStats();
 
 // Shimeji controls
-shimejiFunctions.triggerMassJump();
-shimejiFunctions.triggerMassFall();
-shimejiFunctions.removeAll();
+ShimejiFunctions.triggerMassJump();
+ShimejiFunctions.triggerMassFall();
+ShimejiFunctions.removeAll();
 ```
 
 ## 🌐 GitHub Pages Deployment

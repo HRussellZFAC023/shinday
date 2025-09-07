@@ -1,4 +1,4 @@
-// Typing × DIVA v1 — prototype typing rhythm game
+// Typing × DIVA v1 • prototype typing rhythm game
 (function () {
   const DEFAULT_LINES = [
     "miku",
@@ -35,12 +35,10 @@
   }
 
   function getBpm() {
-    try {
+    
       const cur = window.__rhythmBpm || 120;
       return cur || 120;
-    } catch (_) {
-      return 120;
-    }
+   
   }
 
   function scheduleNotes(line) {
@@ -165,13 +163,13 @@
     }
     if (j === "MISS") {
       STATE.combo = 0;
-      try {
+      
         window.flashJudge && window.flashJudge("typingHighway", "MISS");
-      } catch (_) {}
+      
     } else {
       STATE.combo++;
       STATE.bestCombo = Math.max(STATE.bestCombo, STATE.combo);
-      try {
+      
         window.flashJudge && window.flashJudge("typingHighway", j);
         if (window.addCombo) window.addCombo("typingHighway");
         if (window.addVoltage)
@@ -179,18 +177,18 @@
             j === "COOL" ? 5 : j === "GREAT" ? 3 : 2,
             "typingHighway",
           );
-      } catch (_) {}
-      try {
+      
+      
         window.SFX && window.SFX.play("quiz.correct");
-      } catch (_) {}
+      
     }
     STATE.score += scoreFor(j);
     updateHud();
     // Zap swallower on correct
     if (j !== "MISS") {
-      try {
+      
         window.zapSwallower && window.zapSwallower();
-      } catch (_) {}
+      
     }
     // End when all hit
     if (STATE.notes.every((n) => n.hit)) finish();
@@ -226,15 +224,15 @@
       fb.style.color = "#2b2b44";
     }
     // Rewards
-    try {
+    
       if (rank === "A") {
         window.Hearts?.add?.(3);
-        window.loveToast && window.loveToast("Typing Rank A! +3💖");
+        window.hearts.loveToast && window.hearts.loveToast("Typing Rank A! +3💖");
       }
-    } catch (_) {}
-    try {
+    
+    
       if (window.logEvent) window.logEvent("typing_rank", 1);
-    } catch (_) {}
+    
   }
 
   function start() {
@@ -252,9 +250,9 @@
       .trim();
     scheduleNotes(line);
     STATE.running = true;
-    try {
+    
       window.SFX && window.SFX.play("ui.change");
-    } catch (_) {}
+    
     requestAnimationFrame(loop);
   }
 

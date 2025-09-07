@@ -28,17 +28,15 @@
     return new Date().toDateString();
   }
   function load() {
-    try {
+    
       const raw = JSON.parse(localStorage.getItem(LS_Q) || "{}");
       return raw;
-    } catch (_) {
-      return {};
-    }
+  
   }
   function save(state) {
-    try {
+    
       localStorage.setItem(LS_Q, JSON.stringify(state));
-    } catch (_) {}
+    
   }
   function ensureState() {
     const s = load();
@@ -61,9 +59,9 @@
       it.done = true;
       const reward = QUESTS.find((q) => q.id === id).reward || {};
       if (reward.xp && window.Progression) Progression.addXp(reward.xp);
-      try {
+      
         if (window.SFX) SFX.play("ui.select");
-      } catch (_) {}
+      
     }
     save(s);
     render();
@@ -105,7 +103,7 @@
 
   function wireHooks() {
     // Hook flashJudge to count COOLs
-    try {
+    
       const orig = window.flashJudge;
       if (typeof orig === "function") {
         window.flashJudge = function (cardId, label) {
@@ -113,9 +111,9 @@
           return orig.apply(this, arguments);
         };
       }
-    } catch (_) {}
+    
     // Hook study correct answer increments
-    try {
+    
       const el = document.getElementById("jpGames");
       if (el) {
         el.addEventListener("click", (e) => {
@@ -124,9 +122,9 @@
             inc("answers-right", 1);
         });
       }
-    } catch (_) {}
+    
     // Hook jukebox play
-    try {
+    
       const origPlay = window.Jukebox && Jukebox.play;
       if (typeof origPlay === "function") {
         Jukebox.play = function () {
@@ -134,7 +132,7 @@
           return origPlay.apply(this, arguments);
         };
       }
-    } catch (_) {}
+    
   }
 
   function init() {

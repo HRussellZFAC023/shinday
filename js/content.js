@@ -24,7 +24,7 @@ if (
 }
 const yearsAgo = age - 25;
 
-window.SITE_CONTENT = {
+const SITE_CONTENT = {
   images: {
     favicon: "./assets/icon.jpg",
     ogImage: "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png",
@@ -566,3 +566,57 @@ window.SITE_CONTENT = {
       "https://gifypet.neocities.org/pet/pet.html?name=PixieBel&dob=1756939149&gender=f&element=Air&pet=https%3A%2F%2Fi.imgur.com%2FYV9mzxS.gif&map=https://i.imgur.com/cUgWk1C.png&background=https%3A%2F%2Fi.imgur.com%2FDHjfhbo.png&tablecolor=black&textcolor=black",
   },
 };
+
+
+// ========== SPLASH SCREEN SYSTEM ==========
+function initializeSplash() {
+  const splash = document.getElementById("splash");
+  const enterButton = document.getElementById("enterSite");
+  const mainSite = document.getElementById("mainSite");
+
+  // Splash copy
+  const splashTitle = document.querySelector("#splash .glitch");
+  if (splashTitle && SITE_CONTENT.splash?.title) {
+    splashTitle.textContent = SITE_CONTENT.splash.title;
+    splashTitle.setAttribute("data-text", SITE_CONTENT.splash.title);
+  }
+  const splashSub = document.querySelector("#splash .typing-text");
+  if (splashSub && SITE_CONTENT.splash?.subtitle)
+    splashSub.textContent = SITE_CONTENT.splash.subtitle;
+  const splashBtn = document.getElementById("enterSite");
+  if (splashBtn && SITE_CONTENT.splash?.button) splashBtn.textContent = SITE_CONTENT.splash.button;
+
+  const splashImg = document.getElementById("splashMiku");
+  if (splashImg)
+    splashImg.src =
+      SITE_CONTENT.images?.splashMiku ||
+      "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png";
+
+  if (!splash || !enterButton || !mainSite) return;
+  if (splash.dataset.wired === "1") return;
+
+  splash.dataset.wired = "1";
+
+  const enterSite = () => {
+    enterButton.disabled = true;
+    splash.style.display = "none";
+    mainSite.classList.remove("hidden");
+
+    // Initialize site properly
+    const initFunction = window.initSite || (() => {});
+    initFunction();
+  };
+
+  enterButton.addEventListener("click", enterSite, { once: true });
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key === "Enter") enterSite();
+    },
+    { capture: true }
+  );
+
+}
+
+window.SITE_CONTENT = SITE_CONTENT;
+initializeSplash();

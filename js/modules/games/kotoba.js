@@ -2,16 +2,15 @@
 (function () {
   const KEY_TIMED = "kotoba.timed";
   function isTimed() {
-    try {
+    
       return localStorage.getItem(KEY_TIMED) === "1";
-    } catch (_) {
-      return false;
-    }
+  
+
   }
   function setTimed(on) {
-    try {
+    
       localStorage.setItem(KEY_TIMED, on ? "1" : "0");
-    } catch (_) {}
+    
   }
 
   // DOM
@@ -65,10 +64,10 @@
     return a;
   }
   async function fetchJson(url, prox = true) {
-    try {
+    
       const r = await fetch(url, { cache: "no-store" });
       if (r.ok) return await r.json();
-    } catch (_) {}
+    
     if (!prox) throw new Error("network");
     return fetchJson(
       `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
@@ -100,7 +99,7 @@
         };
       }
     } else {
-      try {
+      
         const q = ["miku", "song", "love", "friend", "summer", "happy"][rnd(6)];
         const data = await fetchJson(
           `https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(q)}`,
@@ -123,9 +122,7 @@
             options: shuffle([correct, ...decoys]),
           };
         }
-      } catch (_) {
-        /* fall back */
-      }
+      
     }
     // fallback single option prevents dead-end
     return {
@@ -147,18 +144,18 @@
     bestTimeEl = document.getElementById("kotobaBestTime");
     startBtn = document.getElementById("kotobaStart");
     if (!cEl) return;
-    try {
+    
       attachDivaHud && attachDivaHud("kotobaCard");
-    } catch (_) {}
-    try {
+    
+    
       bestStreak =
         parseInt(localStorage.getItem("kotoba.bestStreak") || "0", 10) || 0;
-    } catch (_) {}
-    try {
+    
+    
       const bt =
         parseInt(localStorage.getItem("kotoba.bestTime") || "0", 10) || 0;
       bestTime = bt || null;
-    } catch (_) {}
+    
     if (bestStreakEl) bestStreakEl.textContent = String(bestStreak);
     if (bestTimeEl)
       bestTimeEl.textContent = bestTime
@@ -190,16 +187,16 @@
   async function loadRound() {
     if (!cEl) return;
     lock = false;
-    try {
+    
       if (window.clearDivaFeedback) clearDivaFeedback("kotobaFeedback");
-    } catch (_) {}
+    
     if (fbEl) fbEl.textContent = "";
     cEl.innerHTML = "";
     if (chatEl) chatEl.innerHTML = "";
-    try {
+    
       HUD && HUD.notes++;
-    } catch (_) {}
-    try {
+    
+    
       const q = await getQuestion();
       const correct = q.correct;
       if (chatEl)
@@ -215,11 +212,9 @@
       cEl.style.flexDirection = "column";
       if (isTimed()) {
         const baseTime = (function () {
-          try {
+          
             return (window.diffParams && diffParams().baseTime) || 20;
-          } catch (_) {
-            return 20;
-          }
+          
         })();
         countdown = PRESET.baseTime || baseTime;
         if (timerEl) timerEl.textContent = String(countdown);
@@ -236,14 +231,14 @@
               fbEl.textContent = `⏰ Time!`;
               fbEl.style.color = "#c00";
             }
-            try {
+            
               SFX.play("quiz.timeup");
-            } catch (_) {}
-            try {
+            
+            
               flashJudge && flashJudge("kotobaCard", "MISS");
               addVoltage && addVoltage(-5, "kotobaCard");
               loseLife && loseLife("kotobaCard");
-            } catch (_) {}
+            
             streak = 0;
             if (streakEl) streakEl.textContent = String(streak);
             setTimeout(loadRound, 900);
@@ -260,11 +255,8 @@
         );
         cEl.appendChild(btn);
       });
-    } catch (e) {
-      if (cEl) {
-        cEl.textContent = "Offline. Try again.";
-      }
-    }
+    
+    
   }
 
   function onSelect(text, element, style, correct) {
@@ -276,28 +268,28 @@
     }
     const isCorrect = text === correct;
     if (isCorrect) {
-      try {
+      
         createRingEffect && createRingEffect(element, true);
-      } catch (_) {}
+      
       element.classList.add("correct");
       if (style && style.isPerfect) {
-        try {
+        
           createPerfectHitEffect &&
             createPerfectHitEffect(element, style.color);
-        } catch (_) {}
+        
         if (window.showDivaFeedback)
           showDivaFeedback("kotobaFeedback", "✨ PERFECT! ✨", true);
         else if (fbEl) fbEl.textContent = "✨ PERFECT! ✨";
-        try {
+        
           awardHearts && awardHearts(2);
-        } catch (_) {}
+        
       } else {
         if (window.showDivaFeedback)
           showDivaFeedback("kotobaFeedback", "✅ Correct!", true);
         else if (fbEl) fbEl.textContent = "✅ Correct!";
-        try {
+        
           awardHearts && awardHearts(1);
-        } catch (_) {}
+        
       }
       if (fbEl) fbEl.style.color = "#2b2b44";
       score++;
@@ -308,29 +300,25 @@
       }
       streak++;
       if (streakEl) streakEl.textContent = String(streak);
-      try {
+      
         if (streak > 1) loveToast && loveToast(`Combo x${streak}!`);
         createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak);
-      } catch (_) {}
+      
       const mult = (function () {
-        try {
+        
           return diffParams().mult;
-        } catch (_) {
-          return 1;
-        }
+       
       })();
       const rmult = (function () {
-        try {
+        
           return getRhythmMult();
-        } catch (_) {
-          return 1;
-        }
+       
       })();
       const gain = (12 + Math.min(15, (streak - 1) * 2)) * mult * rmult;
-      try {
+      
         addXP &&
           addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
-      } catch (_) {}
+      
       const dt = Date.now() - startAt;
       let judge = "FINE",
         v = 2,
@@ -339,46 +327,46 @@
         judge = "COOL";
         v = 5;
         sc = 120;
-        try {
+        
           HUD && HUD.counts && HUD.counts.COOL++;
           party && party("kotobaCard");
-        } catch (_) {}
+        
       } else if (dt <= 1600) {
         judge = "GREAT";
         v = 3;
         sc = 80;
-        try {
+        
           HUD && HUD.counts && HUD.counts.GREAT++;
-        } catch (_) {}
+        
       } else {
-        try {
+        
           HUD && HUD.counts && HUD.counts.FINE++;
-        } catch (_) {}
+        
       }
-      try {
+      
         flashJudge && flashJudge("kotobaCard", judge);
         addVoltage && addVoltage(v, "kotobaCard");
         addCombo && addCombo("kotobaCard");
         HUD && (HUD.score += Math.round(sc * mult * rmult));
-      } catch (_) {}
-      try {
+      
+      
         window.zapSwallower && window.zapSwallower();
-      } catch (_) {}
+      
       if (isTimed()) {
         const elapsed = Date.now() - startAt;
         if (!bestTime || elapsed < bestTime) {
           bestTime = elapsed;
-          try {
+          
             localStorage.setItem("kotoba.bestTime", String(bestTime));
-          } catch (_) {}
+          
           if (bestTimeEl)
             bestTimeEl.textContent = `${(bestTime / 1000).toFixed(1)}s`;
         }
       }
     } else {
-      try {
+      
         createRingEffect && createRingEffect(element, false);
-      } catch (_) {}
+      
       element.classList.add("wrong");
       if (window.showDivaFeedback)
         showDivaFeedback("kotobaFeedback", `❌ ${correct}`, false);
@@ -392,26 +380,26 @@
       }
       streak = 0;
       if (streakEl) streakEl.textContent = String(streak);
-      try {
+      
         HUD && HUD.counts && HUD.counts.SAD++;
         flashJudge && flashJudge("kotobaCard", "SAD");
         addVoltage && addVoltage(-5, "kotobaCard");
         resetCombo && resetCombo();
         loseLife && loseLife("kotobaCard");
-      } catch (_) {}
+      
       // Highlight correct answer
-      try {
+      
         Array.from(cEl.querySelectorAll(".chat-option")).forEach((b) => {
           b.disabled = true;
           if (b.textContent === correct) b.classList.add("correct");
         });
-      } catch (_) {}
+      
     }
-    try {
+    
       Array.from(cEl.querySelectorAll(".chat-option")).forEach(
         (b) => (b.disabled = true),
       );
-    } catch (_) {}
+    
     setTimeout(loadRound, 900);
     return isCorrect;
   }
@@ -422,9 +410,9 @@
     loadRound();
   }
   function stop() {
-    try {
+    
       if (tId) clearInterval(tId);
-    } catch (_) {}
+    
     tId = null;
   }
 

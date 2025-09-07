@@ -3,28 +3,16 @@
   const KEY_MODE = "kanji.mode";
   const KEY_TIMED = "kanji.timed";
   function mode() {
-    try {
-      return localStorage.getItem(KEY_MODE) || "meaning";
-    } catch (_) {
-      return "meaning";
-    }
+    return localStorage.getItem(KEY_MODE) || "meaning";
   }
   function setMode(m) {
-    try {
-      localStorage.setItem(KEY_MODE, m);
-    } catch (_) {}
+    localStorage.setItem(KEY_MODE, m);
   }
   function isTimed() {
-    try {
-      return localStorage.getItem(KEY_TIMED) === "1";
-    } catch (_) {
-      return false;
-    }
+    return localStorage.getItem(KEY_TIMED) === "1";
   }
   function setTimed(on) {
-    try {
-      localStorage.setItem(KEY_TIMED, on ? "1" : "0");
-    } catch (_) {}
+    localStorage.setItem(KEY_TIMED, on ? "1" : "0");
   }
 
   // DOM
@@ -68,21 +56,20 @@
   }
 
   async function fetchJson(url, prox = true) {
-    try {
-      const r = await fetch(url, { cache: "no-store" });
-      if (r.ok) return await r.json();
-    } catch (_) {}
+    const r = await fetch(url, { cache: "no-store" });
+    if (r.ok) return await r.json();
+
     if (!prox) throw new Error("network");
     return fetchJson(
       `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-      false,
+      false
     );
   }
   async function getGradeList(grade) {
     if (kanjiCache.gradeLists.has(grade))
       return kanjiCache.gradeLists.get(grade);
     const list = await fetchJson(
-      `https://kanjiapi.dev/v1/kanji/grade-${grade}`,
+      `https://kanjiapi.dev/v1/kanji/grade-${grade}`
     );
     if (!Array.isArray(list) || !list.length) throw new Error("no-list");
     kanjiCache.gradeLists.set(grade, list);
@@ -93,7 +80,7 @@
   async function getKanjiDetail(ch) {
     if (kanjiCache.details.has(ch)) return kanjiCache.details.get(ch);
     const d = await fetchJson(
-      `https://kanjiapi.dev/v1/kanji/${encodeURIComponent(ch)}`,
+      `https://kanjiapi.dev/v1/kanji/${encodeURIComponent(ch)}`
     );
     kanjiCache.details.set(ch, d);
     if (kanjiCache.details.size > 60)
@@ -101,13 +88,9 @@
     return d;
   }
   function gradeFromDiff() {
-    try {
-      const d = (window.getJpDifficulty && getJpDifficulty()) || 3;
-      const map = { 1: 1, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6, 8: 6, 9: 6 };
-      return map[String(d)] || 3;
-    } catch (_) {
-      return 3;
-    }
+    const d = (window.getJpDifficulty && getJpDifficulty()) || 3;
+    const map = { 1: 1, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6, 8: 6, 9: 6 };
+    return map[String(d)] || 3;
   }
 
   async function getQuestion(mode) {
@@ -184,18 +167,15 @@
     bestTimeEl = document.getElementById("kanjiBestTime");
     optionBtns = document.querySelectorAll("#kanjiMeta .mode-option");
     if (!qEl || !cEl) return;
-    try {
-      attachDivaHud && attachDivaHud("kanjiCard");
-    } catch (_) {}
-    try {
-      bestStreak =
-        parseInt(localStorage.getItem("kanji.bestStreak") || "0", 10) || 0;
-    } catch (_) {}
-    try {
-      const bt =
-        parseInt(localStorage.getItem("kanji.bestTime") || "0", 10) || 0;
-      bestTime = bt || null;
-    } catch (_) {}
+
+    attachDivaHud && attachDivaHud("kanjiCard");
+
+    bestStreak =
+      parseInt(localStorage.getItem("kanji.bestStreak") || "0", 10) || 0;
+
+    const bt = parseInt(localStorage.getItem("kanji.bestTime") || "0", 10) || 0;
+    bestTime = bt || null;
+
     if (bestStreakEl) bestStreakEl.textContent = String(bestStreak);
     if (bestTimeEl)
       bestTimeEl.textContent = bestTime
@@ -207,9 +187,9 @@
         curMode = b.getAttribute("data-mode") || "meaning";
         optionBtns.forEach((x) => x.classList.remove("active"));
         b.classList.add("active");
-        try {
-          SFX.play("ui.select");
-        } catch (_) {}
+
+        SFX.play("ui.select");
+
         start({ mode: curMode, timed: isTimed() });
       });
     });
@@ -218,97 +198,84 @@
   async function loadRound() {
     if (!qEl || !cEl) return;
     lock = false;
-    try {
-      if (window.clearDivaFeedback) clearDivaFeedback("kanjiFeedback");
-    } catch (_) {}
+
+    if (window.clearDivaFeedback) clearDivaFeedback("kanjiFeedback");
+
     if (fbEl) fbEl.textContent = "";
     cEl.innerHTML = "";
     qEl.textContent = "Loading…";
-    try {
-      HUD && HUD.notes++;
-    } catch (_) {}
-    try {
-      const q = await getQuestion(curMode);
-      const correct = q.correct;
-      qEl.innerHTML = q.promptHtml;
-      const PRESET = (window.Jukebox &&
-        Jukebox.getPreset &&
-        Jukebox.getPreset()) || { baseTime: 15, options: 4 };
-      const maxOpts = Math.min(PRESET.options || 4, 4);
-      try {
-        const cols = maxOpts >= 6 ? 3 : 2;
-        cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`;
-        cEl.style.gridTemplateRows = `repeat(${Math.ceil(maxOpts / cols)},1fr)`;
-      } catch (_) {}
-      if (isTimed()) {
-        const baseTime = (function () {
-          try {
-            return (window.diffParams && diffParams().baseTime) || 15;
-          } catch (_) {
-            return 15;
+
+    HUD && HUD.notes++;
+
+    const q = await getQuestion(curMode);
+    const correct = q.correct;
+    qEl.innerHTML = q.promptHtml;
+    const PRESET = (window.Jukebox &&
+      Jukebox.getPreset &&
+      Jukebox.getPreset()) || { baseTime: 15, options: 4 };
+    const maxOpts = Math.min(PRESET.options || 4, 4);
+
+    const cols = maxOpts >= 6 ? 3 : 2;
+    cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+    cEl.style.gridTemplateRows = `repeat(${Math.ceil(maxOpts / cols)},1fr)`;
+
+    if (isTimed()) {
+      const baseTime = (function () {
+        return (window.diffParams && diffParams().baseTime) || 15;
+      })();
+      countdown = PRESET.baseTime || baseTime;
+      if (timerEl) timerEl.textContent = String(countdown);
+      startAt = Date.now();
+      if (tId) clearInterval(tId);
+      tId = setInterval(() => {
+        countdown--;
+        if (timerEl) timerEl.textContent = String(Math.max(0, countdown));
+        if (countdown <= 0) {
+          clearInterval(tId);
+          tId = null;
+          lock = true;
+          if (fbEl) {
+            fbEl.textContent = `⏰ Time! Correct: ${correct}`;
+            fbEl.style.color = "#c00";
           }
-        })();
-        countdown = PRESET.baseTime || baseTime;
-        if (timerEl) timerEl.textContent = String(countdown);
-        startAt = Date.now();
-        if (tId) clearInterval(tId);
-        tId = setInterval(() => {
-          countdown--;
-          if (timerEl) timerEl.textContent = String(Math.max(0, countdown));
-          if (countdown <= 0) {
-            clearInterval(tId);
-            tId = null;
-            lock = true;
-            if (fbEl) {
-              fbEl.textContent = `⏰ Time! Correct: ${correct}`;
-              fbEl.style.color = "#c00";
-            }
-            try {
-              SFX.play("quiz.timeup");
-            } catch (_) {}
-            try {
-              flashJudge && flashJudge("kanjiCard", "MISS");
-              addVoltage && addVoltage(-5, "kanjiCard");
-              loseLife && loseLife("kanjiCard");
-            } catch (_) {}
-            streak = 0;
-            if (streakEl) streakEl.textContent = String(streak);
-            setTimeout(loadRound, 900);
-          }
-        }, 1000);
-      }
-      const use = q.options.slice(0, maxOpts);
-      use.forEach((opt, idx) => {
-        const maker =
-          window.createUltimateBeatpadButton ||
-          ((label) => {
-            const btn = document.createElement("button");
-            btn.className = "pixel-btn beatpad-btn";
-            btn.textContent = label;
-            return { btn, style: { isPerfect: false, color: "#a594f9" } };
-          });
-        const { btn } = maker(opt, idx, (text, element, style) =>
-          onSelect(text, element, style, correct),
-        );
-        cEl.appendChild(btn);
-      });
-      try {
-        createFallingBeatsSystem && createFallingBeatsSystem(cEl);
-      } catch (_) {}
-      try {
-        setupUltimateBeatpadKeyboard &&
-          setupUltimateBeatpadKeyboard(cEl, (text) => {
-            const target = Array.from(
-              cEl.querySelectorAll(".beatpad-btn"),
-            ).find((b) => b.textContent === text);
-            if (target) target.click();
-          });
-      } catch (_) {}
-    } catch (e) {
-      if (cEl) {
-        cEl.textContent = "Offline. Try again.";
-      }
+
+          SFX.play("quiz.timeup");
+
+          flashJudge && flashJudge("kanjiCard", "MISS");
+          addVoltage && addVoltage(-5, "kanjiCard");
+          loseLife && loseLife("kanjiCard");
+
+          streak = 0;
+          if (streakEl) streakEl.textContent = String(streak);
+          setTimeout(loadRound, 900);
+        }
+      }, 1000);
     }
+    const use = q.options.slice(0, maxOpts);
+    use.forEach((opt, idx) => {
+      const maker =
+        window.createUltimateBeatpadButton ||
+        ((label) => {
+          const btn = document.createElement("button");
+          btn.className = "pixel-btn beatpad-btn";
+          btn.textContent = label;
+          return { btn, style: { isPerfect: false, color: "#a594f9" } };
+        });
+      const { btn } = maker(opt, idx, (text, element, style) =>
+        onSelect(text, element, style, correct)
+      );
+      cEl.appendChild(btn);
+    });
+
+    createFallingBeatsSystem && createFallingBeatsSystem(cEl);
+
+    setupUltimateBeatpadKeyboard &&
+      setupUltimateBeatpadKeyboard(cEl, (text) => {
+        const target = Array.from(cEl.querySelectorAll(".beatpad-btn")).find(
+          (b) => b.textContent === text
+        );
+        if (target) target.click();
+      });
   }
 
   function onSelect(text, element, style, correct) {
@@ -320,57 +287,43 @@
     }
     const isCorrect = text === correct;
     if (isCorrect) {
-      try {
-        createRingEffect && createRingEffect(element, true);
-      } catch (_) {}
+      createRingEffect && createRingEffect(element, true);
+
       if (style && style.isPerfect) {
-        try {
-          createPerfectHitEffect &&
-            createPerfectHitEffect(element, style.color);
-        } catch (_) {}
+        createPerfectHitEffect && createPerfectHitEffect(element, style.color);
+
         if (window.showDivaFeedback)
           showDivaFeedback("kanjiFeedback", "✨ PERFECT! 正解! ✨", true);
         else if (fbEl) fbEl.textContent = "✨ PERFECT! 正解! ✨";
-        try {
-          awardHearts && awardHearts(2);
-        } catch (_) {}
+
+        awardHearts && awardHearts(2);
       } else {
         if (window.showDivaFeedback)
           showDivaFeedback("kanjiFeedback", "✅ 正解!", true);
         else if (fbEl) fbEl.textContent = "✅ 正解!";
-        try {
-          awardHearts && awardHearts(1);
-        } catch (_) {}
+
+        awardHearts && awardHearts(1);
       }
       if (fbEl) fbEl.style.color = "#2b2b44";
       score++;
       if (scoreEl) scoreEl.textContent = String(score);
       streak++;
       if (streakEl) streakEl.textContent = String(streak);
-      try {
-        if (streak > 1) loveToast && loveToast(`コンボ x${streak}!`);
-        createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak);
-      } catch (_) {}
+
+      if (streak > 1) loveToast && loveToast(`コンボ x${streak}!`);
+      createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak);
+
       const mult = (function () {
-        try {
-          return diffParams().mult;
-        } catch (_) {
-          return 1;
-        }
+        return diffParams().mult;
       })();
       const rmult = (function () {
-        try {
-          return getRhythmMult();
-        } catch (_) {
-          return 1;
-        }
+        return getRhythmMult();
       })();
       const base = curMode === "reading" ? 16 : 12;
       const gain = (base + Math.min(15, (streak - 1) * 2)) * mult * rmult;
-      try {
-        addXP &&
-          addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
-      } catch (_) {}
+
+      addXP && addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
+
       const dt = Date.now() - startAt;
       let judge = "FINE",
         v = 2,
@@ -379,46 +332,40 @@
         judge = "COOL";
         v = 5;
         sc = 120;
-        try {
-          HUD && HUD.counts && HUD.counts.COOL++;
-          party && party("kanjiCard");
-        } catch (_) {}
+
+        HUD && HUD.counts && HUD.counts.COOL++;
+        party && party("kanjiCard");
       } else if (dt <= 1600) {
         judge = "GREAT";
         v = 3;
         sc = 80;
-        try {
-          HUD && HUD.counts && HUD.counts.GREAT++;
-        } catch (_) {}
+
+        HUD && HUD.counts && HUD.counts.GREAT++;
       } else {
-        try {
-          HUD && HUD.counts && HUD.counts.FINE++;
-        } catch (_) {}
+        HUD && HUD.counts && HUD.counts.FINE++;
       }
-      try {
-        flashJudge && flashJudge("kanjiCard", judge);
-        addVoltage && addVoltage(v, "kanjiCard");
-        addCombo && addCombo("kanjiCard");
-        HUD && (HUD.score += Math.round(sc * mult * rmult));
-      } catch (_) {}
-      try {
-        window.zapSwallower && window.zapSwallower();
-      } catch (_) {}
+
+      flashJudge && flashJudge("kanjiCard", judge);
+      addVoltage && addVoltage(v, "kanjiCard");
+      addCombo && addCombo("kanjiCard");
+      HUD && (HUD.score += Math.round(sc * mult * rmult));
+
+      window.zapSwallower && window.zapSwallower();
+
       if (isTimed()) {
         const elapsed = Date.now() - startAt;
         if (!bestTime || elapsed < bestTime) {
           bestTime = elapsed;
-          try {
-            localStorage.setItem("kanji.bestTime", String(bestTime));
-          } catch (_) {}
+
+          localStorage.setItem("kanji.bestTime", String(bestTime));
+
           if (bestTimeEl)
             bestTimeEl.textContent = `${(bestTime / 1000).toFixed(1)}s`;
         }
       }
     } else {
-      try {
-        createRingEffect && createRingEffect(element, false);
-      } catch (_) {}
+      createRingEffect && createRingEffect(element, false);
+
       if (window.showDivaFeedback)
         showDivaFeedback("kanjiFeedback", `❌ ${correct}`, false);
       else if (fbEl) {
@@ -427,13 +374,12 @@
       }
       streak = 0;
       if (streakEl) streakEl.textContent = String(streak);
-      try {
-        HUD && HUD.counts && HUD.counts.SAD++;
-        flashJudge && flashJudge("kanjiCard", "SAD");
-        addVoltage && addVoltage(-5, "kanjiCard");
-        resetCombo && resetCombo();
-        loseLife && loseLife("kanjiCard");
-      } catch (_) {}
+
+      HUD && HUD.counts && HUD.counts.SAD++;
+      flashJudge && flashJudge("kanjiCard", "SAD");
+      addVoltage && addVoltage(-5, "kanjiCard");
+      resetCombo && resetCombo();
+      loseLife && loseLife("kanjiCard");
     }
     setTimeout(loadRound, 900);
     return isCorrect;
@@ -449,9 +395,8 @@
     loadRound();
   }
   function stop() {
-    try {
-      if (tId) clearInterval(tId);
-    } catch (_) {}
+    if (tId) clearInterval(tId);
+
     tId = null;
   }
 

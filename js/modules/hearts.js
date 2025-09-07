@@ -1,15 +1,16 @@
 /* Hearts and love system extracted from main.js */
-(function () {
+window.hearts = (function () {
   const C = window.SITE_CONTENT || {};
   const LOVE_TOASTS = C.love?.toasts || ["ありがとう！💖"];
   const LOVE_MILESTONES = C.love?.milestones || [];
+  const SFX = window.SFX;
   let heartCount = parseInt(
     localStorage.getItem("pixelbelle-hearts") || "0",
-    10,
+    10
   );
   let lastMilestone = parseInt(
     localStorage.getItem("pixelbelle-last-milestone") || "0",
-    10,
+    10
   );
 
   function updateCounters() {
@@ -18,15 +19,17 @@
   }
 
   function loveToast(text) {
-    const msg = `${text} ${LOVE_TOASTS[Math.floor(Math.random() * LOVE_TOASTS.length)]}`;
+    const msg = `${text} ${
+      LOVE_TOASTS[Math.floor(Math.random() * LOVE_TOASTS.length)]
+    }`;
     const toast = document.createElement("div");
     toast.textContent = msg;
     toast.style.cssText =
       "position:fixed;left:50%;top:20%;transform:translateX(-50%);background:rgba(255,255,255,0.95);border:2px solid var(--accent);border-radius:16px;padding:12px 18px;font-weight:800;color:var(--ink);box-shadow:var(--shadow);z-index:9999;animation:fadeToast 2.5s ease-out forwards;";
     document.body.appendChild(toast);
-    try {
-      mikuSpeakToast && mikuSpeakToast(msg);
-    } catch (_) {}
+
+    mikuSpeakToast && mikuSpeakToast(msg);
+
     setTimeout(() => toast.remove(), 3500);
   }
 
@@ -46,7 +49,7 @@
   }
 
   function shimejiCelebrate(amount) {
-    const s = window.shimejiFunctions;
+    const s = window.ShimejiFunctions;
     if (!s) return;
     if (heartCount % 5 === 0) s.triggerMassJump();
     else s.triggerMassHappy();
@@ -58,13 +61,12 @@
   }
 
   function shimejiBroadcastLove() {
-    const s = window.shimejiFunctions;
+    const s = window.ShimejiFunctions;
     if (!s || !s.makeAllSpeak) return;
-    try {
-      const loveMessage =
-        LOVE_TOASTS[Math.floor(Math.random() * LOVE_TOASTS.length)];
-      s.makeAllSpeak(loveMessage, 3000);
-    } catch (_) {}
+
+    const loveMessage =
+      LOVE_TOASTS[Math.floor(Math.random() * LOVE_TOASTS.length)];
+    s.makeAllSpeak(loveMessage, 3000);
   }
 
   function createFloatingHeart(x, y) {
@@ -80,7 +82,11 @@
       setTimeout(() => {
         const sp = document.createElement("div");
         sp.textContent = "✨";
-        sp.style.cssText = `position:absolute;font-size:1rem;pointer-events:none;left:${Math.random() * 50 - 25}px;top:${Math.random() * 50 - 25}px;animation:sparkle 1s ease-out forwards;`;
+        sp.style.cssText = `position:absolute;font-size:1rem;pointer-events:none;left:${
+          Math.random() * 50 - 25
+        }px;top:${
+          Math.random() * 50 - 25
+        }px;animation:sparkle 1s ease-out forwards;`;
         el.style.position = "relative";
         el.appendChild(sp);
         setTimeout(() => sp.remove(), 1000);
@@ -92,14 +98,13 @@
     heartCount = Math.max(0, heartCount + amount);
     localStorage.setItem("pixelbelle-hearts", heartCount);
     updateCounters();
-    try {
-      const el = document.getElementById("gameHeartCount");
-      if (el) el.textContent = String(heartCount);
-    } catch (_) {}
-    try {
-      SFX.play("hearts.add");
-      if (amount >= 5) SFX.play("extra.coin");
-    } catch (_) {}
+
+    const el = document.getElementById("gameHeartCount");
+    if (el) el.textContent = String(heartCount);
+
+    SFX.play("hearts.add");
+    if (amount >= 5) SFX.play("extra.coin");
+
     if (Array.isArray(LOVE_MILESTONES)) {
       const reached = LOVE_MILESTONES.filter((m) => heartCount >= m.step);
       if (reached.length) {
@@ -108,9 +113,9 @@
           lastMilestone = top.step;
           localStorage.setItem("pixelbelle-last-milestone", lastMilestone);
           loveToast(top.msg);
-          try {
-            SFX.play("hearts.milestone");
-          } catch (_) {}
+
+          SFX.play("hearts.milestone");
+
           shimejiBroadcastLove();
         }
       }
@@ -138,9 +143,7 @@
     const heartBtn = document.getElementById("heartBtn");
     if (heartBtn) {
       heartBtn.addEventListener("click", () => {
-        try {
-          SFX.play("hearts.click");
-        } catch (_) {}
+        SFX.play("hearts.click");
         addHearts(1);
         const rect = heartBtn.getBoundingClientRect();
         createFloatingHeart(rect.left + heartBtn.offsetWidth / 2, rect.top);
@@ -154,13 +157,10 @@
     const container = document.querySelector(".floating-hearts");
     if (!container) return;
     let radioOn = false;
+
     function isRadioPlaying() {
-      try {
-        const a = window.__radioAudio;
-        return a && !a.paused;
-      } catch (_) {
-        return false;
-      }
+      const a = window.__radioAudio;
+      return a && !a.paused;
     }
     function createHeart() {
       if (!radioOn) return;
@@ -178,33 +178,30 @@
     }
     const id = setInterval(tick, 2000);
     // Watch radio play/pause to fade out existing hearts after completion
-    try {
-      const a = window.__radioAudio;
-      if (a) {
-        a.addEventListener("play", () => {
-          radioOn = true;
-        });
-        a.addEventListener("pause", () => {
-          radioOn = false;
-        });
-      }
-    } catch (_) {}
+
+    const a = window.__radioAudio;
+    if (a) {
+      a.addEventListener("play", () => {
+        radioOn = true;
+      });
+      a.addEventListener("pause", () => {
+        radioOn = false;
+      });
+    }
   }
 
   function initPassiveHearts() {
     // Only grant passive hearts if shimejis are active and marked as passive
     let grantAt = Date.now() + 180000; // 3 minutes
     setInterval(() => {
-      try {
-        const active =
-          window.shimejiFunctions &&
-          window.shimejiFunctions.getCreatureCount &&
-          window.shimejiFunctions.getCreatureCount() > 0;
-        if (active && Date.now() >= grantAt) {
-          addHearts(1);
-          grantAt = Date.now() + 180000;
-        }
-      } catch (_) {}
+      const active =
+        window.ShimejiFunctions &&
+        window.ShimejiFunctions.getCreatureCount &&
+        window.ShimejiFunctions.getCreatureCount() > 0;
+      if (active && Date.now() >= grantAt) {
+        addHearts(1);
+        grantAt = Date.now() + 180000;
+      }
     }, 15000);
   }
 
@@ -216,18 +213,15 @@
     initPassiveHearts();
   }
 
-  window.addHearts = addHearts;
-  window.initPeriodicUpdates = initPeriodicUpdates;
-  window.initFloatingHearts = initFloatingHearts;
-  window.initPassiveHearts = initPassiveHearts;
-  window.createFloatingHeart = createFloatingHeart;
-  window.createSparkleEffect = createSparkleEffect;
-  window.loveToast = loveToast;
-  window.updateCounters = updateCounters;
-  // Export heartCount getter for garden sync
-  window.getHeartCount = () => heartCount;
-  if (document.readyState === "loading")
-    document.addEventListener("DOMContentLoaded", initHearts);
-  else initHearts();
-  window.Hearts = { add: addHearts, init: initHearts };
+  return {
+    addHearts,
+    initHearts,
+    updateCounters,
+    loveToast,
+    createFloatingHeart,
+    createSparkleEffect,
+    burstHeartsAndStars,
+    shimejiCelebrate,
+    shimejiBroadcastLove,
+  };
 })();

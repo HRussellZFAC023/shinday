@@ -1,6 +1,5 @@
-// SFX engine extracted from main.js — attaches window.SFX
-(function initSfxEngine() {
-  if (window.SFX) return; // already present
+// SFX engine extracted from main.js • attaches window.SFX
+window.SFX = (function initSfxEngine() {
   const BASE = "./assets/SFX";
   const p = (sub) => `${BASE}/${sub}`;
   const MAP = {
@@ -158,9 +157,22 @@
       p("misc other voice clips/(miku) yo.wav"),
       p("misc other voice clips/(rin) yo.wav"),
     ],
+  // Misc voice clips not referenced elsewhere
+  "extra.miku.laugh": [p("misc other voice clips/(miku) laugh.wav")],
+  "extra.miku.uu": [p("misc other voice clips/(miku) uu.wav")],
+  "extra.len.hey": [p("misc other voice clips/(len) hey.wav")],
+  // filename contains a closing paren in the assets listing
+  "extra.len.yo": [p("misc other voice clips/(len) yo).wav")],
     "extra.wan": [p("misc other voice clips/(rin) wan.wav")],
     "extra.thanks": [
       p("misc other voice clips/(miku) thank you for playing!.wav"),
+    ],
+    // Misc other voice clips not referenced elsewhere
+    "misc.voice": [
+      p("misc other voice clips/(miku) laugh.wav"),
+      p("misc other voice clips/(miku) uu.wav"),
+      p("misc other voice clips/(len) hey.wav"),
+      p("misc other voice clips/(len) yo).wav"),
     ],
     "sega.tag": [
       p("sega voice clips/sega (solo).wav"),
@@ -202,7 +214,7 @@
   };
   function ensureCtx() {
     if (!ctxState.ctx) {
-      try {
+      
         ctxState.ctx = new (window.AudioContext || window.webkitAudioContext)();
         ctxState.master = ctxState.ctx.createGain();
         ctxState.master.gain.value = ctxState.volume;
@@ -213,7 +225,7 @@
           window.removeEventListener("pointerdown", unlock);
         };
         window.addEventListener("pointerdown", unlock);
-      } catch (_) {}
+      
     }
     return ctxState.ctx;
   }
@@ -252,9 +264,9 @@
     } else {
       src.connect(g).connect(ctxState.master);
     }
-    try {
+    
       src.start();
-    } catch (_) {}
+    
   }
   function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -281,12 +293,12 @@
     if (ctxState.master) ctxState.master.gain.value = ctxState.volume;
     localStorage.setItem("pixelbelle-sfx-volume", String(ctxState.volume));
   }
-  try {
+  
     const en = localStorage.getItem("pixelbelle-sfx-enabled");
     if (en != null) ctxState.enabled = en === "1";
     const vol = parseFloat(localStorage.getItem("pixelbelle-sfx-volume") || "");
     if (isFinite(vol)) ctxState.volume = vol;
-  } catch (_) {}
+  
   function preloadFirst(keys = [], { perTick = 2, delay = 150 } = {}) {
     const paths = [];
     const seen = new Set();
@@ -312,7 +324,7 @@
     }
     step();
   }
-  window.SFX = {
+  return {
     play: playKey,
     playPath,
     setEnabled,
