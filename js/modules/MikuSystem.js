@@ -126,7 +126,9 @@ window.MikuSystem = (function () {
     if (!src) {
       const pool = Array.isArray(window.MIKU_IMAGES) ? window.MIKU_IMAGES : [];
       if (!pool.length) {
-        document.addEventListener("miku-images-ready", refreshFloatingMikus, { once: true });
+        document.addEventListener("miku-images-ready", refreshFloatingMikus, {
+          once: true,
+        });
         return;
       }
       const pixelOnly = pool.filter((u) => /\/assets\/pixel-miku\//i.test(u));

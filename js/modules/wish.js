@@ -150,7 +150,9 @@
     document.body.appendChild(ov);
     const close = () => ov.remove();
     panel.querySelector("#pixieClose").addEventListener("click", () => {
-      try { window.SFX?.play?.("ui.select"); } catch {}
+      try {
+        window.SFX?.play?.("ui.select");
+      } catch {}
       window.hearts?.loveToast?.("PixieBel joins the celebration! ✨");
       window.refreshFloatingMikus?.();
       close();

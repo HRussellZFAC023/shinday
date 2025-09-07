@@ -26,9 +26,8 @@
     if (!card || card.querySelector(".diva-hud")) return;
     const wrap = document.createElement("div");
     wrap.className = "diva-hud";
-    wrap.innerHTML = '<div class="judge-echo" id="' +
-      cardId +
-      'Judge">READY</div>';
+    wrap.innerHTML =
+      '<div class="judge-echo" id="' + cardId + 'Judge">READY</div>';
     card.style.position = card.style.position || "relative";
     card.appendChild(wrap);
   }
@@ -130,95 +129,98 @@
   }
 
   // Simple 3-minute session controller and results overlay
-  const Session = (window.Session = window.Session || (function () {
-    let tId = null;
-    let endsAt = 0;
-    let startedAt = 0;
-    function renderTimer() {
-      const remain = Math.max(0, Math.floor((endsAt - Date.now()) / 1000));
-      const el = document.getElementById("hudLevelText");
-      if (el) {
-        const min = Math.floor(remain / 60);
-        const sec = String(remain % 60).padStart(2, "0");
-        el.textContent = `Session ${min}:${sec}`;
+  const Session = (window.Session =
+    window.Session ||
+    (function () {
+      let tId = null;
+      let endsAt = 0;
+      let startedAt = 0;
+      function renderTimer() {
+        const remain = Math.max(0, Math.floor((endsAt - Date.now()) / 1000));
+        const el = document.getElementById("hudLevelText");
+        if (el) {
+          const min = Math.floor(remain / 60);
+          const sec = String(remain % 60).padStart(2, "0");
+          el.textContent = `Session ${min}:${sec}`;
+        }
+        if (remain <= 0) finish({ reason: "time" });
       }
-      if (remain <= 0) finish({ reason: "time" });
-    }
-    function start(opts) {
-      // Reset HUD counters at session start
-      HUD.score = 0;
-      HUD.voltage = 0;
-      HUD.combo = 0;
-      HUD.counts = { COOL: 0, GREAT: 0, FINE: 0, SAD: 0 };
-      HUD.notes = 0;
-      HUD.lives = 5;
-      HUD.maxLives = 5;
-      syncLives();
-      startedAt = Date.now();
-      const dur = (opts && opts.seconds) || 180; // 3 minutes
-      endsAt = Date.now() + dur * 1000;
-      if (tId) clearInterval(tId);
-      tId = setInterval(renderTimer, 1000);
-      renderTimer();
-    }
-    function calcRank() {
-      const total = HUD.counts.COOL + HUD.counts.GREAT + HUD.counts.FINE + HUD.counts.SAD;
-      const good = HUD.counts.COOL + HUD.counts.GREAT;
-      const acc = total ? good / total : 0;
-      if (acc >= 0.95) return "S";
-      if (acc >= 0.85) return "A";
-      if (acc >= 0.70) return "B";
-      if (acc >= 0.50) return "C";
-      return "D";
-    }
-    function rewardFor(rank) {
-      switch (rank) {
-        case "S":
-          return 10000;
-        case "A":
-          return 2500;
-        case "B":
-          return 800;
-        case "C":
-          return 300;
-        case "D":
-        default:
-          return 100;
+      function start(opts) {
+        // Reset HUD counters at session start
+        HUD.score = 0;
+        HUD.voltage = 0;
+        HUD.combo = 0;
+        HUD.counts = { COOL: 0, GREAT: 0, FINE: 0, SAD: 0 };
+        HUD.notes = 0;
+        HUD.lives = 5;
+        HUD.maxLives = 5;
+        syncLives();
+        startedAt = Date.now();
+        const dur = (opts && opts.seconds) || 180; // 3 minutes
+        endsAt = Date.now() + dur * 1000;
+        if (tId) clearInterval(tId);
+        tId = setInterval(renderTimer, 1000);
+        renderTimer();
       }
-    }
-    function finish({ reason } = {}) {
-      if (tId) clearInterval(tId);
-      tId = null;
-      const rank = calcRank();
-      const hearts = rewardFor(rank);
-      awardHearts(hearts);
-      // overlay
-      const ov = document.createElement("div");
-      ov.style.cssText =
-        "position:fixed;inset:0;background:rgba(255,255,255,.9);z-index:99999;display:flex;align-items:center;justify-content:center;";
-      const box = document.createElement("div");
-      box.style.cssText =
-        "padding:20px 24px;border:3px solid var(--border);border-radius:14px;background:#fff;box-shadow:var(--shadow);max-width:520px;text-align:center;";
-      box.innerHTML = `
+      function calcRank() {
+        const total =
+          HUD.counts.COOL + HUD.counts.GREAT + HUD.counts.FINE + HUD.counts.SAD;
+        const good = HUD.counts.COOL + HUD.counts.GREAT;
+        const acc = total ? good / total : 0;
+        if (acc >= 0.95) return "S";
+        if (acc >= 0.85) return "A";
+        if (acc >= 0.7) return "B";
+        if (acc >= 0.5) return "C";
+        return "D";
+      }
+      function rewardFor(rank) {
+        switch (rank) {
+          case "S":
+            return 10000;
+          case "A":
+            return 2500;
+          case "B":
+            return 800;
+          case "C":
+            return 300;
+          case "D":
+          default:
+            return 100;
+        }
+      }
+      function finish({ reason } = {}) {
+        if (tId) clearInterval(tId);
+        tId = null;
+        const rank = calcRank();
+        const hearts = rewardFor(rank);
+        awardHearts(hearts);
+        // overlay
+        const ov = document.createElement("div");
+        ov.style.cssText =
+          "position:fixed;inset:0;background:rgba(255,255,255,.9);z-index:99999;display:flex;align-items:center;justify-content:center;";
+        const box = document.createElement("div");
+        box.style.cssText =
+          "padding:20px 24px;border:3px solid var(--border);border-radius:14px;background:#fff;box-shadow:var(--shadow);max-width:520px;text-align:center;";
+        box.innerHTML = `
         <h2 style="margin:0 0 8px;font-size:22px">Session Complete</h2>
         <p style="margin:4px 0;color:#2b2b44">Rank <strong style="font-size:26px">${rank}</strong> • Score <strong>${HUD.score}</strong></p>
         <p style="margin:4px 0">COOL ${HUD.counts.COOL} • GREAT ${HUD.counts.GREAT} • FINE ${HUD.counts.FINE} • MISS ${HUD.counts.SAD}</p>
         <p style="margin:10px 0;font-weight:800">+${hearts.toLocaleString()} 💖</p>
         <button id="sessionClose" class="pixel-btn">Close</button>
       `;
-      ov.appendChild(box);
-      document.body.appendChild(ov);
-      const close = () => ov.remove();
-      box.querySelector("#sessionClose").addEventListener("click", close);
-      setTimeout(() => {
-        // also auto-close with click on overlay
-        ov.addEventListener("click", (e) => {
-          if (e.target === ov) close();
-        });
-      }, 0);
-    }
-    return { start, finish };
-  })());
+        ov.appendChild(box);
+        document.body.appendChild(ov);
+        const close = () => ov.remove();
+        box.querySelector("#sessionClose").addEventListener("click", close);
+        setTimeout(() => {
+          // also auto-close with click on overlay
+          ov.addEventListener("click", (e) => {
+            if (e.target === ov) close();
+          });
+        }, 0);
+      }
+      return { start, finish };
+    })());
 
   // Auto-start a session when games start
   document.addEventListener("vocab-start", () => Session.start());

@@ -32,7 +32,12 @@ window.socials = (function () {
         ? window.MikuCore.mikuIcon(mikuIconName, icon)
         : icon;
       let domain =
-        (url && (url.match(/^https?:\/\/([^\/]+)/i) || ["", ""])[1].replace(/^www\./, "")) || "";
+        (url &&
+          (url.match(/^https?:\/\/([^\/]+)/i) || ["", ""])[1].replace(
+            /^www\./,
+            "",
+          )) ||
+        "";
 
       // Blocklist some sites that should not be embedded (e.g., jigsawplanet)
       if (domain.includes("jigsawplanet.com")) {
@@ -141,7 +146,10 @@ window.socials = (function () {
       }
 
       // Spring/Teespring store (simple iframe embed)
-      if (domain.includes("creator-spring.com") || domain.includes("teespring.com")) {
+      if (
+        domain.includes("creator-spring.com") ||
+        domain.includes("teespring.com")
+      ) {
         return `
           <div class="social-item" style="--accent:${color}">
             <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
