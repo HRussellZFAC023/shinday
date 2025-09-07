@@ -5,6 +5,14 @@
   const LS_FILTER = "Wish.dexFilter";
   const PIXIE_URL = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
 
+   if (!window.handleVideoError) {
+    window.handleVideoError = function (iframe, videoUrl) {
+      if (iframe && iframe.parentElement) {
+        iframe.parentElement.innerHTML = `<div class="video-error">Video unavailable<br><a href="${videoUrl}" target="_blank" rel="noopener">Watch on YouTube</a></div>`;
+      }
+    };
+  }
+
   function poolReady() {
     return Array.isArray(window.MIKU_IMAGES) && window.MIKU_IMAGES.length > 0;
   }
@@ -241,16 +249,12 @@
   }
 
   function openDetails(url) {
-    const meta =
-      typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
-    const name =
-      meta?.name ||
-      meta?.title ||
-      (url.split("/").pop() || "Miku").replace(/\.[a-z0-9]+$/i, "");
-    const rarity =
-      meta?.rarity ||
-      (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
-    const vid = ytIdFrom(meta?.song || meta?.video);
+    const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
+    const name = meta?.name || meta?.title || (url.split("/").pop() || "Miku").replace(/\.[a-z0-9]+$/i, "");
+    const rarity = meta?.rarity || (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
+    const videoUrl = meta?.song || meta?.video || "";
+    const vid = ytIdFrom(videoUrl);
+    const escapedVideoUrl = (videoUrl || "").replace(/'/g, "\\'");
     const links = Array.isArray(meta?.links) ? meta.links : [];
     const coll = getColl();
     const entry = coll[url];
@@ -292,12 +296,13 @@
               vid
                 ? `
               <div class="video-container" style="margin-top:10px">
-                <iframe 
-                  style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" 
-                  src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1" 
-                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-                  allowfullscreen 
+                <iframe
+                  style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px"
+                  src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1"
+                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
                   referrerpolicy="strict-origin-when-cross-origin"
+<<<<<<< ours
                   loading="lazy">
                 </iframe>
               </div>`
@@ -313,6 +318,16 @@
                     .join("")}</div>`
                 : ""
             }
+=======
+                  loading="lazy"
+                  onload="this.style.opacity=1"
+                  onerror="window.handleVideoError && window.handleVideoError(this, '${escapedVideoUrl}')"
+                ></iframe>
+              </div>` : ""}
+            ${links.length ? `<div class="dex-links" style="margin-top:10px">${links
+              .map((l, i) => `<a href="${l}" target="_blank" rel="noopener" class="pixel-btn" style="margin-right:8px">Link ${i + 1}</a>`)
+              .join("")}</div>` : ""}
+>>>>>>> theirs
           </div>
         </div>
         <div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">

@@ -5,7 +5,24 @@
     if (!grid) return null;
     if (grid.dataset.wired === "1") return grid;
     grid.dataset.wired = "1";
+    const C = window.SITE_CONTENT || {};
+    const wod = (C.study && C.study.wordOfDay) || window.WOD || {};
+    const wodIframeSrc =
+      (C.study && C.study.wordOfDay && C.study.wordOfDay.externalIframe) ||
+      "https://kanjiday.com/kanji/";
     grid.innerHTML = `
+      <div class="study-card" id="wodCard" style="grid-column: 1 / -1; display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:stretch;">
+        <div class="word-of-day" style="padding:10px;border:2px solid var(--border);border-radius:12px;background:#fff;">
+          <h3 style="margin-top:0">📖 Word of the Day</h3>
+          <div style="font-size:22px;font-weight:900" class="japanese">${wod.japanese || ""}</div>
+          <div class="romaji" style="opacity:.8">${wod.romaji || ""}</div>
+          <div class="meaning">${wod.meaning || ""}</div>
+        </div>
+        <div class="wod-iframe" style="min-height:220px;border:2px solid var(--border);border-radius:12px;overflow:hidden;background:#fff">
+          <iframe id="wodIframe" src="${wodIframeSrc}"
+            style="border:0;width:100%;height:100%" loading="lazy" referrerpolicy="no-referrer"></iframe>
+        </div>
+      </div>
       <div class="game-widget" id="vocabCard">
         <h3>🗣️ Vocab</h3>
         <div id="vocabQuestion"></div>

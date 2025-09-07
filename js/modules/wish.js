@@ -149,7 +149,12 @@
     ov.appendChild(panel);
     document.body.appendChild(ov);
     const close = () => ov.remove();
-    panel.querySelector("#pixieClose").addEventListener("click", close);
+    panel.querySelector("#pixieClose").addEventListener("click", () => {
+      try { window.SFX?.play?.("ui.select"); } catch {}
+      window.hearts?.loveToast?.("PixieBel joins the celebration! ✨");
+      window.refreshFloatingMikus?.();
+      close();
+    });
     // SFX and subtle rainbow effect
     try {
       SFX.play("extra.thanks");
