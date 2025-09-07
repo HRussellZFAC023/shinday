@@ -20,6 +20,7 @@
     tokens: "Wish.tokens",
     lastDaily: "Wish.lastDaily",
     coll: "Wish.collection",
+    pityCount: "Wish.pityCount", // tracks pulls since last missing miku
   };
   function getTokens() {
     return parseInt(localStorage.getItem(LS.tokens) || "3", 10);
@@ -82,7 +83,15 @@
     const entry = coll[card.url] || { count: 0 };
     entry.count += 1;
     const isNew = !coll[card.url];
-    if (isNew) entry.new = 1;
+    if (isNew) {
+      entry.new = 1;
+      // Also add to NEW set for persistent tracking
+      try {
+        const newSet = new Set(JSON.parse(localStorage.getItem("Wish.newIds") || "[]"));
+        newSet.add(card.url);
+        localStorage.setItem("Wish.newIds", JSON.stringify(Array.from(newSet)));
+      } catch {}
+    }
     coll[card.url] = entry;
     setColl(coll);
     return isNew;
@@ -236,11 +245,46 @@
       } catch {}
     }, 2000 + cards.length * 300 + 500);
   }
-  function pickRandom(n = 1) {
+  function getPityCount() {
+    return parseInt(localStorage.getItem(LS.pityCount) || "0", 10);
+  }
+  function setPityCount(n) {
+    localStorage.setItem(LS.pityCount, String(Math.max(0, n)));
+  }
+  function incrementPity() {
+    setPityCount(getPityCount() + 1);
+  }
+  function resetPity() {
+    setPityCount(0);
+  }
+  function getMissingMikus() {
+    const coll = getColl();
+    const all = window.MIKU_IMAGES || [];
+    return all.filter(url => !coll[url]);
+  }
+  function pickRandom(n = 1, guaranteeMissing = false) {
     const out = [];
     const list = window.MIKU_IMAGES || [];
+    const missing = getMissingMikus();
+    
     for (let i = 0; i < n; i++) {
-      const url = list[Math.floor(Math.random() * list.length)];
+      let url;
+      
+      // For x10 pulls, guarantee at least one missing miku if pity >= 10
+      const shouldGuarantee = guaranteeMissing && missing.length > 0 && 
+        (i === Math.floor(Math.random() * n)); // random position to avoid pattern
+      
+      if (shouldGuarantee) {
+        url = missing[Math.floor(Math.random() * missing.length)];
+        resetPity(); // reset pity counter when we get a missing miku
+      } else {
+        url = list[Math.floor(Math.random() * list.length)];
+        const coll = getColl();
+        if (!coll[url]) {
+          resetPity(); // also reset if we naturally get a missing miku
+        }
+      }
+      
       out.push({ url, rarity: rarityFor(url) });
     }
     return out;
@@ -251,7 +295,18 @@
       SFX.play("ui.unavailable");
       return;
     }
-    const cards = pickRandom(n);
+    
+    // Check pity system
+    const pityCount = getPityCount();
+    const shouldGuarantee = pityCount >= 10 && n === 10; // only apply to x10 pulls
+    
+    const cards = pickRandom(n, shouldGuarantee);
+    
+    // Increment pity for each pull (will be reset in pickRandom if missing miku obtained)
+    for (let i = 0; i < n; i++) {
+      incrementPity();
+    }
+    
     showResults(cards);
   }
   function resetUI() {

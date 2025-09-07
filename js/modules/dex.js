@@ -114,11 +114,31 @@
         const passesSearch = !filter.search || name.toLowerCase().includes(filter.search.toLowerCase());
         if (!(passesScope && passesRarity && passesSearch)) return "";
         const ownClass = owned ? `owned rarity-${r}` : "locked";
-        const newBadge = entry?.new ? '<div class="Wish-new">NEW!</div>' : "";
+        
+        // Check for NEW status from localStorage or entry.new
+        const getNewSet = () => {
+          try {
+            return new Set(JSON.parse(localStorage.getItem("Wish.newIds") || "[]"));
+          } catch {
+            return new Set();
+          }
+        };
+        const isNewFromSet = getNewSet().has(url);
+        const isNewFromEntry = entry?.new;
+        const isNew = isNewFromSet || isNewFromEntry;
+        const newBadge = isNew ? '<div class="Wish-new">NEW!</div>' : "";
+        
+        // PixieBel mystery mask for locked state
+        const isPixieBel = /(PixieBel \(bonus\)\.gif)$/i.test(url);
+        const mysteryOverlay = !owned && isPixieBel ? 
+          '<div class="mystery-cover"><div class="mystery-text">?</div></div>' : "";
+        
         return `
           <div class="dex-card ${ownClass}" data-url="${url}" tabindex="0">
             <div class="dex-stars">${stars(r)}</div>
+            <div class="rarity-ring"></div>
             <img src="${url}" alt="${name}" loading="lazy" decoding="async" />
+            ${mysteryOverlay}
             ${owned ? `<span class="dex-count">x${entry.count || 1}</span>` : `<span class="dex-locked">?</span>`}
             <div class="dex-name">${name}</div>
             ${newBadge}
@@ -148,12 +168,27 @@
         saveFilter({ ...filter, rarity: r });
         renderInto(container);
       };
-    if (searchInp)
+    if (searchInp) {
+      let searchTimeout;
       searchInp.oninput = () => {
-        saveFilter({ ...filter, search: searchInp.value.trim() });
-        // defer slight to keep typing feel
-        setTimeout(() => renderInto(container), 0);
+        const newFilter = { ...filter, search: searchInp.value.trim() };
+        saveFilter(newFilter);
+        // Use proper debouncing to prevent input deselection
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => renderInto(container), 300);
       };
+      // Prevent search from losing focus during typing
+      searchInp.addEventListener('blur', (e) => {
+        // Re-focus if blur was caused by our re-rendering
+        if (e.relatedTarget === null) {
+          setTimeout(() => {
+            if (document.activeElement !== searchInp) {
+              searchInp.focus();
+            }
+          }, 0);
+        }
+      });
+    }
 
     // Tile popovers
     container.querySelectorAll(".dex-card").forEach((card) => {
@@ -166,15 +201,15 @@
       });
     });
 
-    // Clear new flags when Dex renders
-    let cleared = false;
+    // Clear new flags when Dex renders (but preserve the localStorage NEW set)
+    let collChanged = false;
     Object.keys(coll).forEach((k) => {
       if (coll[k].new) {
         delete coll[k].new;
-        cleared = true;
+        collChanged = true;
       }
     });
-    if (cleared) setColl(coll);
+    if (collChanged) setColl(coll);
   }
 
   function openDetails(url) {
@@ -183,42 +218,118 @@
     const rarity = meta?.rarity || (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
     const vid = ytIdFrom(meta?.song || meta?.video);
     const links = Array.isArray(meta?.links) ? meta.links : [];
+    const coll = getColl();
+    const entry = coll[url];
+    const owned = !!entry;
+    
+    // Rarity effects calculation
+    const RARITY_EFFECTS = window.RARITY_EFFECTS || {
+      scorePerStep: 0.1,
+      scoreCap: 0.4,
+      rareDropBonus: 0.05,
+    };
+    const steps = Math.max(0, rarity - 1);
+    const scoreBonus = Math.min(RARITY_EFFECTS.scoreCap, steps * RARITY_EFFECTS.scorePerStep);
+    const shieldPct = Math.round(scoreBonus * 100);
+    const rarePct = Math.round((RARITY_EFFECTS.rareDropBonus || 0) * 100);
+    const effectsText = `Effects: +${Math.round(scoreBonus * 100)}% score, +${shieldPct}% shield time, +${rarePct}% rare drop`;
 
     const ov = document.createElement("div");
-    ov.setAttribute(
-      "style",
-      "position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:10001;"
-    );
-    const panel = document.createElement("div");
-    panel.setAttribute(
-      "style",
-      "width:min(920px,92vw);max-height:90vh;overflow:auto;background:#fff;border:3px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:14px"
-    );
-    panel.innerHTML = `
-      <div class="dex-details">
-        <div class="dex-title">${name}</div>
-        <div class="dex-rarity">${stars(rarity)}</div>
-        <div style="display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:start">
-          <img src="${url}" alt="${name}" style="width:200px;image-rendering:pixelated;border-radius:10px;border:2px solid var(--border)"/>
-          <div>
-            ${meta?.description ? `<div class="dex-desc">${meta.description}</div>` : ""}
-            ${vid ? `<div class="dex-video" style="margin-top:10px"><iframe src="https://www.youtube.com/embed/${vid}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : ""}
+    ov.className = "image-modal";
+    ov.innerHTML = `
+      <div class="image-panel">
+        <div class="top">
+          <img src="${url}" alt="${name}" style="width:200px;height:auto;image-rendering:pixelated;border-radius:10px;border:2px solid var(--border);"/>
+          <div class="meta">
+            <h3>${name}</h3>
+            <div class="rarity-info">
+              <div>Rarity: ${stars(rarity)}</div>
+              <div style="font-size:12px;color:#596286;margin-top:4px">${effectsText}</div>
+            </div>
+            <div class="owned-info" style="margin-top:8px">
+              ${owned ? `Owned: x${entry.count || 1}` : "Owned: •"}
+            </div>
+            ${meta?.description ? `<div class="description" style="font-size:14px;color:var(--ink-soft);margin-top:8px;">${meta.description}</div>` : ""}
+            ${meta?.song ? `<div class="song-info" style="margin-top:8px;font-size:14px"><strong>Unlocks:</strong> ${meta.song.includes('youtube.com') || meta.song.includes('youtu.be') ? 'Music track in Jukebox' : meta.song}</div>` : ""}
+            ${vid ? `
+              <div class="video-container" style="margin-top:10px">
+                <iframe 
+                  style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" 
+                  src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1" 
+                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen 
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  loading="lazy">
+                </iframe>
+              </div>` : ""}
             ${links.length ? `<div class="dex-links" style="margin-top:10px">${links
-              .map((l, i) => `<a href="${l}" target="_blank" rel="noopener" class="dex-link">Link ${i + 1}</a>`)
-              .join(" ")}</div>` : ""}
+              .map((l, i) => `<a href="${l}" target="_blank" rel="noopener" class="pixel-btn" style="margin-right:8px">Link ${i + 1}</a>`)
+              .join("")}</div>` : ""}
           </div>
         </div>
-        <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+        <div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+          ${owned ? `<button class="pixel-btn" id="setSingerBtn">Set as Singer</button>` : `<button class="pixel-btn" disabled>Win in Wish</button>`}
           <button class="pixel-btn" id="dexCloseBtn">Close</button>
         </div>
       </div>`;
-    ov.appendChild(panel);
+    
     document.body.appendChild(ov);
-    const close = () => ov.remove();
+    
+    // Add event handlers
+    const close = () => {
+      try { window.SFX?.play?.("ui.back"); } catch {}
+      ov.remove();
+      // Clear NEW flag when viewing details
+      if (entry?.new) {
+        delete entry.new;
+        setColl(coll);
+      }
+      // Also clear from NEW set
+      try {
+        const newSet = new Set(JSON.parse(localStorage.getItem("Wish.newIds") || "[]"));
+        if (newSet.has(url)) {
+          newSet.delete(url);
+          localStorage.setItem("Wish.newIds", JSON.stringify(Array.from(newSet)));
+        }
+      } catch {}
+    };
+    
     ov.addEventListener("click", (e) => {
       if (e.target === ov) close();
     });
-    panel.querySelector("#dexCloseBtn").addEventListener("click", close);
+    
+    document.addEventListener("keydown", function escHandler(e) {
+      if (e.key === "Escape") {
+        close();
+        document.removeEventListener("keydown", escHandler);
+      }
+    });
+    
+    const closeBtn = ov.querySelector("#dexCloseBtn");
+    if (closeBtn) closeBtn.addEventListener("click", close);
+    
+    const singerBtn = ov.querySelector("#setSingerBtn");
+    if (singerBtn) {
+      singerBtn.addEventListener("click", () => {
+        try {
+          if (typeof window.singerSet === "function") {
+            window.singerSet(url);
+          } else {
+            // Fallback: set current singer URL
+            window.__currentSingerUrl = url;
+            localStorage.setItem("currentSinger", url);
+          }
+          window.SFX?.play?.("ui.select");
+        } catch {}
+        close();
+      });
+    }
+    
+    // Play modal open sound
+    try { window.SFX?.play?.("extra.camera"); } catch {}
+    
+    // Add open class for CSS animation
+    setTimeout(() => ov.classList.add("open"), 10);
   }
 
   function renderById(containerId) {

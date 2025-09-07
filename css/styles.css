@@ -2800,6 +2800,152 @@ main {
   animation: rainbowSpin 8s linear infinite;
 }
 
+/* Dex card rarity ring styles */
+.dex-card .rarity-ring {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dex-card.owned.rarity-1 .rarity-ring {
+  border: 1px solid #9ca3af;
+  box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.15) inset;
+}
+.dex-card.owned.rarity-2 .rarity-ring {
+  border: 1px solid #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.18) inset;
+}
+.dex-card.owned.rarity-3 .rarity-ring {
+  border: 1px solid #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) inset;
+}
+.dex-card.owned.rarity-4 .rarity-ring {
+  border: 1px solid #a594f9;
+  box-shadow: 0 0 0 2px rgba(165, 148, 249, 0.18) inset;
+}
+.dex-card.owned.rarity-5 .rarity-ring {
+  border: 1px solid #ffb347;
+  box-shadow: 0 0 0 2px rgba(255, 179, 71, 0.22) inset;
+}
+.dex-card.owned.rarity-6 .rarity-ring {
+  border: 1px solid #ffd700;
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.25) inset;
+}
+
+/* Dex card mystery cover for PixieBel */
+.dex-card .mystery-cover {
+  position: absolute;
+  inset: 0;
+  background: rgba(43, 43, 68, 0.85);
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.dex-card .mystery-text {
+  font-size: 32px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+/* Enhanced image modal styles */
+.image-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-modal.open {
+  opacity: 1;
+}
+
+.image-modal .image-panel {
+  width: min(600px, 92vw);
+  max-height: 90vh;
+  overflow: auto;
+  background: #fff;
+  border: 3px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.image-modal.open .image-panel {
+  transform: scale(1);
+}
+
+.image-modal .top {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.image-modal .meta {
+  flex: 1;
+}
+
+.image-modal .meta h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.image-modal .rarity-info {
+  margin-bottom: 8px;
+}
+
+.image-modal .owned-info {
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.image-modal .description {
+  line-height: 1.4;
+}
+
+.image-modal .song-info {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.image-modal .actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .image-modal .top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .image-modal .actions {
+    justify-content: center;
+  }
+}
+
 @keyframes rainbowSpin {
   to {
     transform: rotate(1turn);
@@ -3064,6 +3210,48 @@ main {
     transform: translateY(-12px) scale(1);
     opacity: 0;
   }
+}
+
+.heart-target {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  border: 2px solid var(--pastel-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  animation: targetFade 2.4s linear forwards;
+}
+.heart-target::after {
+  content: "💖";
+  font-size: 20px;
+}
+.heart-target .approach {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border: 2px solid var(--pastel-blue);
+  border-radius: 50%;
+  animation: approachShrink 2.4s linear forwards;
+}
+ @keyframes approachShrink {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+}
+ @keyframes targetFade {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 /* Keyframe animations */
