@@ -207,7 +207,19 @@
 
     HUD && HUD.notes++;
 
-    const q = await getQuestion(curMode);
+      let q;
+      try {
+        q = await getQuestion(curMode);
+      } catch (e) {
+        const c = document.getElementById("kanjiChoices");
+        const qn = document.getElementById("kanjiQuestion");
+        if (qn) qn.innerHTML = "";
+        if (c)
+          c.innerHTML = `<div style="grid-column:1/-1">⚠️ Couldn't load kanji. <button id=\"kanjiRetry\" class=\"pixel-btn\">Retry</button></div>`;
+        const btn = document.getElementById("kanjiRetry");
+        if (btn) btn.onclick = () => loadRound();
+        return;
+      }
     const correct = q.correct;
     qEl.innerHTML = q.promptHtml;
     const PRESET = (window.Jukebox &&

@@ -5,7 +5,7 @@
   const LS_FILTER = "Wish.dexFilter";
   const PIXIE_URL = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
 
-   if (!window.handleVideoError) {
+  if (!window.handleVideoError) {
     window.handleVideoError = function (iframe, videoUrl) {
       if (iframe && iframe.parentElement) {
         iframe.parentElement.innerHTML = `<div class="video-error">Video unavailable<br><a href="${videoUrl}" target="_blank" rel="noopener">Watch on YouTube</a></div>`;
@@ -66,13 +66,19 @@
   }
 
   function buildControlsHtml(filter) {
-    return `
+    return /*Html*/ `
       <div class="dex-controls">
         <label for="dexScope">Scope</label>
         <select id="dexScope">
-          <option value="all" ${filter.scope === "all" ? "selected" : ""}>All</option>
-          <option value="owned" ${filter.scope === "owned" ? "selected" : ""}>Owned</option>
-          <option value="missing" ${filter.scope === "missing" ? "selected" : ""}>Missing</option>
+          <option value="all" ${
+            filter.scope === "all" ? "selected" : ""
+          }>All</option>
+          <option value="owned" ${
+            filter.scope === "owned" ? "selected" : ""
+          }>Owned</option>
+          <option value="missing" ${
+            filter.scope === "missing" ? "selected" : ""
+          }>Missing</option>
         </select>
         <label for="dexRarity">Rarity</label>
         <select id="dexRarity">
@@ -136,8 +142,8 @@
           filter.scope === "all"
             ? true
             : filter.scope === "owned"
-              ? owned
-              : !owned;
+            ? owned
+            : !owned;
         const passesRarity = !filter.rarity || filter.rarity === r;
         const passesSearch =
           !filter.search ||
@@ -149,7 +155,7 @@
         const getNewSet = () => {
           try {
             return new Set(
-              JSON.parse(localStorage.getItem("Wish.newIds") || "[]"),
+              JSON.parse(localStorage.getItem("Wish.newIds") || "[]")
             );
           } catch {
             return new Set();
@@ -169,11 +175,15 @@
 
         return `
           <div class="dex-card ${ownClass}" data-url="${url}" tabindex="0">
+          <div class="rarity-ring"></div>
             <div class="dex-stars">${stars(r)}</div>
-            <div class="rarity-ring"></div>
             <img src="${url}" alt="${name}" loading="lazy" decoding="async" />
             ${mysteryOverlay}
-            ${owned ? `<span class="dex-count">x${entry.count || 1}</span>` : `<span class="dex-locked">?</span>`}
+            ${
+              owned
+                ? `<span class="dex-count">x${entry.count || 1}</span>`
+                : `<span class="dex-locked">?</span>`
+            }
             <div class="dex-name">${name}</div>
             ${newBadge}
           </div>`;
@@ -227,7 +237,7 @@
     // Tile popovers
     container.querySelectorAll(".dex-card").forEach((card) => {
       card.addEventListener("click", () =>
-        openDetails(card.getAttribute("data-url")),
+        openDetails(card.getAttribute("data-url"))
       );
       card.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -249,9 +259,15 @@
   }
 
   function openDetails(url) {
-    const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
-    const name = meta?.name || meta?.title || (url.split("/").pop() || "Miku").replace(/\.[a-z0-9]+$/i, "");
-    const rarity = meta?.rarity || (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
+    const meta =
+      typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
+    const name =
+      meta?.name ||
+      meta?.title ||
+      (url.split("/").pop() || "Miku").replace(/\.[a-z0-9]+$/i, "");
+    const rarity =
+      meta?.rarity ||
+      (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
     const videoUrl = meta?.song || meta?.video || "";
     const vid = ytIdFrom(videoUrl);
     const escapedVideoUrl = (videoUrl || "").replace(/'/g, "\\'");
@@ -269,15 +285,17 @@
     const steps = Math.max(0, rarity - 1);
     const scoreBonus = Math.min(
       RARITY_EFFECTS.scoreCap,
-      steps * RARITY_EFFECTS.scorePerStep,
+      steps * RARITY_EFFECTS.scorePerStep
     );
     const shieldPct = Math.round(scoreBonus * 100);
     const rarePct = Math.round((RARITY_EFFECTS.rareDropBonus || 0) * 100);
-    const effectsText = `Effects: +${Math.round(scoreBonus * 100)}% score, +${shieldPct}% shield time, +${rarePct}% rare drop`;
+    const effectsText = `Effects: +${Math.round(
+      scoreBonus * 100
+    )}% score, +${shieldPct}% shield time, +${rarePct}% rare drop`;
 
     const ov = document.createElement("div");
     ov.className = "image-modal";
-    ov.innerHTML = `
+    ov.innerHTML = /*html*/ `
       <div class="image-panel">
         <div class="top">
           <img src="${url}" alt="${name}" style="width:200px;height:auto;image-rendering:pixelated;border-radius:10px;border:2px solid var(--border);"/>
@@ -290,49 +308,60 @@
             <div class="owned-info" style="margin-top:8px">
               ${owned ? `Owned: x${entry.count || 1}` : "Owned: •"}
             </div>
-            ${meta?.description ? `<div class="description" style="font-size:14px;color:var(--ink-soft);margin-top:8px;">${meta.description}</div>` : ""}
-            ${meta?.song ? `<div class="song-info" style="margin-top:8px;font-size:14px"><strong>Unlocks:</strong> ${meta.song.includes("youtube.com") || meta.song.includes("youtu.be") ? "Music track in Jukebox" : meta.song}</div>` : ""}
+            ${
+              meta?.description
+                ? `<div class="description" style="font-size:14px;color:var(--ink-soft);margin-top:8px;">${meta.description}</div>`
+                : ""
+            }
+            ${
+              meta?.song
+                ? `<div class="song-info" style="margin-top:8px;font-size:14px"><strong>Unlocks:</strong> ${
+                    meta.song.includes("youtube.com") ||
+                    meta.song.includes("youtu.be")
+                      ? "Music track in Jukebox"
+                      : meta.song
+                  }</div>`
+                : ""
+            }
             ${
               vid
                 ? `
-              <div class="video-container" style="margin-top:10px">
-                <iframe
-                  style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px"
-                  src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1"
-                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen
-                  referrerpolicy="strict-origin-when-cross-origin"
-<<<<<<< ours
-                  loading="lazy">
-                </iframe>
-              </div>`
+      <div class="video-container" style="margin-top:10px">
+        <iframe
+          style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px"
+          src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+          loading="lazy"
+          onload="this.style.opacity=1"
+          onerror="window.handleVideoError && window.handleVideoError(this, '${escapedVideoUrl}')"
+        ></iframe>
+      </div>`
                 : ""
             }
-            ${
-              links.length
-                ? `<div class="dex-links" style="margin-top:10px">${links
-                    .map(
-                      (l, i) =>
-                        `<a href="${l}" target="_blank" rel="noopener" class="pixel-btn" style="margin-right:8px">Link ${i + 1}</a>`,
-                    )
-                    .join("")}</div>`
-                : ""
-            }
-=======
-                  loading="lazy"
-                  onload="this.style.opacity=1"
-                  onerror="window.handleVideoError && window.handleVideoError(this, '${escapedVideoUrl}')"
-                ></iframe>
-              </div>` : ""}
-            ${links.length ? `<div class="dex-links" style="margin-top:10px">${links
-              .map((l, i) => `<a href="${l}" target="_blank" rel="noopener" class="pixel-btn" style="margin-right:8px">Link ${i + 1}</a>`)
-              .join("")}</div>` : ""}
->>>>>>> theirs
-          </div>
-        </div>
-        <div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
-          ${owned ? `<button class="pixel-btn" id="setSingerBtn">Set as Singer</button>` : `<button class="pixel-btn" disabled>Win in Wish</button>`}
-          <button class="pixel-btn" id="dexCloseBtn">Close</button>
+
+    ${
+      links.length
+        ? `<div class="dex-links" style="margin-top:10px">${links
+            .map(
+              (l, i) =>
+                `<a href="${l}" target="_blank" rel="noopener" class="pixel-btn" style="margin-right:8px">Link ${
+                  i + 1
+                }</a>`
+            )
+            .join("")}</div>`
+        : ""
+    }
+  </div>
+</div>
+<div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+  ${
+    owned
+      ? `<button class="pixel-btn" id="setSingerBtn">Set as Singer</button>`
+      : `<button class="pixel-btn" disabled>Win in Wish</button>`
+  }
+  <button class="pixel-btn" id="dexCloseBtn">Close</button>
         </div>
       </div>`;
 
@@ -352,13 +381,13 @@
       // Also clear from NEW set
       try {
         const newSet = new Set(
-          JSON.parse(localStorage.getItem("Wish.newIds") || "[]"),
+          JSON.parse(localStorage.getItem("Wish.newIds") || "[]")
         );
         if (newSet.has(url)) {
           newSet.delete(url);
           localStorage.setItem(
             "Wish.newIds",
-            JSON.stringify(Array.from(newSet)),
+            JSON.stringify(Array.from(newSet))
           );
         }
       } catch {}

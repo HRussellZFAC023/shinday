@@ -726,7 +726,6 @@ main {
 }
 
 .our-own-badge {
-  border: 2px solid var(--accent) !important;
   border-radius: 6px !important;
   box-shadow: 0 0 0 2px rgba(107, 195, 255, 0.3) !important;
   animation: gentle-glow 3s ease-in-out infinite;
@@ -1279,6 +1278,17 @@ main {
   z-index: 10;
 }
 
+/* Apply same grid behavior for generic beatpad containers */
+.beatpad-grid {
+  position: relative;
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  grid-auto-rows: minmax(64px, auto) !important;
+  gap: 12px !important;
+  padding: 8px;
+  z-index: 10;
+}
+
 /* PlayStation Colors with Neon Glow */
 :root {
   --ps-triangle: #00ff88; /* Neon Green */
@@ -1351,6 +1361,29 @@ main {
   font-weight: 900 !important;
   opacity: 0.8;
   z-index: 2;
+}
+
+/* Word-of-the-Day iframe scaling to remove horizontal scrollbars */
+.wod-iframe {
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+}
+.wod-iframe iframe {
+  position: absolute;
+  top: -56px; /* push past site header */
+  left: -30px;
+  width: 150% !important;
+  height: 150% !important;
+  border: 0 !important;
+  display: block !important;
+}
+
+/* Safety: hide empty buttons often rendered as placeholder ovals */
+.beatpad-grid .pixel-btn:empty,
+.chat-choices .pixel-btn:empty,
+.pixel-btn:empty {
+  display: none !important;
 }
 
 /* Keyboard Hint */
@@ -2807,47 +2840,47 @@ main {
 /* Dex card rarity ring styles */
 .dex-card .rarity-ring {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
-  bottom: 8px;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
   border-radius: 10px;
   pointer-events: none;
   z-index: 1;
 }
 
 .dex-card.owned.rarity-1 .rarity-ring {
-  border: 2px solid #9ca3af;
+  border: 2px  #9ca3af;
   -webkit-box-shadow: 0 0 20px 3px rgba(156, 163, 175, 0.5);
   -moz-box-shadow: 0 0 20px 3px rgba(156, 163, 175, 0.5);
   box-shadow: 0 0 20px 3px rgba(156, 163, 175, 0.5);
 }
 .dex-card.owned.rarity-2 .rarity-ring {
-  border: 2px solid #10b981;
+  border: 2px  #10b981;
   -webkit-box-shadow: 0 0 20px 3px rgba(16, 185, 129, 0.52);
   -moz-box-shadow: 0 0 20px 3px rgba(16, 185, 129, 0.52);
   box-shadow: 0 0 20px 3px rgba(16, 185, 129, 0.52);
 }
 .dex-card.owned.rarity-3 .rarity-ring {
-  border: 2px solid #3b82f6;
+  border: 2px  #3b82f6;
   -webkit-box-shadow: 0 0 20px 3px rgba(59, 130, 246, 0.52);
   -moz-box-shadow: 0 0 20px 3px rgba(59, 130, 246, 0.52);
   box-shadow: 0 0 20px 3px rgba(59, 130, 246, 0.52);
 }
 .dex-card.owned.rarity-4 .rarity-ring {
-  border: 2px solid #a594f9;
+  border: 2px  #a594f9;
   -webkit-box-shadow: 0 0 20px 3px rgba(165, 148, 249, 0.52);
   -moz-box-shadow: 0 0 20px 3px rgba(165, 148, 249, 0.52);
   box-shadow: 0 0 20px 3px rgba(165, 148, 249, 0.52);
 }
 .dex-card.owned.rarity-5 .rarity-ring {
-  border: 2px solid #ffb347;
+  border: 2px  #ffb347;
   -webkit-box-shadow: 0 0 20px 3px rgba(255, 179, 71, 0.52);
   -moz-box-shadow: 0 0 20px 3px rgba(255, 179, 71, 0.52);
   box-shadow: 0 0 20px 3px rgba(255, 179, 71, 0.52);
 }
 .dex-card.owned.rarity-6 .rarity-ring {
-  border: 2px solid #ffd700;
+  border: 2px  #ffd700;
   -webkit-box-shadow: 0 0 20px 3px rgba(255, 215, 0, 0.52);
   -moz-box-shadow: 0 0 20px 3px rgba(255, 215, 0, 0.52);
   box-shadow: 0 0 20px 3px rgba(255, 215, 0, 0.52);
@@ -4573,7 +4606,7 @@ main {
   overflow: hidden;
   background: #e8f5ff center/cover no-repeat;
   min-height: 320px;
-  background-image: var(--diva-bg, url("./assets/root.png"));
+  background-image: var(--diva-bg, url("../assets/root.png"));
 }
 .diva-stage::before {
   content: "";
@@ -4592,6 +4625,27 @@ main {
   z-index: 2;
   image-rendering: pixelated;
   transition: all 0.3s ease;
+}
+
+/* Study section wallpaper using root.png */
+#study {
+  --study-wall: url("../assets/root.png");
+  background: #f6fbff var(--study-wall) center/cover no-repeat fixed;
+}
+
+/* Add a faint Miku background in the JP HUD widget/game select card */
+#jpHudWidget .jp-hud-widget {
+  position: relative;
+  overflow: hidden;
+}
+#jpHudWidget .jp-hud-widget::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("../assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png") center right/contain no-repeat;
+  opacity: 0.22;
+  pointer-events: none;
+  mix-blend-mode: multiply;
 }
 .diva-singer.stunned {
   filter: grayscale(1) brightness(0.8) contrast(1.05);

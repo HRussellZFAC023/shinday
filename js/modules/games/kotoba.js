@@ -186,7 +186,17 @@
 
     HUD && HUD.notes++;
 
-    const q = await getQuestion();
+    let q;
+    try {
+      q = await getQuestion();
+    } catch (e) {
+      const grid = document.getElementById("kotobaChoices");
+      if (grid)
+        grid.innerHTML = `<div>⚠️ Couldn't load. <button id=\"kotobaRetry\" class=\"pixel-btn\">Retry</button></div>`;
+      const btn = document.getElementById("kotobaRetry");
+      if (btn) btn.onclick = () => loadRound();
+      return;
+    }
     const correct = q.correct;
     if (chatEl)
       say(

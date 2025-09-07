@@ -9,10 +9,10 @@
 
   // PlayStation-like mapping order: 0=Triangle, 1=Circle, 2=Cross, 3=Square
   const PAD = [
-    { key: "w", label: "△", cls: "pad-triangle", color: "#2ec4b6" },
-    { key: "d", label: "○", cls: "pad-circle", color: "#e76f51" },
-    { key: "s", label: "×", cls: "pad-cross", color: "#264653" },
-    { key: "a", label: "□", cls: "pad-square", color: "#e9c46a" },
+    { key: "w", label: "△", ps: "triangle", cls: "pad-triangle", color: "#00ff88" },
+    { key: "d", label: "○", ps: "circle", cls: "pad-circle", color: "#ff0080" },
+    { key: "s", label: "×", ps: "cross", cls: "pad-cross", color: "#0088ff" },
+    { key: "a", label: "□", ps: "square", cls: "pad-square", color: "#ffaa00" },
   ];
 
   function ensureStyles() {
@@ -38,9 +38,11 @@
     const spec = PAD[index % PAD.length];
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = `pixel-btn beatpad-btn ${spec.cls}`;
+  btn.className = `pixel-btn beatpad-btn ${spec.cls}`;
     btn.setAttribute("data-beatpad-pos", String(index));
     btn.setAttribute("data-beatpad-key", spec.key);
+  btn.setAttribute("data-ps", spec.ps);
+  btn.setAttribute("data-symbol", spec.label);
     btn.style.setProperty("--pad-color", spec.color);
     btn.innerHTML = `
       <span class="pad-ind" style="color:${spec.color}"><span class="beatpad-key">${

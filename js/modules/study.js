@@ -18,12 +18,19 @@
           <div class="romaji" style="opacity:.8">${wod.romaji || ""}</div>
           <div class="meaning">${wod.meaning || ""}</div>
         </div>
-        <div class="wod-iframe" style="min-height:220px;border:2px solid var(--border);border-radius:12px;overflow:hidden;background:#fff">
+        <div class="wod-iframe" style="min-height:320px;border:2px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;position:relative">
           <iframe id="wodIframe" src="${wodIframeSrc}"
-            style="border:0;width:100%;height:100%" loading="lazy" referrerpolicy="no-referrer"></iframe>
+            style="position:absolute;top:-56px;left:-30px;width:150%;height:150%;border:0" loading="lazy" referrerpolicy="no-referrer"></iframe>
         </div>
       </div>
-      <div class="game-widget" id="vocabCard">
+      <!-- Game selection tiles (landing view) -->
+      <div class="study-card" id="gameTiles" style="grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+        <button class="pixel-btn" data-game="vocab">🗣️ Vocab</button>
+        <button class="pixel-btn" data-game="kanji">漢字 Kanji</button>
+        <button class="pixel-btn" data-game="kotoba">ことば Kotoba</button>
+        <button class="pixel-btn" data-game="mikuChat">💬 Miku × Chat</button>
+      </div>
+  <div class="game-widget" id="vocabCard" style="display:none">
         <h3>🗣️ Vocab</h3>
         <div id="vocabQuestion"></div>
         <div id="vocabChoices" class="beatpad-grid"></div>
@@ -33,13 +40,13 @@
         </div>
         <div class="hud-line">
           <span>Score: <strong id="vocabScore">0</strong></span>
-          <span>Streak: <strong id="vocabStreak">0</strong> • Best <strong id="vocabBestStreak">0</strong></span>
+          <span>Streak: <strong id="vocabStreak">0</strong> • Best Streak <strong id="vocabBestStreak">0</strong></span>
           <span id="vocabTimerWrap" style="display:none">⏱️ <strong id="vocabTimer">15</strong>s</span>
           <span>PB: <strong id="vocabBestTime">-</strong></span>
         </div>
         <div id="vocabFeedback" class="diva-feedback-enhanced" style="display:none"></div>
       </div>
-      <div class="game-widget" id="kanjiCard">
+  <div class="game-widget" id="kanjiCard" style="display:none">
         <h3>漢字 Kanji</h3>
         <div class="mode-row" id="kanjiMeta">
           <button class="pixel-btn mode-option active" data-mode="meaning">Meaning→Kanji</button>
@@ -49,26 +56,26 @@
         <div id="kanjiChoices" class="beatpad-grid"></div>
         <div class="hud-line">
           <span>Score: <strong id="kanjiScore">0</strong></span>
-          <span>Streak: <strong id="kanjiStreak">0</strong> • Best <strong id="kanjiBestStreak">0</strong></span>
+          <span>Streak: <strong id="kanjiStreak">0</strong> • Best Streak <strong id="kanjiBestStreak">0</strong></span>
           <span id="kanjiTimerWrap" style="display:none">⏱️ <strong id="kanjiTimer">15</strong>s</span>
           <span>PB: <strong id="kanjiBestTime">-</strong></span>
         </div>
         <div id="kanjiFeedback" class="diva-feedback-enhanced" style="display:none"></div>
       </div>
-      <div class="game-widget" id="kotobaCard">
+  <div class="game-widget" id="kotobaCard" style="display:none">
         <h3>ことば Kotoba</h3>
         <div id="kotobaChat" class="chat-transcript" style="display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:10px;background:#fff;border:2px solid var(--border);max-height:220px;overflow:auto"></div>
         <div id="kotobaChoices" class="chat-choices" style="display:flex;flex-direction:column;gap:8px"></div>
         <div class="hud-line">
           <span>Score: <strong id="kotobaScore">0</strong></span>
-          <span>Streak: <strong id="kotobaStreak">0</strong> • Best <strong id="kotobaBestStreak">0</strong></span>
+          <span>Streak: <strong id="kotobaStreak">0</strong> • Best Streak <strong id="kotobaBestStreak">0</strong></span>
           <span id="kotobaTimerWrap" style="display:none">⏱️ <strong id="kotobaTimer">20</strong>s</span>
           <span>PB: <strong id="kotobaBestTime">-</strong></span>
           <button id="kotobaStart" class="pixel-btn">Start</button>
         </div>
         <div id="kotobaFeedback" class="diva-feedback-enhanced" style="display:none"></div>
       </div>
-      <div class="game-widget" id="mikuChatCard">
+  <div class="game-widget" id="mikuChatCard" style="display:none">
         <h3>💬 Miku × Chat</h3>
         <div id="mikuChatTranscript" class="chat-transcript" style="display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:10px;background:#fff;border:2px solid var(--border);max-height:240px;overflow:auto"></div>
         <div id="mikuChatChoices" class="beatpad-grid"></div>
@@ -89,11 +96,29 @@
       const startSelected = () => {
         const g = selGame.value;
         const m = selMode.value;
+        // Show only selected game
+        ["vocabCard","kanjiCard","kotobaCard","mikuChatCard"].forEach((id)=>{
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.style.display = id.startsWith(g) ? "block" : "none";
+        });
         // route via dispatcher
         window.__startSong && window.__startSong(g, m, false);
       };
       selGame.addEventListener("change", startSelected);
       selMode.addEventListener("change", startSelected);
+      // Landing tiles route
+      const tiles = document.getElementById("gameTiles");
+      if (tiles) {
+        tiles.addEventListener("click", (e)=>{
+          const b = e.target.closest("button[data-game]");
+          if (!b) return;
+          const g = b.getAttribute("data-game");
+          if (selGame) selGame.value = g;
+          tiles.style.display = "none"; // hide landing tiles once a game is chosen
+          startSelected();
+        });
+      }
     }
   }
 
@@ -102,6 +127,17 @@
     const grid = document.getElementById("mikuChatChoices");
     const startBtn = document.getElementById("mikuChatStart");
     if (!chat || !grid || !startBtn) return;
+    async function realReply(prompt) {
+      // Use a safe public API as placeholder: quotable.io random quote
+      try {
+        const r = await fetch("https://api.quotable.io/random?tags=happiness|inspirational", { cache: "no-store" });
+        if (!r.ok) throw new Error("net");
+        const j = await r.json();
+        return j && (j.content || "うん！");
+      } catch (_) {
+        return "うん！";
+      }
+    }
     function say(text, from = "miku") {
       const b = document.createElement("div");
       b.style.cssText =
@@ -131,12 +167,20 @@
             b.textContent = label;
             return { btn: b, style: { isPerfect: false, color: "#a594f9" } };
           });
-        const { btn } = maker(opt, idx, (text) => {
+        const { btn } = maker(opt, idx, async (text) => {
           say(text, "you");
+          // Show thinking then call realReply
+          const thinking = document.createElement("div");
+          thinking.style.cssText = "opacity:.8;font-style:italic;padding:4px 8px;align-self:flex-start";
+          thinking.textContent = "ミク: ……";
+          chat.appendChild(thinking);
+          chat.scrollTop = chat.scrollHeight;
+          const api = await realReply(text);
+          thinking.remove();
           if (text === "歌って!") say("ららら〜♪", "miku");
-          else if (text === "日本語の勉強!")
-            say("ことばカード行こう！", "miku");
+          else if (text === "日本語の勉強!") say("ことばカード行こう！", "miku");
           else if (text === "ゲームしよ!") say("ボカロタイピング？", "miku");
+          else if (api) say(api, "miku");
           else say("またね！", "miku");
           setTimeout(round, 800);
         });
@@ -173,13 +217,8 @@
     const grid = ensureStudyGrid();
     if (!grid) return;
     wireHudControls();
-    mountGames();
-    // Auto-start default selection
-    const selGame = document.getElementById("hudGame");
-    const selMode = document.getElementById("hudMode");
-    const g = (selGame && selGame.value) || "vocab";
-    const m = (selMode && selMode.value) || "jp-en";
-    window.__startSong && window.__startSong(g, m, false);
+  mountGames();
+  // Landing view: show tiles only; games hidden until selection
   }
 
   if (document.readyState === "loading")

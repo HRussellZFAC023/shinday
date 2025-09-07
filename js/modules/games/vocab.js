@@ -52,15 +52,30 @@
     return a;
   }
   async function fetchJsonWithProxy(url) {
-    const r = await fetch(url, { cache: "no-store" });
-    if (r.ok) return await r.json();
-
-    const rr = await fetch(
-      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-      { cache: "no-store" },
-    );
-    if (rr.ok) return await rr.json();
-
+    // Try direct
+    try {
+      const r = await fetch(url, { cache: "no-store" });
+      if (r.ok) return await r.json();
+    } catch (_) {}
+    // Try allorigins JSON
+    try {
+      const rr = await fetch(
+        `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+        { cache: "no-store" },
+      );
+      if (rr.ok) {
+        const j = await rr.json();
+        if (j && j.contents) return JSON.parse(j.contents);
+      }
+    } catch (_) {}
+    // Try allorigins raw
+    try {
+      const rr2 = await fetch(
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+        { cache: "no-store" },
+      );
+      if (rr2.ok) return await rr2.json();
+    } catch (_) {}
     throw new Error("network");
   }
   async function primeVocabPage(page) {
@@ -220,7 +235,17 @@
 
     if (window.HUD) HUD.notes++;
 
-    const q = await getVocabQuestion(curDir);
+    let q;
+    try {
+      q = await getVocabQuestion(curDir);
+    } catch (e) {
+      if (qEl) qEl.innerHTML = "";
+      if (cEl)
+        cEl.innerHTML = `<div style="grid-column:1/-1">⚠️ Couldn't load vocab. <button id=\"vocabRetry\" class=\"pixel-btn\">Retry</button></div>`;
+      const btn = document.getElementById("vocabRetry");
+      if (btn) btn.onclick = () => loadRound();
+      return;
+    }
     const correct = q.correct;
     qEl.innerHTML = q.promptHtml;
     const PRESET = (window.Jukebox &&
