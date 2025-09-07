@@ -25,6 +25,7 @@ window.initSite = function () {
   console.log("🎀 Miku Orchestrator loaded!");
   window.MikuUI.initializeContent();
   window.AudioMod.initBgm();
+  window.Radio.init();
   window.ShimejiFunctions.init();
   window.hearts.initHearts();
   window.Jukebox.initialize();
