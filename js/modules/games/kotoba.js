@@ -2,15 +2,10 @@
 (function () {
   const KEY_TIMED = "kotoba.timed";
   function isTimed() {
-    
-      return localStorage.getItem(KEY_TIMED) === "1";
-  
-
+    return localStorage.getItem(KEY_TIMED) === "1";
   }
   function setTimed(on) {
-    
-      localStorage.setItem(KEY_TIMED, on ? "1" : "0");
-    
+    localStorage.setItem(KEY_TIMED, on ? "1" : "0");
   }
 
   // DOM
@@ -64,10 +59,9 @@
     return a;
   }
   async function fetchJson(url, prox = true) {
-    
-      const r = await fetch(url, { cache: "no-store" });
-      if (r.ok) return await r.json();
-    
+    const r = await fetch(url, { cache: "no-store" });
+    if (r.ok) return await r.json();
+
     if (!prox) throw new Error("network");
     return fetchJson(
       `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
@@ -99,30 +93,28 @@
         };
       }
     } else {
-      
-        const q = ["miku", "song", "love", "friend", "summer", "happy"][rnd(6)];
-        const data = await fetchJson(
-          `https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(q)}`,
-        );
-        const items = (data && data.data) || [];
-        for (let i = 0; i < items.length; i++) {
-          const jp =
-            items[i].japanese?.[0]?.word || items[i].japanese?.[0]?.reading;
-          const senses = items[i].senses?.[0]?.english_definitions || [];
-          if (!jp || senses.length < 2) continue;
-          const correct = senses[0];
-          const key = jp + correct;
-          if (recent.includes(key)) continue;
-          pushRecent(key);
-          const decoys = shuffle(senses.slice(1)).slice(0, decoyCount);
-          if (decoys.length < decoyCount) continue;
-          return {
-            promptHtml: `<div style=\"font-size:26px;font-weight:900\">${jp}</div>`,
-            correct,
-            options: shuffle([correct, ...decoys]),
-          };
-        }
-      
+      const q = ["miku", "song", "love", "friend", "summer", "happy"][rnd(6)];
+      const data = await fetchJson(
+        `https://jisho.org/api/v1/search/words?keyword=${encodeURIComponent(q)}`,
+      );
+      const items = (data && data.data) || [];
+      for (let i = 0; i < items.length; i++) {
+        const jp =
+          items[i].japanese?.[0]?.word || items[i].japanese?.[0]?.reading;
+        const senses = items[i].senses?.[0]?.english_definitions || [];
+        if (!jp || senses.length < 2) continue;
+        const correct = senses[0];
+        const key = jp + correct;
+        if (recent.includes(key)) continue;
+        pushRecent(key);
+        const decoys = shuffle(senses.slice(1)).slice(0, decoyCount);
+        if (decoys.length < decoyCount) continue;
+        return {
+          promptHtml: `<div style=\"font-size:26px;font-weight:900\">${jp}</div>`,
+          correct,
+          options: shuffle([correct, ...decoys]),
+        };
+      }
     }
     // fallback single option prevents dead-end
     return {
@@ -144,18 +136,16 @@
     bestTimeEl = document.getElementById("kotobaBestTime");
     startBtn = document.getElementById("kotobaStart");
     if (!cEl) return;
-    
-      attachDivaHud && attachDivaHud("kotobaCard");
-    
-    
-      bestStreak =
-        parseInt(localStorage.getItem("kotoba.bestStreak") || "0", 10) || 0;
-    
-    
-      const bt =
-        parseInt(localStorage.getItem("kotoba.bestTime") || "0", 10) || 0;
-      bestTime = bt || null;
-    
+
+    attachDivaHud && attachDivaHud("kotobaCard");
+
+    bestStreak =
+      parseInt(localStorage.getItem("kotoba.bestStreak") || "0", 10) || 0;
+
+    const bt =
+      parseInt(localStorage.getItem("kotoba.bestTime") || "0", 10) || 0;
+    bestTime = bt || null;
+
     if (bestStreakEl) bestStreakEl.textContent = String(bestStreak);
     if (bestTimeEl)
       bestTimeEl.textContent = bestTime
@@ -187,76 +177,70 @@
   async function loadRound() {
     if (!cEl) return;
     lock = false;
-    
-      if (window.clearDivaFeedback) clearDivaFeedback("kotobaFeedback");
-    
+
+    if (window.clearDivaFeedback) clearDivaFeedback("kotobaFeedback");
+
     if (fbEl) fbEl.textContent = "";
     cEl.innerHTML = "";
     if (chatEl) chatEl.innerHTML = "";
-    
-      HUD && HUD.notes++;
-    
-    
-      const q = await getQuestion();
-      const correct = q.correct;
-      if (chatEl)
-        say(
-          `「${q.promptHtml.replace(/<[^>]+>/g, "")}」って、どういう意味？`,
-          "miku",
-        );
-      const PRESET = (window.Jukebox &&
-        Jukebox.getPreset &&
-        Jukebox.getPreset()) || { baseTime: 20, options: 4 };
-      const maxOpts = Math.min(PRESET.options || 4, 4);
-      cEl.style.display = "flex";
-      cEl.style.flexDirection = "column";
-      if (isTimed()) {
-        const baseTime = (function () {
-          
-            return (window.diffParams && diffParams().baseTime) || 20;
-          
-        })();
-        countdown = PRESET.baseTime || baseTime;
-        if (timerEl) timerEl.textContent = String(countdown);
-        startAt = Date.now();
-        if (tId) clearInterval(tId);
-        tId = setInterval(() => {
-          countdown--;
-          if (timerEl) timerEl.textContent = String(Math.max(0, countdown));
-          if (countdown <= 0) {
-            clearInterval(tId);
-            tId = null;
-            lock = true;
-            if (fbEl) {
-              fbEl.textContent = `⏰ Time!`;
-              fbEl.style.color = "#c00";
-            }
-            
-              SFX.play("quiz.timeup");
-            
-            
-              flashJudge && flashJudge("kotobaCard", "MISS");
-              addVoltage && addVoltage(-5, "kotobaCard");
-              loseLife && loseLife("kotobaCard");
-            
-            streak = 0;
-            if (streakEl) streakEl.textContent = String(streak);
-            setTimeout(loadRound, 900);
+
+    HUD && HUD.notes++;
+
+    const q = await getQuestion();
+    const correct = q.correct;
+    if (chatEl)
+      say(
+        `「${q.promptHtml.replace(/<[^>]+>/g, "")}」って、どういう意味？`,
+        "miku",
+      );
+    const PRESET = (window.Jukebox &&
+      Jukebox.getPreset &&
+      Jukebox.getPreset()) || { baseTime: 20, options: 4 };
+    const maxOpts = Math.min(PRESET.options || 4, 4);
+    cEl.style.display = "flex";
+    cEl.style.flexDirection = "column";
+    if (isTimed()) {
+      const baseTime = (function () {
+        return (window.diffParams && diffParams().baseTime) || 20;
+      })();
+      countdown = PRESET.baseTime || baseTime;
+      if (timerEl) timerEl.textContent = String(countdown);
+      startAt = Date.now();
+      if (tId) clearInterval(tId);
+      tId = setInterval(() => {
+        countdown--;
+        if (timerEl) timerEl.textContent = String(Math.max(0, countdown));
+        if (countdown <= 0) {
+          clearInterval(tId);
+          tId = null;
+          lock = true;
+          if (fbEl) {
+            fbEl.textContent = `⏰ Time!`;
+            fbEl.style.color = "#c00";
           }
-        }, 1000);
-      }
-      const use = q.options.slice(0, maxOpts);
-      use.forEach((opt) => {
-        const btn = document.createElement("button");
-        btn.className = "pixel-btn chat-option";
-        btn.textContent = opt;
-        btn.addEventListener("click", () =>
-          onSelect(opt, btn, { isPerfect: false, color: "#a594f9" }, correct),
-        );
-        cEl.appendChild(btn);
-      });
-    
-    
+
+          SFX.play("quiz.timeup");
+
+          flashJudge && flashJudge("kotobaCard", "MISS");
+          addVoltage && addVoltage(-5, "kotobaCard");
+          loseLife && loseLife("kotobaCard");
+
+          streak = 0;
+          if (streakEl) streakEl.textContent = String(streak);
+          setTimeout(loadRound, 900);
+        }
+      }, 1000);
+    }
+    const use = q.options.slice(0, maxOpts);
+    use.forEach((opt) => {
+      const btn = document.createElement("button");
+      btn.className = "pixel-btn chat-option";
+      btn.textContent = opt;
+      btn.addEventListener("click", () =>
+        onSelect(opt, btn, { isPerfect: false, color: "#a594f9" }, correct),
+      );
+      cEl.appendChild(btn);
+    });
   }
 
   function onSelect(text, element, style, correct) {
@@ -268,28 +252,23 @@
     }
     const isCorrect = text === correct;
     if (isCorrect) {
-      
-        createRingEffect && createRingEffect(element, true);
-      
+      createRingEffect && createRingEffect(element, true);
+
       element.classList.add("correct");
       if (style && style.isPerfect) {
-        
-          createPerfectHitEffect &&
-            createPerfectHitEffect(element, style.color);
-        
+        createPerfectHitEffect && createPerfectHitEffect(element, style.color);
+
         if (window.showDivaFeedback)
           showDivaFeedback("kotobaFeedback", "✨ PERFECT! ✨", true);
         else if (fbEl) fbEl.textContent = "✨ PERFECT! ✨";
-        
-          awardHearts && awardHearts(2);
-        
+
+        awardHearts && awardHearts(2);
       } else {
         if (window.showDivaFeedback)
           showDivaFeedback("kotobaFeedback", "✅ Correct!", true);
         else if (fbEl) fbEl.textContent = "✅ Correct!";
-        
-          awardHearts && awardHearts(1);
-        
+
+        awardHearts && awardHearts(1);
       }
       if (fbEl) fbEl.style.color = "#2b2b44";
       score++;
@@ -300,25 +279,20 @@
       }
       streak++;
       if (streakEl) streakEl.textContent = String(streak);
-      
-        if (streak > 1) loveToast && loveToast(`Combo x${streak}!`);
-        createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak);
-      
+
+      if (streak > 1) loveToast && loveToast(`Combo x${streak}!`);
+      createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak);
+
       const mult = (function () {
-        
-          return diffParams().mult;
-       
+        return diffParams().mult;
       })();
       const rmult = (function () {
-        
-          return getRhythmMult();
-       
+        return getRhythmMult();
       })();
       const gain = (12 + Math.min(15, (streak - 1) * 2)) * mult * rmult;
-      
-        addXP &&
-          addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
-      
+
+      addXP && addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
+
       const dt = Date.now() - startAt;
       let judge = "FINE",
         v = 2,
@@ -327,46 +301,40 @@
         judge = "COOL";
         v = 5;
         sc = 120;
-        
-          HUD && HUD.counts && HUD.counts.COOL++;
-          party && party("kotobaCard");
-        
+
+        HUD && HUD.counts && HUD.counts.COOL++;
+        party && party("kotobaCard");
       } else if (dt <= 1600) {
         judge = "GREAT";
         v = 3;
         sc = 80;
-        
-          HUD && HUD.counts && HUD.counts.GREAT++;
-        
+
+        HUD && HUD.counts && HUD.counts.GREAT++;
       } else {
-        
-          HUD && HUD.counts && HUD.counts.FINE++;
-        
+        HUD && HUD.counts && HUD.counts.FINE++;
       }
-      
-        flashJudge && flashJudge("kotobaCard", judge);
-        addVoltage && addVoltage(v, "kotobaCard");
-        addCombo && addCombo("kotobaCard");
-        HUD && (HUD.score += Math.round(sc * mult * rmult));
-      
-      
-        window.zapSwallower && window.zapSwallower();
-      
+
+      flashJudge && flashJudge("kotobaCard", judge);
+      addVoltage && addVoltage(v, "kotobaCard");
+      addCombo && addCombo("kotobaCard");
+      HUD && (HUD.score += Math.round(sc * mult * rmult));
+
+      window.zapSwallower && window.zapSwallower();
+
       if (isTimed()) {
         const elapsed = Date.now() - startAt;
         if (!bestTime || elapsed < bestTime) {
           bestTime = elapsed;
-          
-            localStorage.setItem("kotoba.bestTime", String(bestTime));
-          
+
+          localStorage.setItem("kotoba.bestTime", String(bestTime));
+
           if (bestTimeEl)
             bestTimeEl.textContent = `${(bestTime / 1000).toFixed(1)}s`;
         }
       }
     } else {
-      
-        createRingEffect && createRingEffect(element, false);
-      
+      createRingEffect && createRingEffect(element, false);
+
       element.classList.add("wrong");
       if (window.showDivaFeedback)
         showDivaFeedback("kotobaFeedback", `❌ ${correct}`, false);
@@ -380,26 +348,25 @@
       }
       streak = 0;
       if (streakEl) streakEl.textContent = String(streak);
-      
-        HUD && HUD.counts && HUD.counts.SAD++;
-        flashJudge && flashJudge("kotobaCard", "SAD");
-        addVoltage && addVoltage(-5, "kotobaCard");
-        resetCombo && resetCombo();
-        loseLife && loseLife("kotobaCard");
-      
+
+      HUD && HUD.counts && HUD.counts.SAD++;
+      flashJudge && flashJudge("kotobaCard", "SAD");
+      addVoltage && addVoltage(-5, "kotobaCard");
+      resetCombo && resetCombo();
+      loseLife && loseLife("kotobaCard");
+
       // Highlight correct answer
-      
-        Array.from(cEl.querySelectorAll(".chat-option")).forEach((b) => {
-          b.disabled = true;
-          if (b.textContent === correct) b.classList.add("correct");
-        });
-      
+
+      Array.from(cEl.querySelectorAll(".chat-option")).forEach((b) => {
+        b.disabled = true;
+        if (b.textContent === correct) b.classList.add("correct");
+      });
     }
-    
-      Array.from(cEl.querySelectorAll(".chat-option")).forEach(
-        (b) => (b.disabled = true),
-      );
-    
+
+    Array.from(cEl.querySelectorAll(".chat-option")).forEach(
+      (b) => (b.disabled = true),
+    );
+
     setTimeout(loadRound, 900);
     return isCorrect;
   }
@@ -410,9 +377,8 @@
     loadRound();
   }
   function stop() {
-    
-      if (tId) clearInterval(tId);
-    
+    if (tId) clearInterval(tId);
+
     tId = null;
   }
 

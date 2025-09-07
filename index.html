@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -498,14 +498,13 @@
             Cinnamoroll Approved • This site is always under construction! ✨
           </p>
           <div class="tooltip">
-     
-          <img
-            src="./assets/madeByGif.gif"
-            alt="Made by us — gaming together"
-            title="Made with ♥ by Hero & Shin"
-            data-tooltip="Made with ♥ by Hero & Shin"
-            class="made-by-gif"
-          />
+            <img
+              src="./assets/madeByGif.gif"
+              alt="Made by us — gaming together"
+              title="Made with ♥ by Hero & Shin"
+              data-tooltip="Made with ♥ by Hero & Shin"
+              class="made-by-gif"
+            />
           </div>
         </footer>
       </div>
@@ -517,6 +516,9 @@
     </div>
 
     <!-- 🌸 MIKU CORE - EVERYTHING IN ONE PLACE! 🌸 -->
+    <!-- Prefetch Word-of-the-Day and Miku image manifest before splash wiring -->
+    <script src="./js/modules/wod.js"></script>
+    <script src="./js/modules/miku-manifest.js"></script>
     <script src="./js/content.js"></script>
     <script src="./js/shimeji.js"></script>
     <script src="./js/modules/sfx.js"></script>
@@ -527,10 +529,13 @@
     <script src="./js/modules/presentation.js"></script>
     <script src="./js/modules/progression.js"></script>
     <script src="./js/modules/achievements.js"></script>
-  <script src="./js/modules/jukebox.js"></script>
-  <script src="./js/modules/miku-manifest.js"></script>
-  <script src="./js/modules/dex.js"></script>
-  <script src="./js/modules/games/index.js"></script>
+    <script src="./js/modules/jukebox.js"></script>
+    <script src="./js/modules/dex.js"></script>
+    <script src="./js/modules/games/beatpad.js"></script>
+    <script src="./js/modules/games/dispatcher.js"></script>
+    <script src="./js/modules/games/quiz-engine.js"></script>
+    <script src="./js/modules/study.js"></script>
+    <script src="./js/modules/games/index.js"></script>
     <script src="./js/modules/games/vocab.js"></script>
     <script src="./js/modules/games/kanji.js"></script>
     <script src="./js/modules/games/kotoba.js"></script>
@@ -538,16 +543,14 @@
     <script src="./js/modules/quests.js"></script>
     <script src="./js/modules/cursor.js"></script>
     <script src="./js/modules/hearts.js"></script>
-  <script src="./js/modules/games/memory.js"></script>
-  <script src="./js/modules/games/heart-garden.js"></script>
-  <script src="./js/modules/shop.js"></script>
-  <script src="./js/modules/wish.js"></script>
-  <script src="./js/modules/shrine-dex.js"></script>
+    <script src="./js/modules/games/memory.js"></script>
+    <script src="./js/modules/games/heart-garden.js"></script>
+    <script src="./js/modules/shop.js"></script>
+    <script src="./js/modules/wish.js"></script>
+    <script src="./js/modules/shrine-dex.js"></script>
     <script src="./js/modules/mikuUI.js"></script>
     <script src="./js/modules/mikuCore.js"></script>
- <script src="./js/modules/games/memory.js"></script>
-    <script src="./js/modules/games/heart-garden.js"></script>
-    <script src="./js/modules/radio.js"></script>
+
     <script src="./js/main.js"></script>
   </body>
 </html>

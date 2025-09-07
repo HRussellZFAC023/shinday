@@ -128,7 +128,6 @@
           window.hearts.addHearts(1);
         }
 
-
         window.MikuUI.effects.confetti(40);
       });
     return wrap;
@@ -147,7 +146,7 @@
     if (song.theme)
       document.documentElement.style.setProperty(
         "--jukebox-accent",
-        song.theme
+        song.theme,
       );
 
     // Sync rhythm
@@ -180,7 +179,7 @@
 
       const vid = song.yt || "";
       const url = `https://www.youtube.com/embed/${encodeURIComponent(
-        vid
+        vid,
       )}?autoplay=1&rel=0&playsinline=1&modestbranding=1&color=white`;
       if (iframe) iframe.src = url;
       if (wrap) wrap.style.display = "block";
@@ -291,7 +290,7 @@
       };
       ov.__selected =
         list.find(
-          (s) => s.id === (localStorage.getItem("jukebox.song") || "")
+          (s) => s.id === (localStorage.getItem("jukebox.song") || ""),
         ) || list[0];
       ov.addEventListener("click", (e) => {
         const t = e.target.closest(".song-tile");

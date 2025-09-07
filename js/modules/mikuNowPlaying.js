@@ -23,7 +23,7 @@
       list.find(
         (m) =>
           u.includes(normalize(m.filename || "")) ||
-          u.includes(normalize(m.image || ""))
+          u.includes(normalize(m.image || "")),
       ) || null
     );
   }

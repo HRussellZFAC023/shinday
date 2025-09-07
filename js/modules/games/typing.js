@@ -35,10 +35,8 @@
   }
 
   function getBpm() {
-    
-      const cur = window.__rhythmBpm || 120;
-      return cur || 120;
-   
+    const cur = window.__rhythmBpm || 120;
+    return cur || 120;
   }
 
   function scheduleNotes(line) {
@@ -163,32 +161,27 @@
     }
     if (j === "MISS") {
       STATE.combo = 0;
-      
-        window.flashJudge && window.flashJudge("typingHighway", "MISS");
-      
+
+      window.flashJudge && window.flashJudge("typingHighway", "MISS");
     } else {
       STATE.combo++;
       STATE.bestCombo = Math.max(STATE.bestCombo, STATE.combo);
-      
-        window.flashJudge && window.flashJudge("typingHighway", j);
-        if (window.addCombo) window.addCombo("typingHighway");
-        if (window.addVoltage)
-          window.addVoltage(
-            j === "COOL" ? 5 : j === "GREAT" ? 3 : 2,
-            "typingHighway",
-          );
-      
-      
-        window.SFX && window.SFX.play("quiz.correct");
-      
+
+      window.flashJudge && window.flashJudge("typingHighway", j);
+      if (window.addCombo) window.addCombo("typingHighway");
+      if (window.addVoltage)
+        window.addVoltage(
+          j === "COOL" ? 5 : j === "GREAT" ? 3 : 2,
+          "typingHighway",
+        );
+
+      window.SFX && window.SFX.play("quiz.correct");
     }
     STATE.score += scoreFor(j);
     updateHud();
     // Zap swallower on correct
     if (j !== "MISS") {
-      
-        window.zapSwallower && window.zapSwallower();
-      
+      window.zapSwallower && window.zapSwallower();
     }
     // End when all hit
     if (STATE.notes.every((n) => n.hit)) finish();
@@ -224,15 +217,13 @@
       fb.style.color = "#2b2b44";
     }
     // Rewards
-    
-      if (rank === "A") {
-        window.Hearts?.add?.(3);
-        window.hearts.loveToast && window.hearts.loveToast("Typing Rank A! +3💖");
-      }
-    
-    
-      if (window.logEvent) window.logEvent("typing_rank", 1);
-    
+
+    if (rank === "A") {
+      window.Hearts?.add?.(3);
+      window.hearts.loveToast && window.hearts.loveToast("Typing Rank A! +3💖");
+    }
+
+    if (window.logEvent) window.logEvent("typing_rank", 1);
   }
 
   function start() {
@@ -250,9 +241,9 @@
       .trim();
     scheduleNotes(line);
     STATE.running = true;
-    
-      window.SFX && window.SFX.play("ui.change");
-    
+
+    window.SFX && window.SFX.play("ui.change");
+
     requestAnimationFrame(loop);
   }
 

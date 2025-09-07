@@ -16,7 +16,7 @@
           });
         }
       },
-      { passive: true }
+      { passive: true },
     );
     function createCursorTrail(x, y) {
       if (!window._heartPool) window._heartPool = [];
@@ -41,8 +41,8 @@
 
   async function initAniCursors() {
     const smallScreen = Math.min(window.innerWidth, window.innerHeight) < 500;
-  const saveData = navigator.connection && navigator.connection.saveData;
-  if (smallScreen || saveData) return;
+    const saveData = navigator.connection && navigator.connection.saveData;
+    if (smallScreen || saveData) return;
 
     const roleToFile = {
       normal: "Normal.ani",
@@ -119,15 +119,15 @@
         applyAni("html, body", roleToFile.normal),
         applyAni(
           "a, button, .pixel-btn, .heart-btn, .radio-btn, .enter-btn, .quick-links a",
-          roleToFile.link
+          roleToFile.link,
         ),
         applyAni(
           'input, textarea, [contenteditable="true"], .editable',
-          roleToFile.text
+          roleToFile.text,
         ),
         applyAni(
           ".memory-card, .Wish-card, .dex-card, .memory-grid, canvas, svg",
-          roleToFile.precision
+          roleToFile.precision,
         ),
       ]);
 
@@ -135,23 +135,23 @@
         Promise.all([
           applyAni(
             ".hero-miku, .splash-miku, .float-miku, .shrine-image, #shrineMiku, #heroMiku, #splashMiku, .avatar, .friend-avatar",
-            roleToFile.person
+            roleToFile.person,
           ),
           applyAni(
             ".help, [title], .widget h3, .status-item, .hud-line",
-            roleToFile.help
+            roleToFile.help,
           ),
           applyAni(
             '[draggable="true"], .draggable, .movable, .Wish-card.matched',
-            roleToFile.move
+            roleToFile.move,
           ),
           applyAni(
             'button:disabled, .pixel-btn:disabled, [aria-disabled="true"], .disabled, .unavailable',
-            roleToFile.unavailable
+            roleToFile.unavailable,
           ),
           applyAni(
             ".badge, .pin, .pinned, .candle, .blink, #statusDot",
-            roleToFile.pin
+            roleToFile.pin,
           ),
         ]);
 
@@ -216,8 +216,6 @@
 
   function init() {
     initCursorEffects();
-
-   
 
     initAniCursors();
   }

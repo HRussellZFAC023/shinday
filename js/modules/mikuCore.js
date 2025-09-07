@@ -148,7 +148,6 @@ window.MikuCore = (function () {
     activeTimers.timeouts.clear();
   }
 
-
   // Public API
   return {
     $,

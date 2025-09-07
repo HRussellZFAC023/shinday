@@ -76,7 +76,8 @@
 
     audio.addEventListener("error", () => {
       if (radioStatus) radioStatus.textContent = "⚠️ Stream error";
-      if (radioDisplayStatus) radioDisplayStatus.textContent = "⚠️ Stream error";
+      if (radioDisplayStatus)
+        radioDisplayStatus.textContent = "⚠️ Stream error";
       if (statusDot) statusDot.style.color = "#ff4d4d";
     });
 
@@ -181,7 +182,7 @@
       for (const url of candidates) {
         const res = await fetch(url, { cache: "no-store" }).then(
           null,
-          () => null
+          () => null,
         );
         if (!res || !res.ok) continue;
         const ct = (res.headers.get("content-type") || "").toLowerCase();
@@ -210,7 +211,7 @@
       if (!metaUrl) return null;
       const res = await fetch(metaUrl, { cache: "no-store" }).then(
         null,
-        () => null
+        () => null,
       );
       if (!res || !res.ok) return null;
       const ct = (res.headers.get("content-type") || "").toLowerCase();
@@ -247,4 +248,3 @@
 
   window.Radio = { init };
 })();
-

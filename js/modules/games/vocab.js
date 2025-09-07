@@ -3,24 +3,16 @@
   const KEY_DIR = "vocab.direction";
   const KEY_TIMED = "vocab.timed";
   function direction() {
-    
-      return localStorage.getItem(KEY_DIR) || "jp-en";
-    
+    return localStorage.getItem(KEY_DIR) || "jp-en";
   }
   function setDirection(dir) {
-    
-      localStorage.setItem(KEY_DIR, dir);
-    
+    localStorage.setItem(KEY_DIR, dir);
   }
   function isTimed() {
-    
-      return localStorage.getItem(KEY_TIMED) === "1";
-    
+    return localStorage.getItem(KEY_TIMED) === "1";
   }
   function setTimed(on) {
-    
-      localStorage.setItem(KEY_TIMED, on ? "1" : "0");
-    
+    localStorage.setItem(KEY_TIMED, on ? "1" : "0");
   }
 
   // DOM refs
@@ -60,17 +52,15 @@
     return a;
   }
   async function fetchJsonWithProxy(url) {
-    
-      const r = await fetch(url, { cache: "no-store" });
-      if (r.ok) return await r.json();
-    
-    
-      const rr = await fetch(
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-        { cache: "no-store" },
-      );
-      if (rr.ok) return await rr.json();
-    
+    const r = await fetch(url, { cache: "no-store" });
+    if (r.ok) return await r.json();
+
+    const rr = await fetch(
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      { cache: "no-store" },
+    );
+    if (rr.ok) return await rr.json();
+
     throw new Error("network");
   }
   async function primeVocabPage(page) {
@@ -186,20 +176,17 @@
     bestTimeEl = document.getElementById("vocabBestTime");
     optionBtns = document.querySelectorAll("#vocabMeta .mode-option");
     if (!qEl || !cEl) return;
-    
-      if (typeof window.attachDivaHud === "function")
-        attachDivaHud("vocabCard");
-    
+
+    if (typeof window.attachDivaHud === "function") attachDivaHud("vocabCard");
+
     // restore stats
-    
-      bestStreak =
-        parseInt(localStorage.getItem("vocab.bestStreak") || "0", 10) || 0;
-    
-    
-      const bt =
-        parseInt(localStorage.getItem("vocab.bestTime") || "0", 10) || 0;
-      bestTime = bt || null;
-    
+
+    bestStreak =
+      parseInt(localStorage.getItem("vocab.bestStreak") || "0", 10) || 0;
+
+    const bt = parseInt(localStorage.getItem("vocab.bestTime") || "0", 10) || 0;
+    bestTime = bt || null;
+
     if (bestStreakEl) bestStreakEl.textContent = String(bestStreak);
     if (bestTimeEl)
       bestTimeEl.textContent = bestTime
@@ -211,9 +198,9 @@
         curDir = b.getAttribute("data-mode") || "jp-en";
         optionBtns.forEach((x) => x.classList.remove("active"));
         b.classList.add("active");
-        
-          SFX.play("ui.select");
-        
+
+        SFX.play("ui.select");
+
         start({ direction: curDir, timed: isTimed() });
       });
     });
@@ -223,91 +210,86 @@
     if (!qEl || !cEl) return;
     lock = false;
     // Clear previous persistent feedback if enhanced UI is present
-    
-      if (window.clearDivaFeedback) clearDivaFeedback("vocabFeedback");
-    
+
+    if (window.clearDivaFeedback) clearDivaFeedback("vocabFeedback");
+
     if (fbEl) fbEl.textContent = "";
     cEl.innerHTML = "";
     qEl.textContent = "Loading…";
     // advance notes count if HUD exists
-    
-      if (window.HUD) HUD.notes++;
-    
-    
-      const q = await getVocabQuestion(curDir);
-      const correct = q.correct;
-      qEl.innerHTML = q.promptHtml;
-      const PRESET = (window.Jukebox &&
-        Jukebox.getPreset &&
-        Jukebox.getPreset()) || { baseTime: 15, options: 4 };
-      const maxOpts = Math.min(PRESET.options || 4, 4);
-      
-        const cols = maxOpts >= 6 ? 3 : 2;
-        cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`;
-        cEl.style.gridTemplateRows = `repeat(${Math.ceil(maxOpts / cols)},1fr)`;
-      
-      if (isTimed()) {
-        const baseTime = (function () {
-          
-            return (window.diffParams && diffParams().baseTime) || 15;
-          } )();
-        countdown = PRESET.baseTime || baseTime;
-        if (timerEl) timerEl.textContent = String(countdown);
-        startAt = Date.now();
-        if (tId) clearInterval(tId);
-        tId = setInterval(() => {
-          countdown--;
-          if (timerEl) timerEl.textContent = String(Math.max(0, countdown));
-          if (countdown <= 0) {
-            clearInterval(tId);
-            tId = null;
-            lock = true;
-            if (fbEl) {
-              fbEl.textContent = `⏰ Time! Correct: ${correct}`;
-              fbEl.style.color = "#c00";
-            }
-            
-              SFX.play("quiz.timeup");
-            
-            
-              flashJudge && flashJudge("vocabCard", "MISS");
-              addVoltage && addVoltage(-5, "vocabCard");
-              loseLife && loseLife("vocabCard");
-            
-            streak = 0;
-            if (streakEl) streakEl.textContent = String(streak);
-            setTimeout(loadRound, 900);
-          }
-        }, 1000);
-      }
-      const use = q.options.slice(0, maxOpts);
-      use.forEach((opt, idx) => {
-        const maker =
-          window.createUltimateBeatpadButton ||
-          ((label) => {
-            const btn = document.createElement("button");
-            btn.className = "pixel-btn beatpad-btn";
-            btn.textContent = label;
-            return { btn, style: { isPerfect: false, color: "#a594f9" } };
-          });
-        const { btn } = maker(opt, idx, (text, element, style) =>
-          onSelect(text, element, style, correct),
-        );
-        cEl.appendChild(btn);
-      });
-      
-        createFallingBeatsSystem && createFallingBeatsSystem(cEl);
-      
-      
-        setupUltimateBeatpadKeyboard &&
-          setupUltimateBeatpadKeyboard(cEl, (text) => {
-            const target = Array.from(
-              cEl.querySelectorAll(".beatpad-btn"),
-            ).find((b) => b.textContent === text);
-            if (target) target.click();
-          });
 
+    if (window.HUD) HUD.notes++;
+
+    const q = await getVocabQuestion(curDir);
+    const correct = q.correct;
+    qEl.innerHTML = q.promptHtml;
+    const PRESET = (window.Jukebox &&
+      Jukebox.getPreset &&
+      Jukebox.getPreset()) || { baseTime: 15, options: 4 };
+    const maxOpts = Math.min(PRESET.options || 4, 4);
+
+    const cols = maxOpts >= 6 ? 3 : 2;
+    cEl.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+    cEl.style.gridTemplateRows = `repeat(${Math.ceil(maxOpts / cols)},1fr)`;
+
+    if (isTimed()) {
+      const baseTime = (function () {
+        return (window.diffParams && diffParams().baseTime) || 15;
+      })();
+      countdown = PRESET.baseTime || baseTime;
+      if (timerEl) timerEl.textContent = String(countdown);
+      startAt = Date.now();
+      if (tId) clearInterval(tId);
+      tId = setInterval(() => {
+        countdown--;
+        if (timerEl) timerEl.textContent = String(Math.max(0, countdown));
+        if (countdown <= 0) {
+          clearInterval(tId);
+          tId = null;
+          lock = true;
+          if (fbEl) {
+            fbEl.textContent = `⏰ Time! Correct: ${correct}`;
+            fbEl.style.color = "#c00";
+          }
+
+          SFX.play("quiz.timeup");
+
+          flashJudge && flashJudge("vocabCard", "MISS");
+          addVoltage && addVoltage(-5, "vocabCard");
+          loseLife && loseLife("vocabCard");
+
+          streak = 0;
+          if (streakEl) streakEl.textContent = String(streak);
+          setTimeout(loadRound, 900);
+        }
+      }, 1000);
     }
+    const use = q.options.slice(0, maxOpts);
+    use.forEach((opt, idx) => {
+      const maker =
+        window.createUltimateBeatpadButton ||
+        ((label) => {
+          const btn = document.createElement("button");
+          btn.className = "pixel-btn beatpad-btn";
+          btn.textContent = label;
+          return { btn, style: { isPerfect: false, color: "#a594f9" } };
+        });
+      const { btn } = maker(opt, idx, (text, element, style) =>
+        onSelect(text, element, style, correct),
+      );
+      cEl.appendChild(btn);
+    });
+
+    createFallingBeatsSystem && createFallingBeatsSystem(cEl);
+
+    setupUltimateBeatpadKeyboard &&
+      setupUltimateBeatpadKeyboard(cEl, (text) => {
+        const target = Array.from(cEl.querySelectorAll(".beatpad-btn")).find(
+          (b) => b.textContent === text,
+        );
+        if (target) target.click();
+      });
+  }
 
   function onSelect(text, element, style, correct) {
     if (lock) return;
@@ -318,54 +300,44 @@
     }
     const isCorrect = text === correct;
     if (isCorrect) {
-      
-        createRingEffect && createRingEffect(element, true);
-      
+      createRingEffect && createRingEffect(element, true);
+
       if (style && style.isPerfect) {
-        
-          createPerfectHitEffect &&
-            createPerfectHitEffect(element, style.color);
-        
+        createPerfectHitEffect && createPerfectHitEffect(element, style.color);
+
         if (window.showDivaFeedback)
           showDivaFeedback("vocabFeedback", "✨ PERFECT! ✨", true);
         else if (fbEl) fbEl.textContent = "✨ PERFECT! ✨";
-        
-          awardHearts && awardHearts(2);
-        
+
+        awardHearts && awardHearts(2);
       } else {
         if (window.showDivaFeedback)
           showDivaFeedback("vocabFeedback", "✅ Correct!", true);
         else if (fbEl) {
           fbEl.textContent = "✅ Correct!";
         }
-        
-          awardHearts && awardHearts(1);
-        
+
+        awardHearts && awardHearts(1);
       }
       if (fbEl) fbEl.style.color = "#2b2b44";
       score++;
       if (scoreEl) scoreEl.textContent = String(score);
       streak++;
       if (streakEl) streakEl.textContent = String(streak);
-      
-        if (streak > 1) loveToast && loveToast(`コンボ x${streak}!`);
-        createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak);
-      
+
+      if (streak > 1) loveToast && loveToast(`コンボ x${streak}!`);
+      createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak);
+
       const mult = (function () {
-        
-          return diffParams().mult;
-       
+        return diffParams().mult;
       })();
       const rmult = (function () {
-        
-          return getRhythmMult();
-       
+        return getRhythmMult();
       })();
       const gain = (12 + Math.min(15, (streak - 1) * 2)) * mult * rmult;
-      
-        addXP &&
-          addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
-      
+
+      addXP && addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
+
       const dt = Date.now() - startAt;
       let judge = "FINE",
         v = 2,
@@ -374,47 +346,42 @@
         judge = "COOL";
         v = 4;
         sc = 100;
-        
-          HUD && HUD.counts && HUD.counts.COOL++;
-          party && party("vocabCard");
-        
+
+        HUD && HUD.counts && HUD.counts.COOL++;
+        party && party("vocabCard");
       } else if (dt <= 1400) {
         judge = "GREAT";
         v = 3;
         sc = 70;
-        
-          HUD && HUD.counts && HUD.counts.GREAT++;
-        
+
+        HUD && HUD.counts && HUD.counts.GREAT++;
       } else {
-        
-          HUD && HUD.counts && HUD.counts.FINE++;
-        
+        HUD && HUD.counts && HUD.counts.FINE++;
       }
-      
-        flashJudge && flashJudge("vocabCard", judge);
-        addVoltage && addVoltage(v, "vocabCard");
-        addCombo && addCombo("vocabCard");
-        HUD && (HUD.score += Math.round(sc * mult * rmult));
-      
+
+      flashJudge && flashJudge("vocabCard", judge);
+      addVoltage && addVoltage(v, "vocabCard");
+      addCombo && addCombo("vocabCard");
+      HUD && (HUD.score += Math.round(sc * mult * rmult));
+
       // Zap any active swallower on correct
-      
-        window.zapSwallower && window.zapSwallower();
-      
+
+      window.zapSwallower && window.zapSwallower();
+
       if (isTimed()) {
         const elapsed = Date.now() - startAt;
         if (!bestTime || elapsed < bestTime) {
           bestTime = elapsed;
-          
-            localStorage.setItem("vocab.bestTime", String(bestTime));
-          
+
+          localStorage.setItem("vocab.bestTime", String(bestTime));
+
           if (bestTimeEl)
             bestTimeEl.textContent = `${(bestTime / 1000).toFixed(1)}s`;
         }
       }
     } else {
-      
-        createRingEffect && createRingEffect(element, false);
-      
+      createRingEffect && createRingEffect(element, false);
+
       if (window.showDivaFeedback)
         showDivaFeedback("vocabFeedback", `❌ ${correct}`, false);
       else if (fbEl) {
@@ -423,13 +390,12 @@
       }
       streak = 0;
       if (streakEl) streakEl.textContent = String(streak);
-      
-        HUD && HUD.counts && HUD.counts.SAD++;
-        flashJudge && flashJudge("vocabCard", "SAD");
-        addVoltage && addVoltage(-5, "vocabCard");
-        resetCombo && resetCombo();
-        loseLife && loseLife("vocabCard");
-      
+
+      HUD && HUD.counts && HUD.counts.SAD++;
+      flashJudge && flashJudge("vocabCard", "SAD");
+      addVoltage && addVoltage(-5, "vocabCard");
+      resetCombo && resetCombo();
+      loseLife && loseLife("vocabCard");
     }
     setTimeout(loadRound, 900);
     return isCorrect;
@@ -445,9 +411,8 @@
     loadRound();
   }
   function stop() {
-    
-      if (tId) clearInterval(tId);
-    
+    if (tId) clearInterval(tId);
+
     tId = null;
   }
 

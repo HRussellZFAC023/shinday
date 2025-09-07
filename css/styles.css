@@ -2940,7 +2940,7 @@ main {
     align-items: center;
     text-align: center;
   }
-  
+
   .image-modal .actions {
     justify-content: center;
   }
@@ -3061,8 +3061,10 @@ main {
   bottom: -50px;
   width: 200px;
   height: auto;
- 
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .made-by-gif:hover {
@@ -3217,7 +3219,7 @@ main {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   border: 2px solid var(--pastel-pink);
   display: flex;
   align-items: center;
@@ -3239,7 +3241,7 @@ main {
   border-radius: 50%;
   animation: approachShrink 2.4s linear forwards;
 }
- @keyframes approachShrink {
+@keyframes approachShrink {
   from {
     transform: scale(1);
     opacity: 1;
@@ -3249,9 +3251,13 @@ main {
     opacity: 0;
   }
 }
- @keyframes targetFade {
-  from { opacity: 1; }
-  to { opacity: 0; }
+@keyframes targetFade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 /* Keyframe animations */
@@ -3907,8 +3913,6 @@ main {
   display: none !important;
 }
 
-
-
 .pixel-btn {
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
@@ -3969,8 +3973,6 @@ main {
     opacity: 1;
   }
 }
-
-
 
 @keyframes bounceIcon {
   0%,

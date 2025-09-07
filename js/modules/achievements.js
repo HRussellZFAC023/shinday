@@ -2,9 +2,7 @@
 (function () {
   const LS_KEY = "achievements.unlocked";
   function get() {
-    
-      return JSON.parse(localStorage.getItem(LS_KEY) || "[]");
-    
+    return JSON.parse(localStorage.getItem(LS_KEY) || "[]");
   }
   function has(id) {
     return get().includes(id);
@@ -47,9 +45,7 @@
   ];
 
   function lvl() {
-    
-      return Progression.getLevel();
-    
+    return Progression.getLevel();
   }
   function hearts() {
     return parseInt(localStorage.getItem("pixelbelle-hearts") || "0", 10) || 0;
@@ -57,12 +53,10 @@
 
   function check() {
     defs.forEach((d) => {
-      
-        if (!has(d.id) && d.cond()) {
-          add(d.id);
-          toast(d.text);
-        }
-     
+      if (!has(d.id) && d.cond()) {
+        add(d.id);
+        toast(d.text);
+      }
     });
   }
 

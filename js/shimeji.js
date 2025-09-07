@@ -544,7 +544,7 @@ class EnhancedCreature {
       "jumping",
       "scared",
       "happy",
-      "multiplying"
+      "multiplying",
     );
   }
 
@@ -576,7 +576,7 @@ class EnhancedCreature {
     this.state = "walk";
     this.container.classList.add("walking");
     this.playAnimation(frames, interval, walkCycles, () =>
-      this.setNextAction()
+      this.setNextAction(),
     );
   }
 
@@ -664,20 +664,19 @@ class EnhancedCreature {
       this.img.src = frames[this.currentFrame];
 
       // Footstep hooks on frame advance
-      
-        // Walk/forced-walk: step on alternating frames
-        if (
-          (this.state === "walk" || this.state === "forced-walk") &&
-          this.isGrounded
-        ) {
-          if (this.currentFrame % 2 === 0) this._tryFootstep("walk");
-        }
-        // Climb: step a bit slower, on first frame
-        else if (this.state === "climb") {
-          if (this.currentFrame === 0) this._tryFootstep("climb");
-        }
-        // Jump: initial takeoff is handled in triggerJump; landing handled in updatePhysics
-      
+
+      // Walk/forced-walk: step on alternating frames
+      if (
+        (this.state === "walk" || this.state === "forced-walk") &&
+        this.isGrounded
+      ) {
+        if (this.currentFrame % 2 === 0) this._tryFootstep("walk");
+      }
+      // Climb: step a bit slower, on first frame
+      else if (this.state === "climb") {
+        if (this.currentFrame === 0) this._tryFootstep("climb");
+      }
+      // Jump: initial takeoff is handled in triggerJump; landing handled in updatePhysics
     }, interval);
   }
 
@@ -687,13 +686,12 @@ class EnhancedCreature {
       kind === "climb" ? this._stepCooldownClimb : this._stepCooldownWalk;
     if (now - this._lastStepAt < cd) return;
     // Avoid churn when many creatures or tab hidden
-    
-      if (typeof document !== "undefined" && document.hidden) return;
-    
+
+    if (typeof document !== "undefined" && document.hidden) return;
+
     this._lastStepAt = now;
-    
-      if (window.SFX) window.SFX.play("foot.step");
-    
+
+    if (window.SFX) window.SFX.play("foot.step");
   }
 
   // NEW FEATURE: Climbing sides
@@ -733,9 +731,8 @@ class EnhancedCreature {
     this.isGrounded = false;
     this.jumpCooldown = 120; // 2 second cooldown at 60fps
     // Takeoff footstep
-    
-      if (window.SFX) window.SFX.play("foot.step");
-    
+
+    if (window.SFX) window.SFX.play("foot.step");
 
     const config = this.spriteConfig.jump;
     this.playAnimation(config.frames, config.interval, config.loops, () => {
@@ -786,7 +783,7 @@ class EnhancedCreature {
     // Position near parent
     offspring.position.x = Math.max(
       0,
-      Math.min(this.maxPosX, this.position.x + (Math.random() - 0.5) * 100)
+      Math.min(this.maxPosX, this.position.x + (Math.random() - 0.5) * 100),
     );
     offspring.position.y = this.position.y;
     offspring.direction = -this.direction;
@@ -806,7 +803,7 @@ class EnhancedCreature {
 
     const distance = Math.sqrt(
       Math.pow(mousePos.x - (this.position.x + this.containerWidth / 2), 2) +
-        Math.pow(mousePos.y - (this.position.y + this.containerHeight / 2), 2)
+        Math.pow(mousePos.y - (this.position.y + this.containerHeight / 2), 2),
     );
 
     if (distance < this.spriteConfig.mouseReactionDistance) {
@@ -969,9 +966,8 @@ class EnhancedCreature {
         const now = Date.now();
         if (now - this._lastLandAt > this._landCooldown) {
           this._lastLandAt = now;
-          
-            if (window.SFX) window.SFX.play("foot.step");
-          
+
+          if (window.SFX) window.SFX.play("foot.step");
         }
       }
 
@@ -1069,7 +1065,7 @@ function spawnCreatures() {
         const c = new EnhancedCreature(
           "miku-alt-0",
           MIKU_ALT_CONFIG,
-          "miku-alt"
+          "miku-alt",
         );
         creatures.push(c);
         return c;
@@ -1081,7 +1077,7 @@ function spawnCreatures() {
         const c = new EnhancedCreature(
           "miku-sketch-0",
           MIKU_SKETCH_CONFIG,
-          "miku-sketch"
+          "miku-sketch",
         );
         creatures.push(c);
         return c;
@@ -1110,23 +1106,23 @@ window.ShimejiFunctions = {
       const miku = new EnhancedCreature(
         `miku-${Date.now()}`,
         MIKU_CONFIG,
-        "miku"
+        "miku",
       );
       creatures.push(miku);
 
       // Reward hearts for new companion!
-      
-        // Suppress the initial boot-time reward; allow rewards for user-triggered spawns later
-        const booting = !!window.__shimejiBoot;
-        if (
-          !booting &&
-          window.pixelBelleGarden &&
-          window.pixelBelleGarden.addHearts
-        ) {
-          window.pixelBelleGarden.addHearts(3);
-          if (window.hearts.loveToast) window.hearts.loveToast("New companion! +3💖");
-        }
-      
+
+      // Suppress the initial boot-time reward; allow rewards for user-triggered spawns later
+      const booting = !!window.__shimejiBoot;
+      if (
+        !booting &&
+        window.pixelBelleGarden &&
+        window.pixelBelleGarden.addHearts
+      ) {
+        window.pixelBelleGarden.addHearts(3);
+        if (window.hearts.loveToast)
+          window.hearts.loveToast("New companion! +3💖");
+      }
 
       return miku;
     }
@@ -1137,7 +1133,7 @@ window.ShimejiFunctions = {
       const miku = new EnhancedCreature(
         `miku-alt-${Date.now()}`,
         MIKU_ALT_CONFIG,
-        "miku-alt"
+        "miku-alt",
       );
       creatures.push(miku);
       return miku;
@@ -1149,7 +1145,7 @@ window.ShimejiFunctions = {
       const miku = new EnhancedCreature(
         `miku-sketch-${Date.now()}`,
         MIKU_SKETCH_CONFIG,
-        "miku-sketch"
+        "miku-sketch",
       );
       creatures.push(miku);
       return miku;
@@ -1162,7 +1158,7 @@ window.ShimejiFunctions = {
       const classic = new EnhancedCreature(
         `classic-${Date.now()}`,
         CLASSIC_CONFIG,
-        "classic"
+        "classic",
       );
       creatures.push(classic);
       return classic;
@@ -1221,7 +1217,6 @@ window.ShimejiFunctions = {
     if (creatures.length === 0) {
       spawnCreatures();
       console.log("Enhanced Shimeji system initialized!");
-
     }
   },
 };
@@ -1237,4 +1232,3 @@ setInterval(() => {
     }
   }
 }, 10000);
-

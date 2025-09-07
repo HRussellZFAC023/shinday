@@ -28,7 +28,7 @@ window.MikuSystem = (function () {
       mikuList.find(
         (miku) =>
           normalizedUrl.includes(normalize(miku.filename || "")) ||
-          normalizedUrl.includes(normalize(miku.image || ""))
+          normalizedUrl.includes(normalize(miku.image || "")),
       ) || null
     );
   }

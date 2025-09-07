@@ -7,7 +7,7 @@ window.SFX = (function initSfxEngine() {
     "ui.move": [
       p("menu sounds/menu cursor move.wav"),
       p(
-        "menu sounds/menu cursor move (except this time there's three of them and it's slightly louder).wav"
+        "menu sounds/menu cursor move (except this time there's three of them and it's slightly louder).wav",
       ),
       p("menu sounds/se_sy_00.wav"),
     ],
@@ -157,12 +157,12 @@ window.SFX = (function initSfxEngine() {
       p("misc other voice clips/(miku) yo.wav"),
       p("misc other voice clips/(rin) yo.wav"),
     ],
-  // Misc voice clips not referenced elsewhere
-  "extra.miku.laugh": [p("misc other voice clips/(miku) laugh.wav")],
-  "extra.miku.uu": [p("misc other voice clips/(miku) uu.wav")],
-  "extra.len.hey": [p("misc other voice clips/(len) hey.wav")],
-  // filename contains a closing paren in the assets listing
-  "extra.len.yo": [p("misc other voice clips/(len) yo).wav")],
+    // Misc voice clips not referenced elsewhere
+    "extra.miku.laugh": [p("misc other voice clips/(miku) laugh.wav")],
+    "extra.miku.uu": [p("misc other voice clips/(miku) uu.wav")],
+    "extra.len.hey": [p("misc other voice clips/(len) hey.wav")],
+    // filename contains a closing paren in the assets listing
+    "extra.len.yo": [p("misc other voice clips/(len) yo).wav")],
     "extra.wan": [p("misc other voice clips/(rin) wan.wav")],
     "extra.thanks": [
       p("misc other voice clips/(miku) thank you for playing!.wav"),
@@ -214,18 +214,16 @@ window.SFX = (function initSfxEngine() {
   };
   function ensureCtx() {
     if (!ctxState.ctx) {
-      
-        ctxState.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        ctxState.master = ctxState.ctx.createGain();
-        ctxState.master.gain.value = ctxState.volume;
-        ctxState.master.connect(ctxState.ctx.destination);
-        const unlock = () => {
-          if (!ctxState.ctx) return;
-          if (ctxState.ctx.state === "suspended") ctxState.ctx.resume();
-          window.removeEventListener("pointerdown", unlock);
-        };
-        window.addEventListener("pointerdown", unlock);
-      
+      ctxState.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      ctxState.master = ctxState.ctx.createGain();
+      ctxState.master.gain.value = ctxState.volume;
+      ctxState.master.connect(ctxState.ctx.destination);
+      const unlock = () => {
+        if (!ctxState.ctx) return;
+        if (ctxState.ctx.state === "suspended") ctxState.ctx.resume();
+        window.removeEventListener("pointerdown", unlock);
+      };
+      window.addEventListener("pointerdown", unlock);
     }
     return ctxState.ctx;
   }
@@ -236,7 +234,7 @@ window.SFX = (function initSfxEngine() {
     const prom = fetch(path)
       .then((r) => r.arrayBuffer())
       .then(
-        (ab) => new Promise((res, rej) => ctx.decodeAudioData(ab, res, rej))
+        (ab) => new Promise((res, rej) => ctx.decodeAudioData(ab, res, rej)),
       )
       .catch(() => null);
     buffers.set(path, prom);
@@ -244,7 +242,7 @@ window.SFX = (function initSfxEngine() {
   }
   async function playPath(
     path,
-    { volume = 1, rate = 1, detune = 0, pan = 0 } = {}
+    { volume = 1, rate = 1, detune = 0, pan = 0 } = {},
   ) {
     if (!ctxState.enabled) return;
     const ctx = ensureCtx();
@@ -264,9 +262,8 @@ window.SFX = (function initSfxEngine() {
     } else {
       src.connect(g).connect(ctxState.master);
     }
-    
-      src.start();
-    
+
+    src.start();
   }
   function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -285,7 +282,7 @@ window.SFX = (function initSfxEngine() {
     ctxState.enabled = !!on;
     localStorage.setItem(
       "pixelbelle-sfx-enabled",
-      ctxState.enabled ? "1" : "0"
+      ctxState.enabled ? "1" : "0",
     );
   }
   function setVolume(v) {
@@ -293,12 +290,12 @@ window.SFX = (function initSfxEngine() {
     if (ctxState.master) ctxState.master.gain.value = ctxState.volume;
     localStorage.setItem("pixelbelle-sfx-volume", String(ctxState.volume));
   }
-  
-    const en = localStorage.getItem("pixelbelle-sfx-enabled");
-    if (en != null) ctxState.enabled = en === "1";
-    const vol = parseFloat(localStorage.getItem("pixelbelle-sfx-volume") || "");
-    if (isFinite(vol)) ctxState.volume = vol;
-  
+
+  const en = localStorage.getItem("pixelbelle-sfx-enabled");
+  if (en != null) ctxState.enabled = en === "1";
+  const vol = parseFloat(localStorage.getItem("pixelbelle-sfx-volume") || "");
+  if (isFinite(vol)) ctxState.volume = vol;
+
   function preloadFirst(keys = [], { perTick = 2, delay = 150 } = {}) {
     const paths = [];
     const seen = new Set();
