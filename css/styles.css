@@ -393,7 +393,7 @@ main {
 .hero-miku {
   width: 125px;
   height: auto;
-  animation: bounce 2s ease-in-out infinite;
+  animation: float 3s ease-in-out infinite;
 }
 
 .hero-text h2 {
@@ -1872,8 +1872,9 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
+  margin-bottom: 12px;
 }
 .Wish-actions {
   display: flex;
@@ -1896,22 +1897,22 @@ main {
 }
 .Wish-controls {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   justify-content: center;
-  margin: 10px 0;
+  margin: 16px 0;
 }
 .Wish-results {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
-  gap: 10px;
-  margin-top: 10px;
+  gap: 14px;
+  margin-top: 16px;
 }
 .Wish-card {
   position: relative;
   border: 2px solid var(--border);
   border-radius: 10px;
   background: #fff;
-  padding: 6px;
+  padding: 8px;
   box-shadow: var(--shadow);
   /* Performance optimizations */
   will-change: transform, opacity;

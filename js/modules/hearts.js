@@ -76,12 +76,14 @@
   }
 
   function addHearts(amount){
-    heartCount += amount;
+    heartCount = Math.max(0, heartCount + amount);
     localStorage.setItem('pixelbelle-hearts', heartCount);
     updateCounters();
-  try{ const el=document.getElementById('gameHeartCount'); if (el) el.textContent=String(heartCount);}catch(_){}
-    try{ SFX.play('hearts.add'); if(amount>=5) SFX.play('extra.coin'); }catch(_){}
-    if (Array.isArray(LOVE_MILESTONES)){
+    try{ const el=document.getElementById('gameHeartCount'); if (el) el.textContent=String(heartCount);}catch(_){} 
+    if(amount>0){
+      try{ SFX.play('hearts.add'); if(amount>=5) SFX.play('extra.coin'); }catch(_){} 
+    }
+    if (amount>0 && Array.isArray(LOVE_MILESTONES)){
       const reached = LOVE_MILESTONES.filter(m=>heartCount>=m.step);
       if (reached.length){
         const top = reached.reduce((a,b)=>b.step>a.step?b:a);
@@ -89,15 +91,17 @@
           lastMilestone=top.step;
           localStorage.setItem('pixelbelle-last-milestone', lastMilestone);
           loveToast(top.msg);
-          try{ SFX.play('hearts.milestone'); }catch(_){}
+          try{ SFX.play('hearts.milestone'); }catch(_){} 
           shimejiBroadcastLove();
         }
       }
     }
-    const counterEl=document.getElementById('heartCount');
-    if(counterEl) createSparkleEffect(counterEl);
-    burstHeartsAndStars(Math.min(8,2+amount*2));
-    shimejiCelebrate(amount);
+    if(amount>0){
+      const counterEl=document.getElementById('heartCount');
+      if(counterEl) createSparkleEffect(counterEl);
+      burstHeartsAndStars(Math.min(8,2+amount*2));
+      shimejiCelebrate(amount);
+    }
   }
 
   function loadSavedData(){
