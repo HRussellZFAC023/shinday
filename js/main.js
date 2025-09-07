@@ -29,6 +29,7 @@ window.initSite = function () {
   window.ShimejiFunctions.init();
   window.hearts.initHearts();
   window.shop && window.shop.initShop();
+  window.socials && window.socials.initSocials();
   window.Jukebox.initialize();
   console.log(window.navi)
   window.navi.initNavigation();
