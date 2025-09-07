@@ -1066,8 +1066,10 @@ function initMikuWish() {
   function addToCollection(card) {
     const id = card.id;
     const prev = collection[id] || { count: 0, rarity: card.rarity };
+    const isFirst = prev.count === 0;
     prev.count += 1;
     prev.rarity = card.rarity;
+    if (isFirst) prev.new = true;
     try {
       const meta =
         typeof window.getMikuMeta === "function"
@@ -1103,7 +1105,7 @@ function initMikuWish() {
         } catch (_) {}
       }
     } catch (_) {}
-    return prev.count === 1;
+    return isFirst;
   }
 
   function pickRandom() {
@@ -1367,8 +1369,11 @@ function initMikuWish() {
         const name = meta ? meta.name || "Miku" : "Miku";
         const ownClass = owned ? `owned rarity-${r}` : "locked";
         const count = owned
-          ? `<span class=\"dex-count\">x${entry.count}</span>`
+          ? entry.new
+            ? ""
+            : `<span class=\"dex-count\">x${entry.count}</span>`
           : `<span class=\"dex-locked\">?</span>`;
+        const newBadge = entry?.new ? '<div class="Wish-new">NEW!</div>' : "";
         const vid =
           (meta &&
             meta.song &&
@@ -1386,6 +1391,7 @@ function initMikuWish() {
         return `
           <div class=\"dex-card ${ownClass}\" data-url=\"${url}\" tabindex=\"0\">
             <div class=\"dex-stars\">${stars(r)}</div>
+            ${newBadge}
             ${count}
             <img src=\"${url}\" alt=\"${name}\" loading=\"lazy\" />
             <div class=\"dex-name\">${name}</div>
@@ -1456,6 +1462,16 @@ function initMikuWish() {
           <div class=\"dex-grid\">${tiles}</div>
         </div>`;
 
+    // Clear "new" flags now that they've been displayed
+    let cleared = false;
+    for (const k of Object.keys(collection)) {
+      if (collection[k] && collection[k].new) {
+        delete collection[k].new;
+        cleared = true;
+      }
+    }
+    if (cleared) localStorage.setItem(LS_COLL, JSON.stringify(collection));
+
     // Bind control events
     const scopeSel = elements.dex.querySelector("#dexScope");
     const raritySel = elements.dex.querySelector("#dexRarity");
@@ -1509,6 +1525,20 @@ function initMikuWish() {
       });
     });
   }
+
+  function resetWishUI() {
+    try {
+      elements.results.hidden = true;
+      elements.rotation.hidden = false;
+    } catch (_) {}
+    try {
+      elements.dex.classList.add("hidden");
+      elements.dexBtn.textContent = C.games?.WishOpenDex || "Open MikuDex";
+    } catch (_) {}
+  }
+  try {
+    window.__resetWish = resetWishUI;
+  } catch (_) {}
 
   function pull(n) {
     if (!poolReady()) {
@@ -5202,6 +5232,11 @@ function initNavigation() {
         window.__kanjiStop && window.__kanjiStop();
         try {
           if (typeof window.__resetStudy === "function") window.__resetStudy();
+        } catch (_) {}
+      }
+      if (prevSection === "Wish") {
+        try {
+          window.__resetWish && window.__resetWish();
         } catch (_) {}
       }
     } catch (_) {}
