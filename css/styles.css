@@ -1867,17 +1867,20 @@ main {
 /* Wish styles */
 .Wish {
   text-align: center;
+  padding: 12px 0;
 }
 .Wish-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
+  margin-bottom: 15px;
 }
 .Wish-actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 .Wish-actions .pixel-btn {
   background: linear-gradient(180deg, #ffffff, #ffe9f6);
@@ -1903,8 +1906,8 @@ main {
 .Wish-results {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
-  gap: 10px;
-  margin-top: 10px;
+  gap: 14px;
+  margin-top: 16px;
 }
 .Wish-card {
   position: relative;
