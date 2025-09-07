@@ -6638,7 +6638,206 @@ function startRandomCelebrations() {
 window.addEventListener("load", startRandomCelebrations);
 document.addEventListener("DOMContentLoaded", startRandomCelebrations);
 
+// Shop wiring
+function initShop() {
+  const btnDecoy = document.getElementById("shopDecoy");
+  const btnShield = document.getElementById("shopShield");
+  const status = document.getElementById("shopStatus");
+  const shopPanel = document.querySelector(".shop-panel");
 
+  // Add shop keeper with idol.png and Irasshaimase greeting
+  if (shopPanel && !shopPanel.querySelector(".shop-keeper")) {
+    const keeper = document.createElement("div");
+    keeper.className = "shop-keeper";
+    keeper.innerHTML = `
+      <img src="./assets/idol.png" alt="Shop Miku" class="shop-keeper-image" width="48" height="48">
+      <p class="shop-keeper-text">いらっしゃいませ〜！💖<br><small>Welcome to Miku's Item Shop!</small></p>
+    `;
+    shopPanel.insertBefore(keeper, shopPanel.firstChild);
+  }
+
+  // Hide status overlay initially
+  const statusOverlay = document.getElementById("itemsStatusOverlay");
+  if (statusOverlay) {
+    statusOverlay.style.display = "none";
+  }
+
+  // Add Miku icons to shop buttons
+  
+    const shieldIcon = btnShield?.querySelector(".shop-icon-placeholder");
+    const decoyIcon = btnDecoy?.querySelector(".shop-icon-placeholder");
+
+    if (shieldIcon && window.mikuIcon) {
+      shieldIcon.innerHTML =window.MikuCore.mikuIcon("ok sign", "⛨");
+    }
+    if (decoyIcon && window.mikuIcon) {
+      decoyIcon.innerHTML =window.MikuCore.mikuIcon("love letter", "🍪");
+    }
+  
+
+  if (btnDecoy)
+    btnDecoy.addEventListener("click", () => {
+      const cost = 5; // Lower cost as specified
+      
+        if (window.Hearts && typeof window.Hearts.add === "function") {
+          if (
+            (window.getHeartCount && getHeartCount() >= cost) ||
+            (!window.getHeartCount && (heartCount || 0) >= cost)
+          ) {
+            window.Hearts.add(-cost);
+            spawnDecoyTreats(2 + Math.floor(Math.random() * 3));
+            // Show status overlay when item is used
+            const statusOverlay = document.getElementById("itemsStatusOverlay");
+            if (statusOverlay) {
+              statusOverlay.style.display = "block";
+            }
+            // Mirror bait status into micro overlay
+            
+              ensureItemsOverlay();
+              const ob = document.getElementById("itemsOverlayBait");
+              if (ob) {
+                const inner = ob.querySelector(".label");
+                if (inner) inner.textContent = "active";
+                ob.style.opacity = "1";
+                setTimeout(() => {
+                  if (inner && inner.textContent === "active") {
+                    inner.textContent = "";
+                    ob.style.opacity = isReducedMotion() ? "0" : "0";
+                  }
+                }, 9000);
+              }
+            
+            
+              SFX.play("ui.select");
+              if (window.ShimejiFunctions?.makeRandomSpeak) {
+                window.ShimejiFunctions.makeRandomSpeak(
+                  "おとりを置いたよ！🍪",
+                  1500,
+                );
+              }
+            
+          } else {
+            
+              SFX.play("ui.unavailable");
+              if (window.ShimejiFunctions?.makeRandomSpeak) {
+                window.ShimejiFunctions.makeRandomSpeak(
+                  "💖が足りないよ〜",
+                  1200,
+                );
+              }
+            
+          }
+        }
+      
+    });
+  if (btnShield)
+    btnShield.addEventListener("click", () => {
+      const cost = 50;
+      
+        const have =
+          (window.getHeartCount && getHeartCount()) ||
+          heartCount ||
+          parseInt(localStorage.getItem("pixelbelle-hearts") || "0", 10);
+        if (have >= cost) {
+          if (window.Hearts && typeof window.Hearts.add === "function")
+            window.Hearts.add(-cost);
+          else {
+            heartCount = have - cost;
+            localStorage.setItem("pixelbelle-hearts", heartCount);
+            updateCounters && updateCounters();
+          }
+          activateHeartShield(1000 * 60 * 5);
+          status && (status.textContent = "Shield activated!");
+          // Update shield timer immediately
+          
+            updateShieldTimerLabel();
+          
+          
+            SFX.play("extra.fx2");
+            if (window.ShimejiFunctions?.makeAllSpeak) {
+              window.ShimejiFunctions.makeAllSpeak(
+                "シールドが発動したよ！⛨✨",
+                2000,
+              );
+            }
+          
+        } else {
+          status && (status.textContent = "Not enough 💖");
+          
+            SFX.play("ui.unavailable");
+            if (window.ShimejiFunctions?.makeRandomSpeak) {
+              window.ShimejiFunctions.makeRandomSpeak(
+                "💖が足りません〜😿",
+                1300,
+              );
+            }
+          
+        }
+      
+    });
+
+  // Live countdown for shield
+  function updateShieldTimerLabel() {
+    const el = document.getElementById("shieldTimer");
+    if (!el) return;
+    const left = Math.max(0, __heartShieldUntil - Date.now());
+    if (left <= 0) {
+      el.textContent = "";
+      // Mirror into micro-overlay
+      ensureItemsOverlay();
+      const chip = document.getElementById("itemsOverlayShield");
+      if (chip) {
+        const inner = chip.querySelector(".label");
+        if (inner) inner.textContent = "";
+        chip.style.opacity = "0";
+      }
+      return;
+    }
+    const mm = Math.floor(left / 60000);
+    const ss = Math.floor((left % 60000) / 1000);
+    if (mm > 0) el.textContent = `shield: ${mm}m ${ss}s`;
+    else el.textContent = `shield: ${ss}s`;
+    // Mirror into micro-overlay
+    ensureItemsOverlay();
+    const chip = document.getElementById("itemsOverlayShield");
+    if (chip) {
+      const inner = chip.querySelector(".label");
+      if (inner) inner.textContent = el.textContent.replace(/^shield:\s*/, "");
+      chip.style.opacity = isReducedMotion() ? "1" : "1";
+    }
+  }
+  // Tick while page is open
+  
+    if (!window.__shieldTick) {
+      window.__shieldTick = setInterval(updateShieldTimerLabel, 1000);
+    }
+  
+  // Initial render after load
+  setTimeout(updateShieldTimerLabel, 0);
+}
+
+// Small HUD overlay for items status (display-only)
+function ensureItemsOverlay() {
+  let ov = document.getElementById("itemsStatusOverlay");
+  if (!ov) {
+    ov = document.createElement("div");
+    ov.id = "itemsStatusOverlay";
+    ov.style.cssText =
+      "position:fixed;right:10px;top:10px;z-index:9998;background:rgba(255,255,255,0.85);border:2px solid var(--border);border-radius:10px;padding:6px 10px;display:flex;gap:12px;align-items:center;backdrop-filter:saturate(1.1) blur(2px)";
+    const rm = isReducedMotion();
+    const base =
+      "transition:opacity .35s ease;opacity:0;display:inline-flex;gap:6px;align-items:center;font-weight:800;color:#2b2b44;";
+    const vis = rm ? "" : base;
+    ov.innerHTML =
+      '<span id="itemsOverlayShield" style="' +
+      vis +
+      '">⛨ <span class="label"></span></span><span id="itemsOverlayBait" style="' +
+      vis +
+      '">🍪 <span class="label"></span></span>';
+    document.body.appendChild(ov);
+  }
+  return ov;
+}
 
 function initRandomMiku() {
   const randomMikuImg = document.getElementById("randomMikuImg");
