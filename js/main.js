@@ -27,6 +27,7 @@ window.initSite = function () {
   window.AudioMod.initBgm();
   window.ShimejiFunctions.init();
   window.hearts.initHearts();
+  window.shop && window.shop.initShop();
   window.Jukebox.initialize();
   console.log(window.navi)
   window.navi.initNavigation();

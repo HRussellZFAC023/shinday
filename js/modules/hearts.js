@@ -28,9 +28,7 @@ window.hearts = (function () {
       "position:fixed;left:50%;top:20%;transform:translateX(-50%);background:rgba(255,255,255,0.95);border:2px solid var(--accent);border-radius:16px;padding:12px 18px;font-weight:800;color:var(--ink);box-shadow:var(--shadow);z-index:9999;animation:fadeToast 2.5s ease-out forwards;";
     document.body.appendChild(toast);
 
-    mikuSpeakToast && mikuSpeakToast(msg);
-
-    setTimeout(() => toast.remove(), 3500);
+    setTimeout(() => toast.remove(), 4000);
   }
 
   function burstHeartsAndStars(n = 8) {
@@ -51,13 +49,14 @@ window.hearts = (function () {
   function shimejiCelebrate(amount) {
     const s = window.ShimejiFunctions;
     if (!s) return;
-    if (heartCount % 5 === 0) s.triggerMassJump();
+    if (heartCount % 5 === 0) {s.triggerMassJump() ; shimejiBroadcastLove();}
     else s.triggerMassHappy();
     if (heartCount % 25 === 0 && s.triggerMassDance) s.triggerMassDance();
     if (heartCount % 25 === 0) SFX.play("extra.clap");
     else if (Math.random() < 0.5) SFX.play("extra.yo");
     else if (Math.random() < 0.5) SFX.play("extra.wan");
     else SFX.play("hearts.add");
+   
   }
 
   function shimejiBroadcastLove() {

@@ -100,7 +100,7 @@
       "position:fixed;right:16px;bottom:16px;width:360px;z-index:9999;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border:2px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(43,43,68,.25)";
     wrap.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border)">
-        <div style=\"font-weight:900;display:flex;align-items:center;gap:8px\">🎵 Miku Jukebox • <span id=\"jukeboxNow\">Ready</span></div>
+        <div style=\"font-weight:900;display:flex;align-items:center;gap:8px\">🎵 Miku Jukebox <span id=\"jukeboxNow\">Ready</span></div>
         <div style=\"display:flex;align-items:center;gap:6px\">
           <button id=\"jukeboxLove\" title=\"send love\" class=\"pixel-btn\" style=\"padding:4px 8px;line-height:1\">💖</button>
           <button id=\"jukeboxClose\" class=\"pixel-btn\" style=\"padding:4px 8px\">✖</button>
@@ -128,7 +128,6 @@
           window.hearts.addHearts(1);
         }
 
-        window.hearts.loveToast("Thanks for the love! 💖", "miku");
 
         window.MikuUI.effects.confetti(40);
       });
