@@ -28,15 +28,11 @@
     return new Date().toDateString();
   }
   function load() {
-    
-      const raw = JSON.parse(localStorage.getItem(LS_Q) || "{}");
-      return raw;
-  
+    const raw = JSON.parse(localStorage.getItem(LS_Q) || "{}");
+    return raw;
   }
   function save(state) {
-    
-      localStorage.setItem(LS_Q, JSON.stringify(state));
-    
+    localStorage.setItem(LS_Q, JSON.stringify(state));
   }
   function ensureState() {
     const s = load();
@@ -59,9 +55,8 @@
       it.done = true;
       const reward = QUESTS.find((q) => q.id === id).reward || {};
       if (reward.xp && window.Progression) Progression.addXp(reward.xp);
-      
-        if (window.SFX) SFX.play("ui.select");
-      
+
+      if (window.SFX) SFX.play("ui.select");
     }
     save(s);
     render();
@@ -103,36 +98,35 @@
 
   function wireHooks() {
     // Hook flashJudge to count COOLs
-    
-      const orig = window.flashJudge;
-      if (typeof orig === "function") {
-        window.flashJudge = function (cardId, label) {
-          if (label === "COOL") inc("cool-judges", 1);
-          return orig.apply(this, arguments);
-        };
-      }
-    
+
+    const orig = window.flashJudge;
+    if (typeof orig === "function") {
+      window.flashJudge = function (cardId, label) {
+        if (label === "COOL") inc("cool-judges", 1);
+        return orig.apply(this, arguments);
+      };
+    }
+
     // Hook study correct answer increments
-    
-      const el = document.getElementById("jpGames");
-      if (el) {
-        el.addEventListener("click", (e) => {
-          const b = e.target.closest("button");
-          if (b && /option|answer|choice/i.test(b.className))
-            inc("answers-right", 1);
-        });
-      }
-    
+
+    const el = document.getElementById("jpGames");
+    if (el) {
+      el.addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (b && /option|answer|choice/i.test(b.className))
+          inc("answers-right", 1);
+      });
+    }
+
     // Hook jukebox play
-    
-      const origPlay = window.Jukebox && Jukebox.play;
-      if (typeof origPlay === "function") {
-        Jukebox.play = function () {
-          inc("play-song", 1);
-          return origPlay.apply(this, arguments);
-        };
-      }
-    
+
+    const origPlay = window.Jukebox && Jukebox.play;
+    if (typeof origPlay === "function") {
+      Jukebox.play = function () {
+        inc("play-song", 1);
+        return origPlay.apply(this, arguments);
+      };
+    }
   }
 
   function init() {

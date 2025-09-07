@@ -6,11 +6,11 @@ window.hearts = (function () {
   const SFX = window.SFX;
   let heartCount = parseInt(
     localStorage.getItem("pixelbelle-hearts") || "0",
-    10
+    10,
   );
   let lastMilestone = parseInt(
     localStorage.getItem("pixelbelle-last-milestone") || "0",
-    10
+    10,
   );
 
   function updateCounters() {
@@ -49,14 +49,15 @@ window.hearts = (function () {
   function shimejiCelebrate(amount) {
     const s = window.ShimejiFunctions;
     if (!s) return;
-    if (heartCount % 5 === 0) {s.triggerMassJump() ; shimejiBroadcastLove();}
-    else s.triggerMassHappy();
+    if (heartCount % 5 === 0) {
+      s.triggerMassJump();
+      shimejiBroadcastLove();
+    } else s.triggerMassHappy();
     if (heartCount % 25 === 0 && s.triggerMassDance) s.triggerMassDance();
     if (heartCount % 25 === 0) SFX.play("extra.clap");
     else if (Math.random() < 0.5) SFX.play("extra.yo");
     else if (Math.random() < 0.5) SFX.play("extra.wan");
     else SFX.play("hearts.add");
-   
   }
 
   function shimejiBroadcastLove() {

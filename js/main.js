@@ -31,7 +31,7 @@ window.initSite = function () {
   window.shop && window.shop.initShop();
   window.socials && window.socials.initSocials();
   window.Jukebox.initialize();
-  console.log(window.navi)
+  console.log(window.navi);
   window.navi.initNavigation();
   // greet on first visit only
   const visited = localStorage.getItem("pixelbelle-visited");
@@ -39,5 +39,4 @@ window.initSite = function () {
     localStorage.setItem("pixelbelle-visited", "1");
     window.hearts.loveToast("Welcome to Baby Belle's Pixel Garden! ✨", "miku");
   }
-
 };

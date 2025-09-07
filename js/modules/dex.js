@@ -5,6 +5,14 @@
   const LS_FILTER = "Wish.dexFilter";
   const PIXIE_URL = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
 
+   if (!window.handleVideoError) {
+    window.handleVideoError = function (iframe, videoUrl) {
+      if (iframe && iframe.parentElement) {
+        iframe.parentElement.innerHTML = `<div class="video-error">Video unavailable<br><a href="${videoUrl}" target="_blank" rel="noopener">Watch on YouTube</a></div>`;
+      }
+    };
+  }
+
   function poolReady() {
     return Array.isArray(window.MIKU_IMAGES) && window.MIKU_IMAGES.length > 0;
   }
@@ -27,7 +35,8 @@
 
   function rarityFor(url) {
     // Prefer meta rarity; fallback hash
-    const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
+    const meta =
+      typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
     if (meta && Number.isFinite(meta.rarity)) return meta.rarity;
     let h = 0;
     for (let i = 0; i < url.length; i++) h = (h << 5) - h + url.charCodeAt(i);
@@ -43,8 +52,12 @@
     if (!url) return null;
     try {
       const u = new URL(url);
-      if ((u.hostname.includes("youtube.com") || u.hostname.includes("youtu.be"))) {
-        if (u.hostname.includes("youtu.be")) return u.pathname.replace(/^\//, "");
+      if (
+        u.hostname.includes("youtube.com") ||
+        u.hostname.includes("youtu.be")
+      ) {
+        if (u.hostname.includes("youtu.be"))
+          return u.pathname.replace(/^\//, "");
         const v = u.searchParams.get("v");
         if (v) return v;
       }
@@ -72,9 +85,9 @@
           <option value="6" ${filter.rarity === 6 ? "selected" : ""}>★6</option>
         </select>
         <label for="dexSearch">Search</label>
-        <input id="dexSearch" type="search" placeholder="name..." value="${
-          (filter.search || "").replace(/"/g, "&quot;")
-        }"/>
+        <input id="dexSearch" type="search" placeholder="name..." value="${(
+          filter.search || ""
+        ).replace(/"/g, "&quot;")}"/>
       </div>`;
   }
 
@@ -95,7 +108,10 @@
     const coll = getColl();
     const base = (window.MIKU_IMAGES || []).slice();
     const includePixie = true;
-    const urls = includePixie && base.indexOf(PIXIE_URL) === -1 ? base.concat([PIXIE_URL]) : base;
+    const urls =
+      includePixie && base.indexOf(PIXIE_URL) === -1
+        ? base.concat([PIXIE_URL])
+        : base;
     const filter = currentFilter();
 
     const ownedCount = Object.keys(coll).length;
@@ -103,22 +119,38 @@
 
     const tiles = urls
       .map((url) => {
-        const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
-        const name = meta?.name || meta?.title || (url.split("/").pop() || "Miku").replace(/\.[a-z0-9]+$/i, "");
-        const r = meta?.rarity || (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
+        const meta =
+          typeof window.getMikuMeta === "function"
+            ? window.getMikuMeta(url)
+            : null;
+        const name =
+          meta?.name ||
+          meta?.title ||
+          (url.split("/").pop() || "Miku").replace(/\.[a-z0-9]+$/i, "");
+        const r =
+          meta?.rarity ||
+          (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
         const entry = coll[url];
         const owned = !!entry;
         const passesScope =
-          filter.scope === "all" ? true : filter.scope === "owned" ? owned : !owned;
+          filter.scope === "all"
+            ? true
+            : filter.scope === "owned"
+              ? owned
+              : !owned;
         const passesRarity = !filter.rarity || filter.rarity === r;
-        const passesSearch = !filter.search || name.toLowerCase().includes(filter.search.toLowerCase());
+        const passesSearch =
+          !filter.search ||
+          name.toLowerCase().includes(filter.search.toLowerCase());
         if (!(passesScope && passesRarity && passesSearch)) return "";
         const ownClass = owned ? `owned rarity-${r}` : "locked";
-        
+
         // Check for NEW status from localStorage or entry.new
         const getNewSet = () => {
           try {
-            return new Set(JSON.parse(localStorage.getItem("Wish.newIds") || "[]"));
+            return new Set(
+              JSON.parse(localStorage.getItem("Wish.newIds") || "[]"),
+            );
           } catch {
             return new Set();
           }
@@ -127,12 +159,14 @@
         const isNewFromEntry = entry?.new;
         const isNew = isNewFromSet || isNewFromEntry;
         const newBadge = isNew ? '<div class="Wish-new">NEW!</div>' : "";
-        
+
         // PixieBel mystery mask for locked state
         const isPixieBel = /(PixieBel \(bonus\)\.gif)$/i.test(url);
-        const mysteryOverlay = !owned && isPixieBel ? 
-          '<div class="mystery-cover"><div class="mystery-text">?</div></div>' : "";
-        
+        const mysteryOverlay =
+          !owned && isPixieBel
+            ? '<div class="mystery-cover"><div class="mystery-text">?</div></div>'
+            : "";
+
         return `
           <div class="dex-card ${ownClass}" data-url="${url}" tabindex="0">
             <div class="dex-stars">${stars(r)}</div>
@@ -178,7 +212,7 @@
         searchTimeout = setTimeout(() => renderInto(container), 300);
       };
       // Prevent search from losing focus during typing
-      searchInp.addEventListener('blur', (e) => {
+      searchInp.addEventListener("blur", (e) => {
         // Re-focus if blur was caused by our re-rendering
         if (e.relatedTarget === null) {
           setTimeout(() => {
@@ -192,7 +226,9 @@
 
     // Tile popovers
     container.querySelectorAll(".dex-card").forEach((card) => {
-      card.addEventListener("click", () => openDetails(card.getAttribute("data-url")));
+      card.addEventListener("click", () =>
+        openDetails(card.getAttribute("data-url")),
+      );
       card.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -216,12 +252,14 @@
     const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
     const name = meta?.name || meta?.title || (url.split("/").pop() || "Miku").replace(/\.[a-z0-9]+$/i, "");
     const rarity = meta?.rarity || (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
-    const vid = ytIdFrom(meta?.song || meta?.video);
+    const videoUrl = meta?.song || meta?.video || "";
+    const vid = ytIdFrom(videoUrl);
+    const escapedVideoUrl = (videoUrl || "").replace(/'/g, "\\'");
     const links = Array.isArray(meta?.links) ? meta.links : [];
     const coll = getColl();
     const entry = coll[url];
     const owned = !!entry;
-    
+
     // Rarity effects calculation
     const RARITY_EFFECTS = window.RARITY_EFFECTS || {
       scorePerStep: 0.1,
@@ -229,7 +267,10 @@
       rareDropBonus: 0.05,
     };
     const steps = Math.max(0, rarity - 1);
-    const scoreBonus = Math.min(RARITY_EFFECTS.scoreCap, steps * RARITY_EFFECTS.scorePerStep);
+    const scoreBonus = Math.min(
+      RARITY_EFFECTS.scoreCap,
+      steps * RARITY_EFFECTS.scorePerStep,
+    );
     const shieldPct = Math.round(scoreBonus * 100);
     const rarePct = Math.round((RARITY_EFFECTS.rareDropBonus || 0) * 100);
     const effectsText = `Effects: +${Math.round(scoreBonus * 100)}% score, +${shieldPct}% shield time, +${rarePct}% rare drop`;
@@ -250,21 +291,43 @@
               ${owned ? `Owned: x${entry.count || 1}` : "Owned: •"}
             </div>
             ${meta?.description ? `<div class="description" style="font-size:14px;color:var(--ink-soft);margin-top:8px;">${meta.description}</div>` : ""}
-            ${meta?.song ? `<div class="song-info" style="margin-top:8px;font-size:14px"><strong>Unlocks:</strong> ${meta.song.includes('youtube.com') || meta.song.includes('youtu.be') ? 'Music track in Jukebox' : meta.song}</div>` : ""}
-            ${vid ? `
+            ${meta?.song ? `<div class="song-info" style="margin-top:8px;font-size:14px"><strong>Unlocks:</strong> ${meta.song.includes("youtube.com") || meta.song.includes("youtu.be") ? "Music track in Jukebox" : meta.song}</div>` : ""}
+            ${
+              vid
+                ? `
               <div class="video-container" style="margin-top:10px">
-                <iframe 
-                  style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" 
-                  src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1" 
-                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-                  allowfullscreen 
+                <iframe
+                  style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px"
+                  src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1"
+                  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
                   referrerpolicy="strict-origin-when-cross-origin"
+<<<<<<< ours
                   loading="lazy">
                 </iframe>
+              </div>`
+                : ""
+            }
+            ${
+              links.length
+                ? `<div class="dex-links" style="margin-top:10px">${links
+                    .map(
+                      (l, i) =>
+                        `<a href="${l}" target="_blank" rel="noopener" class="pixel-btn" style="margin-right:8px">Link ${i + 1}</a>`,
+                    )
+                    .join("")}</div>`
+                : ""
+            }
+=======
+                  loading="lazy"
+                  onload="this.style.opacity=1"
+                  onerror="window.handleVideoError && window.handleVideoError(this, '${escapedVideoUrl}')"
+                ></iframe>
               </div>` : ""}
             ${links.length ? `<div class="dex-links" style="margin-top:10px">${links
               .map((l, i) => `<a href="${l}" target="_blank" rel="noopener" class="pixel-btn" style="margin-right:8px">Link ${i + 1}</a>`)
               .join("")}</div>` : ""}
+>>>>>>> theirs
           </div>
         </div>
         <div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
@@ -272,12 +335,14 @@
           <button class="pixel-btn" id="dexCloseBtn">Close</button>
         </div>
       </div>`;
-    
+
     document.body.appendChild(ov);
-    
+
     // Add event handlers
     const close = () => {
-      try { window.SFX?.play?.("ui.back"); } catch {}
+      try {
+        window.SFX?.play?.("ui.back");
+      } catch {}
       ov.remove();
       // Clear NEW flag when viewing details
       if (entry?.new) {
@@ -286,28 +351,33 @@
       }
       // Also clear from NEW set
       try {
-        const newSet = new Set(JSON.parse(localStorage.getItem("Wish.newIds") || "[]"));
+        const newSet = new Set(
+          JSON.parse(localStorage.getItem("Wish.newIds") || "[]"),
+        );
         if (newSet.has(url)) {
           newSet.delete(url);
-          localStorage.setItem("Wish.newIds", JSON.stringify(Array.from(newSet)));
+          localStorage.setItem(
+            "Wish.newIds",
+            JSON.stringify(Array.from(newSet)),
+          );
         }
       } catch {}
     };
-    
+
     ov.addEventListener("click", (e) => {
       if (e.target === ov) close();
     });
-    
+
     document.addEventListener("keydown", function escHandler(e) {
       if (e.key === "Escape") {
         close();
         document.removeEventListener("keydown", escHandler);
       }
     });
-    
+
     const closeBtn = ov.querySelector("#dexCloseBtn");
     if (closeBtn) closeBtn.addEventListener("click", close);
-    
+
     const singerBtn = ov.querySelector("#setSingerBtn");
     if (singerBtn) {
       singerBtn.addEventListener("click", () => {
@@ -324,10 +394,12 @@
         close();
       });
     }
-    
+
     // Play modal open sound
-    try { window.SFX?.play?.("extra.camera"); } catch {}
-    
+    try {
+      window.SFX?.play?.("extra.camera");
+    } catch {}
+
     // Add open class for CSS animation
     setTimeout(() => ov.classList.add("open"), 10);
   }

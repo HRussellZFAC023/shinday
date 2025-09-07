@@ -87,7 +87,9 @@
       entry.new = 1;
       // Also add to NEW set for persistent tracking
       try {
-        const newSet = new Set(JSON.parse(localStorage.getItem("Wish.newIds") || "[]"));
+        const newSet = new Set(
+          JSON.parse(localStorage.getItem("Wish.newIds") || "[]"),
+        );
         newSet.add(card.url);
         localStorage.setItem("Wish.newIds", JSON.stringify(Array.from(newSet)));
       } catch {}
@@ -123,19 +125,20 @@
   }
   function awardPixieBel() {
     const coll = getColl();
-    if (!coll[PIXIE_URL]) coll[PIXIE_URL] = { count: 1, rarity: 6, new: true, multiplier: 6 };
+    if (!coll[PIXIE_URL])
+      coll[PIXIE_URL] = { count: 1, rarity: 6, new: true, multiplier: 6 };
     setColl(coll);
     setPixieUnlocked();
     // Ceremony overlay
     const ov = document.createElement("div");
     ov.setAttribute(
       "style",
-      "position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:10002;"
+      "position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:10002;",
     );
     const panel = document.createElement("div");
     panel.setAttribute(
       "style",
-      "background:#fff;border:3px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:16px;max-width:520px;text-align:center"
+      "background:#fff;border:3px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:16px;max-width:520px;text-align:center",
     );
     panel.innerHTML = `
       <div style="font-size:18px;font-weight:900;margin-bottom:8px">Legendary Unlocked!</div>
@@ -146,9 +149,16 @@
     ov.appendChild(panel);
     document.body.appendChild(ov);
     const close = () => ov.remove();
-    panel.querySelector("#pixieClose").addEventListener("click", close);
+    panel.querySelector("#pixieClose").addEventListener("click", () => {
+      try { window.SFX?.play?.("ui.select"); } catch {}
+      window.hearts?.loveToast?.("PixieBel joins the celebration! ✨");
+      window.refreshFloatingMikus?.();
+      close();
+    });
     // SFX and subtle rainbow effect
-    try { SFX.play("extra.thanks"); } catch {}
+    try {
+      SFX.play("extra.thanks");
+    } catch {}
   }
   function showResults(cards) {
     const { results, rotation } = els();
@@ -173,7 +183,9 @@
       .join("");
     SFX.play("Wish.roll");
     cards.forEach((c, cardIndex) => {
-      const cardEl = results.querySelector(`.Wish-card[data-index="${cardIndex}"]`);
+      const cardEl = results.querySelector(
+        `.Wish-card[data-index="${cardIndex}"]`,
+      );
       if (!cardEl) return;
       const reelImg = cardEl.querySelector(".reel-image");
       const sparkles = cardEl.querySelector(".slot-sparkles");
@@ -196,54 +208,66 @@
           if (Math.random() < 0.7) createSparkle();
         }
       }, 150);
-      setTimeout(() => {
-        clearInterval(spinInterval);
-        const isNew = addToCollection(c);
-        const newBadge = isNew ? '<div class="Wish-new">NEW!</div>' : '';
-        cardEl.classList.remove("slot-machine");
-        cardEl.classList.add("revealing");
-        cardEl.innerHTML = `
+      setTimeout(
+        () => {
+          clearInterval(spinInterval);
+          const isNew = addToCollection(c);
+          const newBadge = isNew ? '<div class="Wish-new">NEW!</div>' : "";
+          cardEl.classList.remove("slot-machine");
+          cardEl.classList.add("revealing");
+          cardEl.innerHTML = `
           <div class="Wish-stars">${stars(c.rarity)}</div>
           ${newBadge}
           <img src="${c.url}" alt="Miku card" class="reveal-image"/>
         `;
-        for (let i = 0; i < 6; i++) setTimeout(() => createSparkle(), i * 100);
-        if (cardIndex === 0) SFX.play("Wish.reveal");
-        SFX.play("Wish.pop");
-        if (c.rarity >= 4) SFX.play("Wish.high");
-        if (c.rarity >= 5) {
-          // Legendary flourish: rainbow glow + screen flash + thanks
-          try { SFX.play("extra.thanks"); } catch {}
-          try {
-            cardEl.style.animation = "legendaryGlow 2s ease-in-out infinite";
-          } catch {}
-          const flash = document.createElement("div");
-          flash.setAttribute(
-            "style",
-            "position:fixed;inset:0;background:rgba(255,255,255,.75);pointer-events:none;z-index:10000;opacity:0;transition:opacity .25s"
-          );
-          document.body.appendChild(flash);
-          requestAnimationFrame(() => (flash.style.opacity = "1"));
-          setTimeout(() => {
-            flash.style.opacity = "0";
-            setTimeout(() => flash.remove(), 300);
-          }, 120);
-        }
-      }, 2000 + cardIndex * 300);
+          for (let i = 0; i < 6; i++)
+            setTimeout(() => createSparkle(), i * 100);
+          if (cardIndex === 0) SFX.play("Wish.reveal");
+          SFX.play("Wish.pop");
+          if (c.rarity >= 4) SFX.play("Wish.high");
+          if (c.rarity >= 5) {
+            // Legendary flourish: rainbow glow + screen flash + thanks
+            try {
+              SFX.play("extra.thanks");
+            } catch {}
+            try {
+              cardEl.style.animation = "legendaryGlow 2s ease-in-out infinite";
+            } catch {}
+            const flash = document.createElement("div");
+            flash.setAttribute(
+              "style",
+              "position:fixed;inset:0;background:rgba(255,255,255,.75);pointer-events:none;z-index:10000;opacity:0;transition:opacity .25s",
+            );
+            document.body.appendChild(flash);
+            requestAnimationFrame(() => (flash.style.opacity = "1"));
+            setTimeout(() => {
+              flash.style.opacity = "0";
+              setTimeout(() => flash.remove(), 300);
+            }, 120);
+          }
+        },
+        2000 + cardIndex * 300,
+      );
     });
-    setTimeout(() => {
-      results.animate([{ transform: "scale(0.98)" }, { transform: "scale(1)" }], {
-        duration: 220,
-        easing: "ease-out",
-      });
-      renderDex();
-      const maxR = Math.max(...cards.map((x) => x.rarity || 1));
-      if (!isFinite(maxR) || maxR <= 2) SFX.play("Wish.fail");
-      // After results settle, auto-award PixieBel once all base collected
-      try {
-        if (!pixieUnlocked() && hasAllBaseCollected()) awardPixieBel();
-      } catch {}
-    }, 2000 + cards.length * 300 + 500);
+    setTimeout(
+      () => {
+        results.animate(
+          [{ transform: "scale(0.98)" }, { transform: "scale(1)" }],
+          {
+            duration: 220,
+            easing: "ease-out",
+          },
+        );
+        renderDex();
+        const maxR = Math.max(...cards.map((x) => x.rarity || 1));
+        if (!isFinite(maxR) || maxR <= 2) SFX.play("Wish.fail");
+        // After results settle, auto-award PixieBel once all base collected
+        try {
+          if (!pixieUnlocked() && hasAllBaseCollected()) awardPixieBel();
+        } catch {}
+      },
+      2000 + cards.length * 300 + 500,
+    );
   }
   function getPityCount() {
     return parseInt(localStorage.getItem(LS.pityCount) || "0", 10);
@@ -260,20 +284,22 @@
   function getMissingMikus() {
     const coll = getColl();
     const all = window.MIKU_IMAGES || [];
-    return all.filter(url => !coll[url]);
+    return all.filter((url) => !coll[url]);
   }
   function pickRandom(n = 1, guaranteeMissing = false) {
     const out = [];
     const list = window.MIKU_IMAGES || [];
     const missing = getMissingMikus();
-    
+
     for (let i = 0; i < n; i++) {
       let url;
-      
+
       // For x10 pulls, guarantee at least one missing miku if pity >= 10
-      const shouldGuarantee = guaranteeMissing && missing.length > 0 && 
-        (i === Math.floor(Math.random() * n)); // random position to avoid pattern
-      
+      const shouldGuarantee =
+        guaranteeMissing &&
+        missing.length > 0 &&
+        i === Math.floor(Math.random() * n); // random position to avoid pattern
+
       if (shouldGuarantee) {
         url = missing[Math.floor(Math.random() * missing.length)];
         resetPity(); // reset pity counter when we get a missing miku
@@ -284,7 +310,7 @@
           resetPity(); // also reset if we naturally get a missing miku
         }
       }
-      
+
       out.push({ url, rarity: rarityFor(url) });
     }
     return out;
@@ -295,18 +321,18 @@
       SFX.play("ui.unavailable");
       return;
     }
-    
+
     // Check pity system
     const pityCount = getPityCount();
     const shouldGuarantee = pityCount >= 10 && n === 10; // only apply to x10 pulls
-    
+
     const cards = pickRandom(n, shouldGuarantee);
-    
+
     // Increment pity for each pull (will be reset in pickRandom if missing miku obtained)
     for (let i = 0; i < n; i++) {
       incrementPity();
     }
-    
+
     showResults(cards);
   }
   function resetUI() {
@@ -353,7 +379,7 @@
       if (Math.random() < 0.3) SFX.play("extra.fx1");
     };
     const reel = e.rotation && e.rotation.querySelector(".preview-image");
-  if (reel) {
+    if (reel) {
       const tick = () => {
         if (!poolReady()) return;
         const [card] = pickRandom(1);
@@ -363,7 +389,8 @@
     }
     resetUI();
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", wire);
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", wire);
   else wire();
   window.__resetWish = resetUI;
   window.Wish = { renderDex };

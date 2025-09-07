@@ -13,7 +13,9 @@
   function dispatchReady() {
     try {
       document.dispatchEvent(
-        new CustomEvent("miku-images-ready", { detail: { images: MIKU_IMAGES.slice() } })
+        new CustomEvent("miku-images-ready", {
+          detail: { images: MIKU_IMAGES.slice() },
+        }),
       );
     } catch {}
   }

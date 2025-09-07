@@ -16,6 +16,7 @@ window.MikuSystem = (function () {
   function setCurrentMiku(url) {
     localStorage.setItem("singer.current", url || "");
     refresh(); // Auto-refresh display
+    refreshFloatingMikus();
   }
 
   function normalize(path) {
@@ -28,7 +29,7 @@ window.MikuSystem = (function () {
       mikuList.find(
         (miku) =>
           normalizedUrl.includes(normalize(miku.filename || "")) ||
-          normalizedUrl.includes(normalize(miku.image || ""))
+          normalizedUrl.includes(normalize(miku.image || "")),
       ) || null
     );
   }
@@ -117,8 +118,43 @@ window.MikuSystem = (function () {
     if (songTitleEl) songTitleEl.textContent = songTitle;
   }
 
+  function refreshFloatingMikus() {
+    const container = document.getElementById("floatingMikusContainer");
+    if (!container) return;
+    container.innerHTML = "";
+    let src = getCurrentMikuUrl();
+    if (!src) {
+      const pool = Array.isArray(window.MIKU_IMAGES) ? window.MIKU_IMAGES : [];
+      if (!pool.length) {
+        document.addEventListener("miku-images-ready", refreshFloatingMikus, { once: true });
+        return;
+      }
+      const pixelOnly = pool.filter((u) => /\/assets\/pixel-miku\//i.test(u));
+      if (pixelOnly.length) src = pixelOnly[0];
+      else if (pool.length) src = pool[0];
+      else return;
+    }
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "Miku";
+    img.className = "float-miku";
+    img.style.animationName = "float";
+    img.style.animationTimingFunction = "ease-in-out";
+    img.style.animationIterationCount = "infinite";
+    img.style.marginTop = "-6px";
+    img.style.animationDelay = (Math.random() * 1.2).toFixed(2) + "s";
+    img.style.animationDuration = (3.8 + Math.random() * 1.6).toFixed(2) + "s";
+    container.appendChild(img);
+  }
+
   // Initialize on startup
   setTimeout(refresh, 50);
+  if (Array.isArray(window.MIKU_IMAGES) && window.MIKU_IMAGES.length)
+    setTimeout(refreshFloatingMikus, 50);
+  else
+    document.addEventListener("miku-images-ready", refreshFloatingMikus, {
+      once: true,
+    });
 
   // Public API
   return {
@@ -127,5 +163,9 @@ window.MikuSystem = (function () {
     getCurrentMikuUrl,
     refresh,
     loadMikusData,
+    refreshFloatingMikus,
   };
 })();
+
+window.singerSet = window.MikuSystem.setCurrentMiku;
+window.refreshFloatingMikus = window.MikuSystem.refreshFloatingMikus;

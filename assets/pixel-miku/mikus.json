@@ -1142,5 +1142,15 @@
     "song": "https://www.youtube.com/watch?v=PggKYZyI0SU",
     "title": "Melt (Live)",
     "filename": "100 - Magical Mirai 2022 (10th Anniv. Pastel).png"
+  },
+  {
+    "id": 101,
+    "name": "PixieBel (Bonus)",
+    "alt_names": [],
+    "description": "A tiny baby belle who flutters with sparkle and joy. This secret companion celebrates collectors who complete the garden.",
+    "rarity": 6,
+    "song": "https://www.youtube.com/watch?v=XEvMo8vyYU0",
+    "title": "PixieBel Theme",
+    "filename": "101 - PixieBel (bonus).gif"
   }
 ]

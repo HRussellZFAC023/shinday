@@ -62,14 +62,14 @@
     if (!prox) throw new Error("network");
     return fetchJson(
       `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-      false
+      false,
     );
   }
   async function getGradeList(grade) {
     if (kanjiCache.gradeLists.has(grade))
       return kanjiCache.gradeLists.get(grade);
     const list = await fetchJson(
-      `https://kanjiapi.dev/v1/kanji/grade-${grade}`
+      `https://kanjiapi.dev/v1/kanji/grade-${grade}`,
     );
     if (!Array.isArray(list) || !list.length) throw new Error("no-list");
     kanjiCache.gradeLists.set(grade, list);
@@ -80,7 +80,7 @@
   async function getKanjiDetail(ch) {
     if (kanjiCache.details.has(ch)) return kanjiCache.details.get(ch);
     const d = await fetchJson(
-      `https://kanjiapi.dev/v1/kanji/${encodeURIComponent(ch)}`
+      `https://kanjiapi.dev/v1/kanji/${encodeURIComponent(ch)}`,
     );
     kanjiCache.details.set(ch, d);
     if (kanjiCache.details.size > 60)
@@ -262,7 +262,7 @@
           return { btn, style: { isPerfect: false, color: "#a594f9" } };
         });
       const { btn } = maker(opt, idx, (text, element, style) =>
-        onSelect(text, element, style, correct)
+        onSelect(text, element, style, correct),
       );
       cEl.appendChild(btn);
     });
@@ -272,7 +272,7 @@
     setupUltimateBeatpadKeyboard &&
       setupUltimateBeatpadKeyboard(cEl, (text) => {
         const target = Array.from(cEl.querySelectorAll(".beatpad-btn")).find(
-          (b) => b.textContent === text
+          (b) => b.textContent === text,
         );
         if (target) target.click();
       });

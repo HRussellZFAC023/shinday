@@ -177,7 +177,7 @@
           if (window.ShimejiFunctions?.makeAllSpeak) {
             window.ShimejiFunctions.makeAllSpeak(
               "おめでとう！完璧だよ！🎉✨",
-              3000
+              3000,
             );
           }
           if (window.ShimejiFunctions?.exciteAll) {
@@ -189,7 +189,7 @@
               window.ShimejiFunctions.triggerMassDance();
             }
           }, 500);
-          
+
           setTimeout(() => {}, 900);
         }, 300);
       }
@@ -291,7 +291,7 @@
     async function startNewGame() {
       const ensureImages = async () => {
         let imgs = (Array.isArray(MIKU_IMAGES) ? MIKU_IMAGES : []).filter(
-          Boolean
+          Boolean,
         );
         if (imgs.length < totalPairs && window.MIKU_IMAGES_READY) {
           const ready = await window.MIKU_IMAGES_READY;

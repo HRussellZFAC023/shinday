@@ -1,21 +1,21 @@
- (function () {
+(function () {
   function initHeartGarden() {
-    const zone = document.getElementById('heartZone');
+    const zone = document.getElementById("heartZone");
     if (!zone) return;
-    zone.textContent = '';
-    zone.style.position = 'relative';
+    zone.textContent = "";
+    zone.style.position = "relative";
 
     function spawn() {
-      const target = document.createElement('div');
-      target.className = 'heart-target';
-      const ring = document.createElement('div');
-      ring.className = 'approach';
+      const target = document.createElement("div");
+      target.className = "heart-target";
+      const ring = document.createElement("div");
+      ring.className = "approach";
       target.appendChild(ring);
       const size = 40;
       const x = Math.random() * (zone.clientWidth - size);
       const y = Math.random() * (zone.clientHeight - size);
-      target.style.left = x + 'px';
-      target.style.top = y + 'px';
+      target.style.left = x + "px";
+      target.style.top = y + "px";
       zone.appendChild(target);
       const born = performance.now();
       let collected = false;
@@ -30,10 +30,13 @@
           window.hearts.addHearts(reward);
         const rect = zone.getBoundingClientRect();
         if (window.hearts && window.hearts.createFloatingHeart)
-          window.hearts.createFloatingHeart(rect.left + x + size / 2, rect.top + y + size / 2);
+          window.hearts.createFloatingHeart(
+            rect.left + x + size / 2,
+            rect.top + y + size / 2,
+          );
         target.remove();
       }
-      target.addEventListener('click', collect);
+      target.addEventListener("click", collect);
       setTimeout(() => {
         if (!collected) target.remove();
       }, 2400);

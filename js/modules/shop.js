@@ -21,7 +21,7 @@ window.shop = (function () {
     const body = document.body;
     const vw = Math.max(
       document.documentElement.clientWidth,
-      window.innerWidth || 0
+      window.innerWidth || 0,
     );
     for (let i = 0; i < n; i++) {
       const d = document.createElement("div");
@@ -83,23 +83,22 @@ window.shop = (function () {
   }
   function initShop() {
     const shopPanel = document.querySelector(".shop-panel");
-  const C = window.SITE_CONTENT || {};
-  const ShopC = C.shop || {};
-  const ItemsC = (ShopC && ShopC.items) || {};
+    const C = window.SITE_CONTENT || {};
+    const ShopC = C.shop || {};
+    const ItemsC = (ShopC && ShopC.items) || {};
 
     // Inject beautiful Miku-themed shop styles
     injectShopStyles();
 
     // Transform the entire shop panel into something beautiful
     if (shopPanel) {
-
       // Clear existing content for complete redesign
       shopPanel.innerHTML = "";
 
       // Create stunning shop header with Miku and speech bubble
       const shopHeader = document.createElement("div");
       shopHeader.className = "miku-shop-header";
-  shopHeader.innerHTML = `
+      shopHeader.innerHTML = `
         <div class="miku-character">
           <img src="./assets/idol.png" alt="Shop Miku" class="miku-standalone">
           <div class="miku-sparkles">✨</div>
@@ -182,9 +181,9 @@ window.shop = (function () {
     }
 
     // Enhanced click handlers with state management and animations
-  if (newBtnDecoy) {
+    if (newBtnDecoy) {
       newBtnDecoy.addEventListener("click", () => {
-    const cost = (ItemsC.decoy && ItemsC.decoy.cost) || 5;
+        const cost = (ItemsC.decoy && ItemsC.decoy.cost) || 5;
         const now = Date.now();
 
         // Check if any item is currently active (Miku says finish your vegetables!)
@@ -196,7 +195,7 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
               "野菜ジュースを先に飲んで！🥤",
-              1800
+              1800,
             );
           }
           return;
@@ -219,7 +218,7 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
               "美味しいおとりを配置したよ！🍪✨",
-              1500
+              1500,
             );
           }
         } else {
@@ -230,16 +229,16 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
               "💖が足りないよ〜もっと集めて！",
-              1200
+              1200,
             );
           }
         }
       });
     }
 
-  if (newBtnShield) {
+    if (newBtnShield) {
       newBtnShield.addEventListener("click", () => {
-    const cost = (ItemsC.shield && ItemsC.shield.cost) || 50;
+        const cost = (ItemsC.shield && ItemsC.shield.cost) || 50;
         const now = Date.now();
 
         // Check if any item is currently active
@@ -251,7 +250,7 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
               "野菜ジュースを先に飲んで！🥤",
-              1800
+              1800,
             );
           }
           return;
@@ -272,7 +271,7 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeAllSpeak) {
             window.ShimejiFunctions.makeAllSpeak(
               "最強のシールドが発動！⛨✨💖",
-              2000
+              2000,
             );
           }
         } else {
@@ -283,7 +282,7 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
               "💖がもっと必要だよ〜頑張って！",
-              1300
+              1300,
             );
           }
         }

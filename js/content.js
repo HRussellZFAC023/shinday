@@ -162,8 +162,8 @@ const SITE_CONTENT = {
     heartsLabel: "Hearts collected:",
     heartIcon: "love",
     visitorIcon: "cheering",
-  // Label used in the Site Stats widget for the visitor counter
-  visitorsLabel: "Visitors:",
+    // Label used in the Site Stats widget for the visitor counter
+    visitorsLabel: "Visitors:",
     statusIcon: "starUwu",
   },
 
@@ -592,7 +592,6 @@ const SITE_CONTENT = {
   },
 };
 
-
 // ========== SPLASH SCREEN SYSTEM ==========
 function initializeSplash() {
   const splash = document.getElementById("splash");
@@ -609,7 +608,8 @@ function initializeSplash() {
   if (splashSub && SITE_CONTENT.splash?.subtitle)
     splashSub.textContent = SITE_CONTENT.splash.subtitle;
   const splashBtn = document.getElementById("enterSite");
-  if (splashBtn && SITE_CONTENT.splash?.button) splashBtn.textContent = SITE_CONTENT.splash.button;
+  if (splashBtn && SITE_CONTENT.splash?.button)
+    splashBtn.textContent = SITE_CONTENT.splash.button;
 
   const splashImg = document.getElementById("splashMiku");
   if (splashImg)
@@ -622,14 +622,47 @@ function initializeSplash() {
 
   splash.dataset.wired = "1";
 
-  const enterSite = () => {
+  async function gateReady() {
+    // Wait for critical data: MIKU images + WOD
+    try {
+      const waits = [];
+      if (
+        window.MIKU_IMAGES_READY &&
+        typeof window.MIKU_IMAGES_READY.then === "function"
+      )
+        waits.push(window.MIKU_IMAGES_READY);
+      if (window.WOD_READY && typeof window.WOD_READY.then === "function")
+        waits.push(window.WOD_READY);
+      if (waits.length)
+        await Promise.race([
+          Promise.all(waits),
+          new Promise((r) => setTimeout(r, 4500)),
+        ]);
+    } catch (_) {}
+  }
+
+  const enterSite = async () => {
     enterButton.disabled = true;
+    // Show loading state during gating
+    const prev = enterButton.textContent;
+    enterButton.textContent = "Loading…";
+    await gateReady();
+    // Apply WOD to UI if available and MikuUI loaded later
+    if (window.WOD && window.SITE_CONTENT?.study?.wordOfDay) {
+      window.SITE_CONTENT.study.wordOfDay.japanese =
+        window.WOD.word || window.SITE_CONTENT.study.wordOfDay.japanese;
+      window.SITE_CONTENT.study.wordOfDay.romaji =
+        window.WOD.reading || window.SITE_CONTENT.study.wordOfDay.romaji;
+      window.SITE_CONTENT.study.wordOfDay.meaning =
+        window.WOD.meaning || window.SITE_CONTENT.study.wordOfDay.meaning;
+    }
     splash.style.display = "none";
     mainSite.classList.remove("hidden");
 
-    // Initialize site properly
     const initFunction = window.initSite || (() => {});
     initFunction();
+    // Restore label
+    enterButton.textContent = prev;
   };
 
   enterButton.addEventListener("click", enterSite, { once: true });
@@ -638,9 +671,8 @@ function initializeSplash() {
     (event) => {
       if (event.key === "Enter") enterSite();
     },
-    { capture: true }
+    { capture: true },
   );
-
 }
 
 window.SITE_CONTENT = SITE_CONTENT;

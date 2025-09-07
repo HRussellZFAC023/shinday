@@ -1892,6 +1892,10 @@ main {
   object-fit: cover;
   display: block;
 }
+
+.dex-card.owned {
+  border-color: transparent;
+}
 .dex-name {
   font-size: 10px;
   text-align: center;
@@ -2813,28 +2817,40 @@ main {
 }
 
 .dex-card.owned.rarity-1 .rarity-ring {
-  border: 1px solid #9ca3af;
-  box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.15) inset;
+  border: 2px solid #9ca3af;
+  -webkit-box-shadow: 0 0 20px 3px rgba(156, 163, 175, 0.5);
+  -moz-box-shadow: 0 0 20px 3px rgba(156, 163, 175, 0.5);
+  box-shadow: 0 0 20px 3px rgba(156, 163, 175, 0.5);
 }
 .dex-card.owned.rarity-2 .rarity-ring {
-  border: 1px solid #10b981;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.18) inset;
+  border: 2px solid #10b981;
+  -webkit-box-shadow: 0 0 20px 3px rgba(16, 185, 129, 0.52);
+  -moz-box-shadow: 0 0 20px 3px rgba(16, 185, 129, 0.52);
+  box-shadow: 0 0 20px 3px rgba(16, 185, 129, 0.52);
 }
 .dex-card.owned.rarity-3 .rarity-ring {
-  border: 1px solid #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) inset;
+  border: 2px solid #3b82f6;
+  -webkit-box-shadow: 0 0 20px 3px rgba(59, 130, 246, 0.52);
+  -moz-box-shadow: 0 0 20px 3px rgba(59, 130, 246, 0.52);
+  box-shadow: 0 0 20px 3px rgba(59, 130, 246, 0.52);
 }
 .dex-card.owned.rarity-4 .rarity-ring {
-  border: 1px solid #a594f9;
-  box-shadow: 0 0 0 2px rgba(165, 148, 249, 0.18) inset;
+  border: 2px solid #a594f9;
+  -webkit-box-shadow: 0 0 20px 3px rgba(165, 148, 249, 0.52);
+  -moz-box-shadow: 0 0 20px 3px rgba(165, 148, 249, 0.52);
+  box-shadow: 0 0 20px 3px rgba(165, 148, 249, 0.52);
 }
 .dex-card.owned.rarity-5 .rarity-ring {
-  border: 1px solid #ffb347;
-  box-shadow: 0 0 0 2px rgba(255, 179, 71, 0.22) inset;
+  border: 2px solid #ffb347;
+  -webkit-box-shadow: 0 0 20px 3px rgba(255, 179, 71, 0.52);
+  -moz-box-shadow: 0 0 20px 3px rgba(255, 179, 71, 0.52);
+  box-shadow: 0 0 20px 3px rgba(255, 179, 71, 0.52);
 }
 .dex-card.owned.rarity-6 .rarity-ring {
-  border: 1px solid #ffd700;
-  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.25) inset;
+  border: 2px solid #ffd700;
+  -webkit-box-shadow: 0 0 20px 3px rgba(255, 215, 0, 0.52);
+  -moz-box-shadow: 0 0 20px 3px rgba(255, 215, 0, 0.52);
+  box-shadow: 0 0 20px 3px rgba(255, 215, 0, 0.52);
 }
 
 /* Dex card mystery cover for PixieBel */
@@ -2940,7 +2956,7 @@ main {
     align-items: center;
     text-align: center;
   }
-  
+
   .image-modal .actions {
     justify-content: center;
   }
@@ -3061,8 +3077,10 @@ main {
   bottom: -50px;
   width: 200px;
   height: auto;
- 
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .made-by-gif:hover {
@@ -3217,7 +3235,7 @@ main {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   border: 2px solid var(--pastel-pink);
   display: flex;
   align-items: center;
@@ -3239,7 +3257,7 @@ main {
   border-radius: 50%;
   animation: approachShrink 2.4s linear forwards;
 }
- @keyframes approachShrink {
+@keyframes approachShrink {
   from {
     transform: scale(1);
     opacity: 1;
@@ -3249,9 +3267,13 @@ main {
     opacity: 0;
   }
 }
- @keyframes targetFade {
-  from { opacity: 1; }
-  to { opacity: 0; }
+@keyframes targetFade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 /* Keyframe animations */
@@ -3907,8 +3929,6 @@ main {
   display: none !important;
 }
 
-
-
 .pixel-btn {
   transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
@@ -3969,8 +3989,6 @@ main {
     opacity: 1;
   }
 }
-
-
 
 @keyframes bounceIcon {
   0%,
