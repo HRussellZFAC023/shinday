@@ -61,7 +61,7 @@ window.shop = (function () {
         width: 100vw;
         height: 100vh;
         background: radial-gradient(circle, rgba(255,255,0,0.15) 0%, rgba(255,255,0,0.05) 70%, transparent 100%);
-        border: 3px solid rgba(255,255,0,0.6);
+        border: 1px solid rgba(255,255,0,0.6);
         box-shadow: inset 0 0 30px rgba(255,255,0,0.4), 0 0 20px rgba(255,255,0,0.3);
         pointer-events: none;
         z-index: 9999;

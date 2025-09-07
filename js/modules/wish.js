@@ -90,32 +90,56 @@
   function renderDex() {
     const { dex } = els();
     if (!dex || !poolReady()) return;
+    if (window.MikuDex) window.MikuDex.renderInto(dex);
+  }
+
+  // ====== PixieBel ★6 Unlock Ceremony ======
+  const PIXIE_URL = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
+  function pixieUnlocked() {
+    return localStorage.getItem("pixiebelUnlocked") === "1";
+  }
+  function setPixieUnlocked() {
+    localStorage.setItem("pixiebelUnlocked", "1");
+  }
+  function hasAllBaseCollected() {
     const coll = getColl();
-    const urls = window.MIKU_IMAGES || [];
-    const ownedCount = Object.keys(coll).length;
-    dex.innerHTML = `
-      <div class="dex-pokedex">
-        <div class="dex-header">MikuDex • Owned: ${ownedCount} / ${urls.length}</div>
-        <div class="dex-grid">
-          ${urls
-            .map((u) => {
-              const entry = coll[u];
-              const owned = !!entry;
-              const newBadge = entry?.new ? '<div class="Wish-new">NEW!</div>' : '';
-              const cls = owned ? 'dex-card owned' : 'dex-card locked';
-              return `<div class="${cls}" tabindex="0"><img src="${u}" alt="miku"/>${newBadge}</div>`;
-            })
-            .join("")}
-        </div>
-      </div>`;
-    let cleared = false;
-    for (const k of Object.keys(coll)) {
-      if (coll[k].new) {
-        delete coll[k].new;
-        cleared = true;
-      }
-    }
-    if (cleared) setColl(coll);
+    const base = window.MIKU_IMAGES || [];
+    // exclude Pixie from base if present accidentally
+    const baseOnly = base.filter((u) => !/PixieBel \(bonus\)\.gif$/i.test(u));
+    let owned = 0;
+    baseOnly.forEach((u) => {
+      if (coll[u]) owned++;
+    });
+    return owned >= baseOnly.length && baseOnly.length > 0;
+  }
+  function awardPixieBel() {
+    const coll = getColl();
+    if (!coll[PIXIE_URL]) coll[PIXIE_URL] = { count: 1, rarity: 6, new: true, multiplier: 6 };
+    setColl(coll);
+    setPixieUnlocked();
+    // Ceremony overlay
+    const ov = document.createElement("div");
+    ov.setAttribute(
+      "style",
+      "position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:10002;"
+    );
+    const panel = document.createElement("div");
+    panel.setAttribute(
+      "style",
+      "background:#fff;border:3px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:16px;max-width:520px;text-align:center"
+    );
+    panel.innerHTML = `
+      <div style="font-size:18px;font-weight:900;margin-bottom:8px">Legendary Unlocked!</div>
+      <div style="font-size:14px;color:#596286;margin-bottom:10px">You discovered <strong>PixieBel</strong> ★6 • a secret companion joins your garden.</div>
+      <img src="${PIXIE_URL}" alt="PixieBel" style="width:160px;height:auto;image-rendering:pixelated;border:2px solid var(--border);border-radius:10px" />
+      <div style="margin-top:12px"><button class="pixel-btn" id="pixieClose">Celebrate ✨</button></div>
+    `;
+    ov.appendChild(panel);
+    document.body.appendChild(ov);
+    const close = () => ov.remove();
+    panel.querySelector("#pixieClose").addEventListener("click", close);
+    // SFX and subtle rainbow effect
+    try { SFX.play("extra.thanks"); } catch {}
   }
   function showResults(cards) {
     const { results, rotation } = els();
@@ -178,6 +202,24 @@
         if (cardIndex === 0) SFX.play("Wish.reveal");
         SFX.play("Wish.pop");
         if (c.rarity >= 4) SFX.play("Wish.high");
+        if (c.rarity >= 5) {
+          // Legendary flourish: rainbow glow + screen flash + thanks
+          try { SFX.play("extra.thanks"); } catch {}
+          try {
+            cardEl.style.animation = "legendaryGlow 2s ease-in-out infinite";
+          } catch {}
+          const flash = document.createElement("div");
+          flash.setAttribute(
+            "style",
+            "position:fixed;inset:0;background:rgba(255,255,255,.75);pointer-events:none;z-index:10000;opacity:0;transition:opacity .25s"
+          );
+          document.body.appendChild(flash);
+          requestAnimationFrame(() => (flash.style.opacity = "1"));
+          setTimeout(() => {
+            flash.style.opacity = "0";
+            setTimeout(() => flash.remove(), 300);
+          }, 120);
+        }
       }, 2000 + cardIndex * 300);
     });
     setTimeout(() => {
@@ -188,6 +230,10 @@
       renderDex();
       const maxR = Math.max(...cards.map((x) => x.rarity || 1));
       if (!isFinite(maxR) || maxR <= 2) SFX.play("Wish.fail");
+      // After results settle, auto-award PixieBel once all base collected
+      try {
+        if (!pixieUnlocked() && hasAllBaseCollected()) awardPixieBel();
+      } catch {}
     }, 2000 + cards.length * 300 + 500);
   }
   function pickRandom(n = 1) {
@@ -252,7 +298,7 @@
       if (Math.random() < 0.3) SFX.play("extra.fx1");
     };
     const reel = e.rotation && e.rotation.querySelector(".preview-image");
-    if (reel) {
+  if (reel) {
       const tick = () => {
         if (!poolReady()) return;
         const [card] = pickRandom(1);

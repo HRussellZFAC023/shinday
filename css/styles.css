@@ -124,7 +124,7 @@ body {
 
 .enter-btn {
   background: linear-gradient(45deg, var(--pastel-blue), var(--pastel-pink));
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 15px 30px;
   font-size: 1.1rem;
@@ -217,7 +217,7 @@ body {
     url("../assets/pt_top.png");
   background-size: cover;
   background-position: center;
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 20px 20px 0 0;
   box-shadow: var(--shadow);
   position: relative;
@@ -360,7 +360,7 @@ body {
 .preview-reel {
   width: 140px;
   height: 140px;
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 14px;
   overflow: hidden;
   background: #fff;
@@ -900,7 +900,7 @@ main {
 /* Radio widget for sidebar */
 .radio-widget .retro-radio {
   background: linear-gradient(145deg, #e0e0e0, #c0c0c0);
-  border: 3px solid #999;
+  border: 1px solid #999;
   border-radius: 12px;
   padding: 12px;
   box-shadow:
@@ -982,7 +982,7 @@ main {
 
 .retro-radio {
   background: linear-gradient(145deg, #e0e0e0, #c0c0c0);
-  border: 3px solid #999;
+  border: 1px solid #999;
   border-radius: 15px;
   padding: 20px;
   box-shadow:
@@ -1087,7 +1087,7 @@ main {
 }
 .mode-panel {
   background: #fff;
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px;
   width: min(560px, 92vw);
@@ -1142,7 +1142,7 @@ main {
   letter-spacing: 2px;
   color: var(--ink);
   background: #fff;
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 10px 14px;
   box-shadow: var(--shadow);
@@ -1291,7 +1291,7 @@ main {
 .beatpad-btn {
   position: relative !important;
   min-height: 80px !important;
-  border: 3px solid transparent !important;
+  border: 1px solid transparent !important;
   border-radius: 16px !important;
   background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(12px) !important;
@@ -1699,7 +1699,7 @@ main {
 }
 .result-panel {
   background: #fff;
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 18px;
   width: min(520px, 92vw);
@@ -1739,7 +1739,7 @@ main {
 }
 .ring {
   position: absolute;
-  border: 3px solid #a594f9;
+  border: 1px solid #a594f9;
   border-radius: 50%;
   animation: ring 1.8s ease-out infinite;
   opacity: 0.4;
@@ -1814,7 +1814,7 @@ main {
 /* Dex / Pokedex styles */
 .dex-pokedex {
   padding: 12px;
-  border: 3px solid var(--accent-2);
+  border: 1px solid var(--accent-2);
   border-radius: 16px;
   background: linear-gradient(
     135deg,
@@ -1948,7 +1948,7 @@ main {
 }
 .image-panel {
   background: #fff;
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 16px;
   width: min(720px, 95vw);
   box-shadow: var(--shadow);
@@ -2251,7 +2251,7 @@ main {
 }
 .Wish-actions .pixel-btn {
   background: linear-gradient(180deg, #ffffff, #ffe9f6);
-  border: 3px solid var(--accent);
+  border: 1px solid var(--accent);
   box-shadow:
     0 6px 14px rgba(43, 43, 68, 0.15),
     inset 0 -2px 0 rgba(0, 0, 0, 0.05);
@@ -2285,8 +2285,7 @@ main {
   position: relative;
   border: 2px solid var(--border);
   border-radius: 10px;
-  background: #fff;
-  padding: 6px;
+  background: var(--gradient-bg);
   box-shadow: var(--shadow);
   /* Performance optimizations */
   will-change: transform, opacity;
@@ -2296,7 +2295,7 @@ main {
 /* Wish slot machine styles */
 .Wish-card.slot-machine {
   background: linear-gradient(45deg, #f0f8ff, #ffd1ec, #e6f3ff);
-  border: 3px solid #6bc3ff;
+  border: 1px solid #6bc3ff;
   animation: slotMachineGlow 0.5s ease-in-out infinite alternate;
   overflow: hidden;
 }
@@ -2622,7 +2621,7 @@ main {
     rgba(255, 255, 255, 0.9),
     rgba(189, 227, 255, 0.3)
   );
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 15px;
   padding: 20px;
   box-shadow: var(--shadow);
@@ -2735,7 +2734,7 @@ main {
   inset: -4px;
   border-radius: 12px;
   pointer-events: none;
-  border: 3px solid transparent;
+  border: 1px solid transparent;
   box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
   animation: ringGlow 2.4s ease-in-out infinite;
 }
@@ -2762,7 +2761,7 @@ main {
 
 /* ★6: PixieBel • rainbow accent ring */
 .gallery-item.rarity-6 .rarity-ring {
-  border: 3px solid transparent;
+  border: 1px solid transparent;
   border-radius: 12px;
   /* Ring-only gradient using masks */
   background: conic-gradient(
@@ -3639,7 +3638,7 @@ main {
   padding: 12px;
   background: linear-gradient(135deg, #f0f9ff 0%, #fce7f3 100%);
   border-radius: 16px;
-  border: 3px solid var(--accent);
+  border: 1px solid var(--accent);
   animation: shopKeeperFloat 4s ease-in-out infinite;
   position: relative;
   overflow: hidden;
@@ -4467,7 +4466,7 @@ main {
   transform: translateX(-50%);
   width: 32px;
   height: 32px;
-  border: 3px solid rgba(125, 211, 252, 0.6);
+  border: 1px solid rgba(125, 211, 252, 0.6);
   border-radius: 50%;
   background: radial-gradient(circle, rgba(125, 211, 252, 0.2), transparent);
   animation: ringPulse 1s ease-in-out infinite;

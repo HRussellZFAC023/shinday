@@ -6148,7 +6148,7 @@ function activateHeartShield(ms = 3000) {
       width: 100vw;
       height: 100vh;
       background: radial-gradient(circle, rgba(255, 255, 0, 0.15) 0%, rgba(255, 255, 0, 0.05) 70%, transparent 100%);
-      border: 3px solid rgba(255, 255, 0, 0.6);
+      border: 1px solid rgba(255, 255, 0, 0.6);
       box-shadow: inset 0 0 30px rgba(255, 255, 0, 0.4), 0 0 20px rgba(255, 255, 0, 0.3);
       pointer-events: none;
       z-index: 9999;
@@ -6854,9 +6854,9 @@ window.MikuSystem.updateNowPlaying = function (song) {
     el.textContent = "•";
     return;
   }
-  const artist = song.artist || "Miku";
-  const title = song.title || "•";
-  el.textContent = `${title} • ${artist}`;
+  const artist = song.artist || "";
+  const title = song.title || "";
+  el.textContent = `${title} ${artist ? " • " + artist : ""}`;
 };
 function updateCurrentMiku() {
   
@@ -7833,7 +7833,7 @@ function createBeatpadButton(text, index, onAnswer) {
       position: relative;
       padding: 16px;
       min-height: 80px;
-      border: 3px solid ${style.color};
+      border: 1px solid ${style.color};
       background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
       color: var(--ink);
       font-weight: 800;

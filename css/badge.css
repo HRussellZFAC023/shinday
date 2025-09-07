@@ -22,7 +22,7 @@
     url("../assets/pt_top.png");
   background-size: cover;
   background-position: center;
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 20px 20px 0 0;
   box-shadow: var(--shadow);
   position: relative;
@@ -95,7 +95,7 @@
 
 .badge-widget {
   background: var(--panel);
-  border: 3px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 25px;
   box-shadow: var(--shadow);
@@ -231,7 +231,7 @@
 /* Special styling for our own badge */
 .our-badge {
   background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-pink));
-  border: 3px solid var(--accent);
+  border: 1px solid var(--accent);
   position: relative;
   overflow: hidden;
 }
