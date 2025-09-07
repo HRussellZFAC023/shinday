@@ -117,23 +117,20 @@
 
   // Initialize enhancements
   function init() {
-    try {
-      enhanceFeedback();
-      addMikuIconsEverywhere();
-      enhanceStatusOverlay();
-      
-      // Re-run icon addition when content changes
-      const observer = new MutationObserver(() => {
-        setTimeout(addMikuIconsEverywhere, 100);
-      });
-      
-      const mainContent = document.getElementById('mainContent');
-      if (mainContent) {
-        observer.observe(mainContent, { childList: true, subtree: true });
-      }
-    } catch (e) {
-      console.log('Enhanced UI init error:', e);
-    }
+    enhanceFeedback();
+    addMikuIconsEverywhere();
+    enhanceStatusOverlay();
+    // Auto-enhance future DOM changes
+    const mainContent = document.getElementById('mainContent') || document.body;
+    if (window._enhanceObserver) return; // idempotent
+    const observer = new MutationObserver(()=>{
+      clearTimeout(window._enhanceDebounce);
+      window._enhanceDebounce = setTimeout(()=>{
+        addMikuIconsEverywhere();
+      }, 60);
+    });
+    window._enhanceObserver = observer;
+    observer.observe(mainContent, { childList: true, subtree: true });
   }
 
   // Initialize when DOM is ready
