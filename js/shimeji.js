@@ -547,7 +547,7 @@ window.addEventListener("DOMContentLoaded", () => {
         "jumping",
         "scared",
         "happy",
-        "multiplying"
+        "multiplying",
       );
     }
 
@@ -579,7 +579,7 @@ window.addEventListener("DOMContentLoaded", () => {
       this.state = "walk";
       this.container.classList.add("walking");
       this.playAnimation(frames, interval, walkCycles, () =>
-        this.setNextAction()
+        this.setNextAction(),
       );
     }
 
@@ -787,13 +787,13 @@ window.addEventListener("DOMContentLoaded", () => {
       const offspring = new EnhancedCreature(
         newId,
         this.spriteConfig,
-        this.type
+        this.type,
       );
 
       // Position near parent
       offspring.position.x = Math.max(
         0,
-        Math.min(this.maxPosX, this.position.x + (Math.random() - 0.5) * 100)
+        Math.min(this.maxPosX, this.position.x + (Math.random() - 0.5) * 100),
       );
       offspring.position.y = this.position.y;
       offspring.direction = -this.direction;
@@ -813,7 +813,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
       const distance = Math.sqrt(
         Math.pow(mousePos.x - (this.position.x + this.containerWidth / 2), 2) +
-          Math.pow(mousePos.y - (this.position.y + this.containerHeight / 2), 2)
+          Math.pow(
+            mousePos.y - (this.position.y + this.containerHeight / 2),
+            2,
+          ),
       );
 
       if (distance < this.spriteConfig.mouseReactionDistance) {
@@ -1076,7 +1079,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const c = new EnhancedCreature(
             "miku-alt-0",
             MIKU_ALT_CONFIG,
-            "miku-alt"
+            "miku-alt",
           );
           creatures.push(c);
           return c;
@@ -1088,7 +1091,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const c = new EnhancedCreature(
             "miku-sketch-0",
             MIKU_SKETCH_CONFIG,
-            "miku-sketch"
+            "miku-sketch",
           );
           creatures.push(c);
           return c;
@@ -1100,7 +1103,7 @@ window.addEventListener("DOMContentLoaded", () => {
           const c = new EnhancedCreature(
             "classic-0",
             CLASSIC_CONFIG,
-            "classic"
+            "classic",
           );
           creatures.push(c);
           return c;
@@ -1121,7 +1124,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const miku = new EnhancedCreature(
           `miku-${Date.now()}`,
           MIKU_CONFIG,
-          "miku"
+          "miku",
         );
         creatures.push(miku);
 
@@ -1129,7 +1132,11 @@ window.addEventListener("DOMContentLoaded", () => {
         try {
           // Suppress the initial boot-time reward; allow rewards for user-triggered spawns later
           const booting = !!window.__shimejiBoot;
-          if (!booting && window.pixelBelleGarden && window.pixelBelleGarden.addHearts) {
+          if (
+            !booting &&
+            window.pixelBelleGarden &&
+            window.pixelBelleGarden.addHearts
+          ) {
             window.pixelBelleGarden.addHearts(3);
             if (window.loveToast) window.loveToast("New companion! +3💖");
           }
@@ -1144,7 +1151,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const miku = new EnhancedCreature(
           `miku-alt-${Date.now()}`,
           MIKU_ALT_CONFIG,
-          "miku-alt"
+          "miku-alt",
         );
         creatures.push(miku);
         return miku;
@@ -1156,7 +1163,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const miku = new EnhancedCreature(
           `miku-sketch-${Date.now()}`,
           MIKU_SKETCH_CONFIG,
-          "miku-sketch"
+          "miku-sketch",
         );
         creatures.push(miku);
         return miku;
@@ -1169,7 +1176,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const classic = new EnhancedCreature(
           `classic-${Date.now()}`,
           CLASSIC_CONFIG,
-          "classic"
+          "classic",
         );
         creatures.push(classic);
         return classic;
@@ -1228,10 +1235,16 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Initialize companions
   // Mark boot phase to avoid granting bonus hearts on initial auto-spawns
-  try { window.__shimejiBoot = true; } catch(_){}
+  try {
+    window.__shimejiBoot = true;
+  } catch (_) {}
   spawnCreatures();
   // Clear the boot flag on next tick
-  setTimeout(()=>{ try{ window.__shimejiBoot = false; }catch(_){ } }, 0);
+  setTimeout(() => {
+    try {
+      window.__shimejiBoot = false;
+    } catch (_) {}
+  }, 0);
 
   // Economy tie-in: earn small hearts over time when companions are active
   (function shimejiEconomy() {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -8,7 +8,7 @@
       name="description"
       content="A cozy pastel web home for Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) - links, music, games, study corner, and interactive Miku companions!"
     />
-  <meta property="og:title" content="Baby Belle - Pastel Miku Garden" />
+    <meta property="og:title" content="Baby Belle - Pastel Miku Garden" />
     <meta
       property="og:description"
       content="A magical retro website with interactive Miku friends and kawaii vibes"
@@ -83,7 +83,6 @@
             <div class="status-item">
               💖 Hearts collected: <span id="heartCount">0</span>
             </div>
-            <!-- Moved Now Playing/Current Miku into Diva info section -->
           </div>
           <nav id="navbar" class="status-nav">
             <ul>
@@ -93,7 +92,7 @@
               <li><a href="#games" data-section="games">🎮 Games</a></li>
               <li><a href="#Wish" data-section="Wish">🎰 Wish</a></li>
               <li>
-                <a href="#shrine" data-section="shrine">Shrine</a>
+                <a href="#shrine" data-section="shrine">⛩️ Shrine</a>
               </li>
             </ul>
           </nav>
@@ -448,12 +447,28 @@
               <h3>🛍️ Shop</h3>
               <div class="shop-panel">
                 <div class="shop-item">
-                  <button id="shopShield" class="pixel-btn" title="Ward hearts briefly">⛨ Shield (50💖)</button>
+                  <button
+                    id="shopShield"
+                    class="pixel-btn"
+                    title="Ward hearts briefly"
+                  >
+                    ⛨ Shield (50💖)
+                  </button>
                 </div>
                 <div class="shop-item">
-                  <button id="shopDecoy" class="pixel-btn" title="Distract the swallower">🍪 Decoy (5💖)</button>
+                  <button
+                    id="shopDecoy"
+                    class="pixel-btn"
+                    title="Distract the swallower"
+                  >
+                    🍪 Decoy (5💖)
+                  </button>
                 </div>
-                <div id="shopStatus" class="shop-status" aria-live="polite"></div>
+                <div
+                  id="shopStatus"
+                  class="shop-status"
+                  aria-live="polite"
+                ></div>
               </div>
             </div>
 
@@ -491,38 +506,41 @@
     </div>
 
     <!-- Scripts -->
-  <script src="./js/shimeji.js"></script>
+    <script src="./js/shimeji.js"></script>
     <!-- 🌸 MIKU CORE - EVERYTHING IN ONE PLACE! 🌸 -->
-  <script src="./js/modules/utils.js"></script>
-  <script src="./js/modules/sfx.js"></script>
-  <script src="./js/modules/miku-manifest.js"></script>
-  <script src="./js/modules/now-playing.js"></script>
-  <script src="./js/modules/splash.js"></script>
-  <script src="./js/modules/navigation.js"></script>
-  <script src="./js/modules/presentation.js"></script>
+    <script src="./js/modules/utils.js"></script>
+    <script src="./js/modules/sfx.js"></script>
+    <script src="./js/modules/miku-manifest.js"></script>
+    <script src="./js/modules/now-playing.js"></script>
+    <script src="./js/modules/splash.js"></script>
+    <script src="./js/modules/navigation.js"></script>
+    <script src="./js/modules/presentation.js"></script>
     <script src="./js/modules/audio.js"></script>
     <!-- New modular helpers: progression + jukebox (non-breaking, attach to window) -->
     <script src="./js/modules/progression.js"></script>
     <script src="./js/modules/achievements.js"></script>
-  <script src="./js/modules/jukebox.js"></script>
+    <script src="./js/modules/jukebox.js"></script>
     <script src="./js/modules/games/index.js"></script>
     <script src="./js/modules/games/vocab.js"></script>
     <script src="./js/modules/games/kanji.js"></script>
     <script src="./js/modules/games/kotoba.js"></script>
-  <script src="./js/modules/games/typing.js"></script>
+    <script src="./js/modules/games/typing.js"></script>
+    <script src="./js/modules/utils.js"></script>
     <!-- Enhanced UI for cute animations and DIVA styling -->
-  <script src="./js/modules/enhanced-ui.js"></script>
+    <script src="./js/modules/enhanced-ui.js"></script>
     <script src="./js/modules/diva.js"></script>
     <!-- Centralized editable copy -->
     <script src="./js/content.js"></script>
+    <!-- Content wire: applies SITE_CONTENT to DOM -->
+    <script src="./js/modules/content-wire.js"></script>
     <!-- CONSOLIDATED: now-playing.js contains all Miku display logic -->
     <!-- Load remaining modules before main.js -->
 
     <script src="./js/modules/quests.js"></script>
     <script src="./js/modules/cursor.js"></script>
     <script src="./js/modules/hearts.js"></script>
-  <script src="./js/modules/wish.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/health-check.js"></script>
+    <script src="./js/modules/wish.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/health-check.js"></script>
   </body>
 </html>

@@ -57,7 +57,7 @@ window.SITE_CONTENT = {
       wallHide: "./assets/icons/wall hide.png",
     },
     // Optional swallow gif path for the swallow mascot
-  swallowGif: "./assets/swallow.gif",
+    swallowGif: "./assets/swallow.gif",
     // Game selector tile covers
     menuCovers: {
       vocab: "./assets/Song-Over.full.2116602.gif",
@@ -414,25 +414,21 @@ window.SITE_CONTENT = {
         title: "World is Mine",
         artist: "ryo (supercell)",
         youtubeId: "Ut-vNvGlvLA",
-
       },
       {
         title: "Senbonzakura",
         artist: "Kurousa-P (WhiteFlame)",
         youtubeId: "shs0rAiwsGQ",
-
       },
       {
         title: "Tell Your World",
         artist: "kz (livetune)",
         youtubeId: "iu4PL7iRFQM",
-
       },
       {
         title: "Love is War",
         artist: "ryo (supercell)",
         youtubeId: "SmX5cnQ1YAg",
-
       },
     ],
     favoriteSongs: [

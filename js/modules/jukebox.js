@@ -1,48 +1,107 @@
 // Jukebox module: hit Miku songs + unlocking by level
-(function(){
+(function () {
   const PRESETS = {
     // Enforce 4-option UI across all difficulties; tune timing windows only
-    easy:    { key:'easy',    label:'Easy',    options:4, baseTime:18, travelMs:2400, judge:{cool:180, great:260, fine:340} },
-    normal:  { key:'normal',  label:'Normal',  options:4, baseTime:15, travelMs:2000, judge:{cool:150, great:230, fine:300} },
-    hard:    { key:'hard',    label:'Hard',    options:4, baseTime:12, travelMs:1600, judge:{cool:120, great:180, fine:260} },
-    extreme: { key:'extreme', label:'Extreme', options:4, baseTime:10, travelMs:1200, judge:{cool:90,  great:150, fine:220} }
+    easy: {
+      key: "easy",
+      label: "Easy",
+      options: 4,
+      baseTime: 18,
+      travelMs: 2400,
+      judge: { cool: 180, great: 260, fine: 340 },
+    },
+    normal: {
+      key: "normal",
+      label: "Normal",
+      options: 4,
+      baseTime: 15,
+      travelMs: 2000,
+      judge: { cool: 150, great: 230, fine: 300 },
+    },
+    hard: {
+      key: "hard",
+      label: "Hard",
+      options: 4,
+      baseTime: 12,
+      travelMs: 1600,
+      judge: { cool: 120, great: 180, fine: 260 },
+    },
+    extreme: {
+      key: "extreme",
+      label: "Extreme",
+      options: 4,
+      baseTime: 10,
+      travelMs: 1200,
+      judge: { cool: 90, great: 150, fine: 220 },
+    },
   };
   // Default local BGM card
-  function defaultSongs(){
-    return [{
-      id:'default-bgm', title:'Default BGM', bpm:120, req:0,
-      audio:'./assets/background.ogg', fallback:'./assets/bgm.ogg',
-      jacket:'./assets/pt_top.png', theme:'#66bbff',
-      recommend:{ game:'vocab', direction:'jp-en' }
-    }];
+  function defaultSongs() {
+    return [
+      {
+        id: "default-bgm",
+        title: "Default BGM",
+        bpm: 120,
+        req: 0,
+        audio: "./assets/background.ogg",
+        fallback: "./assets/bgm.ogg",
+        jacket: "./assets/pt_top.png",
+        theme: "#66bbff",
+        recommend: { game: "vocab", direction: "jp-en" },
+      },
+    ];
   }
 
-  function WishSongs(){
-    try{
-      const coll = JSON.parse(localStorage.getItem('Wish.collection')||'{}');
-      const list=[];
-      for(const url in coll){
-        const meta = typeof window.getMikuMeta==='function'? window.getMikuMeta(url,true):null;
-        if(meta && meta.song){
+  function WishSongs() {
+    try {
+      const coll = JSON.parse(localStorage.getItem("Wish.collection") || "{}");
+      const list = [];
+      for (const url in coll) {
+        const meta =
+          typeof window.getMikuMeta === "function"
+            ? window.getMikuMeta(url, true)
+            : null;
+        if (meta && meta.song) {
           const m = meta.song.match(/(?:v=|be\/)([a-zA-Z0-9_-]{11})/);
-          const vid = m? m[1]:'';
-          list.push({ id:`miku-${meta.id}`, title:meta.name, yt:vid, bpm:120, req:0, jacket:`./assets/pixel-miku/${meta.filename}`, theme:'#66bbff' });
+          const vid = m ? m[1] : "";
+          list.push({
+            id: `miku-${meta.id}`,
+            title: meta.name,
+            yt: vid,
+            bpm: 120,
+            req: 0,
+            jacket: `./assets/pixel-miku/${meta.filename}`,
+            theme: "#66bbff",
+          });
         }
       }
       return list;
-    }catch(_){return [];} 
+    } catch (_) {
+      return [];
+    }
   }
-  function allSongs(){ return defaultSongs().concat(WishSongs()); }
+  function allSongs() {
+    return defaultSongs().concat(WishSongs());
+  }
   let SONGS = allSongs();
-  function refresh(){ SONGS = allSongs(); try{ if (window.Jukebox) window.Jukebox.songs = SONGS; }catch(_){} return SONGS; }
-  function unlocked(){ return refresh(); }
+  function refresh() {
+    SONGS = allSongs();
+    try {
+      if (window.Jukebox) window.Jukebox.songs = SONGS;
+    } catch (_) {}
+    return SONGS;
+  }
+  function unlocked() {
+    return refresh();
+  }
 
-  function ensurePlayer(){
-    const existing = document.getElementById('jukeboxPlayer');
+  function ensurePlayer() {
+    const existing = document.getElementById("jukeboxPlayer");
     if (existing) return existing;
-    const wrap = document.createElement('div');
-    wrap.id = 'jukeboxPlayer';
-    wrap.style.cssText = 'position:fixed;right:16px;bottom:16px;width:360px;z-index:9999;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border:2px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(43,43,68,.25)';
+    const wrap = document.createElement("div");
+    wrap.id = "jukeboxPlayer";
+    wrap.style.cssText =
+      "position:fixed;right:16px;bottom:16px;width:360px;z-index:9999;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border:2px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(43,43,68,.25)";
     wrap.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border)">
         <div style=\"font-weight:900;display:flex;align-items:center;gap:8px\">🎵 Miku Jukebox • <span id=\"jukeboxNow\">Ready</span></div>
@@ -55,111 +114,186 @@
   <iframe id="jukeboxIframe" style="width:100%;height:100%;border:0;display:block" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
       </div>`;
     document.body.appendChild(wrap);
-    document.getElementById('jukeboxClose').onclick = () => {
-      try{ document.getElementById('jukeboxIframe').src='about:blank'; }catch(_){ }
-      wrap.style.display='none';
-      try{ if (window.__resumeBgm) window.__resumeBgm(); }catch(_){ }
+    document.getElementById("jukeboxClose").onclick = () => {
+      try {
+        document.getElementById("jukeboxIframe").src = "about:blank";
+      } catch (_) {}
+      wrap.style.display = "none";
+      try {
+        if (window.__resumeBgm) window.__resumeBgm();
+      } catch (_) {}
     };
-    const loveBtn = document.getElementById('jukeboxLove');
-    if (loveBtn) loveBtn.addEventListener('click', () => {
-      try{ addHearts(1); }catch(_){ }
-    });
+    const loveBtn = document.getElementById("jukeboxLove");
+    if (loveBtn)
+      loveBtn.addEventListener("click", () => {
+        // Prefer Hearts module, then global addHearts, then MikuUI effects
+        try {
+          if (window.Hearts?.add) {
+            window.Hearts.add(1);
+          } else if (typeof window.addHearts === "function") {
+            window.addHearts(1);
+          }
+        } catch (_) {}
+        try {
+          window.MikuUI?.effects?.toast("Thanks for the love! 💖", "miku");
+        } catch (_) {}
+        try {
+          window.MikuUI?.effects?.confetti(40);
+        } catch (_) {}
+      });
     return wrap;
   }
 
-  function play(song){
+  function play(song) {
     if (!song) return;
-    try{ if (window.__pauseRadio) window.__pauseRadio(); }catch(_){ }
+    try {
+      if (window.__pauseRadio) window.__pauseRadio();
+    } catch (_) {}
     const wrap = ensurePlayer();
-    const iframe = document.getElementById('jukeboxIframe');
-    const now = document.getElementById('jukeboxNow');
+    const iframe = document.getElementById("jukeboxIframe");
+    const now = document.getElementById("jukeboxNow");
     // Theme accent
-    try { if (song.theme) document.documentElement.style.setProperty('--jukebox-accent', song.theme); } catch(_){}
+    try {
+      if (song.theme)
+        document.documentElement.style.setProperty(
+          "--jukebox-accent",
+          song.theme,
+        );
+    } catch (_) {}
     // Sync rhythm
-    try { window.__rhythmBpm = song.bpm|0; localStorage.setItem('rhythm.bpm', String(window.__rhythmBpm)); } catch(_){ }
-    try { window.__rhythmMet = true; localStorage.setItem('rhythm.met','1'); } catch(_){ }
-  if (song.audio){
+    try {
+      window.__rhythmBpm = song.bpm | 0;
+      localStorage.setItem("rhythm.bpm", String(window.__rhythmBpm));
+    } catch (_) {}
+    try {
+      window.__rhythmMet = true;
+      localStorage.setItem("rhythm.met", "1");
+    } catch (_) {}
+    if (song.audio) {
       // Use site BGM, no mini-player
-      try{
-        if (iframe) iframe.src = 'about:blank';
-        if (wrap) wrap.style.display = 'none';
-        if (window.AudioMod && typeof AudioMod.setBgmSource==='function'){
-          AudioMod.setBgmSource(song.audio, song.fallback || './assets/bgm.ogg');
+      try {
+        if (iframe) iframe.src = "about:blank";
+        if (wrap) wrap.style.display = "none";
+        if (window.AudioMod && typeof AudioMod.setBgmSource === "function") {
+          AudioMod.setBgmSource(
+            song.audio,
+            song.fallback || "./assets/bgm.ogg",
+          );
         }
         // Resume bgm
-        if (window.__resumeBgm) window.__resumeBgm(); else if (window.AudioMod && AudioMod.ensureBgm) { const a=AudioMod.ensureBgm(); try{a.play().catch(()=>{});}catch(_){}};
-      }catch(_){ }
-    } else if (song.yt){
+        if (window.__resumeBgm) window.__resumeBgm();
+        else if (window.AudioMod && AudioMod.ensureBgm) {
+          const a = AudioMod.ensureBgm();
+          try {
+            a.play().catch(() => {});
+          } catch (_) {}
+        }
+      } catch (_) {}
+    } else if (song.yt) {
       // Pause bgm and show mini-player
-      try { if (window.__pauseBgm) window.__pauseBgm(); } catch(_){}
-      const vid = song.yt || '';
+      try {
+        if (window.__pauseBgm) window.__pauseBgm();
+      } catch (_) {}
+      const vid = song.yt || "";
       const url = `https://www.youtube.com/embed/${encodeURIComponent(vid)}?autoplay=1&rel=0&playsinline=1&modestbranding=1&color=white`;
       if (iframe) iframe.src = url;
-      if (wrap) wrap.style.display = 'block';
+      if (wrap) wrap.style.display = "block";
     }
-  if (now) now.textContent = song.title;
-  // Update status bar Now Playing
-  try { if (!song.artist) song.artist = 'Miku'; } catch(_){}
-  try { if (window.updateNowPlaying) window.updateNowPlaying(song); } catch(_){}
+    if (now) now.textContent = song.title;
+    // Update status bar Now Playing
+    try {
+      if (!song.artist) song.artist = "Miku";
+    } catch (_) {}
+    try {
+      if (window.updateNowPlaying) window.updateNowPlaying(song);
+    } catch (_) {}
   }
 
-  function attachHudSelect(){
+  function attachHudSelect() {
     refresh();
-    const hud = document.querySelector('#jpHudWidget .jp-hud-widget');
-    if (!hud || hud.querySelector('#jukeboxOpen')) return;
-    const wrap = document.createElement('div');
-    wrap.className = 'hud-line';
+    const hud = document.querySelector("#jpHudWidget .jp-hud-widget");
+    if (!hud || hud.querySelector("#jukeboxOpen")) return;
+    const wrap = document.createElement("div");
+    wrap.className = "hud-line";
     const current = getCurrentSong();
     wrap.innerHTML = `
       <strong>🎶 Song:</strong>
-      <span id="jukeboxCurrent" style="font-weight:800;color:#596286">${current ? current.title : 'None'}</span>
+      <span id="jukeboxCurrent" style="font-weight:800;color:#596286">${current ? current.title : "None"}</span>
       <div class="spacer"></div>
       <button id="jukeboxOpen" class="pixel-btn">Song Select…</button>`;
     hud.appendChild(wrap);
-    wrap.querySelector('#jukeboxOpen').onclick = openSongSelect;
+    wrap.querySelector("#jukeboxOpen").onclick = openSongSelect;
     // Theme accent hook
-    try{
-      const s = current; if (s && s.theme){
-        document.documentElement.style.setProperty('--jukebox-accent', s.theme);
+    try {
+      const s = current;
+      if (s && s.theme) {
+        document.documentElement.style.setProperty("--jukebox-accent", s.theme);
       }
-    }catch(_){ }
+    } catch (_) {}
   }
 
-  function getCurrentSong(){
-    try{ const id = localStorage.getItem('jukebox.song') || ''; return refresh().find(s=>s.id===id) || null; }catch(_){ return null; }
+  function getCurrentSong() {
+    try {
+      const id = localStorage.getItem("jukebox.song") || "";
+      return refresh().find((s) => s.id === id) || null;
+    } catch (_) {
+      return null;
+    }
   }
 
-  function saveSelection(song, preset){
-    try{ localStorage.setItem('jukebox.song', song.id); }catch(_){ }
-    try{ localStorage.setItem('jukebox.preset', preset.key); }catch(_){ }
+  function saveSelection(song, preset) {
+    try {
+      localStorage.setItem("jukebox.song", song.id);
+    } catch (_) {}
+    try {
+      localStorage.setItem("jukebox.preset", preset.key);
+    } catch (_) {}
     // apply to runtime
-    try{ window.__rhythmBpm = song.bpm|0; localStorage.setItem('rhythm.bpm', String(window.__rhythmBpm)); }catch(_){ }
-    try{ window.__rhythmMet = true; localStorage.setItem('rhythm.met','1'); }catch(_){ }
-    try{ localStorage.setItem('rhythm.travel', String(preset.travelMs)); }catch(_){ }
-  try{ window.MikuNowPlaying && window.MikuNowPlaying.refresh(); }catch(_){ }
+    try {
+      window.__rhythmBpm = song.bpm | 0;
+      localStorage.setItem("rhythm.bpm", String(window.__rhythmBpm));
+    } catch (_) {}
+    try {
+      window.__rhythmMet = true;
+      localStorage.setItem("rhythm.met", "1");
+    } catch (_) {}
+    try {
+      localStorage.setItem("rhythm.travel", String(preset.travelMs));
+    } catch (_) {}
+    try {
+      window.MikuNowPlaying && window.MikuNowPlaying.refresh();
+    } catch (_) {}
   }
 
-  function getPreset(){
-    try{ const key = localStorage.getItem('jukebox.preset') || 'normal'; return PRESETS[key] || PRESETS.normal; }catch(_){ return PRESETS.normal; }
+  function getPreset() {
+    try {
+      const key = localStorage.getItem("jukebox.preset") || "normal";
+      return PRESETS[key] || PRESETS.normal;
+    } catch (_) {
+      return PRESETS.normal;
+    }
   }
 
-  function openSongSelect(){
-    let ov = document.getElementById('songSelectOverlay');
-    if (!ov){
-      ov = document.createElement('div');
-      ov.id = 'songSelectOverlay';
-      ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:10000;';
+  function openSongSelect() {
+    let ov = document.getElementById("songSelectOverlay");
+    if (!ov) {
+      ov = document.createElement("div");
+      ov.id = "songSelectOverlay";
+      ov.style.cssText =
+        "position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;z-index:10000;";
       const list = refresh();
-      const grid = list.map(s => {
-        const jacket = s.jacket || './assets/root.png';
-        const tip = `BPM ${s.bpm}`;
-        return `
+      const grid = list
+        .map((s) => {
+          const jacket = s.jacket || "./assets/root.png";
+          const tip = `BPM ${s.bpm}`;
+          return `
         <div class="song-tile" data-id="${s.id}" title="${tip}" style="position:relative;border:2px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;cursor:pointer">
           <img src="${jacket}" alt="${s.title}" style="width:100%;height:120px;object-fit:cover;display:block" />
           <div style="padding:8px;font-weight:800;color:#2b2b44">${s.title}</div>
-        </div>`
-      }).join('');
-  ov.innerHTML = `
+        </div>`;
+        })
+        .join("");
+      ov.innerHTML = `
         <div class="song-panel" style="background:#fff;border:3px solid var(--border);border-radius:14px;box-shadow:var(--shadow);width:min(820px,95vw);max-height:90vh;overflow:auto;padding:14px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
             <h3 style="margin:0">Song Select</h3>
@@ -169,33 +303,70 @@
       <div style="opacity:.8;font-size:12px;text-align:right">Click a song to play</div>
         </div>`;
       document.body.appendChild(ov);
-  try{ SFX.play('ui.change'); }catch(_){ }
-  ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.remove(); });
-  document.addEventListener('keydown', function escClose(e){ if(e.key==='Escape'){ ov.remove(); document.removeEventListener('keydown', escClose);} });
-  ov.querySelector('#songClose').onclick = ()=> { try{ SFX.play('ui.move'); }catch(_){ } ov.remove(); };
-        ov.__selected = list.find(s=>s.id===(localStorage.getItem('jukebox.song')||'')) || list[0];
-      ov.addEventListener('click',(e)=>{
-        const t = e.target.closest('.song-tile');
+      try {
+        SFX.play("ui.change");
+      } catch (_) {}
+      ov.addEventListener("click", (e) => {
+        if (e.target === ov) ov.remove();
+      });
+      document.addEventListener("keydown", function escClose(e) {
+        if (e.key === "Escape") {
+          ov.remove();
+          document.removeEventListener("keydown", escClose);
+        }
+      });
+      ov.querySelector("#songClose").onclick = () => {
+        try {
+          SFX.play("ui.move");
+        } catch (_) {}
+        ov.remove();
+      };
+      ov.__selected =
+        list.find(
+          (s) => s.id === (localStorage.getItem("jukebox.song") || ""),
+        ) || list[0];
+      ov.addEventListener("click", (e) => {
+        const t = e.target.closest(".song-tile");
         if (!t) return;
-        const s = list.find(x=>x.id===t.getAttribute('data-id'));
+        const s = list.find((x) => x.id === t.getAttribute("data-id"));
         if (!s) return;
-        try{ SFX.play('ui.select'); }catch(_){ }
+        try {
+          SFX.play("ui.select");
+        } catch (_) {}
         const preset = PRESETS.normal;
         saveSelection(s, preset);
         play(s);
-        const cur = document.getElementById('jukeboxCurrent'); if (cur) cur.textContent = s.title;
+        const cur = document.getElementById("jukeboxCurrent");
+        if (cur) cur.textContent = s.title;
         ov.remove();
       });
     } else {
       document.body.appendChild(ov);
-      try{ SFX.play('ui.change'); }catch(_){ }
+      try {
+        SFX.play("ui.change");
+      } catch (_) {}
     }
   }
 
-  window.Jukebox = { songs: SONGS, unlocked, play, attachHudSelect, openSongSelect, getPreset, refresh };
+  window.Jukebox = {
+    songs: SONGS,
+    unlocked,
+    play,
+    attachHudSelect,
+    openSongSelect,
+    getPreset,
+    refresh,
+  };
   // Initialize status bar state at startup
-  try{
-    const cur = (function(){ try{ const id = localStorage.getItem('jukebox.song')||''; return refresh().find(s=>s.id===id); }catch(_){ return null; } })();
+  try {
+    const cur = (function () {
+      try {
+        const id = localStorage.getItem("jukebox.song") || "";
+        return refresh().find((s) => s.id === id);
+      } catch (_) {
+        return null;
+      }
+    })();
     if (window.updateNowPlaying) window.updateNowPlaying(cur);
-  }catch(_){}
+  } catch (_) {}
 })();

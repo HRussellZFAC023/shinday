@@ -5,6 +5,7 @@ A beautiful, retro-inspired personal website with interactive Hatsune Miku compa
 ## 🌸 Features
 
 ### ✨ Interactive Elements
+
 - **Enhanced Shimeji Companions**: Pixel Miku friends that walk, jump, climb walls, fall from the sky, multiply, and react to mouse interactions
 - **Memory Game**: Match kawaii symbols to collect hearts
 - **Heart Collector**: Click-based mini-game with floating animations
@@ -12,18 +13,21 @@ A beautiful, retro-inspired personal website with interactive Hatsune Miku compa
 - **Random Miku Gallery**: Cycle through beautiful pixel art
 
 ### 🎵 Media & Social
+
 - **Retro Radio Player**: Styled like a vintage radio with EQ bars
 - **Social Media Hub**: Beautiful cards linking to all platforms
 - **Music Playlist**: Curated Vocaloid favorites
 - **Miku Shrine**: Gallery and tribute section
 
 ### 📚 Personal Features
+
 - **Japanese Learning Tracker**: Progress bars and daily vocabulary
 - **Mood System**: Save and display current mood
 - **Friends List**: Connect with the community
 - **Status Bar**: Real-time updates and counters
 
 ### 🎨 Visual Design
+
 - **Pastel Theme**: Soft blues, pinks, and mint greens
 - **Retro Aesthetics**: 90s web vibes with modern functionality
 - **Smooth Animations**: CSS transitions and keyframes
@@ -33,6 +37,7 @@ A beautiful, retro-inspired personal website with interactive Hatsune Miku compa
 ## 🚀 Enhanced Shimeji Features
 
 The interactive Miku companions can:
+
 - ✅ Walk around the screen edges
 - ✅ Sit and rest randomly
 - ✅ Dance and spin
@@ -66,23 +71,24 @@ shinday/
 ## 🎮 Interactive Commands
 
 Open browser console and try:
+
 ```javascript
 // Add hearts to counter
-pixelBelleGarden.addHearts(10)
+pixelBelleGarden.addHearts(10);
 
 // Spawn more Miku companions
-pixelBelleGarden.spawnShimeji()
+pixelBelleGarden.spawnShimeji();
 
 // Navigate to sections
-pixelBelleGarden.showSection('shrine')
+pixelBelleGarden.showSection("shrine");
 
 // Get site statistics
-pixelBelleGarden.getStats()
+pixelBelleGarden.getStats();
 
 // Shimeji controls
-shimejiFunctions.triggerMassJump()
-shimejiFunctions.triggerMassFall()
-shimejiFunctions.removeAll()
+shimejiFunctions.triggerMassJump();
+shimejiFunctions.triggerMassFall();
+shimejiFunctions.removeAll();
 ```
 
 ## 🌐 GitHub Pages Deployment
@@ -109,16 +115,20 @@ npx http-server
 ## 🎨 Customization
 
 ### Adding New Miku Images
+
 1. Add images to `assets/pixel-miku/`
 2. Update `MIKU_IMAGES` array in `js/main.js`
 
 ### Customizing Shimeji Behavior
+
 Edit configurations in `js/shimeji.js`:
+
 - `MIKU_CONFIG` - Miku companion settings
 - `CLASSIC_CONFIG` - Classic shimeji settings
 - Adjust speeds, action frequencies, and physics
 
 ### Styling Changes
+
 - Main theme colors in `css/styles.css` `:root` variables
 - Animation timings and effects throughout CSS files
 - Add new animations in keyframes section
@@ -135,7 +145,7 @@ Edit configurations in `js/shimeji.js`:
 
 - ✅ **No server required**: Pure client-side functionality
 - ✅ **Local storage**: Saves progress and preferences
-- ✅ **Responsive design**: Mobile and desktop friendly  
+- ✅ **Responsive design**: Mobile and desktop friendly
 - ✅ **Fast loading**: Optimized assets and code
 - ✅ **Cross-browser**: Works in modern browsers
 - ✅ **Interactive**: Games, animations, and companions
@@ -152,7 +162,7 @@ Edit configurations in `js/shimeji.js`:
 
 Made with 💖 for the retro web community and Miku fans everywhere! ✨
 
-*This site is always under construction!* 🚧
+_This site is always under construction!_ 🚧
 
 ## 🔖 Link to us
 

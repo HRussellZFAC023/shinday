@@ -2,9 +2,7 @@
   {
     "id": 1,
     "name": "Hatsune Miku (Original)",
-    "alt_names": [
-      "Hatsune Miku"
-    ],
+    "alt_names": ["Hatsune Miku"],
     "description": "The classic look of Hatsune Miku in her iconic teal pigtails and futuristic schoolgirl outfit, with a silver-gray vest, pleated skirt and glowing teal accents. This is the design that started it all, capturing Miku’s cheerful and trendy style.",
     "rarity": 1,
     "links": [
@@ -18,10 +16,7 @@
   {
     "id": 2,
     "name": "Hatsune Miku V2 (Classic)",
-    "alt_names": [
-      "Hatsune Miku V2",
-      "Classic Miku"
-    ],
+    "alt_names": ["Hatsune Miku V2", "Classic Miku"],
     "description": "Miku’s classic 2007 look from the VOCALOID2 era. She wears the original black and teal outfit – a sleek vest, turquoise tie, pleated skirt and high boots – embodying the definitive image that made her a virtual pop idol.",
     "rarity": 1,
     "links": [
@@ -49,9 +44,7 @@
   {
     "id": 4,
     "name": "Sakura Miku (Cherries)",
-    "alt_names": [
-      "Sakura Miku"
-    ],
+    "alt_names": ["Sakura Miku"],
     "description": "A delightful cherry blossom-themed Miku with pink hair and cherry hair-ties. Sakura Miku’s outfit is a pink recolor of her default costume adorned with flower motifs and even cherries forming a bow – a look that sends your heart soaring with feelings of spring.",
     "rarity": 2,
     "links": [
@@ -65,14 +58,10 @@
   {
     "id": 5,
     "name": "Sakura Miku (Blossom Ponytails)",
-    "alt_names": [
-      "Sakura Miku"
-    ],
+    "alt_names": ["Sakura Miku"],
     "description": "Another variant of Sakura Miku sporting flowing petal-pink twin-tails with white blossom patterns. Her cherry blossom uniform features extra floral accents and long ribbon ties, making this spring Miku look like a living sakura fairy.",
     "rarity": 3,
-    "links": [
-      "https://www.mikucollection.com/en/art-gallery/sakura-miku/11"
-    ],
+    "links": ["https://www.mikucollection.com/en/art-gallery/sakura-miku/11"],
     "song": "https://www.youtube.com/watch?v=JHgs_qOcR7E",
     "title": "Sakura No Ame",
     "filename": "005 - Sakura Miku (Blossom Ponytails).png"
@@ -80,14 +69,10 @@
   {
     "id": 6,
     "name": "Easter Bunny Miku",
-    "alt_names": [
-      "My Dear Bunny"
-    ],
+    "alt_names": ["My Dear Bunny"],
     "description": "Miku dresses up as a cute Easter bunny, complete with bunny ears and a pastel-colored outfit. She exudes springtime cheer – imagine her holding a basket of eggs and hopping along to spread Easter joy in this adorable ensemble.",
     "rarity": 2,
-    "links": [
-      "https://project-diva.fandom.com/wiki/My_Dear_Bunny"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/My_Dear_Bunny"],
     "song": "https://www.youtube.com/watch?v=pmWC53zY5tE",
     "title": "My Dear Bunny",
     "filename": "006 - Easter Bunny Miku.png"
@@ -95,14 +80,10 @@
   {
     "id": 7,
     "name": "Seifuku Miku (Sailor School Uniform)",
-    "alt_names": [
-      "School Miku"
-    ],
+    "alt_names": ["School Miku"],
     "description": "Miku in a classic Japanese sailor-style school uniform. With a navy blue pleated skirt, white sailor-collared top, and youthful energy, this look captures Miku’s charming high-school vibe perfectly.",
     "rarity": 1,
-    "links": [
-      "https://project-diva.fandom.com/wiki/School"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/School"],
     "song": "https://www.youtube.com/watch?v=MGUSwPd6Y6k",
     "title": "School Song",
     "filename": "007 - Seifuku Miku (Sailor School Uniform).png"
@@ -110,9 +91,7 @@
   {
     "id": 8,
     "name": "Deep-Sea Girl Miku",
-    "alt_names": [
-      "Shinkai Shoujo"
-    ],
+    "alt_names": ["Shinkai Shoujo"],
     "description": "A melancholic underwater-themed Miku clad in an elegant deep blue dress. Her hair flows like the ocean currents around her, and the outfit’s frills and gradients evoke the image of a girl singing alone at the bottom of the sea.",
     "rarity": 4,
     "links": [
@@ -129,9 +108,7 @@
     "alt_names": [],
     "description": "A crossover variant with Miku taking on the persona of Black★Rock Shooter. She wears a sleek black coat, short shorts, and blazing blue eye – a fierce and cool alter-ego that melds Miku’s voice with a rockin’ combat-ready style.",
     "rarity": 5,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Black_Rock_Shooter"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Black_Rock_Shooter"],
     "song": "https://www.youtube.com/watch?v=qa8pCoby9Vg",
     "title": "Black Rock Shooter",
     "filename": "009 - Black Rock Shooter.png"
@@ -139,9 +116,7 @@
   {
     "id": 10,
     "name": "Hachune Miku",
-    "alt_names": [
-      "Negi Miku"
-    ],
+    "alt_names": ["Negi Miku"],
     "description": "The chibi parody of Miku with a simplified face and a constant open-mouthed smile. Hachune Miku is often seen waving a spring onion (negi) enthusiastically, embodying a meme-worthy and adorable side of Miku’s character.",
     "rarity": 1,
     "links": [
@@ -155,14 +130,10 @@
   {
     "id": 11,
     "name": "Miku (China Version)",
-    "alt_names": [
-      "Chinese Miku"
-    ],
+    "alt_names": ["Chinese Miku"],
     "description": "Hatsune Miku’s Chinese-themed attire featuring a chic cheongsam-inspired dress in white and red. This version often has floral motifs and flowing sleeves, reflecting a blend of modern pop idol and traditional Chinese elegance.",
     "rarity": 3,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Hatsune_Miku_V4_Chinese"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Hatsune_Miku_V4_Chinese"],
     "song": "https://www.youtube.com/watch?v=kvnIFo3xMfY",
     "title": "The Disappearance Of Hatsune Miku",
     "filename": "011 - Miku China version.png"
@@ -170,9 +141,7 @@
   {
     "id": 12,
     "name": "The Intense Voice of Miku (Gekishou)",
-    "alt_names": [
-      "Miku no Gekishou"
-    ],
+    "alt_names": ["Miku no Gekishou"],
     "description": "A module designed for the notoriously difficult song “Hatsune Miku no Gekishou.” Miku appears almost like a digital diva vampire – a frilled gothic outfit, dramatic black-and-red color scheme, and an intense aura to match the song’s extreme energy.",
     "rarity": 5,
     "links": [
@@ -185,9 +154,7 @@
   {
     "id": 13,
     "name": "World Is Mine Miku",
-    "alt_names": [
-      "The World Is Mine Miku"
-    ],
+    "alt_names": ["The World Is Mine Miku"],
     "description": "Inspired by the famous song, this Miku wears a princess-like look: a frilly black dress, red rose accessories, and a tiny crown perched in her hair. She looks every bit the spoiled queen of the world lounging on her plush bed, as in the original PV.",
     "rarity": 4,
     "links": [
@@ -203,9 +170,7 @@
     "alt_names": [],
     "description": "A subdued, emotional style for the song “Rolling Girl.” Miku is depicted in a school uniform with bandages wrapping her arms – reflecting the song’s themes of struggle. Her usual bright colors are muted, showing a more troubled side of Miku’s persona.",
     "rarity": 3,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Rolling_Girl"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Rolling_Girl"],
     "song": "https://www.youtube.com/watch?v=3Or7vrxM7yo",
     "title": "Rolling Girl",
     "filename": "014 - Rolling Girl Miku.png"
@@ -216,9 +181,7 @@
     "alt_names": [],
     "description": "A darker, stylish Miku outfit themed after DECO*27’s song “Ghost Rule.” She sports a black and red ensemble with thigh-high boots and fingerless gloves. Her expression and pose hint at secrecy and frustration, matching the song’s edgy mood.",
     "rarity": 4,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Ghost_Rule"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Ghost_Rule"],
     "song": "https://www.youtube.com/watch?v=lOLkAM74OsU&t=425s",
     "title": "Ghost Rule",
     "filename": "015 - Ghost Rule Miku.png"
@@ -240,9 +203,7 @@
   {
     "id": 17,
     "name": "Nurse Miku (Love-Colored Ward)",
-    "alt_names": [
-      "Love-Colored Ward Miku"
-    ],
+    "alt_names": ["Love-Colored Ward Miku"],
     "description": "Dressed as a cute nurse from the song “Love-Colored Ward,” Miku wears a white nurse uniform complete with a little hat and a pink apron. The outfit is accented with hearts and medical cross symbols, giving a playful hospital theme to Miku’s normally trendy style.",
     "rarity": 3,
     "links": [
@@ -258,9 +219,7 @@
     "alt_names": [],
     "description": "A Taisho-era military uniform look from the hit song “Senbonzakura.” Miku dons a deep magenta kimono-style military outfit with a matching officer’s cap, white gloves and boots. The costume is adorned with cherry blossom emblems – a striking blend of retro and modern that captures the song’s spirit.",
     "rarity": 5,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/%E4%B8%89%E9%87%8E%E4%B8%9C"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/%E4%B8%89%E9%87%8E%E4%B8%9C"],
     "song": "https://www.youtube.com/watch?v=F1tWiEPc5yg",
     "title": "Senbonzakura",
     "filename": "018 - Senbonzakura Miku.png"
@@ -281,9 +240,7 @@
   {
     "id": 20,
     "name": "Sand Planet Miku",
-    "alt_names": [
-      "Suna no Wakusei"
-    ],
+    "alt_names": ["Suna no Wakusei"],
     "description": "Designed by artist Hachi for the song “Sand Planet,” this Miku braves a desert world. She wears tattered desert garb – earth-toned cloak, boots, and a desert hat – with a gas mask around her neck. The sand-swept, post-apocalyptic style sets her apart from her usual pop image.",
     "rarity": 5,
     "links": [
@@ -309,14 +266,10 @@
   {
     "id": 22,
     "name": "Dark Angel Miku",
-    "alt_names": [
-      "Secret Police Miku"
-    ],
+    "alt_names": ["Secret Police Miku"],
     "description": "A gothic lolita-style Miku from the “Secret Police” module. She wears a frilly black dress with lace, paired with dark wings and a halo. The look is both cute and dark, perfectly matching the secretive, rebellious vibe of the song.",
     "rarity": 4,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Dark_Angel"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Dark_Angel"],
     "song": "https://www.youtube.com/watch?v=TIhNVuRjYjg",
     "title": "Dark Angel",
     "filename": "022 - Dark Angel (Secret Police).png"
@@ -327,9 +280,7 @@
     "alt_names": [],
     "description": "A Wonderland-inspired costume where Miku takes on the guise of the March Hare. She wears a frilly outfit with bunny ears and tea party accessories. This whimsical style shortens Miku’s twintails and gives her a playful, slightly madcap look straight out of Alice’s world.",
     "rarity": 3,
-    "links": [
-      "https://project-diva.fandom.com/wiki/March_Hare"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/March_Hare"],
     "song": "https://www.youtube.com/watch?v=jW7i8y-uHmA",
     "title": "March Hare",
     "filename": "023 - March Hare Miku.png"
@@ -340,9 +291,7 @@
     "alt_names": [],
     "description": "A candy-sweet module from Project DIVA X, featuring Miku in a pastel, lolita-like outfit adorned with candy motifs. She looks like a human confection, with striped stockings and a giant lollipop prop – perfectly suited to upbeat, playful songs.",
     "rarity": 3,
-    "links": [
-      "https://project-diva.fandom.com/wiki/LOL_-lots_of_laugh-"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/LOL_-lots_of_laugh-"],
     "song": "https://www.youtube.com/shorts/rRE2A4Zhmyo",
     "title": "Lollipop",
     "filename": "024 - Lolipop Miku.png"
@@ -350,9 +299,7 @@
   {
     "id": 25,
     "name": "Maneki Miku (Lucky Cat)",
-    "alt_names": [
-      "Lucky Cat Miku"
-    ],
+    "alt_names": ["Lucky Cat Miku"],
     "description": "Miku transforms into a lucky cat! She wears a traditional-style outfit with cat ears, a bell collar and a paw-like pose reminiscent of a maneki neko statue. With a red and white kimono and cute cat tail, this Miku promises to bring good fortune.",
     "rarity": 4,
     "links": [
@@ -366,9 +313,7 @@
   {
     "id": 26,
     "name": "Miku Symphony 2017 (Ball Gown)",
-    "alt_names": [
-      "Ball Gown Miku"
-    ],
+    "alt_names": ["Ball Gown Miku"],
     "description": "An elegant symphonic concert outfit based on KEI’s illustration for Miku Symphony 2017. Miku appears in a chic black ball gown with blue lining, holding a violin. The sophisticated dress and refined smile give her a graceful, orchestra-soloist presence.",
     "rarity": 5,
     "links": [
@@ -381,9 +326,7 @@
   {
     "id": 27,
     "name": "Miku Symphony 2018 (Maid)",
-    "alt_names": [
-      "Maid Miku"
-    ],
+    "alt_names": ["Maid Miku"],
     "description": "The outfit from Miku Symphony 2018 gives Miku a demure, classical look akin to a Victorian maid or orchestra attendant. She wears a black-and-white dress with apron-like frills and musical motifs. It’s a charming blend of cute and formal, fitting for an orchestral concert setting.",
     "rarity": 4,
     "links": [
@@ -412,9 +355,7 @@
     "alt_names": [],
     "description": "This design is based on Miku’s original concept art – a what-if version where she has a different outfit and even slightly brown hair. Miku if Ver. wears a stylish school-uniform-inspired dress with teal accents, offering fans a glimpse of an alternate Miku that might have been.",
     "rarity": 4,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Hatsune_Miku#if_Version"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Hatsune_Miku#if_Version"],
     "song": "https://www.youtube.com/watch?v=J-W1pMhuInk",
     "title": "If Ver.",
     "filename": "029 - Hatsune Miku IF ver.png"
@@ -425,9 +366,7 @@
     "alt_names": [],
     "description": "An outfit worn for a special winter concert. Miku is bundled in a festive white coat with blue snowflake motifs, a fluffy scarf, and matching earmuffs. She looks warm and radiant on stage, ready to perform in a winter wonderland.",
     "rarity": 4,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/SNOW_MIKU_LIVE!_2015"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/SNOW_MIKU_LIVE!_2015"],
     "song": "https://www.youtube.com/watch?v=w7UTW3PUq94",
     "title": "Taiko No Tatsujin (Longplay Mix)",
     "filename": "030 - Hatsune miku winter live.png"
@@ -438,9 +377,7 @@
     "alt_names": [],
     "description": "A celebratory outfit from Miku’s 12th birthday in 2019. Miku wears a frilly blue party dress with ribbons and bows, as seen in the official birthday illustration. She even holds a decorated birthday cake, overflowing with cheerful charm to mark the special day.",
     "rarity": 4,
-    "links": [
-      "https://myfigurecollection.net/item/868645"
-    ],
+    "links": ["https://myfigurecollection.net/item/868645"],
     "song": "https://www.youtube.com/watch?v=EHUI2sfRjrM",
     "title": "Happy Birthday Miku",
     "filename": "031 - Birthday miku (2019 blue).png"
@@ -451,9 +388,7 @@
     "alt_names": [],
     "description": "A tiny, whimsical Miku derivative who literally lives in a bottle! This fan-made character has Miku with flowing liquid-blue hair enclosed inside a transparent bottle. It’s an adorable concept that imagines Miku as a magical genie or spirit in a bottle.",
     "rarity": 2,
-    "links": [
-      "https://fanloid.fandom.com/wiki/Bottle_Miku"
-    ],
+    "links": ["https://fanloid.fandom.com/wiki/Bottle_Miku"],
     "song": "https://www.youtube.com/watch?v=2L-RaqEGAGc",
     "title": "Bottle Miku (Speedpaint)",
     "filename": "032 - Bottle Miku.png"
@@ -464,9 +399,7 @@
     "alt_names": [],
     "description": "A bizarre and humorous Miku derivative consisting of Miku’s head atop a pair of human legs. Shiteyan’yo is bright pink and utterly strange, born from internet humor. Though unsettling, she’s a beloved meme – a testament to Vocaloid fandom’s quirky creativity.",
     "rarity": 1,
-    "links": [
-      "https://fanloid.fandom.com/wiki/Shiteyan'yo"
-    ],
+    "links": ["https://fanloid.fandom.com/wiki/Shiteyan'yo"],
     "song": "https://www.youtube.com/watch?v=Qit3ALTelOo",
     "title": "Shiteyan’yo",
     "filename": "033 - Shiteyan'yo (Legs Miku).png"
@@ -477,9 +410,7 @@
     "alt_names": [],
     "description": "Miku’s attire from the song “Love is War.” She stands atop towering speakers, wearing a tattered black dress and a long flowing scarf. With a megaphone in hand and distressed, passionate styling, this look captures the intense, rebellious emotion of the song’s story.",
     "rarity": 5,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Love_is_War"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Love_is_War"],
     "song": "https://m.youtube.com/watch?v=KoWFoxTtAcw",
     "title": "Love Is War (A Cappella Dub)",
     "filename": "034 - Love Is War.png"
@@ -490,9 +421,7 @@
     "alt_names": [],
     "description": "A Halloween-themed module where Miku dresses up as a cute pumpkin witch. She wears an orange and purple dress with pumpkin motifs, striped witch hat, and carries a jack-o’-lantern. Sweet Pumpkin Miku is full of Halloween cheer and sugary mischief.",
     "rarity": 4,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Sweet_Pumpkin"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Sweet_Pumpkin"],
     "song": "https://www.youtube.com/watch?v=rIDaTlpVQIo",
     "title": "Sweet Pumpkin",
     "filename": "035 - Sweet Pumpkin Miku.png"
@@ -500,14 +429,10 @@
   {
     "id": 36,
     "name": "Snow Miku 2011 (Fluffy Coat)",
-    "alt_names": [
-      "Fluffy Coat"
-    ],
+    "alt_names": ["Fluffy Coat"],
     "description": "The 2011 Snow Miku dons a fluffy white winter coat and earmuffs, looking warm and noble in the snowy Sapporo winter. Pink accents and a soft scarf complete this early Snow Miku design, bringing cozy cheer to the cold.",
     "rarity": 3,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2011"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2011"],
     "song": "https://www.youtube.com/watch?v=5I2rkQcwp9E",
     "title": "Snow Fairy Story",
     "filename": "036 - Snow Miku 2011 (Fluffy Coat).png"
@@ -515,14 +440,10 @@
   {
     "id": 37,
     "name": "Snow Miku 2012 (Scarf)",
-    "alt_names": [
-      "Scarf"
-    ],
+    "alt_names": ["Scarf"],
     "description": "Snow Miku 2012 wears a warm light-blue coat with a fluffy hood and pom-pom ties, earning her the “Fluffy Coat” nickname. She carries the charm of winter with snowflake designs on her outfit and her hair turned silvery white.",
     "rarity": 3,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2012"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2012"],
     "song": "https://www.youtube.com/watch?v=Bqob1vsJiJ4",
     "title": "Snow Shower",
     "filename": "037 - Snow Miku 2012 (Scarf).png"
@@ -530,14 +451,10 @@
   {
     "id": 38,
     "name": "Snow Miku 2013 (Strawberry White Kimono)",
-    "alt_names": [
-      "Strawberry White Kimono"
-    ],
+    "alt_names": ["Strawberry White Kimono"],
     "description": "The 2013 Snow Miku appears in a pure white kimono adorned with strawberries and floral patterns. This “Strawberry White Kimono” design gives Miku a serene, traditional beauty, celebrating winter through a blend of snow and spring imagery.",
     "rarity": 4,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2013"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2013"],
     "song": "https://www.youtube.com/watch?v=aPb-MTcpNbE",
     "title": "Strawberry Snow Drop",
     "filename": "038 - Snow Miku 2013 (Strawberry White Kimono).png"
@@ -545,14 +462,10 @@
   {
     "id": 39,
     "name": "Snow Miku 2014 (Magical Snow)",
-    "alt_names": [
-      "Magical Snow"
-    ],
+    "alt_names": ["Magical Snow"],
     "description": "Snow Miku 2014 takes on a magical girl motif – “Magical Snow.” She wears a cape and wizard hat decorated with stars and snowflakes, wielding a snowflake staff. This enchanting outfit turns Miku into a winter sorceress twinkling with frost magic.",
     "rarity": 4,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2014"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2014"],
     "song": "https://m.youtube.com/watch?v=79N1O0lF0GY",
     "title": "Love! Snow! Really Magic!",
     "filename": "039 - Snow Miku 2014 (Magical Snow).png"
@@ -560,14 +473,10 @@
   {
     "id": 40,
     "name": "Snow Miku 2015 (Snow Bell)",
-    "alt_names": [
-      "Snow Bell"
-    ],
+    "alt_names": ["Snow Bell"],
     "description": "The 2015 Snow Miku, called “Snow Bell,” is themed around lily-of-the-valley flowers. Dressed in a white bell-shaped dress with green ribbons and fur trim, she embodies a gentle spirit of the snow, ready to warm you up in time for spring.",
     "rarity": 5,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2015"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2015"],
     "song": "https://www.youtube.com/watch?v=kt4PdOjcBzA",
     "title": "Fondant Step",
     "filename": "040 - Snow Miku 2015 (Snow Bell).png"
@@ -575,14 +484,10 @@
   {
     "id": 41,
     "name": "Snow Miku 2016 (Snow Owl Parka)",
-    "alt_names": [
-      "Snow Owl Parka"
-    ],
+    "alt_names": ["Snow Owl Parka"],
     "description": "Snow Miku 2016 is winter-sports themed – she wears a cozy blue and white parka with pink accents, plus ski goggles and an owl motif on her hat. “Snow Owl Parka” Miku looks ready to hit the slopes, keeping things frosty and fun with her adventurous snow style.",
     "rarity": 5,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2016"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2016"],
     "song": "https://www.youtube.com/watch?v=gZL69S3kCd8",
     "title": "Winter Alice",
     "filename": "041 - Snow Miku 2016 (Snow Owl Parka).png"
@@ -590,14 +495,10 @@
   {
     "id": 42,
     "name": "Snow Miku 2017 (Twinkle Constellations)",
-    "alt_names": [
-      "Twinkle Constellations"
-    ],
+    "alt_names": ["Twinkle Constellations"],
     "description": "The 2017 Snow Miku, “Twinkle Constellations,” has a celestial theme. She is robed in a midnight blue cape adorned with constellations, and her outfit sparkles like the night sky over snowy fields. This design blends winter and starry wonder into one twinkling ensemble.",
     "rarity": 5,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2017"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2017"],
     "song": "https://www.youtube.com/watch?v=hbUZ1vZQi0o",
     "title": "Star Night Snow (Game Demo)",
     "filename": "042 - Snow Miku 2017 (Twinkle Constellations).png"
@@ -608,9 +509,7 @@
     "alt_names": [],
     "description": "Snow Miku 2018 is known as the “Crane Priestess.” She wears a traditional Japanese miko (shrine maiden) outfit with rich red and white colors, accented by crane-inspired details. This graceful design celebrates Hokkaido’s wildlife and winter spirituality.",
     "rarity": 5,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2018"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2018"],
     "song": "https://www.youtube.com/watch?v=SmdReIFr7Qo",
     "title": "Snow Miku Twinkle Ver. (Figure Review)",
     "filename": "043 - Snow Miku 2018 (Crane Priestess).png"
@@ -621,9 +520,7 @@
     "alt_names": [],
     "description": "The 2019 Snow Miku appears as a “Snow Princess.” Dressed in an elegant ice-blue ball gown and a tiara, she looks every bit royalty of the winter. The outfit’s layered frills and snowflake ornaments give Miku a regal and frosty charm.",
     "rarity": 5,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2019"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2019"],
     "song": "https://www.youtube.com/watch?v=3Q_XFweeZkc",
     "title": "Snow Miku 2019: Snow Princess (Unboxing)",
     "filename": "044 - Snow Miku 2019 (Princess).png"
@@ -634,9 +531,7 @@
     "alt_names": [],
     "description": "Snow Miku 2020 marches in with a marching-band inspired outfit, hence “Marching Orchestra.” She wears a smart military jacket, music note motifs and a plumed hat. Leading a parade through the snow, this design is festive and full of musical energy.",
     "rarity": 5,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2020"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2020"],
     "song": "https://www.youtube.com/watch?v=LNnN-OY8Z1Q",
     "title": "Snow Miku: Snow Princess Ver. (Painted Figure)",
     "filename": "045 - Snow Miku 2020 (Marching Orchestra).png"
@@ -647,9 +542,7 @@
     "alt_names": [],
     "description": "Snow Miku 2021 shines with an “Illumination” theme. Her outfit is decorated with lights and motifs of winter illuminations – glowing bulbs, city skyline patterns, and twinkling stars. She represents the warm festive lights that brighten up long winter nights.",
     "rarity": 5,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2021"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2021"],
     "song": "https://www.youtube.com/watch?v=qS6iOGX7ENU",
     "title": "Eternal Singing Angel",
     "filename": "046 - Snow Miku 2021 (Illumination).png"
@@ -660,9 +553,7 @@
     "alt_names": [],
     "description": "The 2022 Snow Miku is themed around the winter sea of Hokkaido. Her costume incorporates ocean blues, pearls and marine elements like seashell accessories. With flowing wave-like sleeves and aquatic accents, she brings the serene beauty of Hokkaido’s winter coast to life.",
     "rarity": 5,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Snow_Miku_2022"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Snow_Miku_2022"],
     "song": "https://www.youtube.com/watch?v=aLbRd4lemas",
     "title": "Winter In Hokkaido",
     "filename": "047 - Snow Miku 2022 (Hokkaido Sea).png"
@@ -673,9 +564,7 @@
     "alt_names": [],
     "description": "The 2010 Racing Miku design – an official Good Smile Racing mascot outfit. Miku wears a bright orange and white jumpsuit with sponsor logos, long orange gloves, and orange-tinted goggles. Her twin-tails are held with orange hairbands to complete the race queen look.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2010/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2010/"],
     "song": "https://www.youtube.com/watch?v=sAbyjKB1Tio",
     "title": "Like The Wind",
     "filename": "048 - Racing Miku 2010.png"
@@ -686,9 +575,7 @@
     "alt_names": [],
     "description": "The 2011 Racing Miku module. Miku wears a sleek white and black racing outfit with neon-turquoise trim and a short see-through coat. Black boots and gloves with turquoise accents complete this futuristic race car girl look.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2011/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2011/"],
     "song": "https://www.youtube.com/watch?v=VfXCRmdxuMY",
     "title": "Racing Miku 2011 Theme",
     "filename": "049 - Racing Miku 2011.png"
@@ -699,9 +586,7 @@
     "alt_names": [],
     "description": "The 2012 Racing Miku outfit. A white crop-top and skirt with bold turquoise and purple accents, plus white gloves and thigh-high boots. This flashy ensemble has futuristic touches and was designed by illustrator GAN for the Super GT racing season.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2012/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2012/"],
     "song": "https://www.youtube.com/watch?v=e2lnKwXMhHg",
     "title": "Racing Miku 2012 Theme",
     "filename": "050 - Racing Miku 2012.png"
@@ -712,9 +597,7 @@
     "alt_names": [],
     "description": "The 2013 Racing Miku design by Saitom. She sports a green and white racing mini-dress with mechanical motifs and matching gloves. The look has a sporty, energetic vibe fit for the racetrack.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2013/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2013/"],
     "song": "https://www.youtube.com/watch?v=H7E3MU_H7Hw",
     "title": "Racing Miku 2013 Theme",
     "filename": "051 - Racing Miku 2013.png"
@@ -725,9 +608,7 @@
     "alt_names": [],
     "description": "The 2014 Racing Miku outfit, designed by illustrator Koyamashigeto. It’s a blue and white racing jacket with silver trim, paired with a white miniskirt. Miku’s hair has frosty blue highlights and she dons matching boots for an official race day look.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2014/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2014/"],
     "song": "https://www.youtube.com/watch?v=_2xyE-CsYnA",
     "title": "Racing Miku 2014 Theme",
     "filename": "052 - Racing Miku 2014.png"
@@ -738,9 +619,7 @@
     "alt_names": [],
     "description": "A summer variation of the 2014 Racing Miku design. Miku wears a sleeveless version of her blue racing outfit and a short skirt, showing a bit more skin for the hotter weather. The official colors and logos remain the same.",
     "rarity": 3,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2014summer/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2014summer/"],
     "song": "https://www.youtube.com/watch?v=PQjbaapVilI",
     "title": "Racing Miku 2014 Summer Theme",
     "filename": "053 - Racing Miku 2014 summer.png"
@@ -751,9 +630,7 @@
     "alt_names": [],
     "description": "The 2015 Racing Miku, designed by artist Oguchi. She wears a sleek white and aqua racing jacket, with a matching pleated skirt and white boots. Her outfit includes neon accents and a blue scarf, giving a cool, modern race feel.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2015/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2015/"],
     "song": "https://www.youtube.com/watch?v=7c2pmodXqIA",
     "title": "Racing Miku 2015 Theme",
     "filename": "054 - Racing Miku 2015.png"
@@ -764,9 +641,7 @@
     "alt_names": [],
     "description": "A summer version of Racing Miku 2015. Miku’s jacket is shortened to a crop-top style and she swaps the full skirt for shorts. The color scheme stays in white and aqua, offering a cooler look for warm race days.",
     "rarity": 3,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2015summer/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2015summer/"],
     "song": "https://www.youtube.com/watch?v=tQrjEr1eLG8",
     "title": "Racing Miku 2015 Summer Theme",
     "filename": "055 - Racing Miku 2015 summer.png"
@@ -777,9 +652,7 @@
     "alt_names": [],
     "description": "The 2016 Racing Miku design. She sports a white and blue racing jacket over a black tank top, with a short layered skirt. The outfit has a sporty feel with sponsor patches, and Miku’s hair has cool cyan highlights this season.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2016/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2016/"],
     "song": "https://www.youtube.com/watch?v=G6eUnuKB7Aw",
     "title": "Racing Miku 2016 Theme",
     "filename": "056 - Racing Miku 2016.png"
@@ -790,9 +663,7 @@
     "alt_names": [],
     "description": "A summer variant of Racing Miku 2016. Miku wears a sleeveless zip-up top and shorter skirt, both in white and blue, with her midriff exposed. This version is meant for hot race conditions while keeping the same color scheme.",
     "rarity": 3,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2016summer/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2016summer/"],
     "song": "https://www.youtube.com/watch?v=8JfZCURFr9g",
     "title": "Racing Miku 2016 Summer Theme",
     "filename": "057 - Racing Miku 2016 summer.png"
@@ -803,9 +674,7 @@
     "alt_names": [],
     "description": "The 2017 Racing Miku by artist Rio. She wears a fitted turquoise racing jacket and black shorts with white accents. The outfit features sleek lines and a visor hat, embodying speed and professionalism as the team’s mascot.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2017/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2017/"],
     "song": "https://www.youtube.com/watch?v=pmL1Moa2kK0",
     "title": "Racing Miku 2017 Theme",
     "filename": "058 - Racing Miku 2017.png"
@@ -816,9 +685,7 @@
     "alt_names": [],
     "description": "Summer variant of Racing Miku 2017. Miku’s jacket is shortened and she wears a crop-top with the same turquoise and black colors. The ensemble is completed with a short skirt and athletic boots, keeping her cool under the summer sun.",
     "rarity": 3,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2017summer/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2017summer/"],
     "song": "https://www.youtube.com/watch?v=T30Qz-gqT4g",
     "title": "Racing Miku 2017 Summer Theme",
     "filename": "059 - Racing Miku 2017 summer.png"
@@ -829,9 +696,7 @@
     "alt_names": [],
     "description": "Spring variant of Racing Miku 2017. Miku’s outfit features pastel colors and floral motifs on her racing jacket, blending springtime cheer with racing spirit. It’s a lighter, more decorative take on her usual uniform.",
     "rarity": 3,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2017spring/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2017spring/"],
     "song": "https://www.youtube.com/watch?v=DzppjutGnlY",
     "title": "Racing Miku 2017 Spring Theme",
     "filename": "060 - Racing Miku 2017 spring.png"
@@ -842,9 +707,7 @@
     "alt_names": [],
     "description": "The 2018 Racing Miku design. Miku wears a sleek white and blue racing jacket over a matching crop top and skirt. Her outfit features bold angular designs and a racing helmet, reflecting the cutting-edge style of the team.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2018/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2018/"],
     "song": "https://www.youtube.com/watch?v=TmJ8jSKvAoU",
     "title": "Racing Miku 2018 Theme",
     "filename": "061 - Racing Miku 2018.png"
@@ -855,9 +718,7 @@
     "alt_names": [],
     "description": "Summer variant of Racing Miku 2018. Miku’s long-sleeve jacket is replaced with a short vest, and her skirt is trimmed shorter. The color scheme of white and blue remains, allowing ease of movement in hot weather.",
     "rarity": 3,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2018summer/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2018summer/"],
     "song": "https://www.youtube.com/watch?v=iik25wqIuFo",
     "title": "Racing Miku 2018 Summer Theme",
     "filename": "062 - Racing Miku 2018 summer.png"
@@ -868,9 +729,7 @@
     "alt_names": [],
     "description": "The 2019 Racing Miku design. Miku sports a navy blue and white jacket with green accents, over a short skirt. The outfit has a sporty, aerodynamic feel, and includes a racing cap to top off the look.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2019/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2019/"],
     "song": "https://www.youtube.com/watch?v=V0IqN8IoAq0",
     "title": "Racing Miku 2019 Theme",
     "filename": "063 - Racing Miku 2019.png"
@@ -881,9 +740,7 @@
     "alt_names": [],
     "description": "Summer variant of Racing Miku 2019. The outfit’s long sleeves are replaced with a light vest, and the skirt is slightly shorter. The navy and green color scheme is kept, giving her a fresh look for summer racing.",
     "rarity": 3,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2019summer/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2019summer/"],
     "song": "https://www.youtube.com/watch?v=pAnsu6yB4dY",
     "title": "Racing Miku 2019 Summer Theme",
     "filename": "064 - Racing Miku 2019 summer.png"
@@ -894,9 +751,7 @@
     "alt_names": [],
     "description": "Spring variant of Racing Miku 2019. Miku’s outfit is adorned with floral patterns and pastel highlights, celebrating springtime. The racing jacket is still present but with lighter colors and a cheerful design.",
     "rarity": 3,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2019spring/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2019spring/"],
     "song": "https://www.youtube.com/watch?v=SiRKT5yyhf0",
     "title": "Racing Miku 2019 Spring Theme",
     "filename": "065 - Racing Miku 2019 spring.png"
@@ -907,9 +762,7 @@
     "alt_names": [],
     "description": "The 2020 Racing Miku. She wears a white and sky-blue racing jacket over a matching crop top and skirt, echoing the Good Smile Racing team colors. The ensemble looks dynamic and modern, suitable for the fast-paced GT season.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2020/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2020/"],
     "song": "https://www.youtube.com/watch?v=LmNRJ3uqlvc",
     "title": "Racing Miku 2020 Theme",
     "filename": "066 - Racing Miku 2020.png"
@@ -920,9 +773,7 @@
     "alt_names": [],
     "description": "Summer variant of Racing Miku 2020. Miku’s outfit is lightened for the season: a sleeveless top and shorter skirt in white and blue. The colors and sponsor logos stay the same, keeping her ready for a hot day at the track.",
     "rarity": 3,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2020summer/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2020summer/"],
     "song": "https://www.youtube.com/watch?v=fqQKt5GddPY",
     "title": "Racing Miku 2020 Summer Theme",
     "filename": "067 - Racing Miku 2020 summer.png"
@@ -933,9 +784,7 @@
     "alt_names": [],
     "description": "The 2021 Racing Miku design. She sports a white and dark blue racing jumpsuit with neon accents. The outfit has a futuristic racer look, complete with a visor helmet and aerodynamic styling.",
     "rarity": 4,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2021/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2021/"],
     "song": "https://www.youtube.com/watch?v=FlPHdBv5Im8",
     "title": "Racing Miku 2021 Theme",
     "filename": "068 - Racing Miku 2021.png"
@@ -946,9 +795,7 @@
     "alt_names": [],
     "description": "Summer variant of Racing Miku 2021. Miku’s jacket and skirt are trimmed for warm weather, with the same white and blue color scheme. The outfit is sporty and breathable while still representing her racing team.",
     "rarity": 3,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2021summer/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2021summer/"],
     "song": "https://www.youtube.com/watch?v=TK1P93vS2sE",
     "title": "Racing Miku 2021 Summer Theme",
     "filename": "069 - Racing Miku 2021 summer.png"
@@ -959,9 +806,7 @@
     "alt_names": [],
     "description": "Spring variant of Racing Miku 2021. The racing suit features pastel pink highlights and floral decals, giving it a seasonal touch. Miku still wears the standard white and blue as the base for this cherry blossom-inspired look.",
     "rarity": 3,
-    "links": [
-      "https://www.goodsmileracing.com/en/racingmiku2021spring/"
-    ],
+    "links": ["https://www.goodsmileracing.com/en/racingmiku2021spring/"],
     "song": "https://www.youtube.com/watch?v=e1xCOsgWG0M",
     "title": "Racing Miku 2021 Spring Theme",
     "filename": "070 - Racing Miku 2021 spring.png"
@@ -969,14 +814,10 @@
   {
     "id": 71,
     "name": "Rin Style (Miku as Rin)",
-    "alt_names": [
-      "Miku Rin"
-    ],
+    "alt_names": ["Miku Rin"],
     "description": "Miku cosplaying as Kagamine Rin, adopting Rin’s trademark yellow and black outfit and bow. Effectively a version of Rin with Miku’s face – a fun crossover style beloved by fans.",
     "rarity": 2,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Extra_Chara_Modules"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Extra_Chara_Modules"],
     "song": "https://www.youtube.com/watch?v=p2pS--hm25I",
     "title": "Light Song (Hibikase)",
     "filename": "071 - Rin Style (Miku as Rin).png"
@@ -984,14 +825,10 @@
   {
     "id": 72,
     "name": "Len Style (Miku as Len)",
-    "alt_names": [
-      "Miku Len"
-    ],
+    "alt_names": ["Miku Len"],
     "description": "Miku cosplaying as Kagamine Len, wearing his cool white sailor-style top, black shorts and necktie. Essentially a version of Len with Miku’s face – a fun crossover style beloved by fans.",
     "rarity": 2,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Extra_Chara_Modules"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Extra_Chara_Modules"],
     "song": "https://www.youtube.com/watch?v=P_3-Qy88oMY",
     "title": "Farewell",
     "filename": "072 - Len Style (Miku as Len).png"
@@ -999,14 +836,10 @@
   {
     "id": 73,
     "name": "Luka Style (Miku as Luka)",
-    "alt_names": [
-      "Miku Luka"
-    ],
+    "alt_names": ["Miku Luka"],
     "description": "Miku cosplaying as Megurine Luka, wearing Luka’s elegant black and gold dress. This mature style effectively turns Miku into a version of Luka with Miku’s face – a fun crossover style beloved by fans.",
     "rarity": 2,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Extra_Chara_Modules"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Extra_Chara_Modules"],
     "song": "https://www.youtube.com/watch?v=cMWn6fHli-g",
     "title": "Just Be Friends",
     "filename": "073 - Luka Style (Miku as Luca).png"
@@ -1014,14 +847,10 @@
   {
     "id": 74,
     "name": "MEIKO Style (Miku as MEIKO)",
-    "alt_names": [
-      "Miku MEIKO"
-    ],
+    "alt_names": ["Miku MEIKO"],
     "description": "Miku cosplaying as MEIKO, adopting MEIKO’s classic red outfit – a midriff-baring top and skirt. This outfit makes Miku look like a version of MEIKO with her face, celebrating the early Vocaloid era.",
     "rarity": 2,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Extra_Chara_Modules"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Extra_Chara_Modules"],
     "song": "https://www.youtube.com/watch?v=rWokfI8a4S0",
     "title": "Don't Leave",
     "filename": "074 - Meiko Style (Miku as Meiko).png"
@@ -1029,14 +858,10 @@
   {
     "id": 75,
     "name": "KAITO Style (Miku as KAITO)",
-    "alt_names": [
-      "Miku KAITO"
-    ],
+    "alt_names": ["Miku KAITO"],
     "description": "Miku cosplaying as KAITO, adopting his long blue coat and matching scarf ensemble. It’s essentially a version of KAITO with Miku’s face, a fun crossover style treasured by fans.",
     "rarity": 2,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Extra_Chara_Modules"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Extra_Chara_Modules"],
     "song": "https://www.youtube.com/watch?v=Nle6hYY5i7A",
     "title": "Cantarella",
     "filename": "075 - Kaito Style (Miku as Kaito).png"
@@ -1044,14 +869,10 @@
   {
     "id": 76,
     "name": "Teto Style (Miku as Teto)",
-    "alt_names": [
-      "Miku Teto"
-    ],
+    "alt_names": ["Miku Teto"],
     "description": "Miku cosplaying as Kasane Teto, wearing Teto’s signature pink twin-drill hairstyle and outfit. This playful crossover turns Miku into Teto-miku – a beloved fan mashup style.",
     "rarity": 2,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Extra_Chara_Modules"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Extra_Chara_Modules"],
     "song": "https://www.youtube.com/watch?v=fkgnG9g-k5k",
     "title": "Kasane Teto Song",
     "filename": "076 - Tetso Kasane Style (Miku as Tetso Kasane).png"
@@ -1059,14 +880,10 @@
   {
     "id": 77,
     "name": "GUMI Style (Miku as GUMI)",
-    "alt_names": [
-      "Miku Gumi"
-    ],
+    "alt_names": ["Miku Gumi"],
     "description": "Miku cosplaying as GUMI, adopting GUMI’s orange crop-top and skirt set with green accents and goggles on her head. This style makes Miku look like GUMI with Miku’s face – a fun tribute to the vocaloid lineup.",
     "rarity": 2,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Extra_Chara_Modules"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Extra_Chara_Modules"],
     "song": "https://www.youtube.com/watch?v=T2k60-iXFwY",
     "title": "Coward Montblanc",
     "filename": "077 - Gumi Style Miku (Miku as Gumi).png"
@@ -1077,9 +894,7 @@
     "alt_names": [],
     "description": "A special outfit celebrating Miku’s 10th anniversary. Miku wears a pearlescent white dress inspired by her original costume, decorated with rainbow ribbons and the number ‘10’. This anniversary design by KEI gives her a festive, commemorative glow.",
     "rarity": 5,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Hatsune_Miku_10th_Anniversary"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Hatsune_Miku_10th_Anniversary"],
     "song": "https://www.youtube.com/watch?v=47Ta3zGU3nA",
     "title": "39 Music!",
     "filename": "078 - Hatsune Miku 10th Anniversary Pearl Ver.png"
@@ -1090,9 +905,7 @@
     "alt_names": [],
     "description": "Miku takes on the form of a spring fairy. She is adorned in a light green dress with flower petals and butterfly-like wings. This enchanting look imagines Miku as a tiny seasonal fairy bringing in the spring bloom.",
     "rarity": 3,
-    "links": [
-      "https://myfigurecollection.net/item/740258"
-    ],
+    "links": ["https://myfigurecollection.net/item/740258"],
     "song": "https://www.youtube.com/watch?v=N-zpALZK1Mg",
     "title": "To The World Ends With You",
     "filename": "079 - Fairy Miku 3rd Spring.png"
@@ -1103,9 +916,7 @@
     "alt_names": [],
     "description": "A cute and girly module featuring Miku in a pink, heart-themed outfit designed by Suoh. She has large ribbon ornaments in her hair and heart motifs on her dress and boots. This look is overflowing with idol-like charm and sweet, romantic style.",
     "rarity": 4,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Heart%C3%97Ribbon"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Heart%C3%97Ribbon"],
     "song": "https://www.youtube.com/watch?v=u3uJtTM4w_c",
     "title": "Heart X Ribbon",
     "filename": "080 - Hatsune Miku heart x ribbon.png"
@@ -1116,9 +927,7 @@
     "alt_names": [],
     "description": "A serene autumn-themed outfit. Miku is dressed in a traditional harvest festival kimono with moon and rabbit motifs. The warm earthy colors and gentle design evoke the feeling of watching a harvest moon on a cool autumn night with Miku by your side.",
     "rarity": 3,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Harvest_Moon"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Harvest_Moon"],
     "song": "https://www.youtube.com/watch?v=AkzbWq9Oz2M",
     "title": "Harvest Moon (Unboxing & Review)",
     "filename": "081 - Harvest moon.png"
@@ -1129,9 +938,7 @@
     "alt_names": [],
     "description": "A version of Miku as she appears in the Leo/need band of Project SEKAI. She wears a casual school band outfit – a stylish school uniform with a light cardigan and sneakers. This look highlights Miku’s approachable, band-member side when performing with Leo/need.",
     "rarity": 3,
-    "links": [
-      "https://projectsekai.fandom.com/wiki/Hatsune_Miku#Leo/need"
-    ],
+    "links": ["https://projectsekai.fandom.com/wiki/Hatsune_Miku#Leo/need"],
     "song": "https://www.youtube.com/watch?v=5YkSgCmzEDg",
     "title": "Sakura No Ame",
     "filename": "082 - LeoNeed Miku.png"
@@ -1139,14 +946,10 @@
   {
     "id": 83,
     "name": "MiCrystal (Crystal Miku)",
-    "alt_names": [
-      "Crystal Miku"
-    ],
+    "alt_names": ["Crystal Miku"],
     "description": "A sparkling module where Miku appears as if sculpted from crystal. Her outfit is translucent and faceted like a gemstone, refracting light into rainbows. MiCrystal Miku looks like a delicate glass statue come to life, singing with a pure, crystal-clear tone.",
     "rarity": 4,
-    "links": [
-      "https://project-diva.fandom.com/wiki/Crystal"
-    ],
+    "links": ["https://project-diva.fandom.com/wiki/Crystal"],
     "song": "https://www.youtube.com/watch?v=bON3gE1ZyoA",
     "title": "Crystal",
     "filename": "083 - MiCrystal (Crystal Miku module).png"
@@ -1157,9 +960,7 @@
     "alt_names": [],
     "description": "This outfit comes from ryo’s song “ODDS&ENDS.” Miku is shown in a humble mechanic-style getup – a simple white tank top, work gloves, and boots – surrounded by tools and broken robot parts. It’s a poignant look that underscores Miku’s role as a scrapped, rebuilt robot singing her heart out.",
     "rarity": 4,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/ODDS%26ENDS"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/ODDS%26ENDS"],
     "song": "https://www.youtube.com/watch?v=Qvz8c8NFsSA",
     "title": "Odds&Ends",
     "filename": "084 - Odds and Ends miku.png"
@@ -1183,9 +984,7 @@
     "alt_names": [],
     "description": "From the song “Romeo and Cinderella,” Miku wears a vintage ball gown. It’s a lovely Victorian-style dress in shades of white and deep blue with lace gloves. This attire makes Miku look like the tragic heroine of a fairy tale, longing for love at midnight.",
     "rarity": 4,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Romeo_and_Cinderella"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Romeo_and_Cinderella"],
     "song": "https://www.youtube.com/watch?v=Gt6TcNJDV5o",
     "title": "Romeo And Cinderella (Music Box)",
     "filename": "086 - Romeo and Cinderella (vintage dress module).png"
@@ -1196,9 +995,7 @@
     "alt_names": [],
     "description": "A general module for Miku from project Diva! She’s bundled in a light white shirt with black trimming and a red ribbon, black denim shorts, shoes with red soles, and a red and black ribbon on the left wrist.",
     "rarity": 2,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Vocaloid_Winter"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Vocaloid_Winter"],
     "song": "https://www.youtube.com/watch?v=Wce3qC7D-9U",
     "title": "Snowman",
     "filename": "087 - Miku winter image.png"
@@ -1209,9 +1006,7 @@
     "alt_names": [],
     "description": "Miku’s outfit from the iconic Google Chrome CM song “Tell Your World.” She wears a colorful street-fashion ensemble with a multi-layered tutu skirt splashed in rainbow paint colors. A large pair of headphones around her neck completes this artistic, world-connected look.",
     "rarity": 5,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Tell_Your_World"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Tell_Your_World"],
     "song": "https://www.youtube.com/watch?v=6PsJZ3rG41w",
     "title": "Tell Your World (Live)",
     "filename": "088 - Tell your world.png"
@@ -1222,9 +1017,7 @@
     "alt_names": [],
     "description": "From the graduation song “Sakura no Ame,” Miku is portrayed in a Japanese high school graduation uniform. She wears a pink cherry-blossom colored blazer and skirt with a red ribbon, standing under falling sakura petals. This look is sentimental and gentle, representing farewells and new beginnings in spring.",
     "rarity": 3,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/%E6%A1%9C%E3%83%8E%E9%9B%A8"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/%E6%A1%9C%E3%83%8E%E9%9B%A8"],
     "song": "https://www.youtube.com/watch?v=ByG8fnWP1fc",
     "title": "Sakura No Ame",
     "filename": "089 - Sakura no Ame Miku (Cherry-Petal Uniform).png"
@@ -1235,9 +1028,7 @@
     "alt_names": [],
     "description": "Miku’s infamous dark counterpart. Zatsune Miku has long black hair with red highlights instead of teal, red eyes, and a black variation of Miku’s outfit. She emanates a sinister aura – an alternate, more hostile personality of Miku born from fan imagination.",
     "rarity": 4,
-    "links": [
-      "https://vocaloid.fandom.com/wiki/Zatsune_Miku"
-    ],
+    "links": ["https://vocaloid.fandom.com/wiki/Zatsune_Miku"],
     "song": "https://www.youtube.com/watch?v=jL9z8cL_u2M",
     "title": "Amazing Dolce (Fanloid Cover)",
     "filename": "090 - Zatsune miku.png"
@@ -1248,9 +1039,7 @@
     "alt_names": [],
     "description": "Miku’s signature outfit from Magical Mirai 2013. Miku acts as a magical circus magician, complete with a silk top hat, cape and wand. She looks ready to dazzle the crowd with stage magic and song.",
     "rarity": 5,
-    "links": [
-      "https://magicalmirai.com/2013/"
-    ],
+    "links": ["https://magicalmirai.com/2013/"],
     "song": "https://www.youtube.com/watch?v=k-S-d-fT6-A",
     "title": "The Disappearance Of Hatsune Miku",
     "filename": "091 - Magical Mirai 2013 (Magician Top-Hat).png"
@@ -1261,9 +1050,7 @@
     "alt_names": [],
     "description": "Miku’s signature outfit from Magical Mirai 2014. A futuristic outfit characterized by an oversized ribbon that ties her hair. The design blends a sci-fi feel with cute idol elements, representing Miku’s ever-evolving future.",
     "rarity": 5,
-    "links": [
-      "https://magicalmirai.com/2014/"
-    ],
+    "links": ["https://magicalmirai.com/2014/"],
     "song": "https://www.youtube.com/watch?v=L2G8x_503vA",
     "title": "Tell Your World",
     "filename": "092 - Magical Mirai 2014 (Future Ribbon).png"
@@ -1274,9 +1061,7 @@
     "alt_names": [],
     "description": "Miku’s signature outfit from Magical Mirai 2015. Miku wears a plaid-themed outfit with a crown or tiara. The plaid pattern adds a modern pop style, and the small crown signifies her status as the queen of the event.",
     "rarity": 5,
-    "links": [
-      "https://magicalmirai.com/2015/"
-    ],
+    "links": ["https://magicalmirai.com/2015/"],
     "song": "https://www.youtube.com/watch?v=YfUYH62NqPA",
     "title": "Cat Food",
     "filename": "093 - Magical Mirai 2015 (Plaid Crown).png"
@@ -1287,9 +1072,7 @@
     "alt_names": [],
     "description": "Miku’s signature outfit from Magical Mirai 2016. A marching band style costume in royal blue. Miku looks like a parade drum major, leading the celebration in a military-style jacket and parade hat decorated in blue.",
     "rarity": 5,
-    "links": [
-      "https://magicalmirai.com/2016/"
-    ],
+    "links": ["https://magicalmirai.com/2016/"],
     "song": "https://www.youtube.com/watch?v=1aQZSwwLzAw",
     "title": "Welcome To The World",
     "filename": "094 - Magical Mirai 2016 (Blue Parade).png"
@@ -1300,9 +1083,7 @@
     "alt_names": [],
     "description": "Miku’s signature outfit from Magical Mirai 2017. A unique concept mixing a sailor-style school uniform with a science lab coat. Miku’s outfit has a sailor collar and pleats alongside technical, lab-like details, symbolizing both youth and innovation.",
     "rarity": 5,
-    "links": [
-      "https://magicalmirai.com/2017/"
-    ],
+    "links": ["https://magicalmirai.com/2017/"],
     "song": "https://www.youtube.com/watch?v=C08UYLh6Z_o",
     "title": "Tell Your World",
     "filename": "095 - Magical Mirai 2017 (Sailor Lab).png"
@@ -1313,9 +1094,7 @@
     "alt_names": [],
     "description": "Miku’s signature outfit from Magical Mirai 2018. This design gives Miku a playful circus performer look. She has harlequin diamond patterns on her dress, a jester-like collar, and colorful circus-themed accessories, embodying the carnival atmosphere.",
     "rarity": 5,
-    "links": [
-      "https://magicalmirai.com/2018/"
-    ],
+    "links": ["https://magicalmirai.com/2018/"],
     "song": "https://www.youtube.com/watch?v=V-UFGrWgJ4Y",
     "title": "Paulonia",
     "filename": "096 - Magical Mirai 2018 (Harlequin Circus).png"
@@ -1326,9 +1105,7 @@
     "alt_names": [],
     "description": "Miku’s signature outfit from Magical Mirai 2019. Miku’s outfit features star motifs and she wears a shining star crown on her head. The costume is elegant and cosmic, celebrating the theme of stars and guidance as Magical Mirai hits new heights.",
     "rarity": 5,
-    "links": [
-      "https://magicalmirai.com/2019/"
-    ],
+    "links": ["https://magicalmirai.com/2019/"],
     "song": "https://www.youtube.com/watch?v=a-Nf3QUFkOU",
     "title": "Legend",
     "filename": "097 - Magical Mirai 2019 (Star Crown).png"
@@ -1339,9 +1116,7 @@
     "alt_names": [],
     "description": "Miku’s signature outfit from Magical Mirai 2020. Mirroring a band leader’s attire with a bright red marching band uniform and a plume hat. Despite the challenges of 2020, this outfit exudes determination and unity through music.",
     "rarity": 5,
-    "links": [
-      "https://magicalmirai.com/2020/"
-    ],
+    "links": ["https://magicalmirai.com/2020/"],
     "song": "https://www.youtube.com/watch?v=0k280-F-dK8",
     "title": "Zero",
     "filename": "098 - Magical Mirai 2020 (Marching Band).png"
@@ -1352,9 +1127,7 @@
     "alt_names": [],
     "description": "Miku’s signature outfit from Magical Mirai 2021. Miku dons a sleek white and teal outfit resembling a science lab coat fused with futuristic fashion. Goggles and techy patterns accent the design, capturing the forward-looking spirit of that year’s event.",
     "rarity": 5,
-    "links": [
-      "https://magicalmirai.com/2021/"
-    ],
+    "links": ["https://magicalmirai.com/2021/"],
     "song": "https://www.youtube.com/watch?v=Pa82WZ9I7-c",
     "title": "Tell Your World",
     "filename": "099 - Magical Mirai 2021 (Future Lab).png"
@@ -1365,9 +1138,7 @@
     "alt_names": [],
     "description": "Miku’s signature outfit from Magical Mirai 2022. For Magical Mirai’s 10th anniversary, Miku wears a soft pastel-colored ensemble that incorporates elements from past years’ designs. It’s a celebratory, all-star outfit – pastel rainbow dress, anniversary logo, and joyful nods to her decade of Magical Mirai.",
     "rarity": 5,
-    "links": [
-      "https://magicalmirai.com/2022/"
-    ],
+    "links": ["https://magicalmirai.com/2022/"],
     "song": "https://www.youtube.com/watch?v=PggKYZyI0SU",
     "title": "Melt (Live)",
     "filename": "100 - Magical Mirai 2022 (10th Anniv. Pastel).png"

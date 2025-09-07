@@ -17,7 +17,9 @@
 /* Header matching main site */
 .badge-header {
   height: 120px;
-  background: linear-gradient(135deg, rgba(189,227,255,.9), rgba(255,209,236,.9)), url('../assets/pt_top.png');
+  background:
+    linear-gradient(135deg, rgba(189, 227, 255, 0.9), rgba(255, 209, 236, 0.9)),
+    url("../assets/pt_top.png");
   background-size: cover;
   background-position: center;
   border: 3px solid var(--border);
@@ -35,7 +37,7 @@
   font-size: 2.2rem;
   font-weight: 900;
   color: var(--ink);
-  text-shadow: 2px 2px 0 rgba(255,255,255,.8);
+  text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.8);
   margin: 0;
   animation: pulse 3s ease-in-out infinite;
 }
@@ -48,7 +50,7 @@
 }
 
 .back-link {
-  background: rgba(255,255,255,.8);
+  background: rgba(255, 255, 255, 0.8);
   border: 2px solid var(--border);
   border-radius: 15px;
   padding: 10px 20px;
@@ -62,12 +64,12 @@
 .back-link:hover {
   background: var(--pastel-mint);
   transform: translateY(-2px);
-  box-shadow: 0 4px 0 rgba(43,43,68,.15);
+  box-shadow: 0 4px 0 rgba(43, 43, 68, 0.15);
 }
 
 /* Main content area */
 .badge-main {
-  background: rgba(255,255,255,.9);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
   border: 2px solid var(--border);
   border-top: none;
@@ -102,7 +104,9 @@
 
 .badge-widget:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 0 rgba(43,43,68,.15), 0 16px 40px rgba(43,43,68,.12);
+  box-shadow:
+    0 6px 0 rgba(43, 43, 68, 0.15),
+    0 16px 40px rgba(43, 43, 68, 0.12);
 }
 
 .widget-header {
@@ -131,7 +135,7 @@
 
 /* Preview area */
 .preview-area {
-  background: rgba(0,0,0,.03);
+  background: rgba(0, 0, 0, 0.03);
   border: 2px solid var(--border);
   border-radius: 15px;
   padding: 20px;
@@ -147,7 +151,7 @@
   max-width: 100%;
   height: auto;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(43,43,68,.15);
+  box-shadow: 0 4px 12px rgba(43, 43, 68, 0.15);
   transition: transform 0.3s ease;
 }
 
@@ -190,13 +194,13 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 0 rgba(43,43,68,.15);
+  box-shadow: 0 2px 0 rgba(43, 43, 68, 0.15);
 }
 
 .copy-btn:hover {
   background: var(--accent-2);
   transform: translateY(-1px);
-  box-shadow: 0 3px 0 rgba(43,43,68,.2);
+  box-shadow: 0 3px 0 rgba(43, 43, 68, 0.2);
 }
 
 .copy-btn.copied {
@@ -208,12 +212,12 @@
   width: 100%;
   min-height: 100px;
   resize: vertical;
-  font-family: 'Courier New', 'Monaco', monospace;
+  font-family: "Courier New", "Monaco", monospace;
   font-size: 0.9rem;
   padding: 15px;
   border: 2px solid var(--border);
   border-radius: 12px;
-  background: rgba(255,255,255,.8);
+  background: rgba(255, 255, 255, 0.8);
   color: var(--ink);
   transition: border-color 0.3s ease;
 }
@@ -233,7 +237,7 @@
 }
 
 .our-badge::before {
-  content: '✨';
+  content: "✨";
   position: absolute;
   top: 10px;
   right: 15px;
@@ -268,7 +272,11 @@
   padding: 30px 0;
   border-top: 3px solid var(--border);
   border-bottom: 3px solid var(--border);
-  background: linear-gradient(135deg, rgba(189,227,255,.1), rgba(255,209,236,.1));
+  background: linear-gradient(
+    135deg,
+    rgba(189, 227, 255, 0.1),
+    rgba(255, 209, 236, 0.1)
+  );
 }
 
 .embed-section h2 {
@@ -277,7 +285,7 @@
 
 .embed-section h2::before,
 .embed-section h2::after {
-  content: '✨';
+  content: "✨";
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -307,7 +315,7 @@
   .badge-container {
     padding: 20px;
   }
-  
+
   .badge-header {
     flex-direction: column;
     height: auto;
@@ -315,15 +323,15 @@
     text-align: center;
     gap: 15px;
   }
-  
+
   .badge-header-content h1 {
     font-size: 1.8rem;
   }
-  
+
   .badges-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .widget-header {
     flex-direction: column;
     align-items: flex-start;
@@ -333,18 +341,35 @@
 
 /* Animations */
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
 }
 
 @keyframes sparkle {
-  0%, 100% { opacity: 1; transform: rotate(0deg); }
-  50% { opacity: 0.7; transform: rotate(180deg); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+  50% {
+    opacity: 0.7;
+    transform: rotate(180deg);
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 /* Kawaii elements */

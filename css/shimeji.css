@@ -18,7 +18,7 @@
   pointer-events: none;
   display: block;
   image-rendering: pixelated;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .webmeji-container.walking {
@@ -39,7 +39,8 @@
 
 /* Enhanced animations for new features */
 @keyframes walkBounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -48,7 +49,8 @@
 }
 
 @keyframes climbMotion {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0px);
   }
   50% {
@@ -121,7 +123,8 @@
 }
 
 @keyframes happyBounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   25% {
