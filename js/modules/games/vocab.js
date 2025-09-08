@@ -35,7 +35,8 @@
     lock = false,
     tId = null,
     startAt = 0,
-    countdown = 15;
+    countdown = 15,
+    beats = null;
   let curDir = direction();
 
   // Caches
@@ -96,6 +97,14 @@
     if (vocabCache.pages.length > 6) vocabCache.pages.shift();
     return arr;
   }
+  // Preload a couple of pages up front to reduce question stalls
+  (async () => {
+    try {
+      await primeVocabPage(rnd(50) + 1);
+      await primeVocabPage(rnd(50) + 1);
+    } catch (_) {}
+  })();
+
   function pickN(setLike, n, avoid = new Set()) {
     const arr = Array.isArray(setLike) ? setLike.slice() : Array.from(setLike);
     const out = [];
@@ -123,9 +132,9 @@
       Jukebox.getPreset()) || { options: 4 };
     const optCount = Math.min(preset.options || 4, 4);
     const decoyCount = Math.max(1, optCount - 1);
-    if (vocabCache.pages.length === 0) await primeVocabPage(rnd(50) + 1);
-    if (vocabCache.enDefs.size < 12 || vocabCache.jpSurfaces.size < 12)
-      await primeVocabPage(rnd(50) + 1);
+    if (vocabCache.pages.length === 0) await primeVocabPages(3);
+    if (vocabCache.enDefs.size < 20 || vocabCache.jpSurfaces.size < 20)
+      await primeVocabPages(2);
     const page = vocabCache.pages[rnd(vocabCache.pages.length)];
     for (let guard = 0; guard < 14; guard++) {
       const pick = page[rnd(page.length)];
@@ -146,7 +155,7 @@
           .filter((x) => x !== correct)
           .slice(0, decoyCount);
         if (Treats.length < decoyCount) {
-          await primeVocabPage(rnd(50) + 1);
+          await primeVocabPages(2);
           continue;
         }
         pushRecent(jp);
@@ -165,7 +174,7 @@
           .filter((x) => x !== correct)
           .slice(0, decoyCount);
         if (Treats.length < decoyCount) {
-          await primeVocabPage(rnd(50) + 1);
+          await primeVocabPages(2);
           continue;
         }
         pushRecent(jp);
@@ -306,8 +315,6 @@
       cEl.appendChild(btn);
     });
 
-    createFallingBeatsSystem && createFallingBeatsSystem(cEl);
-
     setupUltimateBeatpadKeyboard &&
       setupUltimateBeatpadKeyboard(cEl, (text) => {
         const target = Array.from(cEl.querySelectorAll(".beatpad-btn")).find(
@@ -325,6 +332,7 @@
       tId = null;
     }
     const isCorrect = text === correct;
+    let judge;
     if (isCorrect) {
       createRingEffect && createRingEffect(element, true);
 
@@ -365,8 +373,8 @@
       addXP && addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
 
       const dt = Date.now() - startAt;
-      let judge = "FINE",
-        v = 2,
+      judge = "FINE";
+      let v = 2,
         sc = 50;
       if ((style && style.isPerfect) || dt <= 600) {
         judge = "COOL";
@@ -441,12 +449,19 @@
     }
     if (typeof timed === "boolean") setTimed(timed);
     if (timerWrap) timerWrap.style.display = isTimed() ? "inline-flex" : "none";
+    if (window.createFallingBeatsSystem && cEl) {
+      if (beats) beats.stop();
+      beats = createFallingBeatsSystem(cEl);
+    }
     loadRound();
   }
   function stop() {
     if (tId) clearInterval(tId);
-
     tId = null;
+    if (beats && beats.stop) {
+      beats.stop();
+      beats = null;
+    }
   }
 
   // Wire event start from main __startSong dispatcher

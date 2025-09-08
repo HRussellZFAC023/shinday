@@ -127,7 +127,7 @@
         } else if (typeof window.hearts.addHearts === "function") {
           window.hearts.addHearts(1);
         }
-
+        window.
         window.MikuUI.effects.confetti(40);
       });
     return wrap;

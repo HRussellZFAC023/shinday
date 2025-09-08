@@ -31,7 +31,8 @@
   let lock = false,
     tId = null,
     startAt = 0,
-    countdown = 15;
+    countdown = 15,
+    beats = null;
   let score = 0,
     streak = 0,
     bestStreak = 0,
@@ -280,8 +281,6 @@
       cEl.appendChild(btn);
     });
 
-    createFallingBeatsSystem && createFallingBeatsSystem(cEl);
-
     setupUltimateBeatpadKeyboard &&
       setupUltimateBeatpadKeyboard(cEl, (text) => {
         const target = Array.from(cEl.querySelectorAll(".beatpad-btn")).find(
@@ -299,6 +298,7 @@
       tId = null;
     }
     const isCorrect = text === correct;
+    let judge;
     if (isCorrect) {
       createRingEffect && createRingEffect(element, true);
 
@@ -338,8 +338,8 @@
       addXP && addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
 
       const dt = Date.now() - startAt;
-      let judge = "FINE",
-        v = 2,
+      judge = "FINE";
+      let v = 2,
         sc = 60;
       if ((style && style.isPerfect) || dt <= 700) {
         judge = "COOL";
@@ -412,12 +412,19 @@
     }
     if (typeof timed === "boolean") setTimed(timed);
     if (timerWrap) timerWrap.style.display = isTimed() ? "inline-flex" : "none";
+    if (window.createFallingBeatsSystem && cEl) {
+      if (beats) beats.stop();
+      beats = createFallingBeatsSystem(cEl);
+    }
     loadRound();
   }
   function stop() {
     if (tId) clearInterval(tId);
-
     tId = null;
+    if (beats && beats.stop) {
+      beats.stop();
+      beats = null;
+    }
   }
 
   document.addEventListener("kanji-start", (ev) => {

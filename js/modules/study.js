@@ -77,16 +77,17 @@
         </div>
         <div id="kotobaFeedback" class="diva-feedback-enhanced" style="display:none"></div>
       </div>
-      <div class="game-widget" id="mikuChatCard" style="display:none;position:relative">
-        <h3>💬 Miku × Chat</h3>
-        <div id="mikuChatTranscript" class="chat-transcript" style="display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:10px;background:#fff;border:2px solid var(--border);max-height:240px;overflow:auto"></div>
-        <div id="mikuChatChoices" class="beatpad-grid"></div>
-        <div class="hud-line">
-          <button id="mikuChatStart" class="pixel-btn">Start</button>
-          <span class="spacer"></span>
-          <span>Rhythm: falling beats enabled</span>
+        <div class="game-widget" id="mikuChatCard" style="display:none;position:relative">
+          <h3>💬 Miku × Chat</h3>
+          <div id="mikuChatTranscript" class="chat-transcript" style="display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:10px;background:#fff;border:2px solid var(--border);max-height:240px;overflow:auto"></div>
+          <div id="mikuChatInputRow" style="display:none;margin-top:4px;gap:6px;align-items:center">
+            <input id="mikuChatInput" class="pixel-input" placeholder="Type a message" style="flex:1" />
+            <button id="mikuChatSend" class="pixel-btn">Send</button>
+          </div>
+          <div class="hud-line">
+            <button id="mikuChatStart" class="pixel-btn">Start</button>
+          </div>
         </div>
-      </div>
     <div id="songOverPanel" class="study-card" style="display:none;grid-column:1 / -1;text-align:center;padding:20px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;">
       <div class="result-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
       <h3>Song Over - <span class="reason"></span></h3>
@@ -178,13 +179,18 @@
 
   function initChatGame() {
     const chat = document.getElementById("mikuChatTranscript");
-    const grid = document.getElementById("mikuChatChoices");
+    const row = document.getElementById("mikuChatInputRow");
+    const input = document.getElementById("mikuChatInput");
+    const sendBtn = document.getElementById("mikuChatSend");
     const startBtn = document.getElementById("mikuChatStart");
-    if (!chat || !grid || !startBtn) return;
+    if (!chat || !row || !input || !sendBtn || !startBtn) return;
+
     async function realReply(prompt) {
-      // Use a safe public API as placeholder: quotable.io random quote
       try {
-        const r = await fetch("https://api.quotable.io/random?tags=happiness|inspirational", { cache: "no-store" });
+        const r = await fetch(
+          "https://api.quotable.io/random?tags=happiness|inspirational",
+          { cache: "no-store" },
+        );
         if (!r.ok) throw new Error("net");
         const j = await r.json();
         return j && (j.content || "うん！");
@@ -192,6 +198,7 @@
         return "うん！";
       }
     }
+
     function say(text, from = "miku") {
       const b = document.createElement("div");
       b.style.cssText =
@@ -208,54 +215,40 @@
       chat.appendChild(b);
       chat.scrollTop = chat.scrollHeight;
     }
-    function round() {
-      grid.innerHTML = "";
-      say("元気？次はどれにする？", "miku");
-      const opts = ["歌って!", "日本語の勉強!", "ゲームしよ!", "またね!"];
-      opts.forEach((opt, idx) => {
-        const maker =
-          window.createUltimateBeatpadButton ||
-          ((label) => {
-            const b = document.createElement("button");
-            b.className = "pixel-btn beatpad-btn";
-            b.textContent = label;
-            return { btn: b, style: { isPerfect: false, color: "#a594f9" } };
-          });
-        const { btn } = maker(opt, idx, async (text) => {
-          say(text, "you");
-          // Show thinking then call realReply
-          const thinking = document.createElement("div");
-          thinking.style.cssText = "opacity:.8;font-style:italic;padding:4px 8px;align-self:flex-start";
-          thinking.textContent = "ミク: ……";
-          chat.appendChild(thinking);
-          chat.scrollTop = chat.scrollHeight;
-          const api = await realReply(text);
-          thinking.remove();
-          if (text === "歌って!") say("ららら〜♪", "miku");
-          else if (text === "日本語の勉強!") say("ことばカード行こう！", "miku");
-          else if (text === "ゲームしよ!") say("ボカロタイピング？", "miku");
-          else if (api) say(api, "miku");
-          else say("またね！", "miku");
-          setTimeout(round, 800);
-        });
-        grid.appendChild(btn);
-      });
-      createFallingBeatsSystem && createFallingBeatsSystem(grid);
-      setupUltimateBeatpadKeyboard &&
-        setupUltimateBeatpadKeyboard(grid, (text) => {
-          const target = Array.from(grid.querySelectorAll(".beatpad-btn")).find(
-            (b) => b.textContent === text,
-          );
-          if (target) target.click();
-        });
+
+    async function handleSend() {
+      const text = input.value.trim();
+      if (!text) return;
+      say(text, "you");
+      input.value = "";
+      const thinking = document.createElement("div");
+      thinking.style.cssText =
+        "opacity:.8;font-style:italic;padding:4px 8px;align-self:flex-start";
+      thinking.textContent = "ミク: ……";
+      chat.appendChild(thinking);
+      chat.scrollTop = chat.scrollHeight;
+      const api = await realReply(text);
+      thinking.remove();
+      say(api || "うん！", "miku");
     }
+
     startBtn.addEventListener("click", () => {
       chat.innerHTML = "";
-      round();
+      say("元気？お話ししよ！", "miku");
+      row.style.display = "flex";
+      input.focus();
     });
+
+    sendBtn.addEventListener("click", handleSend);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleSend();
+    });
+
     document.addEventListener("miku-chat-start", () => {
       chat.innerHTML = "";
-      round();
+      say("元気？お話ししよ！", "miku");
+      row.style.display = "flex";
+      input.focus();
     });
   }
 

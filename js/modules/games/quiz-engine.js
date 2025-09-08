@@ -26,7 +26,8 @@
     let lock = false,
       tId = null,
       countdown = DEFAULTS.baseTime,
-      startAt = 0;
+      startAt = 0,
+      beats = null;
     let score = 0,
       streak = 0,
       bestStreak = 0,
@@ -74,6 +75,9 @@
     }
 
     attachDivaHud && attachDivaHud(cfg.cardId);
+    if (window.createFallingBeatsSystem && els.c) {
+      beats = createFallingBeatsSystem(els.c);
+    }
 
     async function next() {
       lock = false;
@@ -130,7 +134,6 @@
         );
         els.c.appendChild(btn);
       });
-      createFallingBeatsSystem && createFallingBeatsSystem(els.c);
       setupUltimateBeatpadKeyboard &&
         setupUltimateBeatpadKeyboard(els.c, (text) => {
           const target = Array.from(
@@ -238,6 +241,10 @@
     function stop() {
       if (tId) clearInterval(tId);
       tId = null;
+      if (beats && beats.stop) {
+        beats.stop();
+        beats = null;
+      }
     }
 
     // initialize bests
