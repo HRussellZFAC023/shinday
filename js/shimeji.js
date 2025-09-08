@@ -693,15 +693,14 @@ class EnhancedCreature {
 
   // NEW FEATURE: Jumping
   triggerJump() {
-    if (this.jumpCooldown > 0) return;
+  if (this.jumpCooldown > 0) return;
 
-    this.velocity.y = -this.spriteConfig.jumpForce;
-    this.isGrounded = false;
-    this.jumpCooldown = 120; // 2 second cooldown at 60fps
-    // Takeoff footstep
-
-    if (window.SFX) window.SFX.play("foot.step");
-    if (window.SFX && Math.random() < 0.3) window.SFX.play("extra.yo");
+  this.velocity.y = -this.spriteConfig.jumpForce;
+  this.isGrounded = false;
+  this.jumpCooldown = 120; // ~2s cooldown at 60fps
+  // Takeoff footstep
+  if (window.SFX) window.SFX.play("foot.step");
+  if (window.SFX && Math.random() < 0.3) window.SFX.play("extra.yo");
 
     const config = this.spriteConfig.jump;
     this.playAnimation(config.frames, config.interval, config.loops, () => {
@@ -716,6 +715,8 @@ class EnhancedCreature {
     this.velocity.y = 0;
     this.isGrounded = false;
     this.updatePosition();
+
+    if (window.SFX && Math.random() < 0.2) window.SFX.play("extra.wan");
 
     const config = this.spriteConfig.fall;
     this.playAnimation(config.frames, config.interval, 1, () => {
@@ -745,7 +746,6 @@ class EnhancedCreature {
     });
 
     if (window.SFX && Math.random() < 0.3) window.SFX.play("extra.kya");
-    localStorage.setItem("diva.extraShimejis", creatures.length + 1);
   }
 
   createOffspring() {
@@ -1033,21 +1033,21 @@ function spawnCreatures() {
         return c;
       })();
 
-  const extra = parseInt(localStorage.getItem("diva.extraShimejis") || "0", 10);
+
+  const eggs = parseInt(localStorage.getItem("diva.eggs") || "0", 10);
+  const toSpawn =  (isNaN(eggs) ? 0 : eggs);
   const spawns = [
     w.spawnMiku,
     w.spawnMikuAlt,
     w.spawnMikuSketch,
     w.spawnClassic,
   ].filter(Boolean);
-  for (let i = 0; i < extra; i++) {
+  for (let i = 0; i < toSpawn; i++) {
     const f = spawns[Math.floor(Math.random() * spawns.length)];
-    if (f) f();
+    if (typeof f === "function") f();
   }
 
-  console.log(`Spawned ${creatures.length} enhanced companions`, {
-    classic,
-  });
+  console.log(`Spawned ${creatures.length} enhanced companions`, { classic });
 }
 
 // Global functions for interaction
@@ -1060,6 +1060,9 @@ window.ShimejiFunctions = {
         "miku"
       );
       creatures.push(miku);
+
+  // Newly spawned fall from the sky
+  setTimeout(() => miku.triggerFall && miku.triggerFall(), 0);
 
       // Reward hearts for new companion!
 
@@ -1087,6 +1090,7 @@ window.ShimejiFunctions = {
         "miku-alt"
       );
       creatures.push(miku);
+  setTimeout(() => miku.triggerFall && miku.triggerFall(), 0);
       return miku;
     }
     return null;
@@ -1099,6 +1103,7 @@ window.ShimejiFunctions = {
         "miku-sketch"
       );
       creatures.push(miku);
+  setTimeout(() => miku.triggerFall && miku.triggerFall(), 0);
       return miku;
     }
     return null;
@@ -1112,6 +1117,7 @@ window.ShimejiFunctions = {
         "classic"
       );
       creatures.push(classic);
+  setTimeout(() => classic.triggerFall && classic.triggerFall(), 0);
       return classic;
     }
     return null;
@@ -1123,6 +1129,13 @@ window.ShimejiFunctions = {
   },
 
   getCreatureCount: () => creatures.length,
+  removeRandom: () => {
+    if (creatures.length === 0) return false;
+    const idx = Math.floor(Math.random() * creatures.length);
+    const c = creatures[idx];
+    if (c && c.destroy) c.destroy();
+    return true;
+  },
 
   triggerMassJump: () => {
     creatures.forEach((creature) => {

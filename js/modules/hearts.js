@@ -216,6 +216,164 @@ window.hearts = (function () {
     initPeriodicUpdates();
     initFloatingHearts();
     initPassiveHearts();
+    initSwallower();
+  }
+
+  // Swallower enemy (Kirby-like)
+  function initSwallower() {
+    function scheduleNext() {
+      // between 1s and 10m
+      const delay = 1000 + Math.random() * (10 * 60 * 1000 - 1000);
+      setTimeout(spawnOne, delay);
+    }
+
+    function spawnOne() {
+      try {
+        const img = document.createElement("img");
+        img.src = "./assets/swallow.gif";
+        img.alt = "Swallower";
+        img.style.cssText = `
+          position: fixed;
+          bottom: 0;
+          left: -80px;
+          width: 72px; height: 48px; image-rendering: pixelated;
+          z-index: 9997;
+          opacity: 0;
+          transform: scaleX(1);
+          transition: opacity .4s ease;
+        `;
+        document.body.appendChild(img);
+
+        // fade in
+        requestAnimationFrame(() => (img.style.opacity = "1"));
+
+        // movement across screen
+        const vw = window.innerWidth;
+        const duration = 12000 + Math.random() * 8000; // 12–20s cross
+        const start = performance.now();
+
+        const sfx = window.SFX;
+        if (sfx && sfx.play) sfx.play("enemy.spawn");
+
+        let eaten = false;
+        let raf;
+        function step(t) {
+          const p = Math.min(1, (t - start) / duration);
+          const x = -80 + p * (vw + 160);
+          img.style.left = x + "px";
+          if (p < 1) {
+            raf = requestAnimationFrame(step);
+          } else {
+            cleanup();
+          }
+        }
+        raf = requestAnimationFrame(step);
+
+        // click does nothing per spec
+        img.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (sfx && sfx.play) sfx.play("ui.unavailable");
+        });
+
+  // On midpoint, attempt to eat
+  let eatTimer = setTimeout(() => tryEat(), Math.max(500, duration * (0.45 + Math.random() * 0.1)));
+
+        function tryEat() {
+          if (eaten) return;
+          eaten = true;
+          const now = Date.now();
+          const shieldUntil = parseInt(localStorage.getItem("diva.shield.until") || "0", 10) || 0;
+          const shieldActive = now < shieldUntil;
+
+          if (shieldActive) {
+            // harmless pass
+            pulse(img, "#ffd700");
+            if (sfx && sfx.play) sfx.play("enemy.blocked");
+            fadeOut();
+            return;
+          }
+
+          // Bait check (single-use)
+          let baitHandled = false;
+          const shopApi = window.shop;
+          if (shopApi && typeof shopApi.getBaitCount === "function" && typeof shopApi.consumeBait === "function") {
+            if (shopApi.getBaitCount() > 0) {
+              shopApi.consumeBait();
+              baitHandled = true;
+              if (sfx && sfx.play) sfx.play("enemy.nom");
+            }
+          }
+
+          if (baitHandled) {
+            // harmless pass
+            pulse(img, "#ffd700");
+            if (sfx && sfx.play) sfx.play("enemy.blocked");
+            fadeOut();
+            return;
+          }
+
+          // try to eat hearts
+          const current = parseInt(localStorage.getItem("pixelbelle-hearts") || "0", 10);
+          if (current > 0) {
+            const loss = Math.min(500, current);
+            if (window.hearts && typeof window.hearts.addHearts === "function") {
+              window.hearts.addHearts(-loss);
+            } else {
+              localStorage.setItem("pixelbelle-hearts", String(current - loss));
+            }
+            if (sfx && sfx.play) {
+              sfx.play("enemy.eat"); sfx.play("extra.wan"); sfx.play("extra.fx1");
+            }
+            pulse(img, "#ff1493");
+            fadeOut();
+            return;
+          }
+
+          // no hearts: eat a shimeji
+          const sh = window.ShimejiFunctions;
+          if (sh && typeof sh.removeRandom === "function") {
+            const removed = sh.removeRandom();
+            if (removed) {
+              const eggs = Math.max(0, parseInt(localStorage.getItem("diva.eggs") || "0", 10) - 1);
+              localStorage.setItem("diva.eggs", String(eggs));
+              if (sfx && sfx.play) { sfx.play("enemy.chomp"); sfx.play("extra.kya"); }
+              pulse(img, "#ff4500");
+              fadeOut();
+              return;
+            }
+          }
+
+          // nothing to eat
+          fadeOut();
+        }
+
+        function pulse(el, color) {
+          el.style.boxShadow = `0 0 0 0 ${color}`;
+          el.style.transition = "box-shadow .2s ease";
+          requestAnimationFrame(() => (el.style.boxShadow = `0 0 30px 6px ${color}`));
+          setTimeout(() => (el.style.boxShadow = ""), 600);
+        }
+
+        function fadeOut() {
+          if (sfx && sfx.play) sfx.play("enemy.leave");
+          img.style.transition = "opacity .35s ease";
+          img.style.opacity = "0";
+          setTimeout(cleanup, 400);
+        }
+
+        function cleanup() {
+          cancelAnimationFrame(raf);
+          clearTimeout(eatTimer);
+          if (img && img.parentNode) img.parentNode.removeChild(img);
+          scheduleNext();
+        }
+      } catch (e) {
+        scheduleNext();
+      }
+    }
+
+    // initial schedule
+    scheduleNext();
   }
 
   return {

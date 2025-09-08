@@ -23,7 +23,9 @@
         if (collected) return;
         collected = true;
         const diff = performance.now() - born;
-        const reward = 10;
+        let reward = 10;
+        if (diff > 1200 && diff < 1800) reward = 30;
+        else if (diff > 800 && diff < 2200) reward = 20;
         if (window.hearts && window.hearts.addHearts)
           window.hearts.addHearts(reward);
         const rect = zone.getBoundingClientRect();

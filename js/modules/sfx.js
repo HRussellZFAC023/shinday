@@ -195,12 +195,11 @@ window.SFX = (function initSfxEngine() {
 
     // Swallow mascot cues
     "swallow.swoop": [
-      p("other sounds/se_ev_17.wav"),
-      p("menu sounds/song selection teleport.wav"),
+      p("other sounds/mr_0100000.wav"),
     ],
     "swallow.chomp": [
-      p("other sounds/se_sy_09.wav"),
-      p("other sounds/click.wav"),
+      p("other sounds/se_sy_15.wav"),
+      p("menu sounds/unavailable.wav"),
     ],
   };
   const ctxState = { ctx: null, master: null, enabled: true, volume: 0.6 };

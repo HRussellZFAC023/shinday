@@ -46,7 +46,11 @@
     emit();
   }
   function addXp(delta) {
-    let xp = getXp() + (delta | 0);
+    const mult =
+      typeof window !== "undefined" && window.__xpPotionUntil > Date.now()
+        ? 2
+        : 1;
+    let xp = getXp() + (delta | 0) * mult;
     let lvl = getLevel();
     while (xp >= lvl * XP_PER_LEVEL) lvl++;
 
