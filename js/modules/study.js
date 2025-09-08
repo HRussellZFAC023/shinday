@@ -11,6 +11,15 @@
       (C.study && C.study.wordOfDay && C.study.wordOfDay.externalIframe) ||
       "https://kanjiday.com/kanji/";
     grid.innerHTML = `
+    <div class="study-card" id="studyControls" style="grid-column:1 / -1;display:flex;align-items:center;gap:8px">
+      <label for="studyDifficulty">Difficulty</label>
+      <input type="range" id="studyDifficulty" min="1" max="5" value="1" />
+      <span id="studyDifficultyLabel">1</span>
+      <span class="spacer"></span>
+      <span>⏱️ <strong id="songTimer">180</strong>s</span>
+      <span>❤️ <strong id="studyLives">5</strong>/5</span>
+      <span>⏳ <strong id="questionTimer">15</strong>s</span>
+    </div>
     <div class="study-card" id="wodCard" style="grid-column: 1 / -1; display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:stretch; position:relative;">
         <div class="word-of-day" style="padding:10px;border:2px solid var(--border);border-radius:12px;background:#fff;">
       <h3 style="margin-top:0;display:flex;align-items:center;justify-content:space-between;gap:8px">📖 Word of the Day <button id="wodNext" class="pixel-btn" title="Next word">Next</button></h3>
@@ -88,7 +97,15 @@
           <span class="spacer"></span>
           <span>Rhythm: falling beats enabled</span>
         </div>
-      </div>`;
+      </div>
+    <div id="songOverPanel" class="study-card" style="display:none;grid-column:1 / -1;text-align:center;padding:20px;position:relative;">
+      <div class="result-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+      <h3>Song Over - <span class="reason"></span></h3>
+      <div class="rank-line">Rank <span class="rank">C</span> • Score <span class="score">0</span></div>
+      <div class="counts" style="margin:6px 0">COOL 0 • GREAT 0 • FINE 0 • MISS 0</div>
+      <div class="reward" style="font-weight:800;margin-bottom:8px"></div>
+      <button id="songOverClose" class="pixel-btn">Close</button>
+    </div>`;
     return grid;
   }
 
@@ -108,6 +125,7 @@
         });
         // route via dispatcher
         window.__startSong && window.__startSong(g, m, false);
+        window.StudyHub && StudyHub.start(g);
       };
       selGame.addEventListener("change", startSelected);
       selMode.addEventListener("change", startSelected);
@@ -267,6 +285,7 @@
   const next = document.getElementById("wodNext");
   if (next) next.addEventListener("click", refreshWod);
   mountGames();
+  window.StudyHub && StudyHub.init();
   // Landing view: show tiles only; games hidden until selection
   }
 

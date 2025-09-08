@@ -26,6 +26,7 @@
     notes: [],
     hits: [],
     startTime: 0,
+    beats: null,
   };
   const JUDGE = { perfect: 120, great: 220, good: 350 }; // ms windows
   const SPEED_SCALE = { normal: 1, practice: 0.75 };
@@ -178,6 +179,7 @@
       window.SFX && window.SFX.play("quiz.correct");
     }
     STATE.score += scoreFor(j);
+    window.StudyHub && StudyHub.registerAnswer(j !== 'MISS', j);
     updateHud();
     // Zap swallower on correct
     if (j !== "MISS") {
@@ -210,6 +212,7 @@
 
   function finish() {
     STATE.running = false;
+    if (STATE.beats && STATE.beats.stop) STATE.beats.stop();
     const rank = rankFor(STATE.score, STATE.notes.length);
     const fb = document.getElementById("typingFeedback");
     if (fb) {
@@ -242,6 +245,13 @@
     scheduleNotes(line);
     STATE.running = true;
 
+    // spawn decorative falling beats over the highway for rhythm feel
+    const hw = document.getElementById("typingHighway");
+    if (window.createFallingBeatsSystem && hw) {
+      if (STATE.beats) STATE.beats.stop();
+      STATE.beats = createFallingBeatsSystem(hw);
+    }
+
     window.SFX && window.SFX.play("ui.change");
 
     requestAnimationFrame(loop);
@@ -251,6 +261,7 @@
     const ov = document.getElementById("typingDivaOverlay");
     if (ov) ov.remove();
     STATE.running = false;
+    if (STATE.beats && STATE.beats.stop) STATE.beats.stop();
   }
 
   function open() {

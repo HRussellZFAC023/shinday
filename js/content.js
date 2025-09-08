@@ -379,6 +379,26 @@ const SITE_CONTENT = {
     goalItemIcons: {
       2: "pow", // 100 vocabulary words
     },
+    gameData: {
+      vocab: [
+        { jp: "猫", en: "cat" },
+        { jp: "犬", en: "dog" },
+        { jp: "水", en: "water" },
+        { jp: "火", en: "fire" },
+      ],
+      kanji: [
+        { kanji: "日", meaning: "sun" },
+        { kanji: "月", meaning: "moon" },
+        { kanji: "山", meaning: "mountain" },
+        { kanji: "田", meaning: "rice field" },
+      ],
+      typing: [
+        { jp: "ありがとう", romaji: "arigatou", en: "thank you" },
+        { jp: "こんにちは", romaji: "konnichiwa", en: "hello" },
+        { jp: "さようなら", romaji: "sayounara", en: "goodbye" },
+        { jp: "すし", romaji: "sushi", en: "sushi" },
+      ],
+    },
   },
 
   games: {

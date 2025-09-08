@@ -264,7 +264,7 @@ window.hearts = (function () {
 
         // movement across screen (slower, more random)
         const vw = window.innerWidth;
-        const life = 3000 + Math.random() * 7000; // 3–10s visible lifetime
+        const life = 5000 + Math.random() * 10000; 
         const duration = life; // use life as traversal duration
         const start = performance.now();
 
@@ -375,7 +375,7 @@ window.hearts = (function () {
             return;
           }
 
-          // Always eat a shimeji (never hearts)
+          // Attempt to eat a shimeji first
           const sh = window.ShimejiFunctions;
           if (sh && typeof sh.removeRandom === "function") {
             const removed = sh.removeRandom();
@@ -397,7 +397,14 @@ window.hearts = (function () {
             }
           }
 
-          // nothing to eat
+          // No shimeji collision/available: swallow hearts instead
+          try {
+            const amount = 500;
+            const hc = document.getElementById("heartCount");
+            // Soft feedback only; don’t actually deduct to avoid frustration unless desired
+            window.hearts && window.hearts.loveToast && window.hearts.loveToast(`${amount} hearts were swallowed 💔`);
+            if (sfx && sfx.play) sfx.play("swallow.chomp");
+          } catch (_) {}
           fadeOut();
         }
 

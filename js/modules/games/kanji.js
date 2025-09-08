@@ -256,6 +256,7 @@
           flashJudge && flashJudge("kanjiCard", "MISS");
           addVoltage && addVoltage(-5, "kanjiCard");
           loseLife && loseLife("kanjiCard");
+          window.StudyHub && StudyHub.registerAnswer(false, 'MISS');
 
           streak = 0;
           if (streakEl) streakEl.textContent = String(streak);
@@ -399,6 +400,7 @@
       resetCombo && resetCombo();
       loseLife && loseLife("kanjiCard");
     }
+    window.StudyHub && StudyHub.registerAnswer(isCorrect, isCorrect ? judge : 'MISS');
     setTimeout(loadRound, 900);
     return isCorrect;
   }

@@ -1,6 +1,7 @@
 /* Enhanced Webmeji/Shimeji with new features */
 // Configuration for different character types
 const MIKU_CONFIG = {
+  basePath: "./assets/webmeji/miku",
   speed: 3,
   climbSpeed: 2,
   fallSpeed: 10,
@@ -24,12 +25,28 @@ const MIKU_CONFIG = {
     interval: 300,
     loops: 8,
   },
+  ceiling: {
+    frames: [
+      "./assets/webmeji/miku/shime9.png",
+      "./assets/webmeji/miku/shime10.png",
+    ],
+    interval: 280,
+    loops: 8,
+  },
   fall: {
     frames: [
       "./assets/webmeji/miku/shime18.png",
       "./assets/webmeji/miku/shime19.png",
     ],
     interval: 150,
+    loops: 1,
+  },
+  fallen: {
+    frames: [
+      "./assets/webmeji/miku/shime22.png",
+      "./assets/webmeji/miku/shime23.png",
+    ],
+    interval: 600,
     loops: 1,
   },
   jump: {
@@ -58,6 +75,16 @@ const MIKU_CONFIG = {
     ],
     interval: 250,
     loops: 4,
+  },
+  fun: {
+    frames: [
+      "./assets/webmeji/miku/shime12.png",
+      "./assets/webmeji/miku/shime13.png",
+      "./assets/webmeji/miku/shime14.png",
+      "./assets/webmeji/miku/shime13.png",
+    ],
+    interval: 180,
+    loops: 3,
   },
   scared: {
     frames: ["./assets/webmeji/miku/shime20.png"],
@@ -90,6 +117,7 @@ const MIKU_CONFIG = {
     "dance",
     "spin",
     "climb",
+    "fun",
     "jump",
     "multiply",
   ],
@@ -101,6 +129,7 @@ const MIKU_CONFIG = {
 
 // Alternate Miku: uses alternative art set
 const MIKU_ALT_CONFIG = {
+  basePath: "./assets/webmeji/Miku_alternitive",
   speed: 3,
   climbSpeed: 2,
   fallSpeed: 10,
@@ -124,12 +153,28 @@ const MIKU_ALT_CONFIG = {
     interval: 300,
     loops: 8,
   },
+  ceiling: {
+    frames: [
+      "./assets/webmeji/Miku_alternitive/shime9.png",
+      "./assets/webmeji/Miku_alternitive/shime10.png",
+    ],
+    interval: 280,
+    loops: 8,
+  },
   fall: {
     frames: [
       "./assets/webmeji/Miku_alternitive/shime18.png",
       "./assets/webmeji/Miku_alternitive/shime19.png",
     ],
     interval: 150,
+    loops: 1,
+  },
+  fallen: {
+    frames: [
+      "./assets/webmeji/Miku_alternitive/shime22.png",
+      "./assets/webmeji/Miku_alternitive/shime23.png",
+    ],
+    interval: 600,
     loops: 1,
   },
   jump: {
@@ -158,6 +203,16 @@ const MIKU_ALT_CONFIG = {
     ],
     interval: 250,
     loops: 4,
+  },
+  fun: {
+    frames: [
+      "./assets/webmeji/Miku_alternitive/shime12.png",
+      "./assets/webmeji/Miku_alternitive/shime13.png",
+      "./assets/webmeji/Miku_alternitive/shime14.png",
+      "./assets/webmeji/Miku_alternitive/shime13.png",
+    ],
+    interval: 180,
+    loops: 3,
   },
   scared: {
     frames: ["./assets/webmeji/Miku_alternitive/shime20.png"],
@@ -189,6 +244,7 @@ const MIKU_ALT_CONFIG = {
     "dance",
     "spin",
     "climb",
+  "fun",
     "jump",
     "multiply",
   ],
@@ -199,6 +255,7 @@ const MIKU_ALT_CONFIG = {
 
 // Sketch Miku: uses sketch art set
 const MIKU_SKETCH_CONFIG = {
+  basePath: "./assets/webmeji/Miku_sketch",
   speed: 3,
   climbSpeed: 2,
   fallSpeed: 10,
@@ -222,12 +279,28 @@ const MIKU_SKETCH_CONFIG = {
     interval: 300,
     loops: 8,
   },
+  ceiling: {
+    frames: [
+      "./assets/webmeji/Miku_sketch/shime9.png",
+      "./assets/webmeji/Miku_sketch/shime10.png",
+    ],
+    interval: 280,
+    loops: 8,
+  },
   fall: {
     frames: [
       "./assets/webmeji/Miku_sketch/shime18.png",
       "./assets/webmeji/Miku_sketch/shime19.png",
     ],
     interval: 150,
+    loops: 1,
+  },
+  fallen: {
+    frames: [
+      "./assets/webmeji/Miku_sketch/shime22.png",
+      "./assets/webmeji/Miku_sketch/shime23.png",
+    ],
+    interval: 600,
     loops: 1,
   },
   jump: {
@@ -256,6 +329,16 @@ const MIKU_SKETCH_CONFIG = {
     ],
     interval: 250,
     loops: 4,
+  },
+  fun: {
+    frames: [
+      "./assets/webmeji/Miku_sketch/shime12.png",
+      "./assets/webmeji/Miku_sketch/shime13.png",
+      "./assets/webmeji/Miku_sketch/shime14.png",
+      "./assets/webmeji/Miku_sketch/shime13.png",
+    ],
+    interval: 180,
+    loops: 3,
   },
   scared: {
     frames: ["./assets/webmeji/Miku_sketch/shime20.png"],
@@ -287,6 +370,7 @@ const MIKU_SKETCH_CONFIG = {
     "dance",
     "spin",
     "climb",
+  "fun",
     "jump",
     "multiply",
   ],
@@ -296,6 +380,7 @@ const MIKU_SKETCH_CONFIG = {
 };
 
 const CLASSIC_CONFIG = {
+  basePath: "./assets/webmeji/Shimeji",
   speed: 2,
   climbSpeed: 1.5,
   fallSpeed: 10,
@@ -303,37 +388,53 @@ const CLASSIC_CONFIG = {
   gravity: 0.4,
   walk: {
     frames: [
-      "./assets/webmeji/shimeji/shime1.png",
-      "./assets/webmeji/shimeji/shime2.png",
-      "./assets/webmeji/shimeji/shime3.png",
-      "./assets/webmeji/shimeji/shime2.png",
+      "./assets/webmeji/Shimeji/shime1.png",
+      "./assets/webmeji/Shimeji/shime2.png",
+      "./assets/webmeji/Shimeji/shime3.png",
+      "./assets/webmeji/Shimeji/shime2.png",
     ],
     interval: 250,
     loops: 6,
   },
   climb: {
     frames: [
-      "./assets/webmeji/shimeji/shime7.png",
-      "./assets/webmeji/shimeji/shime8.png",
+      "./assets/webmeji/Shimeji/shime7.png",
+      "./assets/webmeji/Shimeji/shime8.png",
     ],
     interval: 400,
     loops: 6,
   },
+  ceiling: {
+    frames: [
+      "./assets/webmeji/Shimeji/shime9.png",
+      "./assets/webmeji/Shimeji/shime10.png",
+    ],
+    interval: 320,
+    loops: 6,
+  },
   fall: {
     frames: [
-      "./assets/webmeji/shimeji/shime20.png",
-      "./assets/webmeji/shimeji/shime21.png",
+      "./assets/webmeji/Shimeji/shime20.png",
+      "./assets/webmeji/Shimeji/shime21.png",
     ],
     interval: 200,
     loops: 1,
   },
+  fallen: {
+    frames: [
+      "./assets/webmeji/Shimeji/shime22.png",
+      "./assets/webmeji/Shimeji/shime23.png",
+    ],
+    interval: 800,
+    loops: 1,
+  },
   jump: {
-    frames: ["./assets/webmeji/shimeji/shime4.png"],
+    frames: ["./assets/webmeji/Shimeji/shime4.png"],
     interval: 120,
     loops: 1,
   },
   sit: {
-    frames: ["./assets/webmeji/shimeji/shime11.png"],
+    frames: ["./assets/webmeji/Shimeji/shime11.png"],
     interval: 1000,
     loops: 1,
     randomizeDuration: true,
@@ -341,36 +442,46 @@ const CLASSIC_CONFIG = {
     max: 6000,
   },
   spin: {
-    frames: ["./assets/webmeji/shimeji/shime1.png"],
+    frames: ["./assets/webmeji/Shimeji/shime1.png"],
     interval: 180,
     loops: 3,
   },
   dance: {
     frames: [
-      "./assets/webmeji/shimeji/shime5.png",
-      "./assets/webmeji/shimeji/shime6.png",
-      "./assets/webmeji/shimeji/shime1.png",
+      "./assets/webmeji/Shimeji/shime5.png",
+      "./assets/webmeji/Shimeji/shime6.png",
+      "./assets/webmeji/Shimeji/shime1.png",
     ],
     interval: 300,
     loops: 3,
   },
+  fun: {
+    frames: [
+      "./assets/webmeji/Shimeji/shime12.png",
+      "./assets/webmeji/Shimeji/shime13.png",
+      "./assets/webmeji/Shimeji/shime14.png",
+      "./assets/webmeji/Shimeji/shime13.png",
+    ],
+    interval: 200,
+    loops: 3,
+  },
   scared: {
-    frames: ["./assets/webmeji/shimeji/shime20.png"],
+    frames: ["./assets/webmeji/Shimeji/shime20.png"],
     interval: 600,
     loops: 2,
   },
   happy: {
     frames: [
-      "./assets/webmeji/shimeji/shime5.png",
-      "./assets/webmeji/shimeji/shime6.png",
+      "./assets/webmeji/Shimeji/shime5.png",
+      "./assets/webmeji/Shimeji/shime6.png",
     ],
     interval: 250,
     loops: 2,
   },
   multiply: {
     frames: [
-      "./assets/webmeji/shimeji/shime30.png",
-      "./assets/webmeji/shimeji/shime31.png",
+      "./assets/webmeji/Shimeji/shime30.png",
+      "./assets/webmeji/Shimeji/shime31.png",
     ],
     interval: 400,
     loops: 2,
@@ -384,6 +495,7 @@ const CLASSIC_CONFIG = {
     "dance",
     "spin",
     "climb",
+  "fun",
     "jump",
     "multiply",
   ],
@@ -395,6 +507,246 @@ const CLASSIC_CONFIG = {
 // Global creatures array
 const creatures = [];
 let mousePos = { x: 0, y: 0 };
+
+// Optional: Load official Shimeji-ee actions.xml to override frames/interval/loops
+(function initShimejiEEOverrides() {
+  const ACTION_NAME_MAP = {
+    walk: "walk",
+    walking: "walk",
+    climb: "climb",
+    climbing: "climb",
+    ceiling: "ceiling",
+    ceilingwalk: "ceiling",
+    fall: "fall",
+    falling: "fall",
+    fallen: "fallen",
+    sit: "sit",
+    sitting: "sit",
+    jump: "jump",
+    spin: "spin",
+    dance: "dance",
+    happy: "happy",
+    scared: "scared",
+    multiply: "multiply",
+  };
+
+  function buildPathFromSample(sampleFrame) {
+    if (!sampleFrame) return null;
+    const idx = sampleFrame.lastIndexOf("/");
+    if (idx === -1) return null;
+    return sampleFrame.slice(0, idx); // folder
+  }
+
+  function applyToConfig(cfg) {
+    return function overrideAction(key, data) {
+      if (!data) return;
+      const targ = cfg[key];
+      if (!targ) return;
+      const sample = Array.isArray(targ.frames) && targ.frames[0];
+      const base = buildPathFromSample(sample);
+      if (!base) return;
+      // Override frames if provided and look like numbers
+      if (data.frames && data.frames.length) {
+        const arr = [];
+        for (const n of data.frames) {
+          const num = parseInt(n, 10);
+          if (!isNaN(num)) arr.push(`${base}/shime${num}.png`);
+        }
+        if (arr.length) targ.frames = arr;
+      }
+      if (typeof data.interval === "number" && data.interval > 0) {
+        targ.interval = Math.max(40, Math.round(data.interval));
+      }
+      if (typeof data.loops === "number" && data.loops > 0) {
+        targ.loops = data.loops;
+      }
+    };
+  }
+
+  function parseActionsXML(xml) {
+    const out = {};
+    try {
+      const dom = new DOMParser().parseFromString(xml, "application/xml");
+      const acts = dom.querySelectorAll("Action, action");
+      acts.forEach((el) => {
+        const rawName = el.getAttribute("name") || el.getAttribute("Name") || "";
+        const norm = (rawName || "").toLowerCase().replace(/\s+/g, "");
+        const key = ACTION_NAME_MAP[norm];
+        if (!key) return;
+        const frames = [];
+        const durs = [];
+        const frameEls = el.querySelectorAll("Image, image, Frame, frame");
+        frameEls.forEach((f) => {
+          const src = f.getAttribute("src") || f.getAttribute("Src") || f.getAttribute("image") || f.getAttribute("Image") || "";
+          const idx = f.getAttribute("index") || f.getAttribute("Index") || "";
+          let n = "";
+          const m = src.match(/shime(\d+)\.png/i);
+          if (m) n = m[1];
+          else if (/^\d+$/.test(idx)) n = idx;
+          if (n) frames.push(n);
+          const dur = f.getAttribute("duration") || f.getAttribute("Duration") || f.getAttribute("delay") || f.getAttribute("Delay");
+          if (dur && !isNaN(+dur)) durs.push(+dur);
+        });
+        let interval = undefined;
+        if (durs.length) interval = Math.max(40, Math.round(durs.reduce((a, b) => a + b, 0) / durs.length));
+        let loops = undefined;
+        const l = el.getAttribute("loops") || el.getAttribute("Loops") || el.getAttribute("loop") || el.getAttribute("Loop") || el.getAttribute("repeat") || el.getAttribute("Repeat");
+        if (l && !isNaN(+l)) loops = +l;
+        out[key] = { frames, interval, loops };
+      });
+    } catch (e) {
+      console.warn("Shimeji-ee actions.xml parse failed:", e);
+    }
+    return out;
+  }
+
+  async function loadAndApply() {
+    try {
+      const urls = [
+        "./assets/shimejiee/conf/actions.xml",
+        "/assets/shimejiee/conf/actions.xml",
+        "./shimejiee/conf/actions.xml",
+        "/shimejiee/conf/actions.xml",
+      ];
+      let xml = null;
+      for (const u of urls) {
+        try {
+          const r = await fetch(u, { cache: "no-store" });
+          if (r && r.ok) { xml = await r.text(); break; }
+        } catch {}
+      }
+      if (!xml) return;
+      const map = parseActionsXML(xml);
+      if (!map || !Object.keys(map).length) return;
+      const applyClassic = applyToConfig(CLASSIC_CONFIG);
+      const applyMiku = applyToConfig(MIKU_CONFIG);
+      const applyAlt = applyToConfig(MIKU_ALT_CONFIG);
+      const applySketch = applyToConfig(MIKU_SKETCH_CONFIG);
+      for (const k of Object.keys(map)) {
+        applyClassic(k, map[k]);
+        applyMiku(k, map[k]);
+        applyAlt(k, map[k]);
+        applySketch(k, map[k]);
+      }
+      console.info("Applied Shimeji-ee actions.xml overrides to sprite configs");
+    } catch (e) {
+      // Ignore fetch errors (e.g., file not present or served as file://)
+    }
+  }
+
+  if (typeof window !== "undefined" && typeof fetch === "function" && typeof DOMParser !== "undefined") {
+    // Defer to allow assets to mount
+    setTimeout(loadAndApply, 0);
+  }
+})();
+
+// Optional: Load official Shimeji-ee behaviors.xml to influence action selection weights
+(function initShimejiEEBehaviors() {
+  // Global weights bucket by environment
+  const DEFAULT_WEIGHTS = {
+    floor: { walk: 300, sit: 200, climb: 60, jump: 40, multiply: 10, fall: 0, fun: 20 },
+    wall: { climb: 200, fall: 50, sit: 0, walk: 0, jump: 10, multiply: 5, fun: 0 },
+    ceiling: { climb: 120, fall: 50, sit: 20, walk: 0, jump: 10, multiply: 5, fun: 10 },
+  };
+  function cloneWeights(w) { return JSON.parse(JSON.stringify(w)); }
+  const weights = cloneWeights(DEFAULT_WEIGHTS);
+
+  const NAME_TO_ACTION = (name) => {
+    const n = (name || "").toLowerCase();
+    if (n.startsWith("walk")) return "walk";
+    if (n.startsWith("run")) return "walk";
+    if (n.includes("crawl")) return "fun";
+    if (n.startsWith("sit") || n.includes("liedown") || n.includes("lie")) return "sit";
+    if (n.startsWith("grab") || n.startsWith("climb") || n.includes("holdonto")) return "climb";
+    if (n.startsWith("fall")) return "fall";
+    if (n.startsWith("jump")) return "jump";
+    if (n.includes("split") || n.includes("pullupshimeji") || n.includes("divided")) return "multiply";
+    if (n.includes("throw")) return "fun";
+    return null;
+  };
+
+  function detectEnv(condText) {
+    const t = (condText || "").toLowerCase();
+    if (t.includes("floor.ison")) return "floor";
+    if (t.includes("ceiling.ison") || t.includes("bottomborder.ison")) return "ceiling";
+    if (t.includes("workarea.rightborder.ison") || t.includes("workarea.leftborder.ison") || t.includes("iewall")) return "wall";
+    // Fallbacks based on hints
+    if (t.includes("topborder.ison")) return "ceiling";
+    return null;
+  }
+
+  function parseBehaviorsXML(xml) {
+    try {
+      const dom = new DOMParser().parseFromString(xml, "application/xml");
+      // Walk all Condition blocks to get context, then Behaviors within
+      const conditions = dom.querySelectorAll("Condition, condition");
+      conditions.forEach((c) => {
+        const env = detectEnv(c.getAttribute("Condition") || c.getAttribute("condition") || c.textContent || "");
+        const bucket = env && weights[env] ? weights[env] : null;
+        const behaviors = c.querySelectorAll("Behavior, behavior");
+        behaviors.forEach((b) => {
+          const name = b.getAttribute("Name") || b.getAttribute("name") || "";
+          const freqStr = b.getAttribute("Frequency") || b.getAttribute("frequency") || "0";
+          const freq = Math.max(0, parseInt(freqStr, 10) || 0);
+          const action = NAME_TO_ACTION(name);
+          if (bucket && action && freq > 0) {
+            bucket[action] = (bucket[action] || 0) + freq;
+          }
+        });
+      });
+    } catch (e) {
+      console.warn("Shimeji-ee behaviors.xml parse failed:", e);
+    }
+  }
+
+  async function loadAndApplyBehaviors() {
+    try {
+      const urls = [
+        "./assets/shimejiee/conf/behaviors.xml",
+        "/assets/shimejiee/conf/behaviors.xml",
+        "./shimejiee/conf/behaviors.xml",
+        "/shimejiee/conf/behaviors.xml",
+      ];
+      let xml = null;
+      for (const u of urls) {
+        try {
+          const r = await fetch(u, { cache: "no-store" });
+          if (r && r.ok) { xml = await r.text(); break; }
+        } catch {}
+      }
+      if (xml) parseBehaviorsXML(xml);
+    } catch {}
+    // Expose weights globally
+    window.__shimejiBehaviorWeights = weights;
+    console.info("Behavior weights ready", weights);
+  }
+
+  if (typeof window !== "undefined" && typeof fetch === "function" && typeof DOMParser !== "undefined") {
+    setTimeout(loadAndApplyBehaviors, 0);
+  } else {
+    // Non-browser: expose defaults
+    if (typeof window !== "undefined") window.__shimejiBehaviorWeights = weights;
+  }
+})();
+
+// Preload up to 100 frames per sprite base to avoid late image swaps and ensure configuration
+function __preloadFrames(basePath, count = 100) {
+  if (!basePath) return;
+  const seen = (__preloadFrames._seen = __preloadFrames._seen || new Set());
+  if (seen.has(basePath)) return; // do once per base
+  seen.add(basePath);
+  const doLoad = () => {
+    for (let i = 1; i <= count; i++) {
+      const img = new Image();
+      img.src = `${basePath}/shime${i}.png`;
+    }
+  };
+  if (typeof window !== "undefined" && window.requestIdleCallback) {
+    window.requestIdleCallback(doLoad, { timeout: 2000 });
+  } else {
+    setTimeout(doLoad, 0);
+  }
+}
 
 // Track mouse position
 document.addEventListener("mousemove", (e) => {
@@ -410,7 +762,7 @@ class EnhancedCreature {
 
     // Create container
     this.container = document.createElement("div");
-    this.container.className = "webmeji-container";
+  this.container.className = "webmeji-container shimeji";
     this.container.id = containerId;
     this.container.style.overflow = "visible"; // Allow speech bubbles to show outside
     document.body.appendChild(this.container);
@@ -421,6 +773,9 @@ class EnhancedCreature {
     this.img.alt = /*html*/ `${type} companion`;
     this.container.appendChild(this.img);
 
+  // Preload full sprite sheet range (1..100) for this config
+  if (spriteConfig.basePath) __preloadFrames(spriteConfig.basePath, 100);
+
     // Physics properties
     this.position = {
       x: Math.random() * (window.innerWidth - 64),
@@ -430,6 +785,7 @@ class EnhancedCreature {
     this.direction = Math.random() > 0.5 ? 1 : -1;
     this.isGrounded = true;
     this.isClimbing = false;
+  this.hangingOnCeiling = false;
     this.state = "walk";
 
     // Animation properties
@@ -447,6 +803,9 @@ class EnhancedCreature {
     this.climbTarget = null;
     this.jumpCooldown = 0;
     this.speechBubble = null;
+  this.nextForcedAction = null;
+  this._nextFunAt = Date.now() + 8000 + Math.random() * 10000;
+  this.approachWallSide = null; // 'left' | 'right' while moving to wall before climbing
 
     // Footstep SFX rate limiting
     this._lastStepAt = 0; // ms
@@ -466,8 +825,8 @@ class EnhancedCreature {
     this.updateImageDirection();
 
     // Start initial action
-    this.currentAction = this.actionSequence[this.currentActionIndex];
-    this.startAction(this.currentAction);
+  this.currentAction = this.actionSequence[this.currentActionIndex];
+  this.startAction(this.currentAction);
 
     // Bind animation loop
     this.animate = this.animate.bind(this);
@@ -505,8 +864,9 @@ class EnhancedCreature {
   }
 
   updateImageDirection() {
-    const scaleX = this.direction === -1 ? "scaleX(-1)" : "scaleX(1)";
-    this.img.style.transform = scaleX;
+  const scaleX = this.direction === -1 ? "scaleX(-1)" : "scaleX(1)";
+  const scaleY = this.hangingOnCeiling ? " scaleY(-1)" : "";
+  this.img.style.transform = scaleX + scaleY;
   }
 
   resetAnimation() {
@@ -527,22 +887,57 @@ class EnhancedCreature {
   setNextAction() {
     this.resetAnimation();
 
+    // If we're approaching a wall for a pending climb, hold actions
+    if (this.approachWallSide) {
+      // Keep walking until we reach the wall; actions resume after climb
+      return;
+    }
+
     if (this.forceWalkAfter) {
       this.forceWalkAfter = false;
       this.startForcedWalk();
       return;
     }
 
-    this.currentActionIndex++;
-    if (this.currentActionIndex >= this.actionSequence.length) {
-      this.currentActionIndex = 0;
-      this.actionSequence = this.shuffle([
-        ...this.spriteConfig.ORIGINAL_ACTIONS,
-      ]);
+    if (this.nextForcedAction) {
+      const nxt = this.nextForcedAction;
+      this.nextForcedAction = null;
+      this.startAction(nxt);
+      return;
     }
 
-    this.currentAction = this.actionSequence[this.currentActionIndex];
-    this.startAction(this.currentAction);
+    // Weighted pick based on environment bucket from behaviors.xml
+    const weights = window.__shimejiBehaviorWeights;
+    let env = "floor";
+    if (this.isClimbing || this.approachWallSide) env = "wall";
+    else if (!this.isGrounded && this.hangingOnCeiling) env = "ceiling";
+
+    const bucket = (weights && weights[env]) || null;
+    if (!bucket) {
+      // Fallback original rotation
+      this.currentActionIndex++;
+      if (this.currentActionIndex >= this.actionSequence.length) {
+        this.currentActionIndex = 0;
+        this.actionSequence = this.shuffle([
+          ...this.spriteConfig.ORIGINAL_ACTIONS,
+        ]);
+      }
+      this.currentAction = this.actionSequence[this.currentActionIndex];
+      this.startAction(this.currentAction);
+      return;
+    }
+
+    const entries = Object.entries(bucket).filter(([, w]) => w > 0);
+    const total = entries.reduce((a, [, w]) => a + w, 0) || 0;
+    let pick = Math.random() * total;
+    let chosen = "walk";
+    for (const [name, w] of entries) {
+      if ((pick -= w) <= 0) { chosen = name; break; }
+    }
+    // Map to implemented actions
+    const map = { walk: "walk", sit: "sit", climb: "climb", jump: "jump", multiply: "multiply", fall: "fall", fun: "fun" };
+    const action = map[chosen] || "walk";
+    this.startAction(action);
   }
 
   startForcedWalk() {
@@ -577,6 +972,9 @@ class EnhancedCreature {
     } else if (action === "fall") {
       this.container.classList.add("falling");
       this.triggerFall();
+      // Important: don't also run the generic playAnimation branch for 'fall'
+      // to avoid double timers and premature setNextAction mid-air.
+      return;
     } else if (action === "jump") {
       this.container.classList.add("jumping");
       this.triggerJump();
@@ -586,6 +984,17 @@ class EnhancedCreature {
     }
 
     // Handle special actions
+  if (action === "walk") {
+      // Walk for a random duration instead of fixed loops to ensure visible movement
+      const ms = 4000 + Math.random() * 6000; // 4s..10s
+      this.playAnimation(frames, interval, 99999, null);
+      clearTimeout(this.actionCompletionTimer);
+      this.actionCompletionTimer = setTimeout(() => {
+        this.forceWalkAfter = false;
+        this.setNextAction();
+      }, ms);
+      return;
+    }
     if (action === "sit") {
       const duration = config.randomizeDuration
         ? Math.random() * (config.max - config.min) + config.min
@@ -598,7 +1007,7 @@ class EnhancedCreature {
       return;
     }
 
-    if (action === "climb") {
+  if (action === "climb") {
       this.startClimbing();
       return;
     }
@@ -651,6 +1060,9 @@ class EnhancedCreature {
       // Climb: step a bit slower, on first frame
       else if (this.state === "climb") {
         if (this.currentFrame === 0) this._tryFootstep("climb");
+        if (this.hangingOnCeiling && Math.random() < 0.04 && window.SFX) {
+          window.SFX.play("ui.move");
+        }
       }
       // Jump: initial takeoff is handled in triggerJump; landing handled in updatePhysics
     }, interval);
@@ -672,14 +1084,37 @@ class EnhancedCreature {
 
   // NEW FEATURE: Climbing sides
   startClimbing() {
-    const side = Math.random() > 0.5 ? "left" : "right";
-    this.climbTarget = {
-      side: side,
-      targetY: Math.random() * (window.innerHeight * 0.6),
-      startY: this.position.y,
-    };
+    // Determine nearest wall; only climb when actually at the wall, otherwise approach first
+    const distLeft = Math.abs(this.position.x - 0);
+    const distRight = Math.abs(this.position.x - this.maxPosX);
+    const side = distLeft <= distRight ? "left" : "right";
 
-    // Move to edge
+    // If not near a wall, approach it first
+    const nearThresh = 2;
+    if (!((side === "left" && this.position.x <= nearThresh) || (side === "right" && this.position.x >= this.maxPosX - nearThresh))) {
+      // Begin approach to wall
+      this.approachWallSide = side;
+      this.hangingOnCeiling = false;
+      this.isClimbing = false;
+      // Face the wall and start walking visually
+      this.direction = side === "left" ? -1 : 1;
+      this.updateImageDirection();
+      this.resetAnimation();
+      this.container.classList.add("walking");
+      // Simple looping walk while approaching
+      const w = this.spriteConfig.walk;
+      this.playAnimation(w.frames, w.interval, 99999, null);
+      return;
+    }
+
+    // Already at wall: start climbing immediately
+    this.beginClimbOnSide(side);
+  }
+
+  beginClimbOnSide(side) {
+    this.approachWallSide = null;
+    this.climbTarget = { side, targetY: 0, startY: this.position.y };
+    // Snap to chosen wall precisely
     if (side === "left") {
       this.position.x = 0;
       this.direction = 1;
@@ -687,16 +1122,14 @@ class EnhancedCreature {
       this.position.x = this.maxPosX;
       this.direction = -1;
     }
-
+    this.isGrounded = false;
+    this.velocity.x = 0;
     this.updatePosition();
     this.updateImageDirection();
-
     const config = this.spriteConfig.climb;
-    this.playAnimation(config.frames, config.interval, config.loops, () => {
-      this.isClimbing = false;
-      this.forceWalkAfter = true;
-      this.setNextAction();
-    });
+    this.isClimbing = true;
+    // Keep climb animation looping; physics decides end/transition
+    this.playAnimation(config.frames, config.interval, 99999, null);
   }
 
   // NEW FEATURE: Jumping
@@ -717,26 +1150,32 @@ class EnhancedCreature {
   }
 
   // NEW FEATURE: Falling from sky
-  triggerFall() {
-  // Reset any active animations/timers to avoid stuck states
-  this.resetAnimation();
-  this.forceWalkAfter = true;
-  // mark as falling state so landing logic can recover to walk
-  this.state = "fall";
-  this.position.y = -this.containerHeight; // start just above top
-  this.velocity.y = 0;
+  triggerFall(fromSky = false) {
+    // Only trigger a meaningful fall when starting from some height
+  const startAbove = fromSky || this.position.y > this.containerHeight * 2;
+    if (!startAbove) return; // no-op if too low
+
+    // Reset any active animations/timers to avoid stuck states
+    this.resetAnimation();
+  // mark as falling state so landing logic can recover to sit
+    this.state = "fall";
+  // Cancel any pending climb/approach intents
+  this.approachWallSide = null;
+    // If asked to fall from the sky, start above the viewport
+    if (fromSky) this.position.y = -this.containerHeight;
+    this.velocity.y = 0;
     this.isGrounded = false;
   this.container.classList.add("falling");
+  this._fallingSince = Date.now();
     this.updatePosition();
 
-    if (window.SFX && Math.random() < 0.2) window.SFX.play("extra.wan");
+    if (window.SFX && Math.random() < 0.25) window.SFX.play("extra.wan");
 
     const config = this.spriteConfig.fall;
     this.playAnimation(config.frames, config.interval, 1, () => {
-      // Fall animation plays while physics handles the movement; landing will switch state
+      // Fall animation plays while physics handles the movement; landing logic will set nextForcedAction to sit
+      this.nextForcedAction = "sit";
     });
-    if (window.SFX && Math.random() < 0.3) window.SFX.play("extra.wan");
-
   }
 
   // NEW FEATURE: Multiplication
@@ -795,6 +1234,11 @@ class EnhancedCreature {
         this.reactToMouse("scared");
         this.direction = mousePos.x > this.position.x ? -1 : 1;
         this.updateImageDirection();
+      }
+
+      // 20% chance to follow with a fun flourish
+      if (Math.random() < 0.2) {
+        setTimeout(() => this.startAction("fun"), 200);
       }
     }
   }
@@ -920,16 +1364,54 @@ class EnhancedCreature {
       if (this.velocity.y > maxFall) this.velocity.y = maxFall;
     }
 
-    // Update climbing physics
+    // Update climbing/ceiling-crawl physics
     if (this.isClimbing && this.climbTarget) {
-      const climbDirection =
-        this.climbTarget.targetY > this.position.y ? 1 : -1;
-      this.velocity.y = climbDirection * this.spriteConfig.climbSpeed;
-
-      if (Math.abs(this.position.y - this.climbTarget.targetY) < 5) {
-        this.isClimbing = false;
+      const side = this.climbTarget.side;
+      if (side === "left" || side === "right") {
+        const climbDirection =
+          this.climbTarget.targetY > this.position.y ? 1 : -1;
+        this.velocity.y = climbDirection * this.spriteConfig.climbSpeed;
+        // Prevent any horizontal movement while climbing and snap to wall edge
+        this.velocity.x = 0;
+        if (side === "left") this.position.x = 0;
+        else this.position.x = this.maxPosX;
+        // Ceiling reached? snap
+        if (this.position.y <= 0) this.position.y = 0;
+        if (Math.abs(this.position.y - this.climbTarget.targetY) < 3 || this.position.y <= 1) {
+          // Reached the top: start a ceiling crawl
+          const randX = Math.random() * this.maxPosX;
+          this.climbTarget = {
+            side: "top",
+            targetX: randX,
+            startX: this.position.x,
+          };
+          this.velocity.y = 0;
+          this.hangingOnCeiling = true;
+          this.direction = randX >= this.position.x ? 1 : -1;
+          this.updateImageDirection();
+          // Swap to a horizontal crawl animation
+          if (this.frameTimer) { clearInterval(this.frameTimer); this.frameTimer = null; }
+          const cx = this.spriteConfig.ceiling || this.spriteConfig.walk;
+          this.playAnimation(cx.frames, cx.interval, 99999, null);
+        }
+      } else if (side === "top" || side === "bottom") {
+        const crawlDir =
+          this.climbTarget.targetX > this.position.x ? 1 : -1;
+        this.velocity.x = crawlDir * this.spriteConfig.climbSpeed;
+        // Lock vertical position/velocity
         this.velocity.y = 0;
-        this.climbTarget = null;
+        if (side === "top") this.position.y = 0;
+        else this.position.y = this.maxPosY;
+
+  if (side === "top" && Math.abs(this.position.x - this.climbTarget.targetX) < 5) {
+          this.isClimbing = false;
+          this.velocity.x = 0;
+          this.climbTarget = null;
+          // Done crawling the ceiling; drop orientation back and sit
+          this.nextForcedAction = "sit";
+          this.hangingOnCeiling = false;
+          this.updateImageDirection();
+        }
       }
     }
 
@@ -942,6 +1424,17 @@ class EnhancedCreature {
       this.position.y = this.maxPosY;
       this.velocity.y = 0;
       this.isGrounded = true;
+      // Always clear any lingering falling class on landing
+      if (this.container.classList.contains("falling")) {
+        this.container.classList.remove("falling");
+      }
+  // Cancel any pending wall approach when we land
+  this.approachWallSide = null;
+      // Reset ceiling hang when on ground
+      if (this.hangingOnCeiling) {
+        this.hangingOnCeiling = false;
+        this.updateImageDirection();
+      }
       // Landing thump
       if (!wasGrounded) {
         const now = Date.now();
@@ -960,7 +1453,20 @@ class EnhancedCreature {
       ) {
         this.container.classList.remove("falling");
         // keep forceWalkAfter so setNextAction triggers a short walk
-        this.setNextAction();
+        // If we fell, play a short 'fallen' then sit
+        if (this.state === "fall") {
+          const fallen = this.spriteConfig.fallen;
+          if (fallen) {
+            this.playAnimation(fallen.frames, fallen.interval, fallen.loops || 1, () => {
+              this.startAction("sit");
+            });
+          } else {
+            this.nextForcedAction = "sit";
+            this.setNextAction();
+          }
+        } else {
+          this.setNextAction();
+        }
       }
     } else if (this.position.y < this.maxPosY) {
       this.isGrounded = false;
@@ -986,7 +1492,58 @@ class EnhancedCreature {
       this.jumpCooldown--;
     }
 
+    // Swallower knockback detection (throttled)
+    if (!this._lastSwChkAt || Date.now() - this._lastSwChkAt > 120) {
+      this._lastSwChkAt = Date.now();
+      try {
+        const predators = document.querySelectorAll('.diva-kirby, img[alt="Swallower"]');
+        if (predators && predators.length) {
+          const sr = this.container.getBoundingClientRect();
+          for (const p of predators) {
+            const pr = p.getBoundingClientRect();
+            if (pr.left < sr.right && pr.right > sr.left && pr.top < sr.bottom && pr.bottom > sr.top) {
+              // Compute knockback vector from predator to shimeji
+              const cx = sr.left + sr.width / 2;
+              const cy = sr.top + sr.height / 2;
+              const px = pr.left + pr.width / 2;
+              const py = pr.top + pr.height / 2;
+              let dx = Math.max(-1, Math.min(1, cx - px));
+              const mag = Math.max(0.5, Math.abs(dx));
+              dx /= mag;
+              const strengthX = 12; // push sideways away from predator
+              const strengthY = 24;  // kick upwards strongly
+              this.applyImpulse(dx * strengthX, -strengthY);
+              // Reaction
+              this.reactToMouse("scared");
+              if (window.SFX) window.SFX.play("ui.unavailable");
+              break;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
     this.updatePosition();
+  }
+
+  // Public impulse helper to allow external forces
+  applyImpulse(vx, vy) {
+    // cancel climb when taking a strong hit
+    if (this.isClimbing) {
+      this.isClimbing = false;
+      this.climbTarget = null;
+      this.hangingOnCeiling = false;
+      this.container.classList.remove("climbing");
+      this.state = "walk";
+    }
+    // stop any looping animation that may conflict
+    if (this.frameTimer) {
+      clearInterval(this.frameTimer);
+      this.frameTimer = null;
+    }
+    this.velocity.x += vx;
+    this.velocity.y += vy;
+    this.isGrounded = false;
   }
 
   animate(time) {
@@ -994,18 +1551,62 @@ class EnhancedCreature {
     const deltaTime = (time - this.lastTime) / 16.67; // Normalize to 60fps
     this.lastTime = time;
 
+    // If approaching a wall for climb, steer and check arrival
+    if (this.approachWallSide) {
+      // Force facing and gentle forward motion
+      this.direction = this.approachWallSide === "left" ? -1 : 1;
+      this.updateImageDirection();
+      // Velocity will be set by walking logic below; ensure we're grounded allows walking
+    }
+
     // Update physics
     this.updatePhysics(deltaTime);
+
+    // Failsafe: if we're stuck in 'falling' CSS for too long, recover
+    if (this.container.classList.contains("falling")) {
+      const since = this._fallingSince || (this._fallingSince = Date.now());
+      if (Date.now() - since > 6000) {
+        // 6s guard
+        this.container.classList.remove("falling");
+        this.state = "walk";
+        this.isClimbing = false;
+        this.hangingOnCeiling = false;
+        this.velocity.y = 0;
+        this.nextForcedAction = "sit";
+        this.setNextAction();
+      }
+    }
 
     // Check mouse interaction
     this.checkMouseInteraction();
 
-    // Handle walking movement
+    // Occasional fun flourish when idle-ish
     if (
-      (this.state === "walk" || this.state === "forced-walk") &&
+      Date.now() > this._nextFunAt &&
+      !this.isClimbing &&
+      this.isGrounded &&
+      (this.state === "walk" || this.state === "forced-walk" || this.state === "sit")
+    ) {
+      this._nextFunAt = Date.now() + 10000 + Math.random() * 15000;
+      this.startAction("fun");
+    }
+
+    // Convert approach to actual climb when reaching wall
+    if (this.approachWallSide) {
+      const nearLeft = this.position.x <= 1;
+      const nearRight = this.position.x >= this.maxPosX - 1;
+      if ((this.approachWallSide === "left" && nearLeft) || (this.approachWallSide === "right" && nearRight)) {
+        this.beginClimbOnSide(this.approachWallSide);
+      }
+    }
+
+    // Handle walking movement (physics controls movement during climb)
+    if (
+      ((this.state === "walk" || this.state === "forced-walk") || this.approachWallSide) &&
       this.isGrounded
     ) {
-      this.velocity.x = this.direction * this.spriteConfig.speed;
+      const base = this.direction * this.spriteConfig.speed;
+      this.velocity.x = base;
     } else if (this.state !== "climb") {
       this.velocity.x *= 0.9; // Friction when not walking
     }
@@ -1048,7 +1649,7 @@ function spawnCreatures() {
     const pick = configs[random];
     const c = new EnhancedCreature("init-0", pick.cfg, pick.type);
     creatures.push(c);
-    setTimeout(() => c.triggerFall && c.triggerFall(), 0);
+  setTimeout(() => c.triggerFall && c.triggerFall(true), 0);
   // }
 
 
@@ -1080,7 +1681,7 @@ window.ShimejiFunctions = {
       creatures.push(miku);
 
   // Newly spawned fall from the sky
-  setTimeout(() => miku.triggerFall && miku.triggerFall(), 0);
+  setTimeout(() => miku.triggerFall && miku.triggerFall(true), 0);
 
       // Reward hearts for new companion!
 
@@ -1108,7 +1709,7 @@ window.ShimejiFunctions = {
         "miku-alt"
       );
       creatures.push(miku);
-  setTimeout(() => miku.triggerFall && miku.triggerFall(), 0);
+  setTimeout(() => miku.triggerFall && miku.triggerFall(true), 0);
       return miku;
     }
     return null;
@@ -1121,7 +1722,7 @@ window.ShimejiFunctions = {
         "miku-sketch"
       );
       creatures.push(miku);
-  setTimeout(() => miku.triggerFall && miku.triggerFall(), 0);
+  setTimeout(() => miku.triggerFall && miku.triggerFall(true), 0);
       return miku;
     }
     return null;
@@ -1135,7 +1736,7 @@ window.ShimejiFunctions = {
         "classic"
       );
       creatures.push(classic);
-  setTimeout(() => classic.triggerFall && classic.triggerFall(), 0);
+  setTimeout(() => classic.triggerFall && classic.triggerFall(true), 0);
       return classic;
     }
     return null;

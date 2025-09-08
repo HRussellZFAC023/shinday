@@ -282,6 +282,7 @@
           flashJudge && flashJudge("vocabCard", "MISS");
           addVoltage && addVoltage(-5, "vocabCard");
           loseLife && loseLife("vocabCard");
+          window.StudyHub && StudyHub.registerAnswer(false, 'MISS');
 
           streak = 0;
           if (streakEl) streakEl.textContent = String(streak);
@@ -428,6 +429,7 @@
       resetCombo && resetCombo();
       loseLife && loseLife("vocabCard");
     }
+    window.StudyHub && StudyHub.registerAnswer(isCorrect, isCorrect ? judge : 'MISS');
     setTimeout(loadRound, 900);
     return isCorrect;
   }

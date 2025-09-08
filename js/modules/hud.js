@@ -58,6 +58,18 @@
       }, 350);
     }
     pulse(card);
+    // Play judgment SFX if available
+    const sfxMap = {
+      COOL: "result.perfect",
+      GREAT: "result.great",
+      FINE: "result.standard",
+      SAD: "result.cheap",
+      MISS: "result.miss",
+    };
+    const id = sfxMap[label];
+    if (id && window.SFX?.play) {
+      window.SFX.play(id);
+    }
   }
 
   function addVoltage(amount, cardId) {
