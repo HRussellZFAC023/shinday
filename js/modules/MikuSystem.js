@@ -26,11 +26,11 @@ window.MikuSystem = (function () {
   function findMikuByImage(mikuList, imageUrl) {
     const normalizedUrl = normalize(imageUrl);
     return (
-      mikuList.find(
-        (miku) =>
-          normalizedUrl.includes(normalize(miku.filename || "")) ||
-          normalizedUrl.includes(normalize(miku.image || "")),
-      ) || null
+      mikuList.find((miku) => {
+        const fn = miku.filename ? normalize(miku.filename) : null;
+        const img = miku.image ? normalize(miku.image) : null;
+        return (fn && normalizedUrl.includes(fn)) || (img && normalizedUrl.includes(img));
+      }) || null
     );
   }
 

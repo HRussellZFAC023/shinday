@@ -485,12 +485,7 @@ window.MikuUI = (function () {
         ? window.MikuCore.mikuIcon(C.study.titleIcon, "🎌")
         : "🎌";
       if (h2) h2.innerHTML = /*html*/ `${studyIcon} ${C.study.title}`;
-      // Update HUD Level text/progress if provided by content
-      const hudProg = document.getElementById("hudLevelProgress");
-      const hudText = document.getElementById("hudLevelText");
-      if (hudProg && Number.isFinite(C.study.progressPercent))
-        hudProg.style.width = /*html*/ `${C.study.progressPercent}%`;
-      if (hudText && C.study.levelText) hudText.textContent = C.study.levelText;
+      // HUD level is managed by Progression module; no content override
       const wodCard = document.getElementById("wodCard");
       const wodInline = document.querySelector(".word-of-day");
       if (C.study.wordOfDay) {

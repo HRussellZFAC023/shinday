@@ -20,11 +20,11 @@
     const u = normalize(url);
     // match by filename containment
     return (
-      list.find(
-        (m) =>
-          u.includes(normalize(m.filename || "")) ||
-          u.includes(normalize(m.image || "")),
-      ) || null
+      list.find((m) => {
+        const fn = m.filename ? normalize(m.filename) : null;
+        const img = m.image ? normalize(m.image) : null;
+        return (fn && u.includes(fn)) || (img && u.includes(img));
+      }) || null
     );
   }
 

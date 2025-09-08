@@ -51,7 +51,12 @@
     const txt = document.getElementById("hudLevelText");
     const pct = Math.min(100, Math.floor((into / need) * 100));
     if (bar) bar.style.width = pct + "%";
-    if (txt) txt.textContent = `Level ${level} • ${pct}%`;
+    if (txt) {
+      const bonus = Math.max(0, (level - 1) * 10);
+      txt.textContent = bonus
+        ? `Level ${level} • +${bonus}% rewards`
+        : `Level ${level}`;
+    }
   }
 
   function addXp(delta) {
@@ -75,7 +80,12 @@
       Math.floor(((xp % XP_PER_LEVEL) / XP_PER_LEVEL) * 100),
     );
     if (bar) bar.style.width = pct + "%";
-    if (txt) txt.textContent = `Level ${lvl} • ${pct}%`;
+    if (txt) {
+      const bonus = Math.max(0, (lvl - 1) * 10);
+      txt.textContent = bonus
+        ? `Level ${lvl} • +${bonus}% rewards`
+        : `Level ${lvl}`;
+    }
 
     if (lvl > prev) {
       if (window.SFX) window.SFX.play("hearts.milestone");
@@ -94,7 +104,12 @@
     const bar = document.getElementById("hudLevelProgress");
     const txt = document.getElementById("hudLevelText");
     if (bar) bar.style.width = pct + "%";
-    if (txt) txt.textContent = `Level ${level} • ${pct}%`;
+    if (txt) {
+      const bonus = Math.max(0, (level - 1) * 10);
+      txt.textContent = bonus
+        ? `Level ${level} • +${bonus}% rewards`
+        : `Level ${level}`;
+    }
   }
 
   // Provide API (with camelCase alias)
