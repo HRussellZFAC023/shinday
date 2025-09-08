@@ -6,11 +6,11 @@ window.hearts = (function () {
   const SFX = window.SFX;
   let heartCount = parseInt(
     localStorage.getItem("pixelbelle-hearts") || "0",
-    10,
+    10
   );
   let lastMilestone = parseInt(
     localStorage.getItem("pixelbelle-last-milestone") || "0",
-    10,
+    10
   );
 
   function updateCounters() {
@@ -200,8 +200,7 @@ window.hearts = (function () {
     // Only grant passive hearts if shimejis are active
     setInterval(() => {
       const count =
-        window.ShimejiFunctions &&
-        window.ShimejiFunctions.getCreatureCount
+        window.ShimejiFunctions && window.ShimejiFunctions.getCreatureCount
           ? window.ShimejiFunctions.getCreatureCount()
           : 0;
       if (count > 0) {
@@ -221,16 +220,24 @@ window.hearts = (function () {
 
   // Swallower enemy (Kirby-like)
   function initSwallower() {
-    function scheduleNext() {
-      // between 1s and 10m
-      const delay = 1000 + Math.random() * (10 * 60 * 1000 - 1000);
+    function scheduleNext(initial = false) {
+      // Debug fast mode
+      let delay;
+
+      delay = 1000 + Math.random() * (10 * 60 * 1000 - 1000); 
+
       setTimeout(spawnOne, delay);
     }
 
     function spawnOne() {
       try {
         const img = document.createElement("img");
-        img.src = "./assets/swallow.gif";
+        const src =
+          (window.SITE_CONTENT &&
+            window.SITE_CONTENT.images &&
+            window.SITE_CONTENT.images.swallowGif) ||
+          "./assets/swallow.gif";
+        img.src = src;
         img.alt = "Swallower";
         // randomize direction (true = L->R, false = R->L)
         const leftToRight = Math.random() < 0.5;
@@ -246,22 +253,17 @@ window.hearts = (function () {
           transform: scaleX(${face});
           filter: hue-rotate(90deg) saturate(1.6) contrast(1.05);
           transition: opacity .4s ease;
-          box-shadow: 0 0 12px rgba(0,200,0,0.35);
         `;
         document.body.appendChild(img);
 
-        // stinky aura that follows the sprite
-        const stink = document.createElement("div");
-        stink.textContent = "💚💨";
-        stink.style.cssText = `position:fixed;left:${startX}px;bottom:52px;z-index:9996;opacity:.8;pointer-events:none;transition:opacity .4s ease;`;
-        document.body.appendChild(stink);
 
         // fade in
         requestAnimationFrame(() => (img.style.opacity = "1"));
 
         // movement across screen (slower, more random)
         const vw = window.innerWidth;
-        const duration = 18000 + Math.random() * 12000; // 18–30s cross
+        const life = 3000 + Math.random() * 7000; // 3–10s visible lifetime
+        const duration = life; // use life as traversal duration
         const start = performance.now();
 
         const sfx = window.SFX;
@@ -293,9 +295,6 @@ window.hearts = (function () {
           const bob = Math.sin(t / 300) * 3;
           img.style.left = x + "px";
           img.style.transform = `scaleX(${face}) translateY(${bob}px)`;
-          // keep stink aura following
-          stink.style.left = x + "px";
-          stink.style.bottom = 52 + bob + "px";
 
           // react to shimeji intersections frequently
           tryIntersectReactions(img);
@@ -325,12 +324,12 @@ window.hearts = (function () {
           if (eaten) return;
           eaten = true;
           const now = Date.now();
-          const shieldUntil = parseInt(localStorage.getItem("diva.shield.until") || "0", 10) || 0;
+          const shieldUntil =
+            parseInt(localStorage.getItem("diva.shield.until") || "0", 10) || 0;
           const shieldActive = now < shieldUntil;
 
           if (shieldActive) {
             // harmless pass
-            pulse(img, "#ffd700");
             if (sfx && sfx.play) sfx.play("enemy.blocked");
             fadeOut();
             return;
@@ -339,7 +338,11 @@ window.hearts = (function () {
           // Bait check (single-use)
           let baitHandled = false;
           const shopApi = window.shop;
-          if (shopApi && typeof shopApi.getBaitCount === "function" && typeof shopApi.consumeBait === "function") {
+          if (
+            shopApi &&
+            typeof shopApi.getBaitCount === "function" &&
+            typeof shopApi.consumeBait === "function"
+          ) {
             if (shopApi.getBaitCount() > 0) {
               shopApi.consumeBait();
               baitHandled = true;
@@ -349,27 +352,38 @@ window.hearts = (function () {
 
           if (baitHandled) {
             // harmless pass
-            pulse(img, "#ffd700");
             if (sfx && sfx.play) sfx.play("enemy.blocked");
             fadeOut();
             return;
           }
 
           // try to eat hearts
-          const current = parseInt(localStorage.getItem("pixelbelle-hearts") || "0", 10);
+          const current = parseInt(
+            localStorage.getItem("pixelbelle-hearts") || "0",
+            10
+          );
           if (current > 0) {
             const loss = Math.min(500, current);
-            if (window.hearts && typeof window.hearts.addHearts === "function") {
+            if (
+              window.hearts &&
+              typeof window.hearts.addHearts === "function"
+            ) {
               window.hearts.addHearts(-loss);
             } else {
               localStorage.setItem("pixelbelle-hearts", String(current - loss));
             }
             if (sfx && sfx.play) {
-              sfx.play("swallow.chomp"); sfx.play("extra.wan"); sfx.play("extra.fx1");
+              sfx.play("swallow.chomp");
+              sfx.play("extra.wan");
+              sfx.play("extra.fx1");
             }
             // user feedback
-            window.hearts && window.hearts.loveToast && window.hearts.loveToast("You lost 500 💖!");
-            pulse(img, "#ff1493");
+            if (
+              window.hearts &&
+              typeof window.hearts.loveToast === "function"
+            ) {
+              window.hearts.loveToast("You lost 500 💖!");
+            }
             fadeOut();
             return;
           }
@@ -379,11 +393,18 @@ window.hearts = (function () {
           if (sh && typeof sh.removeRandom === "function") {
             const removed = sh.removeRandom();
             if (removed) {
-              const eggs = Math.max(0, parseInt(localStorage.getItem("diva.eggs") || "0", 10) - 1);
+              const eggs = Math.max(
+                0,
+                parseInt(localStorage.getItem("diva.eggs") || "0", 10) - 1
+              );
               localStorage.setItem("diva.eggs", String(eggs));
-              if (sfx && sfx.play) { sfx.play("swallow.chomp"); sfx.play("extra.kya"); }
-              window.hearts && window.hearts.loveToast && window.hearts.loveToast("A Miku was swallowed! 😭");
-              pulse(img, "#ff4500");
+              if (sfx && sfx.play) {
+                sfx.play("swallow.chomp");
+                sfx.play("extra.kya");
+              }
+              window.hearts &&
+                window.hearts.loveToast &&
+                window.hearts.loveToast("A Miku was swallowed! 😭");
               fadeOut();
               return;
             }
@@ -393,18 +414,12 @@ window.hearts = (function () {
           fadeOut();
         }
 
-        function pulse(el, color) {
-          el.style.boxShadow = `0 0 0 0 ${color}`;
-          el.style.transition = "box-shadow .2s ease";
-          requestAnimationFrame(() => (el.style.boxShadow = `0 0 30px 6px ${color}`));
-          setTimeout(() => (el.style.boxShadow = ""), 600);
-        }
+  
 
         function fadeOut() {
           if (sfx && sfx.play) sfx.play("enemy.leave");
           img.style.transition = "opacity .35s ease";
           img.style.opacity = "0";
-          stink.style.opacity = "0";
           setTimeout(cleanup, 400);
         }
 
@@ -416,7 +431,6 @@ window.hearts = (function () {
           stopSwoop && stopSwoop();
           stopChomp && stopChomp();
           if (img && img.parentNode) img.parentNode.removeChild(img);
-          if (stink && stink.parentNode) stink.parentNode.removeChild(stink);
           scheduleNext();
         }
       } catch (e) {
@@ -427,11 +441,16 @@ window.hearts = (function () {
     function tryIntersectReactions(enemyImg) {
       try {
         const rect = enemyImg.getBoundingClientRect();
-        const nodes = document.querySelectorAll('.webmeji-container');
+        const nodes = document.querySelectorAll(".webmeji-container");
         let hit = false;
         nodes.forEach((n) => {
           const r = n.getBoundingClientRect();
-          const overlap = !(r.right < rect.left || r.left > rect.right || r.bottom < rect.top || r.top > rect.bottom);
+          const overlap = !(
+            r.right < rect.left ||
+            r.left > rect.right ||
+            r.bottom < rect.top ||
+            r.top > rect.bottom
+          );
           if (overlap) {
             hit = true;
             if (Math.random() < 0.4 && window.SFX && window.SFX.play) {
@@ -442,14 +461,28 @@ window.hearts = (function () {
           }
         });
         // occasionally knock everyone back by forcing a fall
-        if (hit && Math.random() < 0.25 && window.ShimejiFunctions && window.ShimejiFunctions.triggerMassFall) {
+        if (
+          hit &&
+          Math.random() < 0.25 &&
+          window.ShimejiFunctions &&
+          window.ShimejiFunctions.triggerMassFall
+        ) {
           window.ShimejiFunctions.triggerMassFall();
         }
       } catch (_) {}
     }
 
-    // initial schedule
-    scheduleNext();
+    // initial schedule (guaranteed within ~5–12s or faster in debug)
+    scheduleNext(true);
+
+    // Expose a manual trigger for testing
+    if (!window.spawnSwallowerNow) {
+      window.spawnSwallowerNow = () => {
+        try {
+          spawnOne();
+        } catch (_) {}
+      };
+    }
   }
 
   return {

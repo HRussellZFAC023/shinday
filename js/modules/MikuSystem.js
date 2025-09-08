@@ -36,17 +36,9 @@ window.MikuSystem = (function () {
 
   // UI Management - NO MORE TRY BLOCKS!
   function updateNowPlaying(song) {
-    const title =
-      song?.title || song?.name
-        ? `${song.title || song.name} • ${song.artist || "Miku"}`
-        : "Kawaii FM 📻";
-
-    const statusEl = document.getElementById("radioStatus");
+    const title = song?.title || song?.name || "Kawaii FM 📻";
     const displayEl = document.getElementById("radioDisplayStatus");
-
-    if (statusEl) statusEl.textContent = title;
     if (displayEl) displayEl.textContent = title;
-
     localStorage.setItem("pixelbelle-now-playing", title);
   }
 
@@ -60,9 +52,7 @@ window.MikuSystem = (function () {
       widget.id = "divaInfo";
       widget.className = "hud-line";
       widget.innerHTML = `
-        <strong>Miku:</strong> <span id="divaInfoMiku">•</span> 
-        <div class="spacer"></div> 
-        <strong>🎶 Song:</strong> <span id="divaInfoSong">•</span>
+        <strong>Miku:</strong> <span id="divaInfoMiku">•</span>
       `;
       hudContainer.insertAdjacentElement("afterbegin", widget);
       return widget;
@@ -84,7 +74,6 @@ window.MikuSystem = (function () {
       `;
       widget.innerHTML = `
         <div><strong>Miku:</strong> <span id="divaInfoMiku">•</span></div>
-        <div><strong>🎶 Song:</strong> <span id="divaInfoSong">•</span></div>
       `;
       fallbackContainer.insertAdjacentElement("afterbegin", widget);
     }
@@ -109,13 +98,8 @@ window.MikuSystem = (function () {
     if (!widget) return;
 
     const mikuNameEl = widget.querySelector("#divaInfoMiku");
-    const songTitleEl = widget.querySelector("#divaInfoSong");
-
     const mikuName = miku?.displayName || miku?.name || miku?.title || "•";
-    const songTitle = miku?.songTitle || miku?.title || "•";
-
     if (mikuNameEl) mikuNameEl.textContent = mikuName;
-    if (songTitleEl) songTitleEl.textContent = songTitle;
   }
 
   function refreshFloatingMikus() {

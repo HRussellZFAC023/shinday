@@ -5,7 +5,6 @@
   function init() {
     const playBtn = document.getElementById("playRadio");
     const pauseBtn = document.getElementById("pauseRadio");
-    const radioStatus = document.getElementById("radioStatus");
     const radioDisplayStatus = document.getElementById("radioDisplayStatus");
     const onlineStatus = document.getElementById("onlineStatus");
     const statusDot = document.getElementById("statusDot");
@@ -37,7 +36,6 @@
     window.__pauseRadio = () => {
       audio.pause();
       const status = C.radio?.stoppedStatus || "Radio Stopped";
-      if (radioStatus) radioStatus.textContent = status;
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
       if (onlineStatus)
         onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
@@ -51,14 +49,12 @@
       C.radio && (C.radio.radioName || C.radio.radioName === 0)
         ? C.radio.radioName
         : C.radio?.radioName || C.radio?.title || "Kawaii FM";
-    if (radioStatus) radioStatus.textContent = station + " 📻";
     if (radioDisplayStatus) radioDisplayStatus.textContent = station + " 📻";
     if (statusDot) statusDot.style.color = "#ffbf00";
 
     if (playBtn)
       playBtn.addEventListener("click", () => {
         const status = C.radio?.playingStatus || "Now Playing";
-        if (radioStatus) radioStatus.textContent = status;
         if (radioDisplayStatus) radioDisplayStatus.textContent = status;
         if (onlineStatus)
           onlineStatus.textContent = C.status?.radioOnLabel || "Playing";
@@ -75,7 +71,6 @@
       });
 
     audio.addEventListener("error", () => {
-      if (radioStatus) radioStatus.textContent = "⚠️ Stream error";
       if (radioDisplayStatus)
         radioDisplayStatus.textContent = "⚠️ Stream error";
       if (statusDot) statusDot.style.color = "#ff4d4d";
@@ -83,7 +78,6 @@
 
     audio.addEventListener("playing", () => {
       const status = C.radio?.playingStatus || "Now Playing";
-      if (radioStatus) radioStatus.textContent = status;
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
       startMetadataPolling();
     });
@@ -105,15 +99,15 @@
     let metaTimer = null;
 
     function setNowPlaying(text) {
+      const titleOnly = (text || "").split(/\s*-\s*/).pop().trim();
       if (
         window.MikuSystem &&
         typeof window.MikuSystem.updateNowPlaying === "function"
       ) {
-        window.MikuSystem.updateNowPlaying({ title: text });
+        window.MikuSystem.updateNowPlaying({ title: titleOnly });
       } else {
-        if (radioStatus) radioStatus.textContent = text;
-        if (radioDisplayStatus) radioDisplayStatus.textContent = text;
-        localStorage.setItem("pixelbelle-now-playing", text);
+        if (radioDisplayStatus) radioDisplayStatus.textContent = titleOnly;
+        localStorage.setItem("pixelbelle-now-playing", titleOnly);
       }
     }
 
@@ -150,7 +144,7 @@
           src.streamTitle ||
           null;
         if (t) return t;
-        if (src.artist && src.title) return `${src.artist} - ${src.title}`;
+        if (src.title) return src.title;
       }
       if (data.songtitle) return data.songtitle;
       if (data.title) return data.title;

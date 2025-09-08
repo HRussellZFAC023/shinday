@@ -97,7 +97,7 @@ window.MikuUI = (function () {
         .join("");
     }
 
-    // (Removed old nowPlaying placeholder: using radioStatus/radioDisplayStatus instead)
+    // (Removed old nowPlaying placeholder: using radioDisplayStatus instead)
     // Status labels
     const onlineStatus = document.getElementById("onlineStatus");
     if (onlineStatus && C.status?.onlineLabel) {
@@ -106,15 +106,15 @@ window.MikuUI = (function () {
         : "";
       onlineStatus.innerHTML = /*html*/ `${statusIcon}${C.status.onlineLabel}`;
     }
-    const heartCountLbl = document.querySelector(".status-item:nth-child(3)");
-    if (heartCountLbl && C.status?.heartsLabel) {
-      const span = heartCountLbl.querySelector("span");
-      if (span) {
-        const heartIcon = C.status.heartIcon
-          ? window.MikuCore.mikuIcon(C.status.heartIcon, "💖")
-          : "💖";
-        span.previousSibling &&
-          (span.previousSibling.innerHTML = /*html*/ ` ${heartIcon} ${C.status.heartsLabel} `);
+    const heartCountSpan = document.getElementById("heartCount");
+    if (heartCountSpan && C.status?.heartsLabel) {
+      const heartIcon = C.status.heartIcon
+        ? window.MikuCore.mikuIcon(C.status.heartIcon, "💖")
+        : "💖";
+      const parent = heartCountSpan.parentElement;
+      if (parent) {
+        const count = heartCountSpan.textContent;
+        parent.innerHTML = /*html*/ `${heartIcon} ${C.status.heartsLabel}: <span id="heartCount">${count}</span>`;
       }
     }
 
@@ -646,7 +646,7 @@ window.MikuUI = (function () {
 
         ul.innerHTML = items
           .map((it) => {
-            const label = it.artist ? `${it.title} - ${it.artist}` : it.title;
+            const label = it.title;
             const data = [
               `data-title="${label.replace(/"/g, "&quot;")}"`,
               it.videoId ? `data-video-id="${it.videoId}"` : "",

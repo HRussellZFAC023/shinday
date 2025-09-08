@@ -3990,8 +3990,7 @@ main {
 
 /* Hide unlock progress bars in Japanese games */
 .jp-unlock-bar,
-.unlock-progress,
-#hudLevelWrap {
+.unlock-progress {
   display: none !important;
 }
 

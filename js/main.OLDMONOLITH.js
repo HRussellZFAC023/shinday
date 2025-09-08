@@ -5144,7 +5144,6 @@ function initSocials() {
 function wireRadioUI() {
   const playBtn = document.getElementById("playRadio");
   const pauseBtn = document.getElementById("pauseRadio");
-  const radioStatus = document.getElementById("radioStatus");
   const radioDisplayStatus = document.getElementById("radioDisplayStatus");
   const onlineStatus = document.getElementById("onlineStatus");
   const statusDot = document.getElementById("statusDot");
@@ -5180,7 +5179,6 @@ function wireRadioUI() {
     audio.pause();
 
     const status = C.radio?.stoppedStatus || "Radio Stopped";
-    if (radioStatus) radioStatus.textContent = status;
     if (radioDisplayStatus) radioDisplayStatus.textContent = status;
     if (onlineStatus)
       onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
@@ -5195,7 +5193,6 @@ function wireRadioUI() {
     C.radio && (C.radio.radioName || C.radio.radioName === 0)
       ? C.radio.radioName
       : C.radio?.radioName || C.radio?.title || "Kawaii FM";
-  if (radioStatus) radioStatus.textContent = station + " 📻";
   if (radioDisplayStatus) radioDisplayStatus.textContent = station + " 📻";
   if (statusDot) statusDot.style.color = "#ffbf00"; // amber on load
 
@@ -5203,7 +5200,6 @@ function wireRadioUI() {
   if (playBtn)
     playBtn.addEventListener("click", () => {
       const status = C.radio?.playingStatus || "Now Playing";
-      if (radioStatus) radioStatus.textContent = status;
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
       if (onlineStatus) onlineStatus.textContent = "Playing";
 
@@ -5221,14 +5217,12 @@ function wireRadioUI() {
     });
 
   audio.addEventListener("error", () => {
-    if (radioStatus) radioStatus.textContent = "⚠️ Stream error";
     if (radioDisplayStatus) radioDisplayStatus.textContent = "⚠️ Stream error";
     if (statusDot) statusDot.style.color = "#ff4d4d";
   });
 
   audio.addEventListener("playing", () => {
     const status = C.radio?.playingStatus || "Now Playing";
-    if (radioStatus) radioStatus.textContent = status;
     if (radioDisplayStatus) radioDisplayStatus.textContent = status;
 
     localStorage.setItem("pixelbelle-now-playing", status);
@@ -5253,7 +5247,6 @@ function wireRadioUI() {
   // Best-effort now playing metadata polling (CORS permitting)
   let metaTimer = null;
   function setNowPlaying(text) {
-    if (radioStatus) radioStatus.textContent = text;
     if (radioDisplayStatus) radioDisplayStatus.textContent = text;
     localStorage.setItem("pixelbelle-now-playing", text);
   }

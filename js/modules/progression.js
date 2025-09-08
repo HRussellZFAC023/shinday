@@ -45,20 +45,28 @@
 
     emit();
   }
+  function syncHud() {
+    const { level, into, need } = getProgress();
+    const bar = document.getElementById("hudLevelProgress");
+    const txt = document.getElementById("hudLevelText");
+    const pct = Math.min(100, Math.floor((into / need) * 100));
+    if (bar) bar.style.width = pct + "%";
+    if (txt) txt.textContent = `Level ${level} • ${pct}%`;
+  }
+
   function addXp(delta) {
     const mult =
       typeof window !== "undefined" && window.__xpPotionUntil > Date.now()
         ? 2
         : 1;
+    const oldLvl = getLevel();
     let xp = getXp() + (delta | 0) * mult;
     let lvl = getLevel();
+    const prev = lvl;
     while (xp >= lvl * XP_PER_LEVEL) lvl++;
 
     localStorage.setItem(LS_XP, String(xp));
-
     localStorage.setItem(LS_LEVEL, String(lvl));
-
-    // HUD update (if present)
 
     const bar = document.getElementById("hudLevelProgress");
     const txt = document.getElementById("hudLevelText");
@@ -69,8 +77,24 @@
     if (bar) bar.style.width = pct + "%";
     if (txt) txt.textContent = `Level ${lvl} • ${pct}%`;
 
+    if (lvl > prev) {
+      if (window.SFX) window.SFX.play("hearts.milestone");
+      if (window.hearts?.loveToast)
+        window.hearts.loveToast(`レベルアップ！Level ${lvl} ✨`);
+      if (window.Hearts?.add) window.Hearts.add(5);
+      else if (window.hearts?.addHearts) window.hearts.addHearts(5);
+    }
+
     emit();
     return { level: lvl, xp };
+  }
+
+  function initHud() {
+    const { level, pct } = getProgress();
+    const bar = document.getElementById("hudLevelProgress");
+    const txt = document.getElementById("hudLevelText");
+    if (bar) bar.style.width = pct + "%";
+    if (txt) txt.textContent = `Level ${level} • ${pct}%`;
   }
 
   // Provide API (with camelCase alias)
@@ -85,4 +109,6 @@
     onChange,
   };
   window.Progression.addXP = addXp; // alias
+
+  window.addEventListener("DOMContentLoaded", initHud);
 })();

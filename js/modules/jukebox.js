@@ -186,7 +186,6 @@
     }
     if (now) now.textContent = song.title;
     // Update status bar Now Playing
-    if (!song.artist) song.artist = "FIX ME";
     window.MikuSystem.updateNowPlaying(song);
   }
 

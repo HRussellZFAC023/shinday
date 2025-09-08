@@ -38,7 +38,7 @@
       host.id = "divaInfo";
       host.className = "hud-line";
       host.innerHTML =
-        '<strong>Miku:</strong> <span id="divaInfoMiku">•</span> <div class="spacer"></div> <strong>🎶 Song:</strong> <span id="divaInfoSong">•</span>';
+        '<strong>Miku:</strong> <span id="divaInfoMiku">•</span>';
       hud.insertAdjacentElement("afterbegin", host);
       return host;
     }
@@ -52,7 +52,7 @@
     host.style.cssText =
       "margin:10px 0;padding:8px 10px;border:2px solid var(--border);border-radius:10px;background:#fff;display:flex;gap:12px;align-items:center;font-weight:800;color:#2b2b44";
     host.innerHTML =
-      '<div><strong>Miku:</strong> <span id="divaInfoMiku">•</span></div><div><strong>🎶 Song:</strong> <span id="divaInfoSong">•</span></div>';
+      '<div><strong>Miku:</strong> <span id="divaInfoMiku">•</span></div>';
     if (study) study.insertAdjacentElement("afterbegin", host);
     return host;
   }
@@ -60,11 +60,8 @@
   function setInfo(m) {
     const host = ensureDivaInfo();
     const mikuEl = host.querySelector("#divaInfoMiku");
-    const songEl = host.querySelector("#divaInfoSong");
     const mikuName = m ? m.displayName || m.name || m.title || "•" : "•";
-    const songTitle = m ? m.songTitle || m.title || "•" : "•";
     if (mikuEl) mikuEl.textContent = mikuName;
-    if (songEl) songEl.textContent = songTitle;
   }
 
   async function refresh() {

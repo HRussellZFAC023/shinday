@@ -404,7 +404,7 @@ const SITE_CONTENT = {
     items: {
       shield: {
         title: "Heart Shield",
-        description: "Protect your precious hearts for 5 minutes!",
+        description: "Protect your precious hearts and mikus for 5 minutes!",
         cost: 50,
         icon: "⛨",
       },

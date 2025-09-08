@@ -3,7 +3,7 @@
 const MIKU_CONFIG = {
   speed: 3,
   climbSpeed: 2,
-  fallSpeed: 8,
+  fallSpeed: 10,
   jumpForce: 15,
   gravity: 0.5,
   walk: {
@@ -95,7 +95,7 @@ const MIKU_CONFIG = {
   ],
   // Interaction settings
   mouseReactionDistance: 100,
-  multiplyChance: 0.02, // reduced chance to multiply
+  multiplyChance: 0.05, // much lower chance to multiply
   maxCreatures: 99,
 };
 
@@ -103,7 +103,7 @@ const MIKU_CONFIG = {
 const MIKU_ALT_CONFIG = {
   speed: 3,
   climbSpeed: 2,
-  fallSpeed: 8,
+  fallSpeed: 10,
   jumpForce: 15,
   gravity: 0.5,
   walk: {
@@ -193,7 +193,7 @@ const MIKU_ALT_CONFIG = {
     "multiply",
   ],
   mouseReactionDistance: 100,
-  multiplyChance: 0.02,
+  multiplyChance: 0.05,
   maxCreatures: 99,
 };
 
@@ -201,7 +201,7 @@ const MIKU_ALT_CONFIG = {
 const MIKU_SKETCH_CONFIG = {
   speed: 3,
   climbSpeed: 2,
-  fallSpeed: 8,
+  fallSpeed: 10,
   jumpForce: 15,
   gravity: 0.5,
   walk: {
@@ -291,14 +291,14 @@ const MIKU_SKETCH_CONFIG = {
     "multiply",
   ],
   mouseReactionDistance: 100,
-  multiplyChance: 0.02,
+  multiplyChance: 0.05,
   maxCreatures: 99,
 };
 
 const CLASSIC_CONFIG = {
   speed: 2,
   climbSpeed: 1.5,
-  fallSpeed: 6,
+  fallSpeed: 10,
   jumpForce: 12,
   gravity: 0.4,
   walk: {
@@ -388,7 +388,7 @@ const CLASSIC_CONFIG = {
     "multiply",
   ],
   mouseReactionDistance: 80,
-  multiplyChance: 0.02,
+  multiplyChance: 0.05,
   maxCreatures: 99,
 };
 
@@ -514,6 +514,14 @@ class EnhancedCreature {
     clearTimeout(this.actionCompletionTimer);
     this.frameTimer = null;
     this.actionCompletionTimer = null;
+
+    this.container.classList.remove(
+      "walking",
+      "climbing",
+      "falling",
+      "jumping",
+      "multiplying"
+    );
   }
 
   setNextAction() {
@@ -710,33 +718,44 @@ class EnhancedCreature {
 
   // NEW FEATURE: Falling from sky
   triggerFall() {
-    this.forceWalkAfter = true;
-    this.position.y = -this.containerHeight;
-    this.velocity.y = 0;
+  // Reset any active animations/timers to avoid stuck states
+  this.resetAnimation();
+  this.forceWalkAfter = true;
+  // mark as falling state so landing logic can recover to walk
+  this.state = "fall";
+  this.position.y = -this.containerHeight; // start just above top
+  this.velocity.y = 0;
     this.isGrounded = false;
+  this.container.classList.add("falling");
     this.updatePosition();
 
     if (window.SFX && Math.random() < 0.2) window.SFX.play("extra.wan");
 
     const config = this.spriteConfig.fall;
     this.playAnimation(config.frames, config.interval, 1, () => {
-      // Fall animation plays while physics handles the movement
+      // Fall animation plays while physics handles the movement; landing will switch state
     });
     if (window.SFX && Math.random() < 0.3) window.SFX.play("extra.wan");
+
   }
 
   // NEW FEATURE: Multiplication
   triggerMultiply() {
-    if (creatures.length >= this.spriteConfig.maxCreatures) {
-      // Too many creatures, just dance instead
-      this.startAction("dance");
-      return;
-    }
-
+    // Convert multiplication into laying an egg (deferred hatching) with low chance
     if (Math.random() < this.spriteConfig.multiplyChance) {
-      setTimeout(() => {
-        this.createOffspring();
-      }, 500);
+      const eggs = parseInt(localStorage.getItem("diva.eggs") || "0", 10) || 0;
+      localStorage.setItem("diva.eggs", String(eggs + 1));
+      // Very small chance to hatch immediately
+      if (Math.random() < 0.1 && window.ShimejiFunctions) {
+        const spawns = [
+          window.ShimejiFunctions.spawnMiku,
+          window.ShimejiFunctions.spawnMikuAlt,
+          window.ShimejiFunctions.spawnMikuSketch,
+          window.ShimejiFunctions.spawnClassic,
+        ].filter(Boolean);
+        const f = spawns[Math.floor(Math.random() * spawns.length)];
+        if (typeof f === "function") f();
+      }
     }
 
     const config = this.spriteConfig.multiply;
@@ -749,23 +768,8 @@ class EnhancedCreature {
   }
 
   createOffspring() {
-    const newId = /*html*/ `${this.type}-offspring-${Date.now()}-${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
-    const offspring = new EnhancedCreature(newId, this.spriteConfig, this.type);
-
-    // Position near parent
-    offspring.position.x = Math.max(
-      0,
-      Math.min(this.maxPosX, this.position.x + (Math.random() - 0.5) * 100)
-    );
-    offspring.position.y = this.position.y;
-    offspring.direction = -this.direction;
-    offspring.updatePosition();
-    offspring.updateImageDirection();
-
-    creatures.push(offspring);
-    console.log(`New ${this.type} offspring created:`, newId);
+  // Deprecated: replaced by egg-based system
+  console.log("createOffspring is deprecated; using egg-based multiply.");
   }
 
   // NEW FEATURE: Mouse interaction
@@ -911,6 +915,9 @@ class EnhancedCreature {
     // Apply gravity if not grounded and not climbing
     if (!this.isGrounded && !this.isClimbing) {
       this.velocity.y += this.spriteConfig.gravity;
+      // clamp downward speed for gentler falls
+      const maxFall = this.spriteConfig.fallSpeed;
+      if (this.velocity.y > maxFall) this.velocity.y = maxFall;
     }
 
     // Update climbing physics
@@ -945,10 +952,14 @@ class EnhancedCreature {
         }
       }
 
-      if (this.state === "fall") {
-        // Land from fall
+      // Recover from fall or forced-walk intent
+      if (
+        this.state === "fall" ||
+        this.container.classList.contains("falling") ||
+        this.forceWalkAfter
+      ) {
         this.container.classList.remove("falling");
-        this.forceWalkAfter = true;
+        // keep forceWalkAfter so setNextAction triggers a short walk
         this.setNextAction();
       }
     } else if (this.position.y < this.maxPosY) {
@@ -1030,6 +1041,8 @@ function spawnCreatures() {
     : (() => {
         const c = new EnhancedCreature("classic-0", CLASSIC_CONFIG, "classic");
         creatures.push(c);
+  // ensure initial classic falls from the sky
+  setTimeout(() => c.triggerFall && c.triggerFall(), 0);
         return c;
       })();
 
