@@ -84,12 +84,12 @@
         pushRecent(key);
         const correct = it.en;
         const pool = deck.filter((x) => x !== it).map((x) => x.en);
-        const decoys = shuffle(pool).slice(0, decoyCount);
-        if (decoys.length < decoyCount) continue;
+        const Treats = shuffle(pool).slice(0, decoyCount);
+        if (Treats.length < decoyCount) continue;
         return {
           promptHtml: `<div style=\"font-size:26px;font-weight:900\">${it.jp}</div>`,
           correct,
-          options: shuffle([correct, ...decoys]),
+          options: shuffle([correct, ...Treats]),
         };
       }
     } else {
@@ -107,12 +107,12 @@
         const key = jp + correct;
         if (recent.includes(key)) continue;
         pushRecent(key);
-        const decoys = shuffle(senses.slice(1)).slice(0, decoyCount);
-        if (decoys.length < decoyCount) continue;
+        const Treats = shuffle(senses.slice(1)).slice(0, decoyCount);
+        if (Treats.length < decoyCount) continue;
         return {
           promptHtml: `<div style=\"font-size:26px;font-weight:900\">${jp}</div>`,
           correct,
-          options: shuffle([correct, ...decoys]),
+          options: shuffle([correct, ...Treats]),
         };
       }
     }

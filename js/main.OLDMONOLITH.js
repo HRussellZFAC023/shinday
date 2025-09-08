@@ -3924,7 +3924,7 @@ function initJpGames() {
   }
 
   async function getVocabQuestion(direction) {
-    // Force a 4-grid beatpad layout (3 decoys + 1 correct)
+    // Force a 4-grid beatpad layout (3 Treats + 1 correct)
     const preset = (window.Jukebox &&
       Jukebox.getPreset &&
       Jukebox.getPreset()) || { options: 4 };
@@ -3948,12 +3948,12 @@ function initJpGames() {
       if (recentVocab.includes(jp)) continue;
       if (direction === "jp-en") {
         const correct = en.trim();
-        const decoys = Array.from(
+        const Treats = Array.from(
           new Set(pickN(vocabCache.enDefs, decoyCount * 2, new Set([correct]))),
         )
           .filter((x) => x !== correct)
           .slice(0, decoyCount);
-        if (decoys.length < decoyCount) {
+        if (Treats.length < decoyCount) {
           await primeVocabPage(rnd(50) + 1);
           continue;
         }
@@ -3963,19 +3963,19 @@ function initJpGames() {
             reading || ""
           }</div>`,
           correct,
-          options: shuffle([correct, ...decoys]),
+          options: shuffle([correct, ...Treats]),
         };
       } else {
         const surface = (jp || reading).trim();
         const correct = surface;
-        const decoys = Array.from(
+        const Treats = Array.from(
           new Set(
             pickN(vocabCache.jpSurfaces, decoyCount * 2, new Set([correct])),
           ),
         )
           .filter((x) => x !== correct)
           .slice(0, decoyCount);
-        if (decoys.length < decoyCount) {
+        if (Treats.length < decoyCount) {
           await primeVocabPage(rnd(50) + 1);
           continue;
         }
@@ -3983,7 +3983,7 @@ function initJpGames() {
         return {
           promptHtml: `<div style=\"font-size:16px;opacity:.8\">Meaning:</div><div style=\"font-size:22px;font-weight:900\">${en}</div>`,
           correct,
-          options: shuffle([correct, ...decoys]),
+          options: shuffle([correct, ...Treats]),
         };
       }
     }
@@ -4018,7 +4018,7 @@ function initJpGames() {
   }
 
   async function getKanjiQuestion(mode) {
-    // Force a 4-grid beatpad layout (3 decoys + 1 correct)
+    // Force a 4-grid beatpad layout (3 Treats + 1 correct)
     const presetK = (window.Jukebox &&
       Jukebox.getPreset &&
       Jukebox.getPreset()) || { options: 4 };
@@ -4041,16 +4041,16 @@ function initJpGames() {
       if (mode === "meaning") {
         const correct = k;
         const pool = list.filter((x) => x !== k);
-        const decoys = pickN(pool, decoyCount * 2, new Set([correct])).slice(
+        const Treats = pickN(pool, decoyCount * 2, new Set([correct])).slice(
           0,
           decoyCount,
         );
-        if (decoys.length < decoyCount) continue;
+        if (Treats.length < decoyCount) continue;
         pushRecent(recentKanji, k);
         return {
           promptHtml: `<div style=\"opacity:.8\">Meaning:</div><div style=\"font-size:22px;font-weight:900\">${meaning}</div>`,
           correct,
-          options: shuffle([correct, ...decoys]),
+          options: shuffle([correct, ...Treats]),
         };
       } else {
         const readings = [...(d.kun_readings || []), ...(d.on_readings || [])]
@@ -6004,11 +6004,11 @@ function showSwallowMascotGame() {
   }
 
   // Check for bait on screen
-  const decoys = document.querySelectorAll(".decoy-treat");
-  if (decoys.length > 0 && Math.random() < 0.7) {
+  const Treats = document.querySelectorAll(".decoy-treat");
+  if (Treats.length > 0 && Math.random() < 0.7) {
     hasEatenBait = true;
     // Remove one bait
-    const randomDecoy = decoys[Math.floor(Math.random() * decoys.length)];
+    const randomDecoy = Treats[Math.floor(Math.random() * Treats.length)];
     randomDecoy.style.animation = "fadeOut 0.3s ease-out";
     setTimeout(() => randomDecoy.remove(), 300);
 

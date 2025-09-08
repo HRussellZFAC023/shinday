@@ -110,17 +110,17 @@
       if (mode === "meaning") {
         const correct = k;
         const pool = list.filter((x) => x !== k);
-        const decoys = pool
+        const Treats = pool
           .sort(() => Math.random() - 0.5)
           .slice(0, decoyCount * 2)
           .filter((x) => x !== correct)
           .slice(0, decoyCount);
-        if (decoys.length < decoyCount) continue;
+        if (Treats.length < decoyCount) continue;
         pushRecent(k);
         return {
           promptHtml: `<div style=\"opacity:.8\">Meaning:</div><div style=\"font-size:22px;font-weight:900\">${meaning}</div>`,
           correct,
-          options: shuffle([correct, ...decoys]),
+          options: shuffle([correct, ...Treats]),
         };
       } else {
         const readings = [...(d.kun_readings || []), ...(d.on_readings || [])]

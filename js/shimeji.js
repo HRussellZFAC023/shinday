@@ -1036,19 +1036,25 @@ class EnhancedCreature {
 function spawnCreatures() {
   const w = window.ShimejiFunctions || {};
 
-  const classic = w.spawnClassic
-    ? w.spawnClassic()
-    : (() => {
-        const c = new EnhancedCreature("classic-0", CLASSIC_CONFIG, "classic");
-        creatures.push(c);
-  // ensure initial classic falls from the sky
-  setTimeout(() => c.triggerFall && c.triggerFall(), 0);
-        return c;
-      })();
+
+    const configs = [
+      { cfg: MIKU_CONFIG, type: "miku" },
+      { cfg: MIKU_ALT_CONFIG, type: "miku-alt" },
+      { cfg: MIKU_SKETCH_CONFIG, type: "miku-sketch" },
+      { cfg: CLASSIC_CONFIG, type: "classic" },
+    ];
+    //Math. random() * (max - min) + min
+    const random =  Math.floor(Math.random() * configs.length);
+    const pick = configs[random];
+    const c = new EnhancedCreature("init-0", pick.cfg, pick.type);
+    creatures.push(c);
+    setTimeout(() => c.triggerFall && c.triggerFall(), 0);
+  // }
 
 
   const eggs = parseInt(localStorage.getItem("diva.eggs") || "0", 10);
-  const toSpawn =  (isNaN(eggs) ? 0 : eggs);
+  const extras = parseInt(localStorage.getItem("diva.extraShimejis") || "0", 10);
+  const toSpawn = (isNaN(eggs) ? 0 : eggs) + (isNaN(extras) ? 0 : extras);
   const spawns = [
     w.spawnMiku,
     w.spawnMikuAlt,
@@ -1060,7 +1066,6 @@ function spawnCreatures() {
     if (typeof f === "function") f();
   }
 
-  console.log(`Spawned ${creatures.length} enhanced companions`, { classic });
 }
 
 // Global functions for interaction

@@ -176,7 +176,7 @@ window.shop = (function () {
   <div class="item-icon"><img src="./assets/shield.png" class="shop-item-img"></div>
         <div class="item-info">
           <h3>${(ItemsC.shield && ItemsC.shield.title) || "Heart Shield"}</h3>
-          <p>${(ItemsC.shield && ItemsC.shield.description) || "Protect your precious hearts for 25 minutes!"}</p>
+          <p>${(ItemsC.shield && ItemsC.shield.description) || "Protect your Mikus for 25 minutes!"}</p>
           <div class="item-cost">
             <span class="cost-amount">${(ItemsC.shield && ItemsC.shield.cost) || 50}</span>
             <span class="cost-hearts">💖</span>
@@ -193,8 +193,8 @@ window.shop = (function () {
       decoyCard.innerHTML = `
   <div class="item-icon"><img src="./assets/cookie.png" class="shop-item-img"></div>
         <div class="item-info">
-          <h3>${(ItemsC.decoy && ItemsC.decoy.title) || "Sweet Decoys"}</h3>
-          <p>${(ItemsC.decoy && ItemsC.decoy.description) || "Distract threats with delicious treats!"}</p>
+          <h3>${(ItemsC.decoy && ItemsC.decoy.title) || "Sweet Treats"}</h3>
+          <p>${(ItemsC.decoy && ItemsC.decoy.description) || "Distract threats with delicious decoys!"}</p>
           <div class="item-cost">
             <span class="cost-amount">${(ItemsC.decoy && ItemsC.decoy.cost) || 5}</span>
             <span class="cost-hearts">💖</span>

@@ -2192,6 +2192,22 @@ main {
   margin: 15px 0;
 }
 
+/* When the memory grid is in a win state, let the win image occupy the full area */
+.memory-grid.won {
+  display: block;
+}
+.memory-win {
+  position: relative;
+  width: 100%;
+}
+.memory-win img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(43, 43, 68, 0.15);
+}
+
 .memory-stats {
   text-align: center;
   font-weight: 700;

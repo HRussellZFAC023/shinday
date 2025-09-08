@@ -220,11 +220,12 @@ window.hearts = (function () {
 
   // Swallower enemy (Kirby-like)
   function initSwallower() {
-    function scheduleNext(initial = false) {
+    function scheduleNext() {
       // Debug fast mode
       let delay;
-
-      delay = 1000 + Math.random() * (10 * 60 * 1000 - 1000); 
+      const minMs = 10 * 1000; // 10 seconds in milliseconds
+      const maxMs = 5 * 60 * 1000; // 5 minutes in milliseconds
+      delay = Math.random() * (maxMs - minMs) + minMs;
 
       setTimeout(spawnOne, delay);
     }
@@ -242,7 +243,8 @@ window.hearts = (function () {
         // randomize direction (true = L->R, false = R->L)
         const leftToRight = Math.random() < 0.5;
         const startX = leftToRight ? -80 : window.innerWidth + 80;
-        const face = leftToRight ? 1 : -1;
+  // Base asset chomps left; when moving left->right we flip horizontally so mouth faces travel
+  const face = leftToRight ? -1 : 1;
         img.style.cssText = `
           position: fixed;
           bottom: 0;
@@ -297,7 +299,23 @@ window.hearts = (function () {
           img.style.transform = `scaleX(${face}) translateY(${bob}px)`;
 
           // react to shimeji intersections frequently
-          tryIntersectReactions(img);
+          const collided = tryIntersectReactions(img);
+          // If collision and a Sweet Decoy is available, consume and neutralize immediately
+          try {
+            const shop = window.shop;
+            if (
+              collided &&
+              shop &&
+              typeof shop.getBaitCount === "function" &&
+              typeof shop.consumeBait === "function" &&
+              shop.getBaitCount() > 0
+            ) {
+              shop.consumeBait();
+              if (sfx && sfx.play) sfx.play("enemy.nom");
+              fadeOut();
+              return; // stop the animation loop; cleanup will run
+            }
+          } catch (_) {}
           if (p < 1) {
             raf = requestAnimationFrame(step);
           } else {
@@ -357,38 +375,7 @@ window.hearts = (function () {
             return;
           }
 
-          // try to eat hearts
-          const current = parseInt(
-            localStorage.getItem("pixelbelle-hearts") || "0",
-            10
-          );
-          if (current > 0) {
-            const loss = Math.min(500, current);
-            if (
-              window.hearts &&
-              typeof window.hearts.addHearts === "function"
-            ) {
-              window.hearts.addHearts(-loss);
-            } else {
-              localStorage.setItem("pixelbelle-hearts", String(current - loss));
-            }
-            if (sfx && sfx.play) {
-              sfx.play("swallow.chomp");
-              sfx.play("extra.wan");
-              sfx.play("extra.fx1");
-            }
-            // user feedback
-            if (
-              window.hearts &&
-              typeof window.hearts.loveToast === "function"
-            ) {
-              window.hearts.loveToast("You lost 500 💖!");
-            }
-            fadeOut();
-            return;
-          }
-
-          // no hearts: eat a shimeji
+          // Always eat a shimeji (never hearts)
           const sh = window.ShimejiFunctions;
           if (sh && typeof sh.removeRandom === "function") {
             const removed = sh.removeRandom();
@@ -469,11 +456,14 @@ window.hearts = (function () {
         ) {
           window.ShimejiFunctions.triggerMassFall();
         }
-      } catch (_) {}
+        return hit;
+      } catch (_) {
+        return false;
+      }
     }
 
-    // initial schedule (guaranteed within ~5–12s or faster in debug)
-    scheduleNext(true);
+    // initial schedule
+    scheduleNext();
 
     // Expose a manual trigger for testing
     if (!window.spawnSwallowerNow) {

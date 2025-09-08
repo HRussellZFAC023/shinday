@@ -404,13 +404,13 @@ const SITE_CONTENT = {
     items: {
       shield: {
         title: "Heart Shield",
-        description: "Protect your precious hearts and mikus for 5 minutes!",
+  description: "Protect your Mikus for 25 minutes!",
         cost: 50,
         icon: "⛨",
       },
       decoy: {
-        title: "Sweet Decoys",
-        description: "Distract threats with delicious treats!",
+        title: "Sweet Treats",
+        description: "Distract threats with delicious decoys!",
         cost: 5,
         icon: "🍪",
       },

@@ -164,11 +164,19 @@
               C.images.menuCovers &&
               C.images.menuCovers.kanji) ||
             "./assets/win.jpg";
-          memoryGrid.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;width:100%"><img src="${imgPath}" alt="You Win!" style="max-width:100%;height:auto;border-radius:10px;box-shadow:0 6px 18px rgba(43,43,68,0.15)"/></div>`;
+          memoryGrid.classList.add("won");
+          memoryGrid.innerHTML = `<div class="memory-win"><img src="${imgPath}" alt="You Win!"/></div>`;
 
-          window.hearts &&
-            window.hearts.addHearts &&
-            window.hearts.addHearts(1000);
+          // Reward based on difficulty: 4x4 → 1,000; 6x6 → 10,000
+          const reward = difficulty === "6x6" ? 10000 : 1000;
+          if (window.hearts && typeof window.hearts.addHearts === "function") {
+            window.hearts.addHearts(reward);
+          }
+          // Announce reward as a loveToast
+          if (window.hearts && typeof window.hearts.loveToast === "function") {
+            const amt = (reward && reward.toLocaleString) ? reward.toLocaleString() : String(reward);
+            window.hearts.loveToast(`You won! +${amt} 💖`);
+          }
           playWin();
 
           // Enhanced completion celebration
@@ -279,6 +287,7 @@
       firstCard = null;
       secondCard = null;
       boardLocked = false;
+  memoryGrid.classList.remove("won");
       if (totalEl()) totalEl().textContent = String(totalPairs);
       if (movesEl()) movesEl().textContent = "0";
       if (pairsEl()) pairsEl().textContent = "0";

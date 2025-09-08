@@ -797,7 +797,7 @@
   }
 
   // ===== WOD Deep Study (single-card + quick quiz) =====
-  const WOD_DECOYS = ['love', 'friend', 'car', 'food', 'music', 'sky', 'flower', 'river'];
+  const WOD_Treats = ['love', 'friend', 'car', 'food', 'music', 'sky', 'flower', 'river'];
   function startWODStudy() {
     state.mode = 'wod'; state.hint = false; state.hitboxes = [];
     ensureWodMeta();
@@ -812,7 +812,7 @@
     const options = [];
     if (w.meaning) options.push(w.meaning);
     while (options.length < 4) {
-      const d = WOD_DECOYS[Math.floor(Math.random() * WOD_DECOYS.length)];
+      const d = WOD_Treats[Math.floor(Math.random() * WOD_Treats.length)];
       if (!options.includes(d)) options.push(d);
     }
     const shuffled = options.slice();

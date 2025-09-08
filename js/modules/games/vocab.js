@@ -140,12 +140,12 @@
       if (recentVocab.includes(jp)) continue;
       if (direction === "jp-en") {
         const correct = en.trim();
-        const decoys = Array.from(
+        const Treats = Array.from(
           new Set(pickN(vocabCache.enDefs, decoyCount * 2, new Set([correct]))),
         )
           .filter((x) => x !== correct)
           .slice(0, decoyCount);
-        if (decoys.length < decoyCount) {
+        if (Treats.length < decoyCount) {
           await primeVocabPage(rnd(50) + 1);
           continue;
         }
@@ -153,18 +153,18 @@
         return {
           promptHtml: `<div style=\"font-size:22px;font-weight:900\">${jp}</div><div style=\"opacity:.8\">${reading || ""}</div>`,
           correct,
-          options: shuffle([correct, ...decoys]),
+          options: shuffle([correct, ...Treats]),
         };
       } else {
         const correct = (jp || reading).trim();
-        const decoys = Array.from(
+        const Treats = Array.from(
           new Set(
             pickN(vocabCache.jpSurfaces, decoyCount * 2, new Set([correct])),
           ),
         )
           .filter((x) => x !== correct)
           .slice(0, decoyCount);
-        if (decoys.length < decoyCount) {
+        if (Treats.length < decoyCount) {
           await primeVocabPage(rnd(50) + 1);
           continue;
         }
@@ -172,7 +172,7 @@
         return {
           promptHtml: `<div style=\"font-size:16px;opacity:.8\">Meaning:</div><div style=\"font-size:22px;font-weight:900\">${en}</div>`,
           correct,
-          options: shuffle([correct, ...decoys]),
+          options: shuffle([correct, ...Treats]),
         };
       }
     }
