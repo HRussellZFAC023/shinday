@@ -2,7 +2,7 @@
 // Configuration for different character types
 const MIKU_CONFIG = {
   basePath: "./assets/webmeji/miku",
-  maxFrames: 101,
+  maxFrames: 46,
   speed: 3,
   climbSpeed: 2,
   fallSpeed: 10,
@@ -131,7 +131,7 @@ const MIKU_CONFIG = {
 // Alternate Miku: uses alternative art set
 const MIKU_ALT_CONFIG = {
   basePath: "./assets/webmeji/Miku_alternitive",
-  maxFrames: 101,
+  maxFrames: 46,
   speed: 3,
   climbSpeed: 2,
   fallSpeed: 10,
@@ -258,7 +258,7 @@ const MIKU_ALT_CONFIG = {
 // Sketch Miku: uses sketch art set
 const MIKU_SKETCH_CONFIG = {
   basePath: "./assets/webmeji/Miku_sketch",
-  maxFrames: 101,
+  maxFrames: 46,
   speed: 3,
   climbSpeed: 2,
   fallSpeed: 10,
@@ -384,7 +384,7 @@ const MIKU_SKETCH_CONFIG = {
 
 const CLASSIC_CONFIG = {
   basePath: "./assets/webmeji/Shimeji",
-  maxFrames: 101,
+  maxFrames: 46,
   speed: 2,
   climbSpeed: 1.5,
   fallSpeed: 10,
@@ -791,7 +791,7 @@ class EnhancedCreature {
     };
 
   // Preload sprite frames up to declared max to avoid 404 spam
-  if (spriteConfig.basePath) __preloadFrames(spriteConfig.basePath, spriteConfig.maxFrames || 101);
+  if (spriteConfig.basePath) __preloadFrames(spriteConfig.basePath, spriteConfig.maxFrames || 46);
 
     // Physics properties
     this.position = {
