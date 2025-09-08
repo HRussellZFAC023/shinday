@@ -85,17 +85,9 @@ const MIKU_CONFIG = {
   ORIGINAL_ACTIONS: [
     "walk",
     "walk",
-    "walk",
-    "walk",
-    "walk",
-    "walk",
-    "walk",
-    "walk",
     "sit",
     "sit",
     "dance",
-    "dance",
-    "spin",
     "spin",
     "climb",
     "jump",
@@ -103,8 +95,8 @@ const MIKU_CONFIG = {
   ],
   // Interaction settings
   mouseReactionDistance: 100,
-  multiplyChance: 0.1, // 3% chance to multiply on certain actions
-  maxCreatures: 8,
+  multiplyChance: 0.02, // reduced chance to multiply
+  maxCreatures: 99,
 };
 
 // Alternate Miku: uses alternative art set
@@ -192,21 +184,17 @@ const MIKU_ALT_CONFIG = {
   ORIGINAL_ACTIONS: [
     "walk",
     "walk",
-    "walk",
-    "walk",
     "sit",
     "sit",
     "dance",
-    "dance",
-    "spin",
     "spin",
     "climb",
     "jump",
     "multiply",
   ],
   mouseReactionDistance: 100,
-  multiplyChance: 0.1,
-  maxCreatures: 8,
+  multiplyChance: 0.02,
+  maxCreatures: 99,
 };
 
 // Sketch Miku: uses sketch art set
@@ -294,21 +282,17 @@ const MIKU_SKETCH_CONFIG = {
   ORIGINAL_ACTIONS: [
     "walk",
     "walk",
-    "walk",
-    "walk",
     "sit",
     "sit",
     "dance",
-    "dance",
-    "spin",
     "spin",
     "climb",
     "jump",
     "multiply",
   ],
   mouseReactionDistance: 100,
-  multiplyChance: 0.1,
-  maxCreatures: 8,
+  multiplyChance: 0.02,
+  maxCreatures: 99,
 };
 
 const CLASSIC_CONFIG = {
@@ -395,10 +379,6 @@ const CLASSIC_CONFIG = {
   ORIGINAL_ACTIONS: [
     "walk",
     "walk",
-    "walk",
-    "walk",
-    "walk",
-    "walk",
     "sit",
     "sit",
     "dance",
@@ -408,8 +388,8 @@ const CLASSIC_CONFIG = {
     "multiply",
   ],
   mouseReactionDistance: 80,
-  multiplyChance: 0.1,
-  maxCreatures: 6,
+  multiplyChance: 0.02,
+  maxCreatures: 99,
 };
 
 // Global creatures array
@@ -532,20 +512,8 @@ class EnhancedCreature {
   resetAnimation() {
     clearInterval(this.frameTimer);
     clearTimeout(this.actionCompletionTimer);
-    this.currentFrame = 0;
     this.frameTimer = null;
     this.actionCompletionTimer = null;
-
-    // Remove animation classes
-    this.container.classList.remove(
-      "walking",
-      "climbing",
-      "falling",
-      "jumping",
-      "scared",
-      "happy",
-      "multiplying",
-    );
   }
 
   setNextAction() {
@@ -576,7 +544,7 @@ class EnhancedCreature {
     this.state = "walk";
     this.container.classList.add("walking");
     this.playAnimation(frames, interval, walkCycles, () =>
-      this.setNextAction(),
+      this.setNextAction()
     );
   }
 
@@ -733,6 +701,7 @@ class EnhancedCreature {
     // Takeoff footstep
 
     if (window.SFX) window.SFX.play("foot.step");
+    if (window.SFX && Math.random() < 0.3) window.SFX.play("extra.yo");
 
     const config = this.spriteConfig.jump;
     this.playAnimation(config.frames, config.interval, config.loops, () => {
@@ -742,6 +711,7 @@ class EnhancedCreature {
 
   // NEW FEATURE: Falling from sky
   triggerFall() {
+    this.forceWalkAfter = true;
     this.position.y = -this.containerHeight;
     this.velocity.y = 0;
     this.isGrounded = false;
@@ -751,6 +721,7 @@ class EnhancedCreature {
     this.playAnimation(config.frames, config.interval, 1, () => {
       // Fall animation plays while physics handles the movement
     });
+    if (window.SFX && Math.random() < 0.3) window.SFX.play("extra.wan");
   }
 
   // NEW FEATURE: Multiplication
@@ -772,6 +743,9 @@ class EnhancedCreature {
       this.forceWalkAfter = true;
       this.setNextAction();
     });
+
+    if (window.SFX && Math.random() < 0.3) window.SFX.play("extra.kya");
+    localStorage.setItem("diva.extraShimejis", creatures.length + 1);
   }
 
   createOffspring() {
@@ -783,7 +757,7 @@ class EnhancedCreature {
     // Position near parent
     offspring.position.x = Math.max(
       0,
-      Math.min(this.maxPosX, this.position.x + (Math.random() - 0.5) * 100),
+      Math.min(this.maxPosX, this.position.x + (Math.random() - 0.5) * 100)
     );
     offspring.position.y = this.position.y;
     offspring.direction = -this.direction;
@@ -803,7 +777,7 @@ class EnhancedCreature {
 
     const distance = Math.sqrt(
       Math.pow(mousePos.x - (this.position.x + this.containerWidth / 2), 2) +
-        Math.pow(mousePos.y - (this.position.y + this.containerHeight / 2), 2),
+        Math.pow(mousePos.y - (this.position.y + this.containerHeight / 2), 2)
     );
 
     if (distance < this.spriteConfig.mouseReactionDistance) {
@@ -1051,38 +1025,6 @@ class EnhancedCreature {
 function spawnCreatures() {
   const w = window.ShimejiFunctions || {};
 
-  const miku = w.spawnMiku
-    ? w.spawnMiku()
-    : (() => {
-        const c = new EnhancedCreature("miku-0", MIKU_CONFIG, "miku");
-        creatures.push(c);
-        return c;
-      })();
-
-  const mikuAlt = w.spawnMikuAlt
-    ? w.spawnMikuAlt()
-    : (() => {
-        const c = new EnhancedCreature(
-          "miku-alt-0",
-          MIKU_ALT_CONFIG,
-          "miku-alt",
-        );
-        creatures.push(c);
-        return c;
-      })();
-
-  const mikuSketch = w.spawnMikuSketch
-    ? w.spawnMikuSketch()
-    : (() => {
-        const c = new EnhancedCreature(
-          "miku-sketch-0",
-          MIKU_SKETCH_CONFIG,
-          "miku-sketch",
-        );
-        creatures.push(c);
-        return c;
-      })();
-
   const classic = w.spawnClassic
     ? w.spawnClassic()
     : (() => {
@@ -1091,10 +1033,19 @@ function spawnCreatures() {
         return c;
       })();
 
+  const extra = parseInt(localStorage.getItem("diva.extraShimejis") || "0", 10);
+  const spawns = [
+    w.spawnMiku,
+    w.spawnMikuAlt,
+    w.spawnMikuSketch,
+    w.spawnClassic,
+  ].filter(Boolean);
+  for (let i = 0; i < extra; i++) {
+    const f = spawns[Math.floor(Math.random() * spawns.length)];
+    if (f) f();
+  }
+
   console.log(`Spawned ${creatures.length} enhanced companions`, {
-    miku,
-    mikuAlt,
-    mikuSketch,
     classic,
   });
 }
@@ -1106,7 +1057,7 @@ window.ShimejiFunctions = {
       const miku = new EnhancedCreature(
         `miku-${Date.now()}`,
         MIKU_CONFIG,
-        "miku",
+        "miku"
       );
       creatures.push(miku);
 
@@ -1133,7 +1084,7 @@ window.ShimejiFunctions = {
       const miku = new EnhancedCreature(
         `miku-alt-${Date.now()}`,
         MIKU_ALT_CONFIG,
-        "miku-alt",
+        "miku-alt"
       );
       creatures.push(miku);
       return miku;
@@ -1145,7 +1096,7 @@ window.ShimejiFunctions = {
       const miku = new EnhancedCreature(
         `miku-sketch-${Date.now()}`,
         MIKU_SKETCH_CONFIG,
-        "miku-sketch",
+        "miku-sketch"
       );
       creatures.push(miku);
       return miku;
@@ -1158,7 +1109,7 @@ window.ShimejiFunctions = {
       const classic = new EnhancedCreature(
         `classic-${Date.now()}`,
         CLASSIC_CONFIG,
-        "classic",
+        "classic"
       );
       creatures.push(classic);
       return classic;

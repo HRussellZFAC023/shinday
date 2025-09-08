@@ -21,12 +21,12 @@ window.shop = (function () {
     const body = document.body;
     const vw = Math.max(
       document.documentElement.clientWidth,
-      window.innerWidth || 0,
+      window.innerWidth || 0
     );
     for (let i = 0; i < n; i++) {
       const d = document.createElement("div");
       d.className = "decoy-treat";
-      d.textContent = Math.random() < 0.5 ? "🍪" : "🍭";
+      d.innerHTML = '<img src="./assets/cookie.png" class="decoy-img">';
       d.style.left = Math.random() * (vw - 50) + "px";
       d.style.animation = `decoyFloat ${
         6000 + Math.random() * 2000
@@ -40,6 +40,8 @@ window.shop = (function () {
     parseInt(localStorage.getItem("diva.shield.until") || "0", 10) || 0;
   // timestamp when decoy/bait is considered active (ms)
   let baitUntil = 0;
+  let potionUntil =
+    parseInt(localStorage.getItem("diva.potion.until") || "0", 10) || 0;
   function activateHeartShield(ms = 3000) {
     shieldUntil = Date.now() + ms;
     localStorage.setItem("diva.shield.until", String(shieldUntil));
@@ -81,6 +83,42 @@ window.shop = (function () {
     }, ms);
     if (SFX && SFX.play) SFX.play("extra.fx1");
   }
+
+  function activateXPPotion(ms = 1000 * 60 * 15) {
+    potionUntil = Date.now() + ms;
+    localStorage.setItem("diva.potion.until", String(potionUntil));
+
+    let overlay = document.getElementById("potionGlowOverlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "potionGlowOverlay";
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: radial-gradient(circle, rgba(255,105,180,0.15) 0%, rgba(255,105,180,0.05) 70%, transparent 100%);
+        border: 1px solid rgba(255,105,180,0.6);
+        box-shadow: inset 0 0 30px rgba(255,105,180,0.4), 0 0 20px rgba(255,105,180,0.3);
+        pointer-events: none;
+        z-index: 9998;
+        animation: potionPulse 2s ease-in-out infinite alternate;
+      `;
+      document.body.appendChild(overlay);
+      if (!document.getElementById("potionGlowStyles")) {
+        const style = document.createElement("style");
+        style.id = "potionGlowStyles";
+        style.textContent = `@keyframes potionPulse {0%{opacity:0.8;}100%{opacity:1;}}`;
+        document.head.appendChild(style);
+      }
+    }
+    overlay.style.display = "block";
+    setTimeout(() => {
+      overlay.style.display = "none";
+    }, ms);
+    if (SFX && SFX.play) SFX.play("extra.fx1");
+  }
   function initShop() {
     const shopPanel = document.querySelector(".shop-panel");
     const C = window.SITE_CONTENT || {};
@@ -107,8 +145,12 @@ window.shop = (function () {
         </div>
         <div class="miku-speech-bubble">
           <div class="speech-content">
-    <div class="welcome-text">${ShopC.headerWelcome || "いらっしゃいませ〜！"}</div>
-    <div class="welcome-subtitle">${ShopC.headerSubtitle || "Welcome to my shop! ✨"}</div>
+    <div class="welcome-text">${
+      ShopC.headerWelcome || "いらっしゃいませ〜！"
+    }</div>
+    <div class="welcome-subtitle">${
+      ShopC.headerSubtitle || "Welcome to my shop! ✨"
+    }</div>
           </div>
           <div class="speech-tail"></div>
         </div>
@@ -123,12 +165,20 @@ window.shop = (function () {
       shieldCard.className = "miku-item-card shield-card";
       shieldCard.id = "shopShield";
       shieldCard.innerHTML = `
-        <div class="item-icon">${(ItemsC.shield && ItemsC.shield.icon) || "⛨"}</div>
+        <div class="item-icon">        <div class="item-icon">${
+          (ItemsC.shield && ItemsC.shield.icon) || "⛨"
+        }</div>
+</div>
         <div class="item-info">
           <h3>${(ItemsC.shield && ItemsC.shield.title) || "Heart Shield"}</h3>
-          <p>${(ItemsC.shield && ItemsC.shield.description) || "Protect your precious hearts for 5 minutes!"}</p>
+          <p>${
+            (ItemsC.shield && ItemsC.shield.description) ||
+            "Protect your precious hearts for 5 minutes!"
+          }</p>
           <div class="item-cost">
-            <span class="cost-amount">${(ItemsC.shield && ItemsC.shield.cost) || 50}</span>
+            <span class="cost-amount">${
+              (ItemsC.shield && ItemsC.shield.cost) || 50
+            }</span>
             <span class="cost-hearts">💖</span>
           </div>
         </div>
@@ -141,12 +191,63 @@ window.shop = (function () {
       decoyCard.className = "miku-item-card decoy-card";
       decoyCard.id = "shopDecoy";
       decoyCard.innerHTML = `
-        <div class="item-icon">${(ItemsC.decoy && ItemsC.decoy.icon) || "🍪"}</div>
+        <div class="item-icon"><img src="./assets/cookie.png" class="shop-item-img"></div>
         <div class="item-info">
           <h3>${(ItemsC.decoy && ItemsC.decoy.title) || "Sweet Decoys"}</h3>
-          <p>${(ItemsC.decoy && ItemsC.decoy.description) || "Distract threats with delicious treats!"}</p>
+          <p>${
+            (ItemsC.decoy && ItemsC.decoy.description) ||
+            "Distract threats with delicious treats!"
+          }</p>
           <div class="item-cost">
-            <span class="cost-amount">${(ItemsC.decoy && ItemsC.decoy.cost) || 5}</span>
+            <span class="cost-amount">${
+              (ItemsC.decoy && ItemsC.decoy.cost) || 5
+            }</span>
+            <span class="cost-hearts">💖</span>
+          </div>
+        </div>
+        <div class="item-glow"></div>
+        <div class="purchase-effect"></div>
+      `;
+
+      // Create XP potion item card
+      const potionCard = document.createElement("div");
+      potionCard.className = "miku-item-card potion-card";
+      potionCard.id = "shopPotion";
+      potionCard.innerHTML = `
+        <div class="item-icon"><img src="./assets/xp_potion.png" class="shop-item-img"></div>
+        <div class="item-info">
+          <h3>${(ItemsC.potion && ItemsC.potion.title) || "XP Potion"}</h3>
+          <p>${
+            (ItemsC.potion && ItemsC.potion.description) ||
+            "Double heart gains for 15 minutes"
+          }</p>
+          <div class="item-cost">
+            <span class="cost-amount">${
+              (ItemsC.potion && ItemsC.potion.cost) || 100
+            }</span>
+            <span class="cost-hearts">💖</span>
+          </div>
+        </div>
+        <div class="item-glow"></div>
+        <div class="purchase-effect"></div>
+      `;
+
+      // Create egg item card
+      const eggCard = document.createElement("div");
+      eggCard.className = "miku-item-card egg-card";
+      eggCard.id = "shopEgg";
+      eggCard.innerHTML = `
+        <div class="item-icon"><img src="./assets/egg.png" class="shop-item-img"></div>
+        <div class="item-info">
+          <h3>${(ItemsC.egg && ItemsC.egg.title) || "Mystery Egg"}</h3>
+          <p>${
+            (ItemsC.egg && ItemsC.egg.description) ||
+            "Hatches a random new companion"
+          }</p>
+          <div class="item-cost">
+            <span class="cost-amount">${
+              (ItemsC.egg && ItemsC.egg.cost) || 1000
+            }</span>
             <span class="cost-hearts">💖</span>
           </div>
         </div>
@@ -156,6 +257,8 @@ window.shop = (function () {
 
       itemsContainer.appendChild(shieldCard);
       itemsContainer.appendChild(decoyCard);
+      itemsContainer.appendChild(potionCard);
+      itemsContainer.appendChild(eggCard);
 
       // Create status area
       const statusArea = document.createElement("div");
@@ -172,6 +275,8 @@ window.shop = (function () {
     // Get references to new elements
     const newBtnDecoy = document.getElementById("shopDecoy");
     const newBtnShield = document.getElementById("shopShield");
+    const newBtnPotion = document.getElementById("shopPotion");
+    const newBtnEgg = document.getElementById("shopEgg");
     const newStatus = document.getElementById("shopStatus");
 
     // Hide status overlay initially
@@ -195,7 +300,7 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
               "野菜ジュースを先に飲んで！🥤",
-              1800,
+              1800
             );
           }
           return;
@@ -218,7 +323,7 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
               "美味しいおとりを配置したよ！🍪✨",
-              1500,
+              1500
             );
           }
         } else {
@@ -229,16 +334,16 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
               "💖が足りないよ〜もっと集めて！",
-              1200,
+              1200
             );
           }
         }
       });
     }
 
-  if (newBtnShield) {
+    if (newBtnShield) {
       newBtnShield.addEventListener("click", () => {
-    const cost = (ItemsC.shield && ItemsC.shield.cost) || 50;
+        const cost = (ItemsC.shield && ItemsC.shield.cost) || 50;
         const now = Date.now();
 
         // Check if any item is currently active
@@ -250,7 +355,7 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
               "野菜ジュースを先に飲んで！🥤",
-              1800,
+              1800
             );
           }
           return;
@@ -271,7 +376,7 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeAllSpeak) {
             window.ShimejiFunctions.makeAllSpeak(
               "最強のシールドが発動！⛨✨💖",
-              2000,
+              2000
             );
           }
         } else {
@@ -282,9 +387,78 @@ window.shop = (function () {
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
               "💖がもっと必要だよ〜頑張って！",
-              1300,
+              1300
             );
           }
+        }
+      });
+    }
+
+    if (newBtnPotion) {
+      newBtnPotion.addEventListener("click", () => {
+        const cost = (ItemsC.potion && ItemsC.potion.cost) || 100;
+        const now = Date.now();
+        if (potionUntil > now) {
+          playDeniedAnimation(newBtnPotion);
+          if (newStatus) newStatus.textContent = "Potion already active!";
+          if (SFX && SFX.play) SFX.play("ui.unavailable");
+          return;
+        }
+        if (getHearts() >= cost) {
+          playPurchaseAnimation(newBtnPotion);
+          spendHearts(cost);
+          activateXPPotion();
+          ensureItemsOverlay();
+          if (newStatus) newStatus.textContent = "XP Potion activated! ✨";
+          updateItemsOverlay();
+          if (SFX && SFX.play) SFX.play("extra.fx2");
+          if (window.ShimejiFunctions?.makeRandomSpeak) {
+            window.ShimejiFunctions.makeRandomSpeak(
+              "経験値ポーションで2倍だよ！✨",
+              1800
+            );
+          }
+        } else {
+          playDeniedAnimation(newBtnPotion);
+          if (newStatus) newStatus.textContent = "Not enough hearts! 💔";
+          if (SFX && SFX.play) SFX.play("ui.unavailable");
+        }
+      });
+    }
+
+    if (newBtnEgg) {
+      newBtnEgg.addEventListener("click", () => {
+        const cost = (ItemsC.egg && ItemsC.egg.cost) || 1000;
+        if (getHearts() >= cost) {
+          playPurchaseAnimation(newBtnEgg);
+          spendHearts(cost);
+          if (newStatus) newStatus.textContent = "Oh, it's hatching!?";
+          if (SFX && SFX.play) SFX.play("extra.yo");
+          if (window.ShimejiFunctions?.makeRandomSpeak)
+            window.ShimejiFunctions.makeRandomSpeak(
+              "Oh, it's hatching!?",
+              2000
+            );
+          if (window.ShimejiFunctions) {
+            const spawns = [
+              window.ShimejiFunctions.spawnMiku,
+              window.ShimejiFunctions.spawnMikuAlt,
+              window.ShimejiFunctions.spawnMikuSketch,
+              window.ShimejiFunctions.spawnClassic,
+            ].filter(Boolean);
+            const f = spawns[Math.floor(Math.random() * spawns.length)];
+            if (f) f();
+            const count =
+              parseInt(localStorage.getItem("diva.extraShimejis") || "0", 10) +
+              1;
+            localStorage.setItem("diva.extraShimejis", String(count));
+          }
+          updateItemsOverlay();
+        } else {
+          playDeniedAnimation(newBtnEgg);
+          if (newStatus)
+            newStatus.textContent = "Need more hearts for the egg!";
+          if (SFX && SFX.play) SFX.play("ui.unavailable");
         }
       });
     }
@@ -444,11 +618,20 @@ window.shop = (function () {
       }
       
       .item-icon {
-        font-size: 18px;
         margin-bottom: 6px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         animation: iconBob 2s ease-in-out infinite;
       }
-      
+
+      .shop-item-img {
+        width: 32px;
+        height: 32px;
+        image-rendering: pixelated;
+      }
+
       @keyframes iconBob {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-2px); }
@@ -624,6 +807,7 @@ window.shop = (function () {
     const now = Date.now();
     const shieldActive = shieldUntil > now;
     const baitActive = baitUntil > now;
+    const potionActive = potionUntil > now;
 
     const base =
       "transition:opacity .35s ease;opacity:0;display:inline-flex;gap:6px;align-items:center;font-weight:800;color:#2b2b44;";
@@ -633,7 +817,8 @@ window.shop = (function () {
       const s = document.createElement("span");
       s.id = "itemsOverlayShield";
       s.style.cssText = base;
-      s.innerHTML = '⛨ <span class="label"></span>';
+      s.innerHTML =
+        '<img src="./assets/shield.png" style="width:16px;height:16px;image-rendering:pixelated;"> <span class="label"></span>';
       ov.appendChild(s);
     } else if (!shieldActive && shieldEl) {
       shieldEl.remove();
@@ -645,10 +830,24 @@ window.shop = (function () {
       const b = document.createElement("span");
       b.id = "itemsOverlayBait";
       b.style.cssText = base;
-      b.innerHTML = '🍪 <span class="label"></span>';
+      b.innerHTML =
+        '<img src="./assets/cookie.png" style="width:16px;height:16px;image-rendering:pixelated;"> <span class="label"></span>';
       ov.appendChild(b);
     } else if (!baitActive && baitEl) {
       baitEl.remove();
+    }
+
+    // manage potion element
+    const potionEl = document.getElementById("itemsOverlayPotion");
+    if (potionActive && !potionEl) {
+      const pEl = document.createElement("span");
+      pEl.id = "itemsOverlayPotion";
+      pEl.style.cssText = base;
+      pEl.innerHTML =
+        '<img src="./assets/xp_potion.png" style="width:16px;height:16px;image-rendering:pixelated;"> <span class="label"></span>';
+      ov.appendChild(pEl);
+    } else if (!potionActive && potionEl) {
+      potionEl.remove();
     }
 
     return ov;
@@ -660,13 +859,15 @@ window.shop = (function () {
     const ov = document.getElementById("itemsStatusOverlay");
     const shieldEl = document.getElementById("itemsOverlayShield");
     const baitEl = document.getElementById("itemsOverlayBait");
+    const potionEl = document.getElementById("itemsOverlayPotion");
 
     const now = Date.now();
     const shieldLeft = Math.max(0, shieldUntil - now);
     const baitLeft = Math.max(0, baitUntil - now);
+    const potionLeft = Math.max(0, potionUntil - now);
 
     // decide visibility
-    const anyActive = shieldLeft > 0 || baitLeft > 0;
+    const anyActive = shieldLeft > 0 || baitLeft > 0 || potionLeft > 0;
     if (!ov) return;
     ov.style.display = anyActive ? "block" : "none";
 
@@ -696,16 +897,31 @@ window.shop = (function () {
         baitEl.style.opacity = "0";
       }
     }
+
+    if (potionEl) {
+      const inner = potionEl.querySelector(".label");
+      if (potionLeft > 0) {
+        const mm = Math.floor(potionLeft / 60000);
+        const ss = Math.floor((potionLeft % 60000) / 1000);
+        inner.textContent = mm > 0 ? `${mm}m ${ss}s` : `${ss}s`;
+        potionEl.style.opacity = "1";
+      } else {
+        inner.textContent = "";
+        potionEl.style.opacity = "0";
+      }
+    }
   }
 
   // expose some functions for other modules to check timers
   if (typeof window !== "undefined") {
     window.__heartShieldUntil = shieldUntil;
     window.__baitUntil = baitUntil;
+    window.__potionUntil = potionUntil;
     // keep a simple updater in case other modules read the globals
     setInterval(() => {
       window.__heartShieldUntil = shieldUntil;
       window.__baitUntil = baitUntil;
+      window.__potionUntil = potionUntil;
     }, 500);
   }
 

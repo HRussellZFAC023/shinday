@@ -99,6 +99,8 @@ window.hearts = (function () {
   }
 
   function addHearts(amount) {
+    const pot = parseInt(localStorage.getItem("diva.potion.until") || "0", 10);
+    if (Date.now() < pot) amount *= 2;
     heartCount = Math.max(0, heartCount + amount);
     localStorage.setItem("pixelbelle-hearts", heartCount);
     updateCounters();
@@ -127,7 +129,6 @@ window.hearts = (function () {
     const counterEl = document.getElementById("heartCount");
     if (counterEl) createSparkleEffect(counterEl);
     burstHeartsAndStars(Math.min(8, 2 + amount * 2));
-    shimejiCelebrate(amount);
   }
 
   function loadSavedData() {
@@ -152,6 +153,7 @@ window.hearts = (function () {
         const rect = heartBtn.getBoundingClientRect();
         createFloatingHeart(rect.left + heartBtn.offsetWidth / 2, rect.top);
         createSparkleEffect(heartBtn);
+        shimejiCelebrate();
       });
     }
   }
@@ -195,16 +197,15 @@ window.hearts = (function () {
   }
 
   function initPassiveHearts() {
-    // Only grant passive hearts if shimejis are active and marked as passive
-    let grantAt = Date.now() + 180000; // 3 minutes
+    // Only grant passive hearts if shimejis are active
     setInterval(() => {
-      const active =
+      const count =
         window.ShimejiFunctions &&
-        window.ShimejiFunctions.getCreatureCount &&
-        window.ShimejiFunctions.getCreatureCount() > 0;
-      if (active && Date.now() >= grantAt) {
-        addHearts(1);
-        grantAt = Date.now() + 180000;
+        window.ShimejiFunctions.getCreatureCount
+          ? window.ShimejiFunctions.getCreatureCount()
+          : 0;
+      if (count > 0) {
+        addHearts(count);
       }
     }, 15000);
   }

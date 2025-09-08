@@ -5146,10 +5146,15 @@ main {
 .decoy-treat {
   position: fixed;
   top: 20%;
-  font-size: 24px;
   z-index: 9996;
   pointer-events: none;
   animation: decoyFloat 6s linear forwards;
+}
+
+.decoy-treat .decoy-img {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
 }
 
 @keyframes decoyFloat {
