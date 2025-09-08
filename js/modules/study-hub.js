@@ -113,6 +113,11 @@
         panel.querySelector('.counts').textContent=
           `COOL ${this.stats.cool} • GREAT ${this.stats.great} • FINE ${this.stats.fine} • MISS ${this.stats.miss}`;
         panel.querySelector('.reward').textContent=`+${r.reward.toLocaleString()} 💖`;
+        const rings=panel.querySelector('.result-rings');
+        if(rings){
+          const clone=rings.cloneNode(true);
+          rings.replaceWith(clone);
+        }
         panel.style.display='block';
       }
     },

@@ -160,6 +160,14 @@
       fb.textContent = j;
       fb.style.color = j === "MISS" ? "#c00" : "#2b2b44";
     }
+    const hitbar = document.getElementById("typingHitbar");
+    if (hitbar) {
+      createRingEffect && createRingEffect(hitbar, j !== "MISS");
+      if (j === "COOL") {
+        createPerfectHitEffect &&
+          createPerfectHitEffect(hitbar, "#a594f9");
+      }
+    }
     if (j === "MISS") {
       STATE.combo = 0;
 

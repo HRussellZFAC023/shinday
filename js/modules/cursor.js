@@ -137,12 +137,17 @@
             ".hero-miku, .splash-miku, .float-miku, .shrine-image, #shrineMiku, #heroMiku, #splashMiku, .avatar, .friend-avatar",
             roleToFile.person,
           ),
+          // Use the hand/person animated cursor when hovering/grabbing shimeji containers
+          applyAni(
+            ".webmeji-container",
+            roleToFile.alternate,
+          ),
           applyAni(
             ".help, [title], .widget h3, .status-item, .hud-line",
             roleToFile.help,
           ),
           applyAni(
-            '[draggable="true"], .draggable, .movable, .Wish-card.matched',
+            '[draggable="true"], .draggable, .movable, .Wish-card.matched .shimeji',
             roleToFile.move,
           ),
           applyAni(

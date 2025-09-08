@@ -97,12 +97,27 @@
     if (vocabCache.pages.length > 6) vocabCache.pages.shift();
     return arr;
   }
+  function ensureVocabCache() {
+    // Keep a deeper pool of prefetched vocab to prevent question stalls
+    if (vocabCache.pages.length < 5)
+      primeVocabPage(rnd(50) + 1).catch(() => {});
+    if (
+      vocabCache.enDefs.size < 80 ||
+      vocabCache.jpSurfaces.size < 80
+    )
+      primeVocabPage(rnd(50) + 1).catch(() => {});
+  }
   // Preload a couple of pages up front to reduce question stalls
   (async () => {
     try {
+      // Warm the cache with several pages so the first rounds never stall
+      await primeVocabPage(rnd(50) + 1);
+      await primeVocabPage(rnd(50) + 1);
       await primeVocabPage(rnd(50) + 1);
       await primeVocabPage(rnd(50) + 1);
     } catch (_) {}
+    ensureVocabCache();
+    setInterval(ensureVocabCache, 30000);
   })();
 
   function pickN(setLike, n, avoid = new Set()) {
@@ -127,6 +142,7 @@
   }
 
   async function getVocabQuestion(direction) {
+    ensureVocabCache();
     const preset = (window.Jukebox &&
       Jukebox.getPreset &&
       Jukebox.getPreset()) || { options: 4 };
@@ -159,6 +175,7 @@
           continue;
         }
         pushRecent(jp);
+        ensureVocabCache();
         return {
           promptHtml: `<div style=\"font-size:22px;font-weight:900\">${jp}</div><div style=\"opacity:.8\">${reading || ""}</div>`,
           correct,
@@ -178,6 +195,7 @@
           continue;
         }
         pushRecent(jp);
+        ensureVocabCache();
         return {
           promptHtml: `<div style=\"font-size:16px;opacity:.8\">Meaning:</div><div style=\"font-size:22px;font-weight:900\">${en}</div>`,
           correct,
@@ -332,17 +350,30 @@
       tId = null;
     }
     const isCorrect = text === correct;
-    let judge;
+    const dt = Date.now() - startAt;
+    let judge = "MISS";
+    let v = 2,
+      sc = 50;
     if (isCorrect) {
-      createRingEffect && createRingEffect(element, true);
-
-      if (style && style.isPerfect) {
-        createPerfectHitEffect && createPerfectHitEffect(element, style.color);
-
+      judge = "FINE";
+      if ((style && style.isPerfect) || dt <= 600) {
+        judge = "COOL";
+        v = 4;
+        sc = 100;
+      } else if (dt <= 1400) {
+        judge = "GREAT";
+        v = 3;
+        sc = 70;
+      }
+    }
+    createRingEffect && createRingEffect(element, isCorrect);
+    if (isCorrect) {
+      if (judge === "COOL") {
+        createPerfectHitEffect &&
+          createPerfectHitEffect(element, style && style.color);
         if (window.showDivaFeedback)
           showDivaFeedback("vocabFeedback", "✨ PERFECT! ✨", true);
         else if (fbEl) fbEl.textContent = "✨ PERFECT! ✨";
-
         awardHearts && awardHearts(2);
       } else {
         if (window.showDivaFeedback)
@@ -350,7 +381,6 @@
         else if (fbEl) {
           fbEl.textContent = "✅ Correct!";
         }
-
         awardHearts && awardHearts(1);
       }
       if (fbEl) fbEl.style.color = "#2b2b44";
@@ -362,32 +392,16 @@
       if (streak > 1) loveToast && loveToast(`コンボ x${streak}!`);
       createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak);
 
-      const mult = (function () {
-        return diffParams().mult;
-      })();
-      const rmult = (function () {
-        return getRhythmMult();
-      })();
+      const mult = diffParams().mult;
+      const rmult = getRhythmMult();
       const gain = (12 + Math.min(15, (streak - 1) * 2)) * mult * rmult;
 
-      addXP && addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
+      addXP && addXP(Math.round(judge === "COOL" ? gain * 1.5 : gain));
 
-      const dt = Date.now() - startAt;
-      judge = "FINE";
-      let v = 2,
-        sc = 50;
-      if ((style && style.isPerfect) || dt <= 600) {
-        judge = "COOL";
-        v = 4;
-        sc = 100;
-
+      if (judge === "COOL") {
         HUD && HUD.counts && HUD.counts.COOL++;
         party && party("vocabCard");
-      } else if (dt <= 1400) {
-        judge = "GREAT";
-        v = 3;
-        sc = 70;
-
+      } else if (judge === "GREAT") {
         HUD && HUD.counts && HUD.counts.GREAT++;
       } else {
         HUD && HUD.counts && HUD.counts.FINE++;
@@ -404,14 +418,11 @@
         HUD && (HUD.score += Math.round(sc * mult * rmult * sm));
       }
 
-      // Zap any active swallower on correct
-
       window.zapSwallower && window.zapSwallower();
 
       if (isTimed()) {
-        const elapsed = Date.now() - startAt;
-        if (!bestTime || elapsed < bestTime) {
-          bestTime = elapsed;
+        if (!bestTime || dt < bestTime) {
+          bestTime = dt;
 
           localStorage.setItem("vocab.bestTime", String(bestTime));
 
@@ -420,8 +431,6 @@
         }
       }
     } else {
-      createRingEffect && createRingEffect(element, false);
-
       if (window.showDivaFeedback)
         showDivaFeedback("vocabFeedback", `❌ ${correct}`, false);
       else if (fbEl) {
@@ -437,7 +446,7 @@
       resetCombo && resetCombo();
       loseLife && loseLife("vocabCard");
     }
-    window.StudyHub && StudyHub.registerAnswer(isCorrect, isCorrect ? judge : 'MISS');
+    window.StudyHub && StudyHub.registerAnswer(isCorrect, judge);
     setTimeout(loadRound, 900);
     return isCorrect;
   }

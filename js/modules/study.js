@@ -25,6 +25,7 @@
           <div class="meaning">${wod.meaning || ""}</div>
         </div>
       </div>
+      <div class="study-card widget" id="questsWidget" style="grid-column:1 / -1;"></div>
       <!-- Game selection tiles (landing view) -->
       <div class="study-card" id="gameTiles" style="grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
         <button class="pixel-btn" data-game="vocab">🗣️ Vocab</button>
@@ -88,12 +89,12 @@
             <button id="mikuChatStart" class="pixel-btn">Start</button>
           </div>
         </div>
-    <div id="songOverPanel" class="study-card" style="display:none;grid-column:1 / -1;text-align:center;padding:20px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;">
+    <div id="songOverPanel" class="song-over-panel" style="display:none;">
       <div class="result-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
       <h3>Song Over - <span class="reason"></span></h3>
       <div class="rank-line">Rank <span class="rank">C</span> • Score <span class="score">0</span></div>
-      <div class="counts" style="margin:6px 0">COOL 0 • GREAT 0 • FINE 0 • MISS 0</div>
-      <div class="reward" style="font-weight:800;margin-bottom:8px"></div>
+      <div class="counts">COOL 0 • GREAT 0 • FINE 0 • MISS 0</div>
+      <div class="reward"></div>
       <button id="songOverClose" class="pixel-btn">Close</button>
     </div>`;
     return grid;

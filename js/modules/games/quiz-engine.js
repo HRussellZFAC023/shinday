@@ -151,11 +151,27 @@
         tId = null;
       }
       const ok = text === correct;
+      const dt = Date.now() - startAt;
+      let judge = "MISS";
+      let v = 2,
+        sc = 60;
+      if (ok) {
+        judge = "FINE";
+        if ((style && style.isPerfect) || dt <= 700) {
+          judge = "COOL";
+          v = 5;
+          sc = 120;
+        } else if (dt <= 1600) {
+          judge = "GREAT";
+          v = 3;
+          sc = 80;
+        }
+      }
       createRingEffect && createRingEffect(element, ok);
       if (ok) {
-        if (style && style.isPerfect) {
+        if (judge === "COOL") {
           createPerfectHitEffect &&
-            createPerfectHitEffect(element, style.color);
+            createPerfectHitEffect(element, style && style.color);
           showFb("✨ PERFECT! ✨", true);
           awardHearts && awardHearts(2);
         } else {
@@ -172,22 +188,11 @@
         const mult = (window.diffParams && diffParams().mult) || 1;
         const rmult = (window.getRhythmMult && getRhythmMult()) || 1;
         const gain = (12 + Math.min(15, (streak - 1) * 2)) * mult * rmult;
-        addXP &&
-          addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
-        const dt = Date.now() - startAt;
-        let judge = "FINE",
-          v = 2,
-          sc = 60;
-        if ((style && style.isPerfect) || dt <= 700) {
-          judge = "COOL";
-          v = 5;
-          sc = 120;
+        addXP && addXP(Math.round(judge === "COOL" ? gain * 1.5 : gain));
+        if (judge === "COOL") {
           HUD && HUD.counts && HUD.counts.COOL++;
           party && party(cfg.cardId);
-        } else if (dt <= 1600) {
-          judge = "GREAT";
-          v = 3;
-          sc = 80;
+        } else if (judge === "GREAT") {
           HUD && HUD.counts && HUD.counts.GREAT++;
         } else {
           HUD && HUD.counts && HUD.counts.FINE++;
@@ -204,9 +209,8 @@
         }
         window.zapSwallower && window.zapSwallower();
         if (cfg.isTimed && cfg.isTimed()) {
-          const elapsed = Date.now() - startAt;
-          if (!bestTime || elapsed < bestTime) {
-            bestTime = elapsed;
+          if (!bestTime || dt < bestTime) {
+            bestTime = dt;
             localStorage.setItem(`${cfg.key}.bestTime`, String(bestTime));
             if (els.btt)
               els.btt.textContent = `${(bestTime / 1000).toFixed(1)}s`;

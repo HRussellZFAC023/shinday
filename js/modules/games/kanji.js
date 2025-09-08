@@ -94,7 +94,34 @@
     return map[String(d)] || 3;
   }
 
+  function ensureKanjiCache() {
+    const grade = gradeFromDiff();
+    getGradeList(grade)
+      .then((list) => {
+        const sample = list
+          .filter((k) => !kanjiCache.details.has(k))
+          // Prefetch a wider slice to avoid running out mid-song
+          .slice(0, 40);
+        sample.forEach((k) => getKanjiDetail(k).catch(() => {}));
+      })
+      .catch(() => {});
+  }
+
+  // Preload some kanji details up front to reduce question stalls
+  (async () => {
+    try {
+      const grade = gradeFromDiff();
+      const list = await getGradeList(grade);
+      const sample = list.slice(0, 40);
+      await Promise.all(sample.map((k) => getKanjiDetail(k)));
+    } catch (_) {}
+    ensureKanjiCache();
+    // Refresh more frequently to keep details warm
+    setInterval(ensureKanjiCache, 30000);
+  })();
+
   async function getQuestion(mode) {
+    ensureKanjiCache();
     const preset = (window.Jukebox &&
       Jukebox.getPreset &&
       Jukebox.getPreset()) || { options: 4 };
@@ -298,23 +325,35 @@
       tId = null;
     }
     const isCorrect = text === correct;
-    let judge;
+    const dt = Date.now() - startAt;
+    let judge = "MISS";
+    let v = 2,
+      sc = 60;
     if (isCorrect) {
-      createRingEffect && createRingEffect(element, true);
-
-      if (style && style.isPerfect) {
-        createPerfectHitEffect && createPerfectHitEffect(element, style.color);
-
+      judge = "FINE";
+      if ((style && style.isPerfect) || dt <= 700) {
+        judge = "COOL";
+        v = 5;
+        sc = 120;
+      } else if (dt <= 1600) {
+        judge = "GREAT";
+        v = 3;
+        sc = 80;
+      }
+    }
+    createRingEffect && createRingEffect(element, isCorrect);
+    if (isCorrect) {
+      if (judge === "COOL") {
+        createPerfectHitEffect &&
+          createPerfectHitEffect(element, style && style.color);
         if (window.showDivaFeedback)
           showDivaFeedback("kanjiFeedback", "✨ PERFECT! 正解! ✨", true);
         else if (fbEl) fbEl.textContent = "✨ PERFECT! 正解! ✨";
-
         awardHearts && awardHearts(2);
       } else {
         if (window.showDivaFeedback)
           showDivaFeedback("kanjiFeedback", "✅ 正解!", true);
         else if (fbEl) fbEl.textContent = "✅ 正解!";
-
         awardHearts && awardHearts(1);
       }
       if (fbEl) fbEl.style.color = "#2b2b44";
@@ -326,33 +365,17 @@
       if (streak > 1) loveToast && loveToast(`コンボ x${streak}!`);
       createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak);
 
-      const mult = (function () {
-        return diffParams().mult;
-      })();
-      const rmult = (function () {
-        return getRhythmMult();
-      })();
+      const mult = diffParams().mult;
+      const rmult = getRhythmMult();
       const base = curMode === "reading" ? 16 : 12;
       const gain = (base + Math.min(15, (streak - 1) * 2)) * mult * rmult;
 
-      addXP && addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
+      addXP && addXP(Math.round(judge === "COOL" ? gain * 1.5 : gain));
 
-      const dt = Date.now() - startAt;
-      judge = "FINE";
-      let v = 2,
-        sc = 60;
-      if ((style && style.isPerfect) || dt <= 700) {
-        judge = "COOL";
-        v = 5;
-        sc = 120;
-
+      if (judge === "COOL") {
         HUD && HUD.counts && HUD.counts.COOL++;
         party && party("kanjiCard");
-      } else if (dt <= 1600) {
-        judge = "GREAT";
-        v = 3;
-        sc = 80;
-
+      } else if (judge === "GREAT") {
         HUD && HUD.counts && HUD.counts.GREAT++;
       } else {
         HUD && HUD.counts && HUD.counts.FINE++;
@@ -372,9 +395,8 @@
       window.zapSwallower && window.zapSwallower();
 
       if (isTimed()) {
-        const elapsed = Date.now() - startAt;
-        if (!bestTime || elapsed < bestTime) {
-          bestTime = elapsed;
+        if (!bestTime || dt < bestTime) {
+          bestTime = dt;
 
           localStorage.setItem("kanji.bestTime", String(bestTime));
 
@@ -383,8 +405,6 @@
         }
       }
     } else {
-      createRingEffect && createRingEffect(element, false);
-
       if (window.showDivaFeedback)
         showDivaFeedback("kanjiFeedback", `❌ ${correct}`, false);
       else if (fbEl) {
@@ -400,7 +420,7 @@
       resetCombo && resetCombo();
       loseLife && loseLife("kanjiCard");
     }
-    window.StudyHub && StudyHub.registerAnswer(isCorrect, isCorrect ? judge : 'MISS');
+    window.StudyHub && StudyHub.registerAnswer(isCorrect, judge);
     setTimeout(loadRound, 900);
     return isCorrect;
   }

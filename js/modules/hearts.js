@@ -397,12 +397,24 @@ window.hearts = (function () {
             }
           }
 
-          // No shimeji collision/available: swallow hearts instead
+          // No shimeji collision/available: swallow hearts instead (deduct and toast)
           try {
             const amount = 500;
-            const hc = document.getElementById("heartCount");
-            // Soft feedback only; don’t actually deduct to avoid frustration unless desired
-            window.hearts && window.hearts.loveToast && window.hearts.loveToast(`${amount} hearts were swallowed 💔`);
+            if (window.Hearts && typeof window.Hearts.add === "function") {
+              window.Hearts.add(-amount);
+            } else if (window.hearts && typeof window.hearts.addHearts === "function") {
+              window.hearts.addHearts(-amount);
+            } else {
+              // Fallback direct localStorage update
+              const have = parseInt(localStorage.getItem("pixelbelle-hearts") || "0", 10) || 0;
+              const next = Math.max(0, have - amount);
+              localStorage.setItem("pixelbelle-hearts", String(next));
+              const hc = document.getElementById("heartCount");
+              if (hc) hc.textContent = String(next);
+            }
+            if (window.hearts && window.hearts.loveToast) {
+              window.hearts.loveToast(`Lost ${amount} hearts 💔`);
+            }
             if (sfx && sfx.play) sfx.play("swallow.chomp");
           } catch (_) {}
           fadeOut();

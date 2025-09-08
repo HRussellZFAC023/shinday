@@ -66,17 +66,18 @@
   }
 
   function render() {
-    const sidebar = document.getElementById("rightSidebar");
-    if (!sidebar) return;
     let widget = document.getElementById("questsWidget");
     if (!widget) {
+      const host = document.getElementById("jpGames");
+      if (!host) return;
       widget = document.createElement("div");
-      widget.className = "widget";
+      widget.className = "study-card widget";
       widget.id = "questsWidget";
+      host.appendChild(widget);
+    }
+    if (!widget.querySelector(".quests-list"))
       widget.innerHTML =
         '<h3>🗒️ Daily Quests</h3><div class="quests-list"></div>';
-      sidebar.appendChild(widget);
-    }
     const list = widget.querySelector(".quests-list");
     const s = ensureState();
     list.innerHTML = QUESTS.map((q) => {

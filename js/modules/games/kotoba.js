@@ -23,7 +23,8 @@
   let lock = false,
     tId = null,
     startAt = 0,
-    countdown = 20;
+    countdown = 20,
+    beats = null;
   let score = 0,
     streak = 0,
     bestStreak = 0,
@@ -261,23 +262,36 @@
       tId = null;
     }
     const isCorrect = text === correct;
+    const dt = Date.now() - startAt;
+    let judge = "MISS";
+    let v = 2,
+      sc = 60;
     if (isCorrect) {
-      createRingEffect && createRingEffect(element, true);
-
+      judge = "FINE";
+      if ((style && style.isPerfect) || dt <= 700) {
+        judge = "COOL";
+        v = 5;
+        sc = 120;
+      } else if (dt <= 1600) {
+        judge = "GREAT";
+        v = 3;
+        sc = 80;
+      }
+    }
+    createRingEffect && createRingEffect(element, isCorrect);
+    if (isCorrect) {
       element.classList.add("correct");
-      if (style && style.isPerfect) {
-        createPerfectHitEffect && createPerfectHitEffect(element, style.color);
-
+      if (judge === "COOL") {
+        createPerfectHitEffect &&
+          createPerfectHitEffect(element, style && style.color);
         if (window.showDivaFeedback)
           showDivaFeedback("kotobaFeedback", "✨ PERFECT! ✨", true);
         else if (fbEl) fbEl.textContent = "✨ PERFECT! ✨";
-
         awardHearts && awardHearts(2);
       } else {
         if (window.showDivaFeedback)
           showDivaFeedback("kotobaFeedback", "✅ Correct!", true);
         else if (fbEl) fbEl.textContent = "✅ Correct!";
-
         awardHearts && awardHearts(1);
       }
       if (fbEl) fbEl.style.color = "#2b2b44";
@@ -293,32 +307,16 @@
       if (streak > 1) loveToast && loveToast(`Combo x${streak}!`);
       createComboMilestoneEffect && createComboMilestoneEffect(cEl, streak);
 
-      const mult = (function () {
-        return diffParams().mult;
-      })();
-      const rmult = (function () {
-        return getRhythmMult();
-      })();
+      const mult = diffParams().mult;
+      const rmult = getRhythmMult();
       const gain = (12 + Math.min(15, (streak - 1) * 2)) * mult * rmult;
 
-      addXP && addXP(Math.round(style && style.isPerfect ? gain * 1.5 : gain));
+      addXP && addXP(Math.round(judge === "COOL" ? gain * 1.5 : gain));
 
-      const dt = Date.now() - startAt;
-      let judge = "FINE",
-        v = 2,
-        sc = 60;
-      if ((style && style.isPerfect) || dt <= 700) {
-        judge = "COOL";
-        v = 5;
-        sc = 120;
-
+      if (judge === "COOL") {
         HUD && HUD.counts && HUD.counts.COOL++;
         party && party("kotobaCard");
-      } else if (dt <= 1600) {
-        judge = "GREAT";
-        v = 3;
-        sc = 80;
-
+      } else if (judge === "GREAT") {
         HUD && HUD.counts && HUD.counts.GREAT++;
       } else {
         HUD && HUD.counts && HUD.counts.FINE++;
@@ -338,9 +336,8 @@
       window.zapSwallower && window.zapSwallower();
 
       if (isTimed()) {
-        const elapsed = Date.now() - startAt;
-        if (!bestTime || elapsed < bestTime) {
-          bestTime = elapsed;
+        if (!bestTime || dt < bestTime) {
+          bestTime = dt;
 
           localStorage.setItem("kotoba.bestTime", String(bestTime));
 
@@ -349,8 +346,6 @@
         }
       }
     } else {
-      createRingEffect && createRingEffect(element, false);
-
       element.classList.add("wrong");
       if (window.showDivaFeedback)
         showDivaFeedback("kotobaFeedback", `❌ ${correct}`, false);
@@ -382,7 +377,7 @@
     Array.from(cEl.querySelectorAll(".chat-option")).forEach(
       (b) => (b.disabled = true),
     );
-
+    window.StudyHub && StudyHub.registerAnswer(isCorrect, judge);
     setTimeout(loadRound, 900);
     return isCorrect;
   }
@@ -390,12 +385,20 @@
   function start({ timed }) {
     if (typeof timed === "boolean") setTimed(timed);
     if (timerWrap) timerWrap.style.display = isTimed() ? "inline-flex" : "none";
+    if (window.createFallingBeatsSystem && cEl) {
+      if (beats) beats.stop();
+      beats = createFallingBeatsSystem(cEl);
+    }
     loadRound();
   }
   function stop() {
     if (tId) clearInterval(tId);
 
     tId = null;
+    if (beats && beats.stop) {
+      beats.stop();
+      beats = null;
+    }
   }
 
   document.addEventListener("kotoba-start", (ev) => {
