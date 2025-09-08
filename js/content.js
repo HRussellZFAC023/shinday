@@ -566,6 +566,7 @@ const SITE_CONTENT = {
 
   sidebarTitles: {
     left: {
+      diva: "🎤 Diva HUD",
       pet: "your new best friend~!",
       petIcon: "innocent",
       friends: "my friends",
@@ -574,7 +575,6 @@ const SITE_CONTENT = {
       statsIcon: "okSign",
     },
     right: {
-      diva: "🎤 Diva HUD",
       quickLinks: "quick links",
       quickLinksIcon: "cheering",
       shop: "Shop",

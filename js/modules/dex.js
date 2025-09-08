@@ -271,22 +271,11 @@
     const entry = coll[url];
     const owned = !!entry;
 
-    // Rarity effects calculation
-    const RARITY_EFFECTS = window.RARITY_EFFECTS || {
-      scorePerStep: 0.1,
-      scoreCap: 0.4,
-      rareDropBonus: 0.05,
-    };
-    const steps = Math.max(0, rarity - 1);
-    const scoreBonus = Math.min(
-      RARITY_EFFECTS.scoreCap,
-      steps * RARITY_EFFECTS.scorePerStep
-    );
-    const shieldPct = Math.round(scoreBonus * 100);
-    const rarePct = Math.round((RARITY_EFFECTS.rareDropBonus || 0) * 100);
-    const effectsText = `Effects: +${Math.round(
-      scoreBonus * 100
-    )}% score, +${shieldPct}% shield time, +${rarePct}% rare drop`;
+  // Singer effects (fixed bonuses when set)
+  const sm = (typeof window.getSingerScoreMult === 'function' ? getSingerScoreMult() : 1) - 1;
+  const sh = (typeof window.getSingerShieldMult === 'function' ? getSingerShieldMult() : 1) - 1;
+  const rb = (typeof window.getSingerRareDropBonus === 'function' ? getSingerRareDropBonus() : 0);
+  const effectsText = `Effects: +${Math.round(Math.max(0, sm) * 100)}% score, +${Math.round(Math.max(0, sh) * 100)}% shield time, +${Math.round(Math.max(0, rb) * 100)}% rare drop`;
 
     const ov = document.createElement("div");
     ov.className = "image-modal";

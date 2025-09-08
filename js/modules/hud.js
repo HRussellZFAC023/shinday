@@ -120,6 +120,25 @@
     return window.createFallingBeatsSystem ? 1.05 : 1;
   }
 
+  // Singer-based global effects
+  function hasSinger() {
+    try {
+      const u = (localStorage.getItem("singer.current") || "").trim();
+      return !!u;
+    } catch (_) {
+      return false;
+    }
+  }
+  function getSingerScoreMult() {
+    return hasSinger() ? 1.4 : 1;
+  }
+  function getSingerShieldMult() {
+    return hasSinger() ? 1.4 : 1;
+  }
+  function getSingerRareDropBonus() {
+    return hasSinger() ? 0.05 : 0;
+  }
+
   // A tiny party effect using CSS class .party if present
   function party(cardId) {
     const card = document.getElementById(cardId);
@@ -240,5 +259,8 @@
   window.getJpDifficulty = getJpDifficulty;
   window.diffParams = diffParams;
   window.getRhythmMult = getRhythmMult;
+  window.getSingerScoreMult = getSingerScoreMult;
+  window.getSingerShieldMult = getSingerShieldMult;
+  window.getSingerRareDropBonus = getSingerRareDropBonus;
   window.party = party;
 })();

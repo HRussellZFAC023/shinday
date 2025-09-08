@@ -57,6 +57,13 @@ window.shop = (function () {
     if (getBaitCount() > 0) setBaitCount(getBaitCount() - 1);
   }
   function activateHeartShield(ms = 1000 * 60 * 25) {
+    try {
+      const m =
+        typeof window.getSingerShieldMult === "function"
+          ? getSingerShieldMult()
+          : 1;
+      ms = Math.round(ms * m);
+    } catch (_) {}
     shieldUntil = Date.now() + ms;
     localStorage.setItem("diva.shield.until", String(shieldUntil));
 

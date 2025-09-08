@@ -654,6 +654,30 @@ window.MikuUI = (function () {
             return `<li class="favorite-song" ${data} style="cursor:pointer">${label}</li>`;
           })
           .join("");
+
+        // Click-to-play in Jukebox mini-player
+        ul.querySelectorAll(".favorite-song").forEach((li) => {
+          li.addEventListener("click", () => {
+            try {
+              const title = li.getAttribute("data-title") || li.textContent || "";
+              const vid = li.getAttribute("data-video-id") || "";
+              if (window.Jukebox && typeof Jukebox.play === "function") {
+                const song = {
+                  id: `yt-${vid || title}`,
+                  title,
+                  yt: vid,
+                  bpm: 128,
+                  req: 0,
+                  jacket: "./assets/root.png",
+                  theme: "#66bbff",
+                };
+                // Remember that shrine started the mini-player, so we can close on navigate
+                window.__jukeboxStartedFromShrine = true;
+                Jukebox.play(song);
+              }
+            } catch (_) {}
+          });
+        });
       }
       const galTitle = document.querySelector("#shrine .gallery h3");
       if (galTitle && C.shrine.galleryTitle)
@@ -783,15 +807,15 @@ window.MikuUI = (function () {
 
       // Diva HUD title
       const divaWidget = document.getElementById("jpHudWidget");
-      if (divaWidget && right.diva) {
+      if (divaWidget && left.diva) {
         const h = divaWidget.querySelector("h3");
         if (h) {
-          const divaIcon = right.divaIcon
-            ? window.MikuCore.mikuIcon(right.divaIcon, "🎤")
+          const divaIcon = left.divaIcon
+            ? window.MikuCore.mikuIcon(left.divaIcon, "🎤")
             : ""; // content may already include emoji
           h.innerHTML = divaIcon
-            ? /*html*/ `${divaIcon} ${right.diva}`
-            : right.diva;
+            ? /*html*/ `${divaIcon} ${left.diva}`
+            : left.diva;
         }
       }
 

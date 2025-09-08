@@ -387,7 +387,13 @@
       flashJudge && flashJudge("vocabCard", judge);
       addVoltage && addVoltage(v, "vocabCard");
       addCombo && addCombo("vocabCard");
-      HUD && (HUD.score += Math.round(sc * mult * rmult));
+      {
+        const sm =
+          typeof window.getSingerScoreMult === "function"
+            ? getSingerScoreMult()
+            : 1;
+        HUD && (HUD.score += Math.round(sc * mult * rmult * sm));
+      }
 
       // Zap any active swallower on correct
 

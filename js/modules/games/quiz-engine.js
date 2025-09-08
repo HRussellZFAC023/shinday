@@ -192,7 +192,13 @@
         flashJudge && flashJudge(cfg.cardId, judge);
         addVoltage && addVoltage(v, cfg.cardId);
         addCombo && addCombo(cfg.cardId);
-        HUD && (HUD.score += Math.round(sc * mult * rmult));
+        {
+          const sm =
+            typeof window.getSingerScoreMult === "function"
+              ? getSingerScoreMult()
+              : 1;
+          HUD && (HUD.score += Math.round(sc * mult * rmult * sm));
+        }
         window.zapSwallower && window.zapSwallower();
         if (cfg.isTimed && cfg.isTimed()) {
           const elapsed = Date.now() - startAt;

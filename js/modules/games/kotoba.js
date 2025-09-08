@@ -327,7 +327,13 @@
       flashJudge && flashJudge("kotobaCard", judge);
       addVoltage && addVoltage(v, "kotobaCard");
       addCombo && addCombo("kotobaCard");
-      HUD && (HUD.score += Math.round(sc * mult * rmult));
+      {
+        const sm =
+          typeof window.getSingerScoreMult === "function"
+            ? getSingerScoreMult()
+            : 1;
+        HUD && (HUD.score += Math.round(sc * mult * rmult * sm));
+      }
 
       window.zapSwallower && window.zapSwallower();
 

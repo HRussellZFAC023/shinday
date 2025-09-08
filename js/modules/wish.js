@@ -305,6 +305,17 @@
     const list = window.MIKU_IMAGES || [];
     const missing = getMissingMikus();
 
+    // Apply rare-drop bias if a singer is set (toward 4★+ images)
+    const rareBias = (function () {
+      try {
+        return typeof window.getSingerRareDropBonus === "function"
+          ? getSingerRareDropBonus()
+          : 0;
+      } catch (_) {
+        return 0;
+      }
+    })();
+
     for (let i = 0; i < n; i++) {
       let url;
 
@@ -318,7 +329,26 @@
         url = missing[Math.floor(Math.random() * missing.length)];
         resetPity(); // reset pity counter when we get a missing miku
       } else {
-        url = list[Math.floor(Math.random() * list.length)];
+        // Weighted pick with rare bias
+        if (list.length) {
+          // Split pool by rarity
+          const commons = [];
+          const rares = [];
+          for (const u of list) {
+            const r = rarityFor(u);
+            (r >= 4 ? rares : commons).push(u);
+          }
+          const baseCommonW = commons.length;
+          const baseRareW = rares.length;
+          const rw = Math.max(0, Math.round(baseRareW * (1 + rareBias)));
+          const cw = Math.max(0, baseCommonW);
+          const totalW = rw + cw || 1;
+          const pickRare = Math.random() * totalW < rw;
+          const pool = pickRare && rares.length ? rares : commons.length ? commons : list;
+          url = pool[Math.floor(Math.random() * pool.length)];
+        } else {
+          url = list[Math.floor(Math.random() * list.length)];
+        }
         const coll = getColl();
         if (!coll[url]) {
           resetPity(); // also reset if we naturally get a missing miku

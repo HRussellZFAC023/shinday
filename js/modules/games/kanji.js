@@ -360,7 +360,13 @@
       flashJudge && flashJudge("kanjiCard", judge);
       addVoltage && addVoltage(v, "kanjiCard");
       addCombo && addCombo("kanjiCard");
-      HUD && (HUD.score += Math.round(sc * mult * rmult));
+      {
+        const sm =
+          typeof window.getSingerScoreMult === "function"
+            ? getSingerScoreMult()
+            : 1;
+        HUD && (HUD.score += Math.round(sc * mult * rmult * sm));
+      }
 
       window.zapSwallower && window.zapSwallower();
 

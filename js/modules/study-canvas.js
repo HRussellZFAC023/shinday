@@ -432,7 +432,11 @@
       state.streak++;
       state.combo++;
   if (state.streak > state.bestStreak) state.bestStreak = state.streak;
-  if (window.HUD) { window.HUD.score += 10; window.HUD.counts.COOL++; }
+  if (window.HUD) {
+    const sm = typeof window.getSingerScoreMult === 'function' ? getSingerScoreMult() : 1;
+    window.HUD.score += Math.round(10 * sm);
+    window.HUD.counts.COOL++;
+  }
       
       // Visual effects
       createRingEffect(canvas.width/2, 200);
@@ -543,7 +547,11 @@
       state.streak++;
       state.combo++;
   if (state.streak > state.bestStreak) state.bestStreak = state.streak;
-  if (window.HUD) { window.HUD.score += 20; window.HUD.counts.COOL++; }
+  if (window.HUD) {
+    const sm = typeof window.getSingerScoreMult === 'function' ? getSingerScoreMult() : 1;
+    window.HUD.score += Math.round(20 * sm);
+    window.HUD.counts.COOL++;
+  }
       
       createRingEffect(canvas.width/2, 200);
       if (state.combo >= 3) createComboEffect(canvas.width/2, 100, state.combo);
@@ -670,7 +678,7 @@
       }
       addHitbox(x, y, bw, bh, () => {
         const ok = opt === kotobaCurrent.correct;
-  if (ok) { state.score += 8; state.streak++; if (window.HUD) { window.HUD.score += 8; window.HUD.counts.GREAT = (window.HUD.counts.GREAT||0)+1; } showFeedback('GREAT! 正解', true); }
+  if (ok) { state.score += 8; state.streak++; if (window.HUD) { const sm = typeof window.getSingerScoreMult === 'function' ? getSingerScoreMult() : 1; window.HUD.score += Math.round(8 * sm); window.HUD.counts.GREAT = (window.HUD.counts.GREAT||0)+1; } showFeedback('GREAT! 正解', true); }
   else { state.streak = 0; if (window.HUD) window.HUD.counts.SAD++; showFeedback('MISS! 正解: ' + kotobaCurrent.correct, false); }
         updateHUD(); setTimeout(nextKotoba, 700);
       });
@@ -718,7 +726,7 @@
       if (highlight) { ctx.save(); ctx.lineWidth = 3; ctx.strokeStyle = '#a594f9'; roundRect(x, y, bw, bh, 14); ctx.stroke(); ctx.restore(); }
       addHitbox(x, y, bw, bh, () => {
         const ok = opt === mikuCurrent.correct;
-  if (ok) { state.score += 5; state.streak++; if (window.HUD) { window.HUD.score += 5; window.HUD.counts.GREAT = (window.HUD.counts.GREAT||0)+1; } showFeedback('GREAT! 正解だよ', true); }
+  if (ok) { state.score += 5; state.streak++; if (window.HUD) { const sm = typeof window.getSingerScoreMult === 'function' ? getSingerScoreMult() : 1; window.HUD.score += Math.round(5 * sm); window.HUD.counts.GREAT = (window.HUD.counts.GREAT||0)+1; } showFeedback('GREAT! 正解だよ', true); }
   else { state.streak = 0; if (window.HUD) window.HUD.counts.SAD++; showFeedback('MISS! 正解: ' + mikuCurrent.correct, false); }
         updateHUD(); setTimeout(nextMikuChat, 750);
       });
@@ -768,7 +776,7 @@
       const elapsedMin = (performance.now() - gameState.typing.startedAt) / 60000;
       const wpm = Math.max(1, Math.round(target.length / 5 / Math.max(0.2, elapsedMin)));
       gameState.typing.wpm = wpm;
-  state.score += 12; state.streak++; if (window.HUD) { window.HUD.score += 12; window.HUD.counts.GREAT = (window.HUD.counts.GREAT||0)+1; }
+  state.score += 12; state.streak++; if (window.HUD) { const sm = typeof window.getSingerScoreMult === 'function' ? getSingerScoreMult() : 1; window.HUD.score += Math.round(12 * sm); window.HUD.counts.GREAT = (window.HUD.counts.GREAT||0)+1; }
   showFeedback(`CLEARED! WPM ${wpm}`, true);
       updateHUD(); setTimeout(nextTyping, 600);
     } else {
@@ -842,7 +850,7 @@
       const style = state.hint && correct ? { highlight: true } : {};
       drawButton(opt, x, y, buttonW, buttonH, style);
       addHitbox(x, y, buttonW, buttonH, () => {
-  if (correct) { state.score += 6; state.streak++; if (window.HUD) { window.HUD.score += 6; window.HUD.counts.FINE = (window.HUD.counts.FINE||0)+1; } showFeedback('Yay! ✨', true); }
+  if (correct) { state.score += 6; state.streak++; if (window.HUD) { const sm = typeof window.getSingerScoreMult === 'function' ? getSingerScoreMult() : 1; window.HUD.score += Math.round(6 * sm); window.HUD.counts.FINE = (window.HUD.counts.FINE||0)+1; } showFeedback('Yay! ✨', true); }
   else { state.streak = 0; if (window.HUD) window.HUD.counts.SAD++; showFeedback('Nope! ' + (w.meaning || ''), false); }
         updateHUD(); setTimeout(() => { state.hint = false; refreshWOD(); }, 700);
       });

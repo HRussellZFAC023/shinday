@@ -1695,7 +1695,7 @@ function initMikuWish() {
 
     const singer = typeof singerGet === "function" ? singerGet() : "";
     if (singer) {
-      const b = RARITY_EFFECTS.rareDropBonus || 0;
+      const b = (typeof window.getSingerRareDropBonus === 'function' ? getSingerRareDropBonus() : RARITY_EFFECTS.rareDropBonus) || 0;
       if (weights[4]) weights[4] = Math.round(weights[4] * (1 + b));
       if (weights[5]) weights[5] = Math.round(weights[5] * (1 + b));
       if (weights[6]) weights[6] = Math.round(weights[6] * (1 + b));

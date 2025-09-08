@@ -189,6 +189,16 @@
     window.MikuSystem.updateNowPlaying(song);
   }
 
+  function stop() {
+    try {
+      const wrap = document.getElementById("jukeboxPlayer");
+      const iframe = document.getElementById("jukeboxIframe");
+      if (iframe) iframe.src = "about:blank";
+      if (wrap) wrap.style.display = "none";
+      if (window.__resumeBgm) window.__resumeBgm();
+    } catch (_) {}
+  }
+
   function attachHudSelect() {
     refresh();
     const hud = document.querySelector("#jpHudWidget .jp-hud-widget");
@@ -326,6 +336,7 @@
     songs: SONGS,
     unlocked,
     play,
+  stop,
     attachHudSelect,
     openSongSelect,
     getPreset,

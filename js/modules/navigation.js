@@ -34,6 +34,13 @@ window.navi = (function () {
       window.__kanjiStop && window.__kanjiStop();
       typeof window.__resetStudy === "function" && window.__resetStudy();
     }
+    // If user navigates away from Shrine, close Jukebox mini-player started there
+    if (prev === "shrine" && sectionId !== "shrine") {
+      if (window.__jukeboxStartedFromShrine && window.Jukebox && typeof Jukebox.stop === "function") {
+        try { Jukebox.stop(); } catch (_) {}
+      }
+      window.__jukeboxStartedFromShrine = false;
+    }
     if (prev === "Wish" || sectionId === "Wish")
       window.__resetWish && window.__resetWish();
 
