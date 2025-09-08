@@ -2,6 +2,7 @@
 // Configuration for different character types
 const MIKU_CONFIG = {
   basePath: "./assets/webmeji/miku",
+  maxFrames: 101,
   speed: 3,
   climbSpeed: 2,
   fallSpeed: 10,
@@ -130,6 +131,7 @@ const MIKU_CONFIG = {
 // Alternate Miku: uses alternative art set
 const MIKU_ALT_CONFIG = {
   basePath: "./assets/webmeji/Miku_alternitive",
+  maxFrames: 101,
   speed: 3,
   climbSpeed: 2,
   fallSpeed: 10,
@@ -256,6 +258,7 @@ const MIKU_ALT_CONFIG = {
 // Sketch Miku: uses sketch art set
 const MIKU_SKETCH_CONFIG = {
   basePath: "./assets/webmeji/Miku_sketch",
+  maxFrames: 101,
   speed: 3,
   climbSpeed: 2,
   fallSpeed: 10,
@@ -381,6 +384,7 @@ const MIKU_SKETCH_CONFIG = {
 
 const CLASSIC_CONFIG = {
   basePath: "./assets/webmeji/Shimeji",
+  maxFrames: 101,
   speed: 2,
   climbSpeed: 1.5,
   fallSpeed: 10,
@@ -773,8 +777,21 @@ class EnhancedCreature {
     this.img.alt = /*html*/ `${type} companion`;
     this.container.appendChild(this.img);
 
-  // Preload full sprite sheet range (1..100) for this config
-  if (spriteConfig.basePath) __preloadFrames(spriteConfig.basePath, 100);
+    // After image loads, refresh container dimensions and constraints
+    this.img.onload = () => {
+      const containerStyle2 = window.getComputedStyle(this.container);
+      this.containerWidth = parseFloat(containerStyle2.width) || this.img.naturalWidth || this.containerWidth;
+      this.containerHeight = parseFloat(containerStyle2.height) || this.img.naturalHeight || this.containerHeight;
+      this.maxPosX = window.innerWidth - this.containerWidth;
+      this.maxPosY = window.innerHeight - this.containerHeight;
+      // Clamp position to new bounds and update
+      this.position.x = Math.min(Math.max(0, this.position.x), this.maxPosX);
+      this.position.y = Math.min(Math.max(0, this.position.y), this.maxPosY);
+      this.updatePosition();
+    };
+
+  // Preload sprite frames up to declared max to avoid 404 spam
+  if (spriteConfig.basePath) __preloadFrames(spriteConfig.basePath, spriteConfig.maxFrames || 101);
 
     // Physics properties
     this.position = {
@@ -1151,16 +1168,18 @@ class EnhancedCreature {
 
   // NEW FEATURE: Falling from sky
   triggerFall(fromSky = false) {
-    // Only trigger a meaningful fall when starting from some height
-  const startAbove = fromSky || this.position.y > this.containerHeight * 2;
-    if (!startAbove) return; // no-op if too low
+    // Only trigger a fall if not grounded, unless explicitly forced from the sky
+    if (!fromSky && this.isGrounded) return;
 
     // Reset any active animations/timers to avoid stuck states
     this.resetAnimation();
   // mark as falling state so landing logic can recover to sit
     this.state = "fall";
-  // Cancel any pending climb/approach intents
+  // Cancel any pending climb/approach intents and clear climb state
   this.approachWallSide = null;
+    this.isClimbing = false;
+    this.climbTarget = null;
+    this.hangingOnCeiling = false;
     // If asked to fall from the sky, start above the viewport
     if (fromSky) this.position.y = -this.containerHeight;
     this.velocity.y = 0;
@@ -1171,8 +1190,8 @@ class EnhancedCreature {
 
     if (window.SFX && Math.random() < 0.25) window.SFX.play("extra.wan");
 
-    const config = this.spriteConfig.fall;
-    this.playAnimation(config.frames, config.interval, 1, () => {
+  const config = this.spriteConfig.fall;
+  this.playAnimation(config.frames, config.interval, 1, () => {
       // Fall animation plays while physics handles the movement; landing logic will set nextForcedAction to sit
       this.nextForcedAction = "sit";
     });
@@ -1419,7 +1438,7 @@ class EnhancedCreature {
     this.position.x += this.velocity.x * deltaTime;
     this.position.y += this.velocity.y * deltaTime;
 
-    // Handle ground collision
+  // Handle ground collision
     if (this.position.y >= this.maxPosY) {
       this.position.y = this.maxPosY;
       this.velocity.y = 0;
@@ -1456,10 +1475,17 @@ class EnhancedCreature {
         // If we fell, play a short 'fallen' then sit
         if (this.state === "fall") {
           const fallen = this.spriteConfig.fallen;
+          // Switch state immediately to avoid retriggering this block every frame
+          this.state = "fallen";
           if (fallen) {
-            this.playAnimation(fallen.frames, fallen.interval, fallen.loops || 1, () => {
-              this.startAction("sit");
-            });
+            this.playAnimation(
+              fallen.frames,
+              fallen.interval,
+              fallen.loops || 1,
+              () => {
+                this.startAction("sit");
+              }
+            );
           } else {
             this.nextForcedAction = "sit";
             this.setNextAction();
@@ -1475,16 +1501,28 @@ class EnhancedCreature {
     // Handle wall collisions
     if (this.position.x <= 0) {
       this.position.x = 0;
-      if (!this.isClimbing && this.state === "walk") {
+      // Flip direction on wall for any forward-walk state, unless we are intentionally approaching to climb
+      if (
+        !this.isClimbing &&
+        !this.approachWallSide &&
+        (this.state === "walk" || this.state === "forced-walk" || this.state === "run")
+      ) {
         this.direction = 1;
         this.updateImageDirection();
       }
+      // Stop horizontal velocity so next frame starts cleanly
+      if (this.isGrounded) this.velocity.x = 0;
     } else if (this.position.x >= this.maxPosX) {
       this.position.x = this.maxPosX;
-      if (!this.isClimbing && this.state === "walk") {
+      if (
+        !this.isClimbing &&
+        !this.approachWallSide &&
+        (this.state === "walk" || this.state === "forced-walk" || this.state === "run")
+      ) {
         this.direction = -1;
         this.updateImageDirection();
       }
+      if (this.isGrounded) this.velocity.x = 0;
     }
 
     // Update jump cooldown

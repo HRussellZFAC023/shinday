@@ -1388,25 +1388,6 @@ main {
   filter: drop-shadow(0 2px 6px rgba(0,0,0,.15));
 }
 
-/* Word-of-the-Day iframe scaling: zoom OUT to see more content */
-.wod-iframe {
-  position: relative;
-  overflow: hidden;
-  min-height: 420px; /* give more vertical space when scaled down */
-}
-.wod-iframe iframe {
-  position: absolute;
-  top: -20px; /* nudge up a bit to hide remote header */
-  left: -20px;
-  /* To zoom out: scale the iframe down, but expand its intrinsic size so the viewport fills container */
-  width: calc(100% / 0.66) !important;
-  height: calc(100% / 0.66) !important;
-  transform: scale(0.66);
-  transform-origin: 0 0;
-  border: 0 !important;
-  display: block !important;
-}
-
 /* Safety: hide empty buttons often rendered as placeholder ovals */
 .beatpad-grid .pixel-btn:empty,
 .chat-choices .pixel-btn:empty,

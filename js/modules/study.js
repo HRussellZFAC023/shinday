@@ -7,9 +7,6 @@
     grid.dataset.wired = "1";
     const C = window.SITE_CONTENT || {};
     const wod = (C.study && C.study.wordOfDay) || window.WOD || {};
-    const wodIframeSrc =
-      (C.study && C.study.wordOfDay && C.study.wordOfDay.externalIframe) ||
-      "https://kanjiday.com/kanji/";
     grid.innerHTML = `
     <div class="study-card" id="studyControls" style="grid-column:1 / -1;display:flex;align-items:center;gap:8px">
       <label for="studyDifficulty">Difficulty</label>
@@ -20,17 +17,13 @@
       <span>❤️ <strong id="studyLives">5</strong>/5</span>
       <span>⏳ <strong id="questionTimer">15</strong>s</span>
     </div>
-    <div class="study-card" id="wodCard" style="grid-column: 1 / -1; display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:stretch; position:relative;">
+    <div class="study-card" id="wodCard" style="grid-column: 1 / -1; display:grid; grid-template-columns: 1fr; gap:12px; align-items:stretch; position:relative;">
         <div class="word-of-day" style="padding:10px;border:2px solid var(--border);border-radius:12px;background:#fff;">
       <h3 style="margin-top:0;display:flex;align-items:center;justify-content:space-between;gap:8px">📖 Word of the Day <button id="wodNext" class="pixel-btn" title="Next word">Next</button></h3>
           <div style="font-size:22px;font-weight:900" class="japanese">${wod.japanese || ""}</div>
           <div class="romaji" style="opacity:.8">${wod.romaji || ""}</div>
           <div class="meaning">${wod.meaning || ""}</div>
         </div>
-        <div class="wod-iframe" style="min-height:320px;border:2px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;position:relative">
-          <iframe id="wodIframe" src="${wodIframeSrc}" loading="lazy" referrerpolicy="no-referrer"></iframe>
-        </div>
-        <img class="hud-miku" alt="Miku" src="./assets/pixiebel.gif" />
       </div>
       <!-- Game selection tiles (landing view) -->
       <div class="study-card" id="gameTiles" style="grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
@@ -40,7 +33,6 @@
         <button class="pixel-btn" data-game="mikuChat">💬 Miku × Chat</button>
       </div>
       <div class="game-widget" id="vocabCard" style="display:none;position:relative">
-        <img class="hud-miku" alt="Miku" src="./assets/pixiebel.gif" />
         <h3>🗣️ Vocab</h3>
         <div id="vocabQuestion"></div>
         <div id="vocabChoices" class="beatpad-grid"></div>
@@ -57,7 +49,6 @@
         <div id="vocabFeedback" class="diva-feedback-enhanced" style="display:none"></div>
       </div>
       <div class="game-widget" id="kanjiCard" style="display:none;position:relative">
-        <img class="hud-miku" alt="Miku" src="./assets/pixiebel.gif" />
         <h3>漢字 Kanji</h3>
         <div class="mode-row" id="kanjiMeta">
           <button class="pixel-btn mode-option active" data-mode="meaning">Meaning→Kanji</button>
@@ -74,7 +65,6 @@
         <div id="kanjiFeedback" class="diva-feedback-enhanced" style="display:none"></div>
       </div>
       <div class="game-widget" id="kotobaCard" style="display:none;position:relative">
-        <img class="hud-miku" alt="Miku" src="./assets/pixiebel.gif" />
         <h3>ことば Kotoba</h3>
         <div id="kotobaChat" class="chat-transcript" style="display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:10px;background:#fff;border:2px solid var(--border);max-height:220px;overflow:auto"></div>
         <div id="kotobaChoices" class="chat-choices" style="display:flex;flex-direction:column;gap:8px"></div>
@@ -88,7 +78,6 @@
         <div id="kotobaFeedback" class="diva-feedback-enhanced" style="display:none"></div>
       </div>
       <div class="game-widget" id="mikuChatCard" style="display:none;position:relative">
-        <img class="hud-miku" alt="Miku" src="./assets/pixiebel.gif" />
         <h3>💬 Miku × Chat</h3>
         <div id="mikuChatTranscript" class="chat-transcript" style="display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:10px;background:#fff;border:2px solid var(--border);max-height:240px;overflow:auto"></div>
         <div id="mikuChatChoices" class="beatpad-grid"></div>
@@ -98,7 +87,7 @@
           <span>Rhythm: falling beats enabled</span>
         </div>
       </div>
-    <div id="songOverPanel" class="study-card" style="display:none;grid-column:1 / -1;text-align:center;padding:20px;position:relative;">
+    <div id="songOverPanel" class="study-card" style="display:none;grid-column:1 / -1;text-align:center;padding:20px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;">
       <div class="result-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
       <h3>Song Over - <span class="reason"></span></h3>
       <div class="rank-line">Rank <span class="rank">C</span> • Score <span class="score">0</span></div>
