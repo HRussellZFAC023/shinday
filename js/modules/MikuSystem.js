@@ -143,7 +143,7 @@ window.MikuSystem = (function () {
     img.style.animationName = "float";
     img.style.animationTimingFunction = "ease-in-out";
     img.style.animationIterationCount = "infinite";
-    img.style.marginTop = "-6px";
+    img.style.marginTop = "6px";
     img.style.animationDelay = (Math.random() * 1.2).toFixed(2) + "s";
     img.style.animationDuration = (3.8 + Math.random() * 1.6).toFixed(2) + "s";
     container.appendChild(img);

@@ -104,6 +104,18 @@
     if (window.MikuDex) window.MikuDex.renderInto(dex);
   }
 
+  function clearNewSet() {
+    try {
+      localStorage.setItem("Wish.newIds", "[]");
+    } catch {}
+  }
+
+  function removeNewBadges() {
+    const res = document.getElementById("WishResults");
+    if (res)
+      res.querySelectorAll(".Wish-new").forEach((el) => el.remove());
+  }
+
   // ====== PixieBel ★6 Unlock Ceremony ======
   const PIXIE_URL = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
   function pixieUnlocked() {
@@ -339,9 +351,17 @@
   }
   function resetUI() {
     const { results, rotation, dex, dexBtn } = els();
-    if (results) results.hidden = true;
+    if (results) {
+      results.hidden = true;
+      removeNewBadges();
+      results.innerHTML = "";
+    }
     if (rotation) rotation.hidden = false;
-    if (dex) dex.classList.add("hidden");
+    if (dex) {
+      const wasOpen = !dex.classList.contains("hidden");
+      dex.classList.add("hidden");
+      if (wasOpen) clearNewSet();
+    }
     if (dexBtn) dexBtn.textContent = "Open MikuDex";
   }
   function wire() {
@@ -375,6 +395,8 @@
         setTimeout(() => e.dex.classList.remove("dex-open"), 500);
         e.dexBtn.textContent = "Close MikuDex";
       } else {
+        clearNewSet();
+        removeNewBadges();
         e.dexBtn.textContent = "Open MikuDex";
       }
       SFX.play("ui.change");

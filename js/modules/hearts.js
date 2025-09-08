@@ -232,35 +232,73 @@ window.hearts = (function () {
         const img = document.createElement("img");
         img.src = "./assets/swallow.gif";
         img.alt = "Swallower";
+        // randomize direction (true = L->R, false = R->L)
+        const leftToRight = Math.random() < 0.5;
+        const startX = leftToRight ? -80 : window.innerWidth + 80;
+        const face = leftToRight ? 1 : -1;
         img.style.cssText = `
           position: fixed;
           bottom: 0;
-          left: -80px;
+          left: ${startX}px;
           width: 72px; height: 48px; image-rendering: pixelated;
           z-index: 9997;
           opacity: 0;
-          transform: scaleX(1);
+          transform: scaleX(${face});
+          filter: hue-rotate(90deg) saturate(1.6) contrast(1.05);
           transition: opacity .4s ease;
+          box-shadow: 0 0 12px rgba(0,200,0,0.35);
         `;
         document.body.appendChild(img);
+
+        // stinky aura that follows the sprite
+        const stink = document.createElement("div");
+        stink.textContent = "💚💨";
+        stink.style.cssText = `position:fixed;left:${startX}px;bottom:52px;z-index:9996;opacity:.8;pointer-events:none;transition:opacity .4s ease;`;
+        document.body.appendChild(stink);
 
         // fade in
         requestAnimationFrame(() => (img.style.opacity = "1"));
 
-        // movement across screen
+        // movement across screen (slower, more random)
         const vw = window.innerWidth;
-        const duration = 12000 + Math.random() * 8000; // 12–20s cross
+        const duration = 18000 + Math.random() * 12000; // 18–30s cross
         const start = performance.now();
 
         const sfx = window.SFX;
-        if (sfx && sfx.play) sfx.play("enemy.spawn");
+        if (sfx && sfx.play) sfx.play("swallow.swoop");
+
+        // loop SFX while visible
+        let cancelled = false;
+        function loopSound(name, min = 1200, max = 2200) {
+          let id;
+          const tick = () => {
+            if (cancelled) return;
+            sfx && sfx.play && sfx.play(name);
+            const delay = min + Math.random() * (max - min);
+            id = setTimeout(tick, delay);
+          };
+          id = setTimeout(tick, min);
+          return () => clearTimeout(id);
+        }
+        const stopSwoop = loopSound("swallow.swoop", 1600, 2600);
+        const stopChomp = loopSound("swallow.chomp", 1300, 2000);
 
         let eaten = false;
         let raf;
         function step(t) {
           const p = Math.min(1, (t - start) / duration);
-          const x = -80 + p * (vw + 160);
+          const travel = leftToRight ? p : 1 - p;
+          const x = -80 + travel * (vw + 160);
+          // gentle bob and combine with facing
+          const bob = Math.sin(t / 300) * 3;
           img.style.left = x + "px";
+          img.style.transform = `scaleX(${face}) translateY(${bob}px)`;
+          // keep stink aura following
+          stink.style.left = x + "px";
+          stink.style.bottom = 52 + bob + "px";
+
+          // react to shimeji intersections frequently
+          tryIntersectReactions(img);
           if (p < 1) {
             raf = requestAnimationFrame(step);
           } else {
@@ -275,8 +313,13 @@ window.hearts = (function () {
           if (sfx && sfx.play) sfx.play("ui.unavailable");
         });
 
-  // On midpoint, attempt to eat
-  let eatTimer = setTimeout(() => tryEat(), Math.max(500, duration * (0.45 + Math.random() * 0.1)));
+        // Auto-eat failsafe after 3s if nothing blocked it
+        let autoEatTimer = setTimeout(() => tryEat(), 3000);
+        // Also attempt around midpoint as a backup
+        let eatTimer = setTimeout(
+          () => tryEat(),
+          Math.max(500, duration * (0.45 + Math.random() * 0.1))
+        );
 
         function tryEat() {
           if (eaten) return;
@@ -322,8 +365,10 @@ window.hearts = (function () {
               localStorage.setItem("pixelbelle-hearts", String(current - loss));
             }
             if (sfx && sfx.play) {
-              sfx.play("enemy.eat"); sfx.play("extra.wan"); sfx.play("extra.fx1");
+              sfx.play("swallow.chomp"); sfx.play("extra.wan"); sfx.play("extra.fx1");
             }
+            // user feedback
+            window.hearts && window.hearts.loveToast && window.hearts.loveToast("You lost 500 💖!");
             pulse(img, "#ff1493");
             fadeOut();
             return;
@@ -336,7 +381,8 @@ window.hearts = (function () {
             if (removed) {
               const eggs = Math.max(0, parseInt(localStorage.getItem("diva.eggs") || "0", 10) - 1);
               localStorage.setItem("diva.eggs", String(eggs));
-              if (sfx && sfx.play) { sfx.play("enemy.chomp"); sfx.play("extra.kya"); }
+              if (sfx && sfx.play) { sfx.play("swallow.chomp"); sfx.play("extra.kya"); }
+              window.hearts && window.hearts.loveToast && window.hearts.loveToast("A Miku was swallowed! 😭");
               pulse(img, "#ff4500");
               fadeOut();
               return;
@@ -358,18 +404,48 @@ window.hearts = (function () {
           if (sfx && sfx.play) sfx.play("enemy.leave");
           img.style.transition = "opacity .35s ease";
           img.style.opacity = "0";
+          stink.style.opacity = "0";
           setTimeout(cleanup, 400);
         }
 
         function cleanup() {
           cancelAnimationFrame(raf);
           clearTimeout(eatTimer);
+          clearTimeout(autoEatTimer);
+          cancelled = true;
+          stopSwoop && stopSwoop();
+          stopChomp && stopChomp();
           if (img && img.parentNode) img.parentNode.removeChild(img);
+          if (stink && stink.parentNode) stink.parentNode.removeChild(stink);
           scheduleNext();
         }
       } catch (e) {
         scheduleNext();
       }
+    }
+
+    function tryIntersectReactions(enemyImg) {
+      try {
+        const rect = enemyImg.getBoundingClientRect();
+        const nodes = document.querySelectorAll('.webmeji-container');
+        let hit = false;
+        nodes.forEach((n) => {
+          const r = n.getBoundingClientRect();
+          const overlap = !(r.right < rect.left || r.left > rect.right || r.bottom < rect.top || r.top > rect.bottom);
+          if (overlap) {
+            hit = true;
+            if (Math.random() < 0.4 && window.SFX && window.SFX.play) {
+              const picks = ["missXtake", "sona", "extra.wan"];
+              const k = picks[Math.floor(Math.random() * picks.length)];
+              window.SFX.play(k);
+            }
+          }
+        });
+        // occasionally knock everyone back by forcing a fall
+        if (hit && Math.random() < 0.25 && window.ShimejiFunctions && window.ShimejiFunctions.triggerMassFall) {
+          window.ShimejiFunctions.triggerMassFall();
+        }
+      } catch (_) {}
     }
 
     // initial schedule
