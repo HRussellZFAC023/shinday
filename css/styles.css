@@ -1300,7 +1300,7 @@ main {
 /* Beatpad Button Base */
 .beatpad-btn {
   position: relative !important;
-  min-height: 80px !important;
+  min-height: 92px !important;
   border: 1px solid transparent !important;
   border-radius: 16px !important;
   background: rgba(255, 255, 255, 0.95) !important;
@@ -1352,29 +1352,57 @@ main {
 }
 
 /* PlayStation Symbol Icons */
-.beatpad-btn::before {
-  content: attr(data-symbol);
+/* Big PS glyph centered */
+.beatpad-btn .ps-glyph {
   position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 24px !important;
-  font-weight: 900 !important;
-  opacity: 0.8;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 42px;
+  font-weight: 900;
+  opacity: 0.85;
+  text-shadow: 0 0 14px currentColor, 0 0 28px currentColor;
+  pointer-events: none;
+}
+.beatpad-btn .beatpad-text {
+  position: relative;
   z-index: 2;
+  padding-top: 44px; /* push label below glyph */
 }
 
-/* Word-of-the-Day iframe scaling to remove horizontal scrollbars */
+/* Remove any mysterious grid overlay */
+.beatpad-grid::before {
+  content: none !important;
+}
+
+/* HUD Miku sprite on cards */
+.hud-miku {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 88px;
+  max-width: 25%;
+  opacity: 0.9;
+  image-rendering: pixelated;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.15));
+}
+
+/* Word-of-the-Day iframe scaling: zoom OUT to see more content */
 .wod-iframe {
   position: relative;
   overflow: hidden;
-  min-height: 320px;
+  min-height: 420px; /* give more vertical space when scaled down */
 }
 .wod-iframe iframe {
   position: absolute;
-  top: -56px; /* push past site header */
-  left: -30px;
-  width: 150% !important;
-  height: 150% !important;
+  top: -20px; /* nudge up a bit to hide remote header */
+  left: -20px;
+  /* To zoom out: scale the iframe down, but expand its intrinsic size so the viewport fills container */
+  width: calc(100% / 0.66) !important;
+  height: calc(100% / 0.66) !important;
+  transform: scale(0.66);
+  transform-origin: 0 0;
   border: 0 !important;
   display: block !important;
 }
@@ -3821,12 +3849,15 @@ main {
   pointer-events: none !important;
   border: 4px solid #fff !important;
   backdrop-filter: blur(4px) !important;
-  display: block !important;
-  opacity: 1 !important;
+  /* Hidden by default; shown when .correct/.incorrect is applied */
+  display: none !important;
+  opacity: 0 !important;
   transition: opacity 0.3s ease !important;
 }
 
 .diva-feedback-enhanced.incorrect {
+  display: block !important;
+  opacity: 1 !important;
   background: linear-gradient(135deg, #ff4757 0%, #c44569 100%) !important;
   box-shadow:
     0 0 25px rgba(255, 71, 87, 0.9),
@@ -3836,6 +3867,8 @@ main {
 }
 
 .diva-feedback-enhanced.correct {
+  display: block !important;
+  opacity: 1 !important;
   background: linear-gradient(135deg, #2ed573 0%, #1e90ff 100%) !important;
   box-shadow:
     0 0 25px rgba(46, 213, 115, 0.9),
@@ -4627,10 +4660,94 @@ main {
   transition: all 0.3s ease;
 }
 
-/* Study section wallpaper using root.png */
+/* Study Canvas Styles */
 #study {
   --study-wall: url("../assets/root.png");
   background: #f6fbff var(--study-wall) center/cover no-repeat fixed;
+  min-height: 100vh;
+  position: relative;
+}
+
+.study-canvas-container {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+#studyCanvas {
+  width: 100%;
+  height: auto;
+  max-height: 80vh;
+  background: #ffffff;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  display: block;
+  image-rendering: pixelated;
+}
+
+.study-hud-overlay {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.study-hud-overlay .hud-pill {
+  background: rgba(255,255,255,.95);
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.study-controls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.study-controls .pixel-btn {
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+/* Canvas-specific animations */
+@keyframes canvasGlow {
+  0%, 100% { box-shadow: var(--shadow); }
+  50% { box-shadow: 0 0 20px rgba(165, 148, 249, 0.3), var(--shadow); }
+}
+
+#studyCanvas:focus-within {
+  animation: canvasGlow 2s ease-in-out infinite;
+}
+
+/* Responsive canvas */
+@media (max-width: 768px) {
+  #studyCanvas {
+    max-height: 60vh;
+  }
+  
+  .study-hud-overlay {
+    top: 8px;
+    right: 8px;
+    gap: 4px;
+  }
+  
+  .study-hud-overlay .hud-pill {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
 }
 
 /* Add a faint Miku background in the JP HUD widget/game select card */

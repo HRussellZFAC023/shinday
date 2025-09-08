@@ -356,16 +356,16 @@ const SITE_CONTENT = {
   },
 
   study: {
-    title: "🎤 Miku's Language Dojo",
+    title: "🎤 Miku's Language Dojo ",
     titleIcon: "thumbsUp",
     levelTitle: "Current Level",
     levelIcon: "starUwu",
     levelText: "Beginner - Working on Hiragana & basic vocab!",
     progressPercent: 35,
     wordOfDay: {
-      japanese: "かわいい",
-      romaji: "kawaii",
-      meaning: "cute, adorable",
+      japanese: "",
+      romaji: "",
+      meaning: "",
       externalIframe: "https://kanjiday.com/kanji/",
     },
     goalsTitle: "Goals",

@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -203,8 +203,7 @@
 
             <!-- Japanese games (via Kotoba API) -->
             <section id="study" class="content-section">
-              <h2>🎌 Japanese Games</h2>
-              <div class="study-grid" id="jpGames">
+              <div id="jpGames">
                 <!-- Populated by JS -->
               </div>
             </section>
@@ -353,12 +352,9 @@
                 </div>
               </div>
 
-              <div class="gallery">
-                <h3>🖼️ Miku Gallery</h3>
-                <br />
-                <div class="image-gallery" id="mikuGallery">
-                  <!-- Will be populated by JS -->
-                </div>
+              <div class="image-gallery"  id="mikuGallery">
+
+                <!-- Will be populated by JS -->
               </div>
               <br />
               <div class="game-widget">
@@ -531,17 +527,9 @@
     <script src="./js/modules/achievements.js"></script>
     <script src="./js/modules/jukebox.js"></script>
     <script src="./js/modules/dex.js"></script>
-  <script src="./js/modules/visual-effects.js"></script>
+    <script src="./js/modules/visual-effects.js"></script>
     <script src="./js/modules/hud.js"></script>
-    <script src="./js/modules/games/beatpad.js"></script>
-    <script src="./js/modules/games/dispatcher.js"></script>
-    <script src="./js/modules/games/quiz-engine.js"></script>
-    <script src="./js/modules/study.js"></script>
-    <script src="./js/modules/games/index.js"></script>
-    <script src="./js/modules/games/vocab.js"></script>
-    <script src="./js/modules/games/kanji.js"></script>
-    <script src="./js/modules/games/kotoba.js"></script>
-    <script src="./js/modules/games/typing.js"></script>
+    <!-- Removed legacy per-game scripts; unified study-canvas handles the JP section -->
     <script src="./js/modules/quests.js"></script>
     <script src="./js/modules/cursor.js"></script>
     <script src="./js/modules/hearts.js"></script>
@@ -556,5 +544,7 @@
     <script src="./js/modules/mikuCore.js"></script>
 
     <script src="./js/main.js"></script>
+    <!-- Unified Study Canvas (chat-first JP section) -->
+    <script src="./js/modules/study-canvas.js"></script>
   </body>
 </html>

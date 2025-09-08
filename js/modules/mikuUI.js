@@ -499,9 +499,10 @@ window.MikuUI = (function () {
           const jp = root.querySelector(".japanese");
           const romaji = root.querySelector(".romaji");
           const meaning = root.querySelector(".meaning");
-          if (jp) jp.textContent = C.study.wordOfDay.japanese || "";
-          if (romaji) romaji.textContent = C.study.wordOfDay.romaji || "";
-          if (meaning) meaning.textContent = C.study.wordOfDay.meaning || "";
+          const src = window.WOD || C.study.wordOfDay || {};
+          if (jp) jp.textContent = src.word || src.japanese || "";
+          if (romaji) romaji.textContent = src.reading || src.romaji || "";
+          if (meaning) meaning.textContent = src.meaning || "";
         };
         setWod(wodCard);
         setWod(wodInline);

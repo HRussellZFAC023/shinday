@@ -239,12 +239,7 @@
       card.addEventListener("click", () =>
         openDetails(card.getAttribute("data-url"))
       );
-      card.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          openDetails(card.getAttribute("data-url"));
-        }
-      });
+     
     });
 
     // Clear new flags when Dex renders (but preserve the localStorage NEW set)

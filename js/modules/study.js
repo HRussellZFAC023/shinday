@@ -11,17 +11,17 @@
       (C.study && C.study.wordOfDay && C.study.wordOfDay.externalIframe) ||
       "https://kanjiday.com/kanji/";
     grid.innerHTML = `
-      <div class="study-card" id="wodCard" style="grid-column: 1 / -1; display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:stretch;">
+    <div class="study-card" id="wodCard" style="grid-column: 1 / -1; display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:stretch; position:relative;">
         <div class="word-of-day" style="padding:10px;border:2px solid var(--border);border-radius:12px;background:#fff;">
-          <h3 style="margin-top:0">📖 Word of the Day</h3>
+      <h3 style="margin-top:0;display:flex;align-items:center;justify-content:space-between;gap:8px">📖 Word of the Day <button id="wodNext" class="pixel-btn" title="Next word">Next</button></h3>
           <div style="font-size:22px;font-weight:900" class="japanese">${wod.japanese || ""}</div>
           <div class="romaji" style="opacity:.8">${wod.romaji || ""}</div>
           <div class="meaning">${wod.meaning || ""}</div>
         </div>
         <div class="wod-iframe" style="min-height:320px;border:2px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;position:relative">
-          <iframe id="wodIframe" src="${wodIframeSrc}"
-            style="position:absolute;top:-56px;left:-30px;width:150%;height:150%;border:0" loading="lazy" referrerpolicy="no-referrer"></iframe>
+          <iframe id="wodIframe" src="${wodIframeSrc}" loading="lazy" referrerpolicy="no-referrer"></iframe>
         </div>
+        <img class="hud-miku" alt="Miku" src="./assets/pixiebel.gif" />
       </div>
       <!-- Game selection tiles (landing view) -->
       <div class="study-card" id="gameTiles" style="grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
@@ -30,7 +30,8 @@
         <button class="pixel-btn" data-game="kotoba">ことば Kotoba</button>
         <button class="pixel-btn" data-game="mikuChat">💬 Miku × Chat</button>
       </div>
-  <div class="game-widget" id="vocabCard" style="display:none">
+      <div class="game-widget" id="vocabCard" style="display:none;position:relative">
+        <img class="hud-miku" alt="Miku" src="./assets/pixiebel.gif" />
         <h3>🗣️ Vocab</h3>
         <div id="vocabQuestion"></div>
         <div id="vocabChoices" class="beatpad-grid"></div>
@@ -46,7 +47,8 @@
         </div>
         <div id="vocabFeedback" class="diva-feedback-enhanced" style="display:none"></div>
       </div>
-  <div class="game-widget" id="kanjiCard" style="display:none">
+      <div class="game-widget" id="kanjiCard" style="display:none;position:relative">
+        <img class="hud-miku" alt="Miku" src="./assets/pixiebel.gif" />
         <h3>漢字 Kanji</h3>
         <div class="mode-row" id="kanjiMeta">
           <button class="pixel-btn mode-option active" data-mode="meaning">Meaning→Kanji</button>
@@ -62,7 +64,8 @@
         </div>
         <div id="kanjiFeedback" class="diva-feedback-enhanced" style="display:none"></div>
       </div>
-  <div class="game-widget" id="kotobaCard" style="display:none">
+      <div class="game-widget" id="kotobaCard" style="display:none;position:relative">
+        <img class="hud-miku" alt="Miku" src="./assets/pixiebel.gif" />
         <h3>ことば Kotoba</h3>
         <div id="kotobaChat" class="chat-transcript" style="display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:10px;background:#fff;border:2px solid var(--border);max-height:220px;overflow:auto"></div>
         <div id="kotobaChoices" class="chat-choices" style="display:flex;flex-direction:column;gap:8px"></div>
@@ -75,7 +78,8 @@
         </div>
         <div id="kotobaFeedback" class="diva-feedback-enhanced" style="display:none"></div>
       </div>
-  <div class="game-widget" id="mikuChatCard" style="display:none">
+      <div class="game-widget" id="mikuChatCard" style="display:none;position:relative">
+        <img class="hud-miku" alt="Miku" src="./assets/pixiebel.gif" />
         <h3>💬 Miku × Chat</h3>
         <div id="mikuChatTranscript" class="chat-transcript" style="display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:10px;background:#fff;border:2px solid var(--border);max-height:240px;overflow:auto"></div>
         <div id="mikuChatChoices" class="beatpad-grid"></div>
@@ -119,6 +123,49 @@
           startSelected();
         });
       }
+    }
+  }
+
+  async function refreshWod() {
+    const card = document.getElementById("wodCard");
+    if (!card) return;
+    const jpEl = card.querySelector(".japanese");
+    const romajiEl = card.querySelector(".romaji");
+    const meaningEl = card.querySelector(".meaning");
+    try {
+      // Try to pull a fresh word similar to WOD prefetch
+      const page = Math.floor(Math.random() * 50) + 1;
+      const url = `https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`;
+      const fetchJson = async (u) => {
+        try {
+          const r = await fetch(u, { cache: "no-store" });
+          if (r.ok) return await r.json();
+        } catch (_) {}
+        try {
+          const rr = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`);
+          if (rr.ok) {
+            const jj = await rr.json();
+            if (jj && jj.contents) return JSON.parse(jj.contents);
+          }
+        } catch (_) {}
+        try {
+          const rr2 = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`);
+          if (rr2.ok) return await rr2.json();
+        } catch (_) {}
+        return null;
+      };
+      const json = await fetchJson(url);
+      const arr = Array.isArray(json?.data) ? json.data : [];
+      if (!arr.length) throw new Error("no-data");
+      const pick = arr[Math.floor(Math.random() * arr.length)];
+      const word = (pick.japanese && (pick.japanese[0].word || pick.japanese[0].reading)) || "";
+      const reading = (pick.japanese && pick.japanese[0].reading) || "";
+      const meaning = (pick.senses && pick.senses[0]?.english_definitions?.[0]) || "";
+      if (jpEl) jpEl.textContent = word || reading || "";
+      if (romajiEl) romajiEl.textContent = reading || "";
+      if (meaningEl) meaningEl.textContent = meaning || "";
+    } catch (e) {
+      if (meaningEl) meaningEl.textContent = "(offline) try again";
     }
   }
 
@@ -217,6 +264,8 @@
     const grid = ensureStudyGrid();
     if (!grid) return;
     wireHudControls();
+  const next = document.getElementById("wodNext");
+  if (next) next.addEventListener("click", refreshWod);
   mountGames();
   // Landing view: show tiles only; games hidden until selection
   }

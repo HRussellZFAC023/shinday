@@ -236,9 +236,9 @@ window.shop = (function () {
       });
     }
 
-    if (newBtnShield) {
+  if (newBtnShield) {
       newBtnShield.addEventListener("click", () => {
-        const cost = (ItemsC.shield && ItemsC.shield.cost) || 50;
+    const cost = (ItemsC.shield && ItemsC.shield.cost) || 50;
         const now = Date.now();
 
         // Check if any item is currently active

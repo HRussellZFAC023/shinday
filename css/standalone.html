@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JP Games · Vocab Pop · Miku × Chat · Kanji Master</title>
+  <style>
+    /* ====== KAWAII PASTEL THEME (extracted + adapted from styles.css) ====== */
+    :root{
+      --pastel-blue:#bde3ff;--pastel-pink:#ffd1ec;--pastel-mint:#cff6e6;--pastel-purple:#e6d1ff;--pastel-yellow:#fff3d1;
+      --ink:#2b2b44;--ink-soft:#596286;--panel:#f8fcff;--panel-alt:#f1f8ff;--nav:#edf4ff;--accent:#6bc3ff;--accent-2:#a594f9;--border:#b7d7ff;
+      --gradient-bg:linear-gradient(135deg,#bde3ff 0%,#ffd1ec 25%,#cff6e6 50%,#e6d1ff 75%,#fff3d1 100%);
+      --shadow:0 2px 0 rgba(43,43,68,.15),0 8px 24px rgba(43,43,68,.12)
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;padding:0}
+    body{font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--gradient-bg);background-attachment:fixed;color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;image-rendering:pixelated}
+
+    /* Header */
+    header{max-width:1100px;margin:20px auto 10px;border-radius:20px;position:relative;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow);background:
+      linear-gradient(135deg,rgba(189,227,255,.9),rgba(255,209,236,.9));}
+    .header-inner{display:flex;gap:16px;align-items:center;padding:16px 20px}
+    .site-title{font-size:28px;font-weight:900;margin:0;text-shadow:2px 2px 0 rgba(255,255,255,.85)}
+    .site-sub{margin:2px 0 0 0;color:var(--ink-soft);font-style:italic}
+    .floating-mikus{position:absolute;top:8px;right:12px;pointer-events:none}
+    .float-miku{width:60px;animation:float 6s ease-in-out infinite}
+    @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+
+    /* Status bar */
+    .status-bar{max-width:1100px;margin:0 auto 14px;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border:2px solid var(--border);border-top:none;border-radius:0 0 20px 20px;padding:10px 16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .status-left{display:flex;gap:12px;align-items:center}
+    .press-start{font-family:"Press Start 2P",monospace;font-weight:900;letter-spacing:2px;color:var(--ink);background:#fff;border:1px solid var(--border);border-radius:12px;padding:8px 10px;box-shadow:var(--shadow);animation:blink 1s steps(2,start) infinite}
+    @keyframes blink{50%{opacity:.35}}
+
+    /* Layout */
+    #container{max-width:1100px;margin:0 auto;padding:0 16px 40px}
+    .grid{display:grid;grid-template-columns:320px 1fr;gap:16px}
+    aside{background:var(--panel-alt);border:2px solid var(--border);border-radius:15px;box-shadow:var(--shadow);padding:16px}
+    main{background:var(--panel);border:2px solid var(--border);border-radius:15px;box-shadow:var(--shadow);padding:16px;min-height:640px}
+
+    /* Menu tiles */
+    .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:6px 0 14px}
+    .menu-tile{position:relative;padding:18px;border-radius:12px;background:linear-gradient(145deg,#fff,#f3f3ff);border:2px solid var(--border);box-shadow:var(--shadow);font-weight:900;cursor:pointer;transition:transform .12s ease, box-shadow .12s ease}
+    .menu-tile:hover{transform:translateY(-2px);box-shadow:0 8px 16px rgba(43,43,68,.2)}
+    .menu-tile .corner-badge{position:absolute;left:8px;top:8px;background:rgba(255,255,255,.9);border:2px solid var(--border);border-radius:999px;padding:2px 8px;font-size:12px}
+
+    /* Canvas card */
+    .game-card{position:relative;border:2px dashed var(--border);border-radius:12px;background:rgba(255,255,255,.6);padding:12px;min-height:500px}
+    canvas{display:block;width:100%;height:480px;max-height:60vh;background:#ffffff;border:2px solid var(--border);border-radius:10px;box-shadow:var(--shadow)}
+
+    /* Pixel-style buttons */
+    .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .pixel-btn{background:linear-gradient(180deg,#ffffff,#ffe9f6);border:1px solid var(--accent);border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer;box-shadow:0 6px 14px rgba(43,43,68,.15), inset 0 -2px 0 rgba(0,0,0,.05);}
+    .pixel-btn:hover{transform:translateY(-2px) scale(1.02)}
+
+    /* HUD */
+    .hud{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+    .hud .pill{border:2px solid var(--border);border-radius:999px;padding:6px 10px;background:#fff;font-weight:800}
+
+    .small{font-size:12px;color:var(--ink-soft)}
+    .diag{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size:12px; white-space:pre-wrap; background:#fff; border:1px dashed var(--border); border-radius:8px; padding:8px;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <img class="float-miku" alt="Miku" src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Note_quaver.svg" />
+      <div>
+        <h1 class="site-title">JP Games — Vocab Pop · Miku × Chat · Kanji Master</h1>
+        <p class="site-sub">Pastel, pixel-cute study games — standalone canvas build</p>
+      </div>
+      <div class="floating-mikus">
+        <img class="float-miku" alt="float1" src="https://upload.wikimedia.org/wikipedia/commons/4/45/Musicalnotes.svg" />
+        <img class="float-miku" alt="float2" src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Note_quaver.svg" />
+      </div>
+    </div>
+  </header>
+  <div class="status-bar">
+    <div class="status-left">
+      <span class="press-start">PRESS START</span>
+      <span class="small">Select a mode below · Click on the canvas to answer</span>
+    </div>
+    <div class="hud">
+      <span class="pill" id="hudGame">Mode: —</span>
+      <span class="pill" id="hudScore">Score: 0</span>
+      <span class="pill" id="hudStreak">Streak: 0</span>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="grid">
+      <aside>
+        <h3 style="margin-top:0">Start Menu</h3>
+        <div class="menu-grid">
+          <div class="menu-tile" data-game="vocab">
+            <span class="corner-badge">A</span>
+            Vocab Pop (JP → EN)
+          </div>
+          <div class="menu-tile" data-game="miku">
+            <span class="corner-badge">B</span>
+            Miku × Chat
+          </div>
+          <div class="menu-tile" data-game="kanji">
+            <span class="corner-badge">C</span>
+            Kanji Master (Meaning → Kanji)
+          </div>
+        </div>
+        <div class="controls">
+          <button class="pixel-btn" id="btnReset">Reset</button>
+          <button class="pixel-btn" id="btnHint">Hint</button>
+          <button class="pixel-btn" id="btnNext">Next</button>
+        </div>
+        <details class="small" style="margin-top:10px;">
+          <summary>Diagnostics</summary>
+          <div id="diag" class="diag">Running self-tests…</div>
+        </details>
+        <p class="small">Images are placeholders; drop in your sprites later. Layout/colors mirror your pastel CSS.</p>
+      </aside>
+      <main>
+        <div class="game-card">
+          <canvas id="gameCanvas" width="960" height="540"></canvas>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+  // ===== Core Canvas Engine (single-canvas, three mini-games) =====
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const hudGame = document.getElementById('hudGame');
+  const hudScore = document.getElementById('hudScore');
+  const hudStreak = document.getElementById('hudStreak');
+  const diag = document.getElementById('diag');
+
+  // Placeholder sprite(s) — load safely with CORS + guards
+  const spriteNote = new Image();
+  spriteNote.crossOrigin = 'anonymous';
+  let spriteReady = false;
+  spriteNote.onload = () => { spriteReady = true; safeRerender('spriteNote loaded'); };
+  spriteNote.onerror = () => { spriteReady = false; logDiag('spriteNote failed to load; using fallback glyph.'); safeRerender('spriteNote error'); };
+  spriteNote.src = 'https://upload.wikimedia.org/wikipedia/commons/6/6a/Note_quaver.svg';
+
+  // Global game state
+  const state = {
+    mode: null, // 'vocab' | 'miku' | 'kanji'
+    score: 0,
+    streak: 0,
+    question: null, // active question object
+    hitboxes: [], // clickable regions
+    hint: false,
+  };
+
+  // Utility: draw rounded rect
+  function roundRect(x,y,w,h,r){
+    const rr = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+rr,y);
+    ctx.arcTo(x+w,y,x+w,y+h,rr);
+    ctx.arcTo(x+w,y+h,x,y+h,rr);
+    ctx.arcTo(x,y+h,x,y,rr);
+    ctx.arcTo(x,y,x+w,y,rr);
+    ctx.closePath();
+  }
+
+  function setHUD(){
+    hudGame.textContent = `Mode: ${state.mode ? state.mode.toUpperCase() : '—'}`;
+    hudScore.textContent = `Score: ${state.score}`;
+    hudStreak.textContent = `Streak: ${state.streak}`;
+  }
+
+  function pastelBG(){
+    const grd = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+    grd.addColorStop(0,'#bde3ff');
+    grd.addColorStop(.25,'#ffd1ec');
+    grd.addColorStop(.5,'#cff6e6');
+    grd.addColorStop(.75,'#e6d1ff');
+    grd.addColorStop(1,'#fff3d1');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+
+  function drawHeader(title){
+    // Decorative header panel
+    ctx.save();
+    roundRect(20,20, canvas.width-40, 70, 16);
+    ctx.fillStyle = 'rgba(255,255,255,.85)';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#b7d7ff';
+    ctx.stroke();
+    // Title
+    ctx.fillStyle = '#2b2b44';
+    ctx.font = '700 28px Nunito, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(title, 40, 66);
+    // Sprite (safe): only draw if fully loaded; otherwise fallback glyph ♪
+    if (spriteReady) {
+      try {
+        ctx.drawImage(spriteNote, canvas.width-80, 30, 40, 40);
+      } catch (e) {
+        // In case browser still flags the image state, draw fallback
+        ctx.fillStyle = '#a594f9';
+        ctx.font = '900 34px system-ui, sans-serif';
+        ctx.fillText('♪', canvas.width-58, 64);
+        logDiag('drawImage threw despite ready; used fallback.');
+      }
+    } else {
+      ctx.fillStyle = '#a594f9';
+      ctx.font = '900 34px system-ui, sans-serif';
+      ctx.fillText('♪', canvas.width-58, 64);
+    }
+    ctx.restore();
+  }
+
+  function drawButton(label, x, y, w, h, highlight=false){
+    ctx.save();
+    roundRect(x,y,w,h,12);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = highlight ? '#a594f9' : '#b7d7ff';
+    ctx.stroke();
+    ctx.fillStyle = highlight ? '#a594f9' : '#596286';
+    ctx.font = '700 22px Nunito, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, x+w/2, y+h/2);
+    ctx.restore();
+  }
+
+  function registerHitbox(x,y,w,h, onClick){
+    state.hitboxes.push({x,y,w,h,onClick});
+  }
+
+  canvas.addEventListener('click', (e)=>{
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (canvas.width/rect.width);
+    const my = (e.clientY - rect.top) * (canvas.height/rect.height);
+    for(const hb of state.hitboxes){
+      if(mx>=hb.x && mx<=hb.x+hb.w && my>=hb.y && my<=hb.y+hb.h){
+        hb.onClick();
+        return;
+      }
+    }
+  });
+
+  // ===== Game 1: VOCAB POP (JP → EN) =====
+  const VOCAB = [
+    {jp:'犬', options:['cat','dog','fish','bird'], answer:1},
+    {jp:'水', options:['fire','earth','water','wind'], answer:2},
+    {jp:'寿司', options:['burger','sushi','ramen','cake'], answer:1},
+    {jp:'学校', options:['school','bank','store','train'], answer:0},
+    {jp:'空', options:['sky','river','mountain','forest'], answer:0},
+  ];
+
+  function startVocab(){
+    state.mode = 'vocab';
+    state.streak = 0; setHUD();
+    nextVocab();
+  }
+
+  function nextVocab(){
+    state.hitboxes.length = 0;
+    state.question = VOCAB[Math.floor(Math.random()*VOCAB.length)];
+    renderVocab();
+  }
+
+  function renderVocab(){
+    pastelBG();
+    drawHeader('Vocab Pop — JP → EN');
+
+    // Japanese prompt card
+    ctx.save();
+    roundRect(60,120, canvas.width-120, 120, 16);
+    ctx.fillStyle = 'rgba(255,255,255,.9)';ctx.fill();
+    ctx.lineWidth=2;ctx.strokeStyle='#b7d7ff';ctx.stroke();
+    ctx.fillStyle='#2b2b44';
+    ctx.font='700 64px Noto Sans JP, sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(state.question.jp, canvas.width/2, 180);
+    ctx.restore();
+
+    // Options grid (4 choices)
+    const gridX = 120, gridY = 280, W = canvas.width-240, H = 200;
+    const rows = 2, cols = 2; const pad = 16; const bw = (W - pad)/2, bh = (H - pad)/2;
+    const indices = [0,1,2,3].sort(()=>Math.random()-.5);
+
+    // Keep a stable mapping for hitboxes per render
+    const placed = [];
+    for(let r=0;r<rows;r++){
+      for(let c=0;c<cols;c++){
+        const idx = indices[r*cols+c];
+        const label = state.question.options[idx];
+        const x = gridX + c*(bw+pad);
+        const y = gridY + r*(bh+pad);
+        drawButton(label, x, y, bw, bh, state.hint && idx===state.question.answer);
+        placed.push({idx,x,y,w:bw,h:bh});
+      }
+    }
+    // Register hitboxes
+    placed.forEach(p=>{
+      registerHitbox(p.x,p.y,p.w,p.h, ()=>{
+        const correct = p.idx===state.question.answer;
+        if(correct){ state.score+=10; state.streak++; flashJudge('COOL'); }
+        else{ state.streak=0; flashJudge('MISS', `Correct: ${state.question.options[state.question.answer]}`); }
+        setHUD();
+        setTimeout(nextVocab, 450);
+      });
+    });
+  }
+
+  // ===== Game 2: MIKU × CHAT (JP → EN chat bubbles rendered on canvas) =====
+  const CHAT = [
+    {prompt:'「こんにちは」って、どういう意味？', correct:'Hello', options:['Hello','Goodbye','Thank you','Sorry']},
+    {prompt:'「さようなら」って、どういう意味？', correct:'Goodbye', options:['Yes','No','Goodbye','Please']},
+    {prompt:'「ありがとう」って、どういう意味？', correct:'Thank you', options:['Hello','Thank you','Sorry','See you']},
+  ];
+  let chatCurrent = null;
+
+  function startMikuChat(){
+    state.mode = 'miku'; state.streak=0; setHUD();
+    nextChat();
+  }
+  function nextChat(){
+    state.hitboxes.length = 0; state.hint=false;
+    chatCurrent = CHAT[Math.floor(Math.random()*CHAT.length)];
+    renderChat();
+  }
+  function drawBubble(text, x, y, w, role='miku'){
+    ctx.save();
+    const grad = ctx.createLinearGradient(x,y,x+w,y+80);
+    if(role==='miku'){ grad.addColorStop(0,'#bde3ff'); grad.addColorStop(1,'#cff6e6'); }
+    else { grad.addColorStop(0,'#ffd1ec'); grad.addColorStop(1,'#e6d1ff'); }
+    roundRect(x,y,w,80,14); ctx.fillStyle=grad; ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle='#b7d7ff'; ctx.stroke();
+    ctx.fillStyle='#2b2b44'; ctx.font='700 18px Nunito, sans-serif';
+    ctx.textAlign='left'; ctx.textBaseline='top';
+    const pad=12; wrapText(text, x+pad, y+pad, w-2*pad, 22);
+    ctx.restore();
+  }
+  function wrapText(text, x, y, maxWidth, lineHeight){
+    const words = text.split(/\s+/); let line=''; let yy=y;
+    ctx.save(); ctx.fillStyle='#2b2b44';
+    for(let n=0;n<words.length;n++){
+      const test=line+words[n]+" ";
+      if(ctx.measureText(test).width>maxWidth && n>0){
+        ctx.fillText(line, x, yy); line=words[n]+" "; yy+=lineHeight;
+      } else { line=test; }
+    }
+    ctx.fillText(line, x, yy); ctx.restore();
+  }
+  function renderChat(){
+    pastelBG();
+    drawHeader('Miku × Chat — What does it mean?');
+    // Miku asks
+    drawBubble('ミク: '+chatCurrent.prompt, 60, 120, canvas.width-120, 'miku');
+    // Options as smaller bubbles
+    const baseY = 240; const bw = (canvas.width-180)/2; const bh=60; const pad=20;
+    const shuffled = chatCurrent.options.slice().sort(()=>Math.random()-.5);
+    shuffled.forEach((opt,i)=>{
+      const row = Math.floor(i/2); const col=i%2;
+      const x = 60 + col*(bw+pad);
+      const y = baseY + row*(bh+pad);
+      drawBubble('あなた: '+opt, x, y, bw, 'user');
+      registerHitbox(x,y,bw,bh, ()=>{
+        const correct = (opt===chatCurrent.correct);
+        if(correct){ state.score+=5; state.streak++; flashJudge('GREAT','正解だよ！'); }
+        else{ state.streak=0; flashJudge('MISS', `正解: ${chatCurrent.correct}`); }
+        setHUD();
+        setTimeout(nextChat, 600);
+      });
+    });
+  }
+
+  // ===== Game 3: KANJI MASTER (Meaning → Kanji) =====
+  const KANJI = [
+    {meaning:'Water', choices:['火','水','風','地'], answer:1},
+    {meaning:'Tree', choices:['木','石','草','雨'], answer:0},
+    {meaning:'Gold', choices:['金','土','銀','銅'], answer:0},
+    {meaning:'Person', choices:['人','入','大','小'], answer:0},
+    {meaning:'Day/Sun', choices:['月','木','日','目'], answer:2},
+  ];
+  function startKanji(){ state.mode='kanji'; state.streak=0; setHUD(); nextKanji(); }
+  function nextKanji(){ state.hitboxes.length=0; state.question = KANJI[Math.floor(Math.random()*KANJI.length)]; renderKanji(); }
+  function renderKanji(){
+    pastelBG(); drawHeader('Kanji Master — Meaning → Kanji');
+    // Meaning card
+    ctx.save(); roundRect(60,120, canvas.width-120, 120, 16); ctx.fillStyle='rgba(255,255,255,.9)'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='#b7d7ff'; ctx.stroke();
+    ctx.fillStyle='#2b2b44'; ctx.font='700 36px Nunito, sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(state.question.meaning, canvas.width/2, 180);
+    ctx.restore();
+    // Options
+    const baseY = 280; const W = canvas.width-240; const pad=16; const bw=(W-pad)/2; const bh=100; const gridX=120;
+    const indices=[0,1,2,3].sort(()=>Math.random()-.5); const placed=[];
+    for(let r=0;r<2;r++){
+      for(let c=0;c<2;c++){
+        const idx = indices[r*2+c]; const ch = state.question.choices[idx];
+        const x = gridX + c*(bw+pad); const y = baseY + r*(bh+pad);
+        drawButton(ch, x, y, bw, bh, state.hint && idx===state.question.answer);
+        placed.push({idx,x,y,w:bw,h:bh});
+      }
+    }
+    placed.forEach(p=>{
+      registerHitbox(p.x,p.y,p.w,p.h, ()=>{
+        const ok = p.idx===state.question.answer;
+        if(ok){ state.score+=20; state.streak++; flashJudge('COOL','正解!'); }
+        else{ state.streak=0; flashJudge('MISS', `正解: ${state.question.choices[state.question.answer]}`); }
+        setHUD(); setTimeout(nextKanji, 500);
+      })
+    });
+  }
+
+  // ===== Shared feedback (DIVA-style judge text) =====
+  let judgeTimer=null; let judgeText=null; let judgeSub=null; let judgeClass='COOL';
+  function flashJudge(kind='COOL', sub=''){
+    judgeText = kind; judgeSub=sub; judgeClass=kind; clearTimeout(judgeTimer);
+    // draw transient overlay
+    const t0 = performance.now();
+    function loop(){
+      if(state.mode) (state.mode==='vocab' ? renderVocab : state.mode==='miku' ? renderChat : renderKanji)();
+      // overlay
+      ctx.save();
+      ctx.globalAlpha = 0.9; roundRect(canvas.width/2-120, 84, 240, 54, 12); ctx.fillStyle='rgba(255,255,255,.95)'; ctx.fill(); ctx.strokeStyle='#b7d7ff'; ctx.lineWidth=2; ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = (kind==='COOL')?'#35a7ff':(kind==='GREAT')?'#00c853':(kind==='FINE')?'#ffb300':'#ff1744';
+      ctx.font='900 26px Nunito, sans-serif'; ctx.textAlign='center'; ctx.fillText(judgeText, canvas.width/2, 116);
+      if(judgeSub){ ctx.fillStyle='#596286'; ctx.font='700 14px Nunito, sans-serif'; ctx.fillText(judgeSub, canvas.width/2, 136); }
+      ctx.restore();
+      if(performance.now()-t0 < 380){ requestAnimationFrame(loop); }
+    }
+    requestAnimationFrame(loop);
+    judgeTimer = setTimeout(()=>{ judgeText=null; judgeSub=null; }, 380);
+  }
+
+  // ===== Controls (Reset/Hint/Next) =====
+  document.getElementById('btnReset').addEventListener('click', ()=>{ state.score=0; state.streak=0; setHUD(); if(state.mode==='vocab') renderVocab(); else if(state.mode==='miku') renderChat(); else if(state.mode==='kanji') renderKanji(); });
+  document.getElementById('btnHint').addEventListener('click', ()=>{ state.hint=true; if(state.mode==='vocab') renderVocab(); else if(state.mode==='kanji') renderKanji(); });
+  document.getElementById('btnNext').addEventListener('click', ()=>{ if(state.mode==='vocab') nextVocab(); else if(state.mode==='miku') nextChat(); else if(state.mode==='kanji') nextKanji(); });
+
+  // ===== Menu selections =====
+  document.querySelectorAll('.menu-tile').forEach(tile=>{
+    tile.addEventListener('click', ()=>{
+      const g = tile.getAttribute('data-game');
+      if(g==='vocab') startVocab();
+      else if(g==='miku') startMikuChat();
+      else if(g==='kanji') startKanji();
+    });
+  });
+
+  function rerender(){
+    if(state.mode==='vocab') renderVocab();
+    else if(state.mode==='miku') renderChat();
+    else if(state.mode==='kanji') renderKanji();
+    else drawAttract();
+  }
+  function safeRerender(msg){
+    try{ rerender(); if(msg) logDiag(msg); }catch(e){ logDiag('rerender error: '+e.message); }
+  }
+  function logDiag(s){ if(diag) diag.textContent = (diag.textContent? diag.textContent+"\n" : '') + '· '+s; }
+
+  // Initial screen + self-tests
+  function drawAttract(){
+    pastelBG(); drawHeader('Select a mode on the left to begin');
+    ctx.fillStyle='#596286'; ctx.font='700 18px Nunito, sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Vocab Pop · Miku × Chat · Kanji Master', canvas.width/2, canvas.height/2 - 10);
+    ctx.fillText('Click a tile to start — answers are clickable regions on canvas', canvas.width/2, canvas.height/2 + 24);
+  }
+  (function boot(){
+    // Self-test: ensure drawHeader is safe before image load
+    try { drawAttract(); logDiag('drawHeader safe before sprite load ✔'); } catch(e){ logDiag('drawHeader threw before load ✖: '+e.message); }
+    // When image loads, onload will rerender and update diag
+    if (spriteNote.complete && spriteNote.naturalWidth > 0) { spriteReady = true; logDiag('spriteNote was already cached/ready'); safeRerender('cached sprite redraw'); }
+  })();
+  </script>
+</body>
+</html>
