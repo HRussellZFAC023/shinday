@@ -10,7 +10,7 @@
     grid.innerHTML = `
     <div class="study-card" id="studyControls" style="grid-column:1 / -1;display:flex;align-items:center;gap:8px">
       <label for="studyDifficulty">Difficulty</label>
-      <input type="range" id="studyDifficulty" min="1" max="5" value="1" />
+      <input type="range" id="studyDifficulty" min="1" max="9" value="1" />
       <span id="studyDifficultyLabel">1</span>
       <span class="spacer"></span>
       <span>⏱️ <strong id="songTimer">180</strong>s</span>
@@ -141,41 +141,17 @@
     const jpEl = card.querySelector(".japanese");
     const romajiEl = card.querySelector(".romaji");
     const meaningEl = card.querySelector(".meaning");
-    try {
-      // Try to pull a fresh word similar to WOD prefetch
-      const page = Math.floor(Math.random() * 50) + 1;
-      const url = `https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`;
-      const fetchJson = async (u) => {
-        try {
-          const r = await fetch(u, { cache: "no-store" });
-          if (r.ok) return await r.json();
-        } catch (_) {}
-        try {
-          const rr = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`);
-          if (rr.ok) {
-            const jj = await rr.json();
-            if (jj && jj.contents) return JSON.parse(jj.contents);
-          }
-        } catch (_) {}
-        try {
-          const rr2 = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`);
-          if (rr2.ok) return await rr2.json();
-        } catch (_) {}
-        return null;
-      };
-      const json = await fetchJson(url);
-      const arr = Array.isArray(json?.data) ? json.data : [];
-      if (!arr.length) throw new Error("no-data");
-      const pick = arr[Math.floor(Math.random() * arr.length)];
-      const word = (pick.japanese && (pick.japanese[0].word || pick.japanese[0].reading)) || "";
-      const reading = (pick.japanese && pick.japanese[0].reading) || "";
-      const meaning = (pick.senses && pick.senses[0]?.english_definitions?.[0]) || "";
-      if (jpEl) jpEl.textContent = word || reading || "";
-      if (romajiEl) romajiEl.textContent = reading || "";
-      if (meaningEl) meaningEl.textContent = meaning || "";
-    } catch (e) {
-      if (meaningEl) meaningEl.textContent = "(offline) try again";
+    await (window.JLPT_READY || Promise.resolve());
+    const pack = window.JLPT.vocab && window.JLPT.vocab[window.State?.difficulty || 1];
+    const arr = Array.isArray(pack) ? pack : [];
+    if (!arr.length) {
+      if (meaningEl) meaningEl.textContent = "(offline)";
+      return;
     }
+    const pick = arr[Math.floor(Math.random() * arr.length)];
+    if (jpEl) jpEl.textContent = pick.word || pick.reading || "";
+    if (romajiEl) romajiEl.textContent = pick.romaji || "";
+    if (meaningEl) meaningEl.textContent = pick.meaning || "";
   }
 
   function initChatGame() {
@@ -265,6 +241,7 @@
     const grid = ensureStudyGrid();
     if (!grid) return;
     wireHudControls();
+    refreshWod();
   const next = document.getElementById("wodNext");
   if (next) next.addEventListener("click", refreshWod);
   mountGames();

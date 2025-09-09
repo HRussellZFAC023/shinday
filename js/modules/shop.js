@@ -183,7 +183,7 @@ window.shop = (function () {
   <div class="item-icon"><img src="./assets/shield.png" class="shop-item-img"></div>
         <div class="item-info">
           <h3>${(ItemsC.shield && ItemsC.shield.title) || "Heart Shield"}</h3>
-          <p>${(ItemsC.shield && ItemsC.shield.description) || "Protect your precious Mikus and precious hearts for 25 minutes!"}</p>
+          <p>${(ItemsC.shield && ItemsC.shield.description) || "Protect your precious Mikus and precious hearts for 35 minutes!"}</p>
           <div class="item-cost">
             <span class="cost-amount">${(ItemsC.shield && ItemsC.shield.cost) || 50}</span>
             <span class="cost-hearts">💖</span>

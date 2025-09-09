@@ -129,9 +129,10 @@
       else if(miss<=1 && score>=20) rank='A';
       else if(miss<=3) rank='B';
       const level=(window.Progression&&Progression.getLevel&&Progression.getLevel())||1;
-      const bonus=Math.max(0,(level-1)*10);
-      const base=1000+Math.floor(Math.random()*9001);
-      const reward=Math.round(base*(1+bonus/100));
+      const bonus=Math.max(0,(level-1)*5);
+      const base=30;
+      const rankBonus = rank==='S'?40:rank==='A'?25:rank==='B'?15:rank==='C'?10:5;
+      const reward=Math.round((base+rankBonus)*(1+bonus/100));
       this.reward=reward;
       if(window.Hearts&&Hearts.add) Hearts.add(reward);
       else if(window.hearts&&hearts.addHearts) hearts.addHearts(reward);

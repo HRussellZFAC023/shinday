@@ -199,28 +199,27 @@
       function rewardFor(rank) {
         switch (rank) {
           case "S":
-            return 10000;
+            return 100;
           case "A":
-            return 2500;
+            return 60;
           case "B":
-            return 800;
+            return 40;
           case "C":
-            return 300;
+            return 25;
           case "D":
           default:
-            return 100;
+            return 10;
         }
       }
       function finish({ reason } = {}) {
         if (tId) clearInterval(tId);
         tId = null;
         const rank = calcRank();
-        // Score-based hearts formula (consistent with Dojo modal):
-        // base 1000 + floor(score/500) + level*100
+        // Score-based hearts formula: base 20 + floor(score/100) + level*5
         const level = (window.Progression?.getProgress?.().level) || 1;
-        const base = 1000;
-        const scoreBonus = Math.floor((window.HUD?.score || 0) / 500);
-        const levelBonus = level * 100;
+        const base = 20;
+        const scoreBonus = Math.floor((window.HUD?.score || 0) / 100);
+        const levelBonus = level * 5;
         const hearts = base + scoreBonus + levelBonus;
         awardHearts(hearts);
         // Show a lightweight toast instead of a blocking overlay

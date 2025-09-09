@@ -1,4 +1,4 @@
-# PixelBelle's Pastel Miku Garden ✨
+1# PixelBelle's Pastel Miku Garden ✨
 
 A beautiful, retro-inspired personal website with interactive Hatsune Miku companions and kawaii aesthetics.
 
@@ -90,6 +90,16 @@ ShimejiFunctions.triggerMassJump();
 ShimejiFunctions.triggerMassFall();
 ShimejiFunctions.removeAll();
 ```
+
+## 💖 Heart Sources & Rewards
+
+- **Daily Quests** – 10–20 hearts per completed quest (plus XP)
+- **Level Up** – 15 hearts
+- **Heart Garden Mini‑game** – 5–15 hearts depending on timing
+- **Memory Game** – 50 hearts (4×4) or 150 hearts (6×6)
+- **Study Sessions** – around 30+ hearts scaled by rank and level
+- **Rhythm HUD Sessions** – base 20 hearts plus score and level bonuses
+- **Jukebox Love Button** – 1 heart each click
 
 ## 🌐 GitHub Pages Deployment
 

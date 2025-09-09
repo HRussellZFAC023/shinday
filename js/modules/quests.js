@@ -8,19 +8,19 @@
       id: "play-song",
       text: "Play any song in the Jukebox",
       amount: 1,
-      reward: { xp: 20 },
+      reward: { xp: 20, hearts: 10 },
     },
     {
       id: "cool-judges",
       text: "Hit 10 COOL judgments",
       amount: 10,
-      reward: { xp: 30 },
+      reward: { xp: 30, hearts: 15 },
     },
     {
       id: "answers-right",
       text: "Answer 15 study prompts",
       amount: 15,
-      reward: { xp: 50 },
+      reward: { xp: 50, hearts: 20 },
     },
   ];
 
@@ -55,8 +55,14 @@
       it.done = true;
       const reward = QUESTS.find((q) => q.id === id).reward || {};
       if (reward.xp && window.Progression) Progression.addXp(reward.xp);
-
-      if (window.SFX) SFX.play("ui.select");
+      if (reward.hearts && window.hearts?.addHearts) {
+        window.hearts.addHearts(reward.hearts);
+        if (window.hearts?.loveToast)
+          window.hearts.loveToast(`Quest complete! +${reward.hearts} 💖`);
+      }
+      if (window.MikuUI?.effects?.confetti)
+        window.MikuUI.effects.confetti(40);
+      if (window.SFX?.play) SFX.play("extra.coin");
     }
     save(s);
     render();

@@ -167,8 +167,8 @@
           memoryGrid.classList.add("won");
           memoryGrid.innerHTML = `<div class="memory-win"><img src="${imgPath}" alt="You Win!"/></div>`;
 
-          // Reward based on difficulty: 4x4 → 1,000; 6x6 → 10,000
-          const reward = difficulty === "6x6" ? 10000 : 1000;
+          // Reward based on difficulty: 4x4 → 50; 6x6 → 150
+          const reward = difficulty === "6x6" ? 150 : 50;
           if (window.hearts && typeof window.hearts.addHearts === "function") {
             window.hearts.addHearts(reward);
           }
