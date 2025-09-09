@@ -26,7 +26,10 @@
 }
 
 /* Global performance optimizations */
+
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -52,13 +55,30 @@ body {
     Helvetica,
     Arial,
     sans-serif;
-  background: var(--gradient-bg);
   background-attachment: fixed;
   color: var(--ink);
-  image-rendering: pixelated;
+  image-rendering: pixelated !important;
   line-height: 1.6;
   /* Performance optimizations (avoid forcing new stacking context on body) */
   -webkit-font-smoothing: antialiased;
+  background: url("../assets/root.png") center/cover no-repeat fixed;
+
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+
+
+
+
+/* Root Background */
+.root-bg {
+  position: fixed;
+  inset: 0;
+  background: var(--gradient-bg);
+  z-index: -2;
+  animation: subtlePulse 10s ease-in-out infinite;
 }
 
 /* Splash screen */
@@ -897,7 +917,7 @@ main {
 
 .radio-widget .radio-display {
   background: #001100;
-  color: #00ff00;
+  color: #00ffe7;
   border: 2px inset #666;
   border-radius: 4px;
   padding: 8px;
@@ -917,7 +937,7 @@ main {
 
 .radio-widget .bar {
   width: 3px;
-  background: #00ff00;
+  background: #00ffe7;
   border-radius: 1px;
   animation: eq 0.8s ease-in-out infinite;
   animation-play-state: paused;
@@ -4641,67 +4661,7 @@ main {
   transition: all 0.3s ease;
 }
 
-/* Study Canvas Styles */
-#study {
-  --study-wall: url("../assets/root.png");
-  background: #f6fbff var(--study-wall) center/cover no-repeat fixed;
-  min-height: 100vh;
-  position: relative;
-}
 
-.study-canvas-container {
-  position: relative;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-#studyCanvas {
-  width: 100%;
-  height: auto;
-  max-height: 80vh;
-  background: #ffffff;
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  display: block;
-  image-rendering: pixelated;
-}
-
-.study-hud-overlay {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.study-hud-overlay .hud-pill {
-  background: rgba(255,255,255,.95);
-  border: 2px solid var(--border);
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-weight: 800;
-  font-size: 14px;
-  color: var(--ink);
-  box-shadow: var(--shadow);
-}
-
-.study-controls {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-
-.study-controls .pixel-btn {
-  font-size: 14px;
-  padding: 8px 12px;
-}
 
 /* Canvas-specific animations */
 @keyframes canvasGlow {
@@ -4787,7 +4747,6 @@ main {
   text-align: right;
 }
 .score-display {
-  background: rgba(255, 255, 255, 0.9);
   border: 2px solid var(--border);
   border-radius: 8px;
   padding: 6px 10px;

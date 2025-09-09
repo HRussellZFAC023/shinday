@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Dojo × Project DIVA</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="dojo.css">
+    <link rel="icon" href="assets/icon.jpg">
+</head>
+<body>
+    <!-- Root Background -->
+    <div class="root-bg"></div>
+    
+    <!-- Floating Miku -->
+    <img src="assets/hatsune_miku_render_by_jimmyisaac_d68ibgy-pre.png" alt="" class="floating-miku">
+    
+    <!-- Main HUD -->
+    <div class="main-hud">
+        <div class="hud-top">
+            <div class="level-display">
+                <span class="label">LV</span>
+                <span class="value" id="userLevel">1</span>
+            </div>
+            
+            <div class="voltage-bar">
+                <div class="voltage-fill" id="voltageBar"></div>
+                <div class="voltage-label">VOLTAGE</div>
+            </div>
+            
+            <div class="combo-display">
+                <span class="combo-label">COMBO</span>
+                <span class="combo-value" id="comboCount">0</span>
+            </div>
+        </div>
+        
+        <div class="hud-bottom">
+            <div class="score-display">
+                <span class="score-label">SCORE</span>
+                <span class="score-value" id="scoreValue">0</span>
+            </div>
+            
+            <div class="timer-display">
+                <span class="timer-icon">⏱️</span>
+                <span class="timer-value" id="songTimer">3:00</span>
+            </div>
+            
+            <div class="lives-display" id="livesContainer">
+                <span class="life active">💖</span>
+                <span class="life active">💖</span>
+                <span class="life active">💖</span>
+                <span class="life active">💖</span>
+                <span class="life active">💖</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Judgment Display -->
+    <div class="judgment-display" id="judgmentDisplay"></div>
+    
+    <!-- Effects Layer -->
+    <div class="effects-layer" id="effectsLayer"></div>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Menu Panel -->
+        <div class="menu-panel" id="menuPanel">
+            <div class="dojo-title">
+                <span class="title-jp">言語道場</span>
+                <span class="title-en">Language Dojo</span>
+                <span class="title-diva">× PROJECT DIVA</span>
+            </div>
+            
+            <!-- Difficulty Selector -->
+            <div class="difficulty-selector">
+                <label for="difficultySlider">難易度 Difficulty</label>
+                <input type="range" id="difficultySlider" min="1" max="9" value="3">
+                <div class="diff-display">
+                    <span id="diffValue">3</span>
+                    <span id="diffLabel">NORMAL</span>
+                </div>
+            </div>
+            
+            <!-- Game Modes -->
+            <div class="game-modes">
+                <button class="mode-btn vocab-mode" data-game="vocab" onclick="startGame('vocab')">
+                    <div class="mode-icon">単</div>
+                    <div class="mode-name">Vocab Pop</div>
+                    <div class="mode-desc">JP → EN Multiple Choice</div>
+                </button>
+
+                <button class="mode-btn kanji-mode" data-game="kanji" onclick="startGame('kanji')">
+                    <div class="mode-icon">漢</div>
+                    <div class="mode-name">Kanji Master</div>
+                    <div class="mode-desc">Meaning ↔ Kanji by Grade</div>
+                </button>
+
+                <button class="mode-btn typing-mode" data-game="typing" onclick="startGame('typing')">
+                    <div class="mode-icon">⌨</div>
+                    <div class="mode-name">Miku × Chat Typing</div>
+                    <div class="mode-desc">Keyboard Romaji Typing</div>
+                </button>
+            </div>
+
+                        <!-- Mode Options -->
+                        <div class="mode-options" style="display:flex; gap:12px; flex-wrap: wrap; margin-bottom: 20px;">
+                                <label style="display:flex; align-items:center; gap:8px;">
+                                    <span>Vocab Direction</span>
+                                    <select id="vocabDirection">
+                                        <option value="jp-en">JP → EN</option>
+                                        <option value="en-jp">EN → JP</option>
+                                    </select>
+                                </label>
+                                <label style="display:flex; align-items:center; gap:8px;">
+                                    <span>Kanji Direction</span>
+                                    <select id="kanjiDirection">
+                                        <option value="meaning-kanji">Meaning → Kanji</option>
+                                        <option value="kanji-meaning">Kanji → Meaning</option>
+                                    </select>
+                                </label>
+                        </div>
+            
+            <!-- Word of the Day -->
+            <div class="wod-panel">
+                <h3>今日の言葉 Word of the Day</h3>
+                <div class="wod-content" id="wodContent">
+                    <div class="wod-loading">Loading...</div>
+                </div>
+                <button class="wod-next" id="wodNext" onclick="nextWordOfDay()">Next Word →</button>
+            </div>
+            
+            <!-- Daily Quests -->
+            <div class="daily-quests">
+                <h3>📋 Daily Quests</h3>
+                <div class="quest-item">
+                    <span class="quest-icon">🎯</span>
+                    <span class="quest-text">Score 10,000 points</span>
+                    <span class="quest-progress" id="questScore">0/10000</span>
+                </div>
+                <div class="quest-item">
+                    <span class="quest-icon">⚡</span>
+                    <span class="quest-text">Get 20 COOL judgments</span>
+                    <span class="quest-progress" id="questCool">0/20</span>
+                </div>
+                <div class="quest-item">
+                    <span class="quest-icon">🔥</span>
+                    <span class="quest-text">15 combo streak</span>
+                    <span class="quest-progress" id="questCombo">0/15</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Area -->
+        <div class="game-area" id="gameArea" style="display: none;">
+            <!-- Rhythm Lanes -->
+            <div class="rhythm-lanes" id="rhythmLanes">
+                <div class="lane lane-triangle" data-key="w">
+                    <div class="lane-track"></div>
+                    <div class="lane-target">△</div>
+                </div>
+                <div class="lane lane-circle" data-key="d">
+                    <div class="lane-track"></div>
+                    <div class="lane-target">○</div>
+                </div>
+                <div class="lane lane-cross" data-key="s">
+                    <div class="lane-track"></div>
+                    <div class="lane-target">×</div>
+                </div>
+                <div class="lane lane-square" data-key="a">
+                    <div class="lane-track"></div>
+                    <div class="lane-target">□</div>
+                </div>
+            </div>
+            
+            <!-- Question Panel -->
+            <div class="question-panel">
+                <div class="question-timer">
+                    <div class="timer-bar" id="questionTimerBar"></div>
+                    <div class="timer-text" id="questionTimerText">15</div>
+                </div>
+                
+                <div class="question-content" id="questionContent">
+                    Loading question...
+                </div>
+                
+                <!-- Answer Grid -->
+                <div class="answer-grid" id="answerGrid">
+                    <!-- Dynamically populated -->
+                </div>
+                
+                <!-- Typing Area -->
+                <div class="typing-area" id="typingArea" style="display: none;">
+                    <div class="typing-target" id="typingTarget">Loading...</div>
+                    <input type="text" class="typing-input" id="typingInput" placeholder="Type here...">
+                    <div class="typing-feedback" id="typingFeedback"></div>
+                </div>
+            </div>
+            
+            <!-- Back to Menu Button -->
+            <button class="modal-continue" onclick="backToMenu()" style="position: absolute; top: 20px; right: 20px;">
+                Back to Menu
+            </button>
+        </div>
+    </div>
+    
+    <!-- Song Over Modal -->
+    <div class="song-over-modal" id="songOverModal">
+        <div class="modal-rings">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+        </div>
+        
+        <div class="modal-content">
+            <div class="song-complete">SONG COMPLETE!</div>
+            <div class="rank-display" id="rankDisplay">A</div>
+            
+            <div class="hit-counts">
+                <div class="hit-stat cool">
+                    <span class="hit-label">COOL</span>
+                    <span class="hit-value" id="coolCount">0</span>
+                </div>
+                <div class="hit-stat great">
+                    <span class="hit-label">GREAT</span>
+                    <span class="hit-value" id="greatCount">0</span>
+                </div>
+                <div class="hit-stat fine">
+                    <span class="hit-label">FINE</span>
+                    <span class="hit-value" id="fineCount">0</span>
+                </div>
+                <div class="hit-stat miss">
+                    <span class="hit-label">MISS</span>
+                    <span class="hit-value" id="missCount">0</span>
+                </div>
+            </div>
+            
+            <div class="reward-display">
+                <div class="reward-label">REWARD</div>
+                <div class="reward-amount" id="rewardAmount">5,000</div>
+                <div class="reward-bonus" id="rewardBonus">Base + Level Bonus</div>
+            </div>
+            
+            <button class="modal-continue" id="continueBtn" onclick="backToMenu()">Continue</button>
+        </div>
+    </div>
+    
+    <!-- Audio Elements (mapped to existing WAV assets) -->
+    <audio id="sfxStart" src="assets/SFX/sega voice clips/sega (shout).wav" preload="auto"></audio>
+    <audio id="sfxPerfect" src="assets/SFX/result voice clips/miku/perfect.wav" preload="auto"></audio>
+    <audio id="sfxGreat" src="assets/SFX/result voice clips/miku/great.wav" preload="auto"></audio>
+    <audio id="sfxMiss" src="assets/SFX/result voice clips/miku/missXtake.wav" preload="auto"></audio>
+    <audio id="sfxTimeup" src="assets/SFX/menu sounds/unavailable.wav" preload="auto"></audio>
+    <audio id="sfxClick" src="assets/SFX/menu sounds/menu option select.wav" preload="auto"></audio>
+    
+    <script src="js/content.js"></script>
+    <script src="dojo.js"></script>
+</body>
+</html>

@@ -33,8 +33,12 @@
 
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/shimeji.css" />
+    <!-- Language Dojo styles -->
+    <link rel="stylesheet" href="./dojo.css" />
   </head>
   <body>
+    <div class="root-bg"></div>
+
     <!-- Loading splash -->
     <div id="splash" class="splash-screen">
       <div class="splash-content">
@@ -77,9 +81,7 @@
               <span class="blink" id="statusDot">●</span>
               <span id="onlineStatus">Online</span>
             </div>
-            <div class="status-item">
-              💖 <span id="heartCount">0</span>
-            </div>
+            <div class="status-item">💖 <span id="heartCount">0</span></div>
           </div>
           <nav id="navbar" class="status-nav">
             <ul>
@@ -113,8 +115,12 @@
                     </div>
                   </div>
                   <div class="radio-controls">
-                    <button id="playRadio" class="pixel-btn radio-btn">▶️</button>
-                    <button id="pauseRadio" class="pixel-btn radio-btn">⏸️</button>
+                    <button id="playRadio" class="pixel-btn radio-btn">
+                      ▶️
+                    </button>
+                    <button id="pauseRadio" class="pixel-btn radio-btn">
+                      ⏸️
+                    </button>
                   </div>
                 </div>
               </div>
@@ -160,6 +166,11 @@
                 </div>
               </div>
             </div>
+            <!-- Moved Web Badges to left sidebar under Site Stats -->
+            <div class="widget">
+              <h3>💫 Web Badges</h3>
+              <div class="badges-collection" id="webBadges"></div>
+            </div>
           </aside>
 
           <!-- Main content -->
@@ -173,7 +184,9 @@
                   <p>
                     <!-- Will be populated by JS (heroParagraphs) -->
                   </p>
-                  <button id="heartBtn" class="pixel-btn heart-btn">💖 Send Love</button>
+                  <button id="heartBtn" class="pixel-btn heart-btn">
+                    💖 Send Love
+                  </button>
                 </div>
               </div>
 
@@ -202,6 +215,263 @@
             <section id="study" class="content-section">
               <div id="jpGames">
                 <!-- Populated by JS -->
+                <!-- Language Dojo Module (embedded) -->
+                <div
+                  id="languageDojoModule"
+                  class="study-card"
+                  style="padding: 0; border: none; background: transparent"
+                >
+                  <!-- Effects Layer -->
+                  <div class="effects-layer" id="effectsLayer"></div>
+
+                  <!-- Main HUD (Dojo) -->
+                  <div class="main-hud">
+                    <div class="hud-top">
+                      <div class="level-display">
+                        <span class="label">LV</span>
+                        <span class="value" id="userLevel">1</span>
+                      </div>
+                      <div class="voltage-bar">
+                        <div class="voltage-fill" id="voltageBar"></div>
+                        <div class="voltage-label">VOLTAGE</div>
+                      </div>
+                      <div class="combo-display">
+                        <span class="combo-label">COMBO</span>
+                        <span class="combo-value" id="comboCount">0</span>
+                      </div>
+                    </div>
+                    <div class="hud-bottom">
+                      <div class="score-display">
+                        <span class="score-label">SCORE</span>
+                        <span class="score-value" id="scoreValue">0</span>
+                      </div>
+                      <div class="timer-display">
+                        <span class="timer-icon">⏱️</span>
+                        <span class="timer-value" id="songTimer">3:00</span>
+                      </div>
+                      <div class="lives-display" id="livesContainer">
+                        <span class="life active">♥</span>
+                        <span class="life active">♥</span>
+                        <span class="life active">♥</span>
+                        <span class="life active">♥</span>
+                        <span class="life active">♥</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Judgment Display -->
+                  <div class="judgment-display" id="judgmentDisplay"></div>
+
+                  <!-- Dojo Content Container -->
+                  <div class="main-container" id="languageDojoCard">
+                    <div class="menu-panel" id="menuPanel">
+                      <div class="dojo-title">
+                        <span class="title-jp">言語道場</span>
+                        <span class="title-en">Language Dojo</span>
+                        <span class="title-diva">× PROJECT DIVA</span>
+                      </div>
+                      <!-- Difficulty Selector -->
+                      <div class="difficulty-selector">
+                        <label for="difficultySlider">難易度 Difficulty</label>
+                        <input
+                          type="range"
+                          id="difficultySlider"
+                          min="1"
+                          max="9"
+                          value="3"
+                        />
+                        <div class="diff-display">
+                          <span id="diffValue">3</span>
+                          <span id="diffLabel">NORMAL</span>
+                        </div>
+                      </div>
+                      <!-- Game Modes -->
+                      <div class="game-modes">
+                        <button
+                          class="mode-btn vocab-mode"
+                          data-game="vocab"
+                          onclick="startGame('vocab')"
+                        >
+                          <div class="mode-icon">単</div>
+                          <div class="mode-name">Vocab Pop</div>
+                          <div class="mode-desc">JP → EN Multiple Choice</div>
+                        </button>
+                        <button
+                          class="mode-btn kanji-mode"
+                          data-game="kanji"
+                          onclick="startGame('kanji')"
+                        >
+                          <div class="mode-icon">漢</div>
+                          <div class="mode-name">Kanji Master</div>
+                          <div class="mode-desc">Meaning ↔ Kanji by Grade</div>
+                        </button>
+                        <button
+                          class="mode-btn typing-mode"
+                          data-game="typing"
+                          onclick="startGame('typing')"
+                        >
+                          <div class="mode-icon">⌨</div>
+                          <div class="mode-name">Miku × Chat Typing</div>
+                          <div class="mode-desc">Keyboard Romaji Typing</div>
+                        </button>
+                      </div>
+                      <!-- Mode Options -->
+                      <div
+                        class="mode-options"
+                        style="
+                          display: flex;
+                          gap: 12px;
+                          flex-wrap: wrap;
+                          margin-bottom: 20px;
+                        "
+                      >
+                        <label
+                          style="display: flex; align-items: center; gap: 8px"
+                        >
+                          <span>Vocab Direction</span>
+                          <select id="vocabDirection">
+                            <option value="jp-en">JP → EN</option>
+                            <option value="en-jp">EN → JP</option>
+                          </select>
+                        </label>
+                        <label
+                          style="display: flex; align-items: center; gap: 8px"
+                        >
+                          <span>Kanji Direction</span>
+                          <select id="kanjiDirection">
+                            <option value="meaning-kanji">
+                              Meaning → Kanji
+                            </option>
+                            <option value="kanji-meaning">
+                              Kanji → Meaning
+                            </option>
+                          </select>
+                        </label>
+                      </div>
+                      <!-- Word of the Day -->
+                      <div class="wod-panel">
+                        <h3>今日の言葉 Word of the Day</h3>
+                        <div class="wod-content" id="wodContent">
+                          <div class="wod-loading">Loading...</div>
+                        </div>
+                        <button
+                          class="wod-next"
+                          id="wodNext"
+                          onclick="nextWordOfDay()"
+                        >
+                          Next Word →
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Game Area -->
+                    <div class="game-area" id="gameArea" style="display: none">
+                      <!-- Rhythm Lanes -->
+                      <div class="rhythm-lanes" id="rhythmLanes">
+                        <div class="lane lane-triangle" data-key="w">
+                          <div class="lane-track"></div>
+                          <div class="lane-target">△</div>
+                        </div>
+                        <div class="lane lane-circle" data-key="d">
+                          <div class="lane-track"></div>
+                          <div class="lane-target">○</div>
+                        </div>
+                        <div class="lane lane-cross" data-key="s">
+                          <div class="lane-track"></div>
+                          <div class="lane-target">×</div>
+                        </div>
+                        <div class="lane lane-square" data-key="a">
+                          <div class="lane-track"></div>
+                          <div class="lane-target">□</div>
+                        </div>
+                      </div>
+                      <!-- Question Panel -->
+                      <div class="question-panel">
+                        <div class="question-timer">
+                          <div class="timer-bar" id="questionTimerBar"></div>
+                          <div class="timer-text" id="questionTimerText">
+                            15
+                          </div>
+                        </div>
+                        <div class="question-content" id="questionContent">
+                          Loading question...
+                        </div>
+                        <div class="answer-grid" id="answerGrid"></div>
+                        <div
+                          class="typing-area"
+                          id="typingArea"
+                          style="display: none"
+                        >
+                          <div class="typing-target" id="typingTarget">
+                            Loading...
+                          </div>
+                          <input
+                            type="text"
+                            class="typing-input"
+                            id="typingInput"
+                            placeholder="Type here..."
+                          />
+                          <div
+                            class="typing-feedback"
+                            id="typingFeedback"
+                          ></div>
+                        </div>
+                      </div>
+                      <button
+                        class="modal-continue"
+                        onclick="backToMenu()"
+                        style="position: absolute; top: 20px; right: 20px"
+                      >
+                        Back to Menu
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Song Over Modal -->
+                  <div class="song-over-modal" id="songOverModal">
+                    <div class="modal-rings">
+                      <div class="ring ring-1"></div>
+                      <div class="ring ring-2"></div>
+                      <div class="ring ring-3"></div>
+                    </div>
+                    <div class="modal-content">
+                      <div class="song-complete">SONG COMPLETE!</div>
+                      <div class="rank-display" id="rankDisplay">A</div>
+                      <div class="hit-counts">
+                        <div class="hit-stat cool">
+                          <span class="hit-label">COOL</span
+                          ><span class="hit-value" id="coolCount">0</span>
+                        </div>
+                        <div class="hit-stat great">
+                          <span class="hit-label">GREAT</span
+                          ><span class="hit-value" id="greatCount">0</span>
+                        </div>
+                        <div class="hit-stat fine">
+                          <span class="hit-label">FINE</span
+                          ><span class="hit-value" id="fineCount">0</span>
+                        </div>
+                        <div class="hit-stat miss">
+                          <span class="hit-label">MISS</span
+                          ><span class="hit-value" id="missCount">0</span>
+                        </div>
+                      </div>
+                      <div class="reward-display">
+                        <div class="reward-label">REWARD</div>
+                        <div class="reward-amount" id="rewardAmount">5,000</div>
+                        <div class="reward-bonus" id="rewardBonus">
+                          Base + Level Bonus
+                        </div>
+                      </div>
+                      <button
+                        class="modal-continue"
+                        id="continueBtn"
+                        onclick="backToMenu()"
+                      >
+                        Continue
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -349,8 +619,7 @@
                 </div>
               </div>
 
-              <div class="image-gallery"  id="mikuGallery">
-
+              <div class="image-gallery" id="mikuGallery">
                 <!-- Will be populated by JS -->
               </div>
               <br />
@@ -444,6 +713,12 @@
               </ul>
             </div>
 
+            <!-- Daily Quests moved and merged here -->
+            <div class="widget" id="questsWidget">
+              <h3>🗒️ daily quests</h3>
+              <div class="quests-list"></div>
+            </div>
+
             <div class="widget">
               <h3>🛍️ Shop</h3>
               <div class="shop-panel">
@@ -468,20 +743,7 @@
               </div>
             </div>
 
-            <div class="widget">
-              <h3>💫 Web Badges</h3>
-              <div class="badges-collection" id="webBadges"></div>
-            </div>
-
-            <div class="widget">
-              <h3>📊 Today's Vibe</h3>
-              <div class="vibe-meter">
-                <div class="vibe-bar">
-                  <div class="vibe-fill kawaii-vibes" style="width: 85%"></div>
-                </div>
-                <p>85% Kawaii Energy! ✨</p>
-              </div>
-            </div>
+            <!-- Web Badges moved to left sidebar -->
           </aside>
         </div>
 
@@ -526,7 +788,6 @@
     <script src="./js/modules/dex.js"></script>
     <script src="./js/modules/visual-effects.js"></script>
     <script src="./js/modules/hud.js"></script>
-    <!-- Removed legacy per-game scripts; unified study-canvas handles the JP section -->
     <script src="./js/modules/quests.js"></script>
     <script src="./js/modules/cursor.js"></script>
     <script src="./js/modules/hearts.js"></script>
@@ -541,13 +802,38 @@
     <script src="./js/modules/mikuCore.js"></script>
 
     <script src="./js/main.js"></script>
-    <script src="./js/modules/games/beatpad.js"></script>
-    <script src="./js/modules/games/dispatcher.js"></script>
-    <script src="./js/modules/games/vocab.js"></script>
-    <script src="./js/modules/games/kanji.js"></script>
-    <script src="./js/modules/games/kotoba.js"></script>
-    <script src="./js/modules/games/typing.js"></script>
-    <script src="./js/modules/study.js"></script>
-    <script src="./js/modules/study-hub.js"></script>
+
+    <!-- Dojo module scripts and audio (embedded module uses these) -->
+    <audio
+      id="sfxStart"
+      src="assets/SFX/sega voice clips/sega (shout).wav"
+      preload="auto"
+    ></audio>
+    <audio
+      id="sfxPerfect"
+      src="assets/SFX/result voice clips/miku/perfect.wav"
+      preload="auto"
+    ></audio>
+    <audio
+      id="sfxGreat"
+      src="assets/SFX/result voice clips/miku/great.wav"
+      preload="auto"
+    ></audio>
+    <audio
+      id="sfxMiss"
+      src="assets/SFX/result voice clips/miku/missXtake.wav"
+      preload="auto"
+    ></audio>
+    <audio
+      id="sfxTimeup"
+      src="assets/SFX/menu sounds/unavailable.wav"
+      preload="auto"
+    ></audio>
+    <audio
+      id="sfxClick"
+      src="assets/SFX/menu sounds/menu option select.wav"
+      preload="auto"
+    ></audio>
+    <script src="./dojo.js"></script>
   </body>
 </html>

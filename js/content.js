@@ -424,7 +424,7 @@ const SITE_CONTENT = {
     items: {
       shield: {
         title: "Heart Shield",
-  description: "Protect your precious Mikus and precious hearts for 25 minutes!",
+  description: "Protect your precious Mikus and  hearts for 25 minutes!",
         cost: 50,
         icon: "⛨",
       },
@@ -496,35 +496,35 @@ const SITE_CONTENT = {
     ],
   },
   quickLinks: {
-    title: "🌟 Quick Links",
+    title: "🌟 quick links",
     items: [
       {
-        label: "💫 Link to us",
+        label: "💫 link to us",
         url: "/badge.html",
         cls: "link-badge",
       },
       {
-        label: "💬 Discord",
+        label: "💬 discord",
         url: "https://discord.gg/jB7mbHwK",
         cls: "link-discord",
       },
       {
-        label: "🎮 Twitch",
+        label: "🎮 twitch",
         url: "https://www.twitch.tv/babybellebb",
         cls: "link-twitch",
       },
       {
-        label: "📺 YouTube",
+        label: "📺 youtube",
         url: "https://www.youtube.com/@babyelle-e",
         cls: "link-youtube",
       },
       {
-        label: "🎶 Spotify",
+        label: "🎶 spotify",
         url: "https://open.spotify.com/playlist/2iZTdm4HQoGhzKNEsKeOGz",
         cls: "link-spotify",
       },
       {
-        label: "🛍️ Shop",
+        label: "🛍️ shop",
         url: "https://shinun-merch.creator-spring.com/",
         cls: "link-shop",
       },
@@ -597,11 +597,10 @@ const SITE_CONTENT = {
     right: {
       quickLinks: "quick links",
       quickLinksIcon: "cheering",
-      shop: "Shop",
+      shop: "shop",
       shopIcon: "okHands",
       badges: "pin badges",
       badgesIcon: "starUwu",
-      vibe: "today's vibe",
       vibeIcon: "vibing",
     },
   },
@@ -662,6 +661,7 @@ function initializeSplash() {
   }
 
   const enterSite = async () => {
+    window.SFX && window.SFX.play("ui.teleport");
     enterButton.disabled = true;
     // Show loading state during gating
     const prev = enterButton.textContent;

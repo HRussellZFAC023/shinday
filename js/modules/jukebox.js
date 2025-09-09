@@ -110,6 +110,43 @@
   <iframe id="jukeboxIframe" style="width:100%;height:100%;border:0;display:block" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
       </div>`;
     document.body.appendChild(wrap);
+    const handle = wrap.firstElementChild;
+    handle.classList.add("movable");
+    let offX = 0;
+    let offY = 0;
+    let dragging = false;
+    function dragStart(e) {
+      if (e.target.closest("button")) return;
+      const rect = wrap.getBoundingClientRect();
+      const point = e.touches ? e.touches[0] : e;
+      offX = point.clientX - rect.left;
+      offY = point.clientY - rect.top;
+      wrap.style.left = rect.left + "px";
+      wrap.style.top = rect.top + "px";
+      wrap.style.right = "auto";
+      wrap.style.bottom = "auto";
+      dragging = true;
+      document.addEventListener("mousemove", dragMove);
+      document.addEventListener("mouseup", dragEnd);
+      document.addEventListener("touchmove", dragMove, { passive: false });
+      document.addEventListener("touchend", dragEnd);
+    }
+    function dragMove(e) {
+      if (!dragging) return;
+      const point = e.touches ? e.touches[0] : e;
+      wrap.style.left = point.clientX - offX + "px";
+      wrap.style.top = point.clientY - offY + "px";
+      e.preventDefault();
+    }
+    function dragEnd() {
+      dragging = false;
+      document.removeEventListener("mousemove", dragMove);
+      document.removeEventListener("mouseup", dragEnd);
+      document.removeEventListener("touchmove", dragMove);
+      document.removeEventListener("touchend", dragEnd);
+    }
+    handle.addEventListener("mousedown", dragStart);
+    handle.addEventListener("touchstart", dragStart, { passive: false });
     document.getElementById("jukeboxClose").onclick = () => {
       document.getElementById("jukeboxIframe").src = "about:blank";
 

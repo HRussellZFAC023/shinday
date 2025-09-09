@@ -23,33 +23,58 @@ function makeShimejiConfig(basePath) {
     tripping: { frames: [f(19), f(18), f(20)], interval: 220, loops: 1 },
     fallen: { frames: [f(21)], interval: 800, loops: 1 },
     jump: { frames: [f(22)], interval: 120, loops: 1 },
-    sit: { frames: [f(11)], interval: 1000, loops: 1, randomizeDuration: true, min: 3000, max: 8000 },
+    sit: {
+      frames: [f(11)],
+      interval: 1000,
+      loops: 1,
+      randomizeDuration: true,
+      min: 3000,
+      max: 8000,
+    },
     sit_lookup: { frames: [f(26)], interval: 800, loops: 1 },
-    sit_spin: { frames: [f(26), f(15), f(27), f(16), f(28), f(17), f(29), f(11)], interval: 220, loops: 1 },
+    sit_spin: {
+      frames: [f(26), f(15), f(27), f(16), f(28), f(17), f(29), f(11)],
+      interval: 220,
+      loops: 1,
+    },
     sit_legs_up: { frames: [f(30)], interval: 800, loops: 1 },
     sit_legs_down: { frames: [f(31)], interval: 800, loops: 1 },
-    sit_dangle: { frames: [f(31), f(32), f(31), f(33)], interval: 260, loops: 4 },
+    sit_dangle: {
+      frames: [f(31), f(32), f(31), f(33)],
+      interval: 260,
+      loops: 4,
+    },
     sprawl: { frames: [f(21)], interval: 800, loops: 1 },
     creep: { frames: [f(20), f(21)], interval: 300, loops: 8 },
     fun: { frames: [f(12), f(13), f(14), f(13)], interval: 200, loops: 3 },
     scared: { frames: [f(20)], interval: 600, loops: 2 },
     happy: { frames: [f(5), f(6)], interval: 250, loops: 2 },
     pullup: { frames: [f(38), f(39), f(40), f(41)], interval: 280, loops: 1 },
-    divide: { frames: [f(42), f(43), f(44), f(45), f(46)], interval: 280, loops: 1 },
-    multiply: { frames: [f(42), f(43), f(44), f(45), f(46)], interval: 280, loops: 1 },
-  // Avoid IE frames (34–36): reuse normal walk/run/fall frames instead
-  walkwithie: { frames: [f(1), f(2), f(1), f(3)], interval: 260, loops: 6 },
-  runwithie: { frames: [f(1), f(2), f(1), f(3)], interval: 180, loops: 6 },
+    divide: {
+      frames: [f(42), f(43), f(44), f(45), f(46)],
+      interval: 280,
+      loops: 1,
+    },
+    multiply: {
+      frames: [f(42), f(43), f(44), f(45), f(46)],
+      interval: 280,
+      loops: 1,
+    },
+    // Avoid IE frames (34–36): reuse normal walk/run/fall frames instead
+    walkwithie: { frames: [f(1), f(2), f(1), f(3)], interval: 260, loops: 6 },
+    runwithie: { frames: [f(1), f(2), f(1), f(3)], interval: 180, loops: 6 },
     throwie: { frames: [f(37)], interval: 300, loops: 1 },
-  fallwithie: { frames: [f(4)], interval: 200, loops: 1 },
+    fallwithie: { frames: [f(4)], interval: 200, loops: 1 },
     pinched: { frames: [f(9), f(7), f(1)], interval: 140, loops: 99999 },
     forcewalk: 3,
     ORIGINAL_ACTIONS: [
       "stand",
-      "walk", "walk",
+      "walk",
+      "walk",
       "run",
       "dash",
-      "sit", "sit",
+      "sit",
+      "sit",
       "sit_lookup",
       "sit_spin",
       "sit_legs_up",
@@ -188,24 +213,24 @@ class EnhancedCreature {
     this.forceWalkAfter = false;
     this.lastTime = 0;
 
-  // Chaining: queued actions to play next (e.g., ["flip","sit","fall"]) 
-  this._actionQueue = [];
+    // Chaining: queued actions to play next (e.g., ["flip","sit","fall"])
+    this._actionQueue = [];
 
     // Enhanced properties
     this.multiplyCounter = 0;
     this.interactionCooldown = 0;
     this.climbTarget = null;
     this.jumpCooldown = 0;
-  this.speechBubble = null;
-  this._creepFramesResolved = false;
-  this._approachWall = null; // pending approach-to-wall state before climbing
+    this.speechBubble = null;
+    this._creepFramesResolved = false;
+    this._approachWall = null; // pending approach-to-wall state before climbing
     // Ceiling interaction: drop on user interaction
     this._handleCeilingInteract = (e) => {
       if (this.state === "ceiling") {
         this.container.classList.remove("ceiling");
         this._detachCeilingInteraction();
-  // Fall from current position (no wall nudge)
-  this.triggerFall({ fromSky: false, allowFromCeiling: true });
+        // Fall from current position (no wall nudge)
+        this.triggerFall({ fromSky: false, allowFromCeiling: true });
       }
     };
     this._ceilingListenersAttached = false;
@@ -217,11 +242,11 @@ class EnhancedCreature {
     this._lastLandAt = 0; // ms
     this._landCooldown = 200; // minimal gap for landing thump
 
-  // Edge-crawl/anti-stall helpers
-  this._stallFrames = 0;
-  this._lastPosX = null;
-  this._lastPosY = null;
-  this._fallIntroUntil = 0; // ms timestamp to keep initial fall slow
+    // Edge-crawl/anti-stall helpers
+    this._stallFrames = 0;
+    this._lastPosX = null;
+    this._lastPosY = null;
+    this._fallIntroUntil = 0; // ms timestamp to keep initial fall slow
 
     // Get container dimensions
     const containerStyle = window.getComputedStyle(this.container);
@@ -246,8 +271,8 @@ class EnhancedCreature {
       if (this.state === "climb") {
         this.triggerFall({ fromSky: false });
       } else if (this.state === "ceiling") {
-  // Fall from current position (no wall nudge)
-  this.triggerFall({ fromSky: false, allowFromCeiling: true });
+        // Fall from current position (no wall nudge)
+        this.triggerFall({ fromSky: false, allowFromCeiling: true });
       }
     };
     this.container.addEventListener("click", this._onClickInterrupt);
@@ -258,8 +283,13 @@ class EnhancedCreature {
         const pushX = this.climbTarget?.side === "left" ? 10 : -10;
         this.triggerFall({ fromSky: false, pushX, pushY: -10 });
       } else if (this.state === "ceiling") {
-  const pushX = this.direction >= 0 ? 10 : -10;
-  this.triggerFall({ fromSky: false, allowFromCeiling: true, pushX, pushY: -12 });
+        const pushX = this.direction >= 0 ? 10 : -10;
+        this.triggerFall({
+          fromSky: false,
+          allowFromCeiling: true,
+          pushX,
+          pushY: -12,
+        });
       }
     };
     this.container.addEventListener("mouseenter", this._onHoverInterrupt);
@@ -275,16 +305,23 @@ class EnhancedCreature {
       this._detachCeilingInteraction();
       this.container.classList.remove("climbing", "ceiling");
       this.state = "drag";
-  this.container.classList.add("dragging");
+      this.container.classList.add("dragging");
       // Start pinched animation if available
-      const cfg = this.spriteConfig.pinched || this.spriteConfig.happy || this.spriteConfig.stand;
+      const cfg =
+        this.spriteConfig.pinched ||
+        this.spriteConfig.happy ||
+        this.spriteConfig.stand;
       if (cfg) this.playAnimation(cfg.frames, cfg.interval, 99999, null);
+      //sfx
+      window.SFX && window.SFX.play("extra.miku.uu");
       // Initialize trail
       this._dragTrail.length = 0;
       this._recordDragPoint(pt.x, pt.y);
       document.addEventListener("mousemove", this._onDragMove);
       document.addEventListener("mouseup", this._onDragEnd);
-      document.addEventListener("touchmove", this._onDragMove, { passive: false });
+      document.addEventListener("touchmove", this._onDragMove, {
+        passive: false,
+      });
       document.addEventListener("touchend", this._onDragEnd);
       e.preventDefault();
     };
@@ -307,7 +344,7 @@ class EnhancedCreature {
     this._onDragEnd = (e) => {
       if (!this._dragging) return;
       this._dragging = false;
-  this.container.classList.remove("dragging");
+      this.container.classList.remove("dragging");
       // Compute throw velocity from last trail points
       const v = this._estimateThrowVelocity();
       document.removeEventListener("mousemove", this._onDragMove);
@@ -318,7 +355,9 @@ class EnhancedCreature {
       this.triggerFall({ fromSky: false, pushX: v.vx, pushY: v.vy });
     };
     this.container.addEventListener("mousedown", this._onDragStart);
-    this.container.addEventListener("touchstart", this._onDragStart, { passive: false });
+    this.container.addEventListener("touchstart", this._onDragStart, {
+      passive: false,
+    });
 
     // Window resize handler
     this.resizeHandler = () => {
@@ -359,9 +398,9 @@ class EnhancedCreature {
   }
 
   updateImageDirection() {
-  const scaleX = this.direction === -1 ? "scaleX(-1)" : "scaleX(1)";
-  const flipY = this.state === "ceiling" ? " scaleY(-1)" : "";
-  this.img.style.transform = scaleX + flipY;
+    const scaleX = this.direction === -1 ? "scaleX(-1)" : "scaleX(1)";
+    const flipY = this.state === "ceiling" ? " scaleY(-1)" : "";
+    this.img.style.transform = scaleX + flipY;
   }
 
   resetAnimation() {
@@ -375,8 +414,8 @@ class EnhancedCreature {
       "climbing",
       "falling",
       "jumping",
-  "multiplying",
-  "ceiling"
+      "multiplying",
+      "ceiling"
     );
     // On any reset, ensure we aren't leaving interaction listeners dangling
     this._detachCeilingInteraction();
@@ -466,7 +505,7 @@ class EnhancedCreature {
     if (this._ceilingListenersAttached) return;
     const h = this._handleCeilingInteract;
     this.container.addEventListener("mouseenter", h);
-  this.container.addEventListener("mousedown", h);
+    this.container.addEventListener("mousedown", h);
     this.container.addEventListener("touchstart", h, { passive: true });
     this._ceilingListenersAttached = true;
   }
@@ -475,7 +514,7 @@ class EnhancedCreature {
     if (!this._ceilingListenersAttached) return;
     const h = this._handleCeilingInteract;
     this.container.removeEventListener("mouseenter", h);
-  this.container.removeEventListener("mousedown", h);
+    this.container.removeEventListener("mousedown", h);
     this.container.removeEventListener("touchstart", h);
     this._ceilingListenersAttached = false;
   }
@@ -500,7 +539,7 @@ class EnhancedCreature {
     try {
       const W = (window && window.__shimejiBehaviorWeights) || null;
       let env = "floor";
-  if (this.state === "ceiling" || this.isClimbing) env = "wall";
+      if (this.state === "ceiling" || this.isClimbing) env = "wall";
       else if (!this.isGrounded) env = "floor";
       const bucket = W && W[env];
       if (bucket) {
@@ -509,7 +548,10 @@ class EnhancedCreature {
         let r = Math.random() * total;
         let chosen = "walk";
         for (const [name, w] of entries) {
-          if ((r -= w) <= 0) { chosen = name; break; }
+          if ((r -= w) <= 0) {
+            chosen = name;
+            break;
+          }
         }
         this.startAction(chosen);
         return;
@@ -552,7 +594,7 @@ class EnhancedCreature {
     const canonical = resolveActionName(action);
     action = canonical;
     this.resetAnimation();
-  // Do not clear intent flags here; they are used to manage transitions
+    // Do not clear intent flags here; they are used to manage transitions
     const config = this.spriteConfig[action];
     if (!config) {
       console.warn(`Action ${action} not found, defaulting to walk`);
@@ -571,7 +613,7 @@ class EnhancedCreature {
       // temporary speed boost handled in animate via state
     } else if (action === "creep") {
       this.container.classList.add("walking"); // reuse subtle bounce
-  } else if (action === "climb") {
+    } else if (action === "climb") {
       this.container.classList.add("climbing");
       this.isClimbing = true;
     } else if (action === "fall") {
@@ -583,7 +625,7 @@ class EnhancedCreature {
     } else if (action === "multiply") {
       this.container.classList.add("multiplying");
       this.triggerMultiply();
-  } else if (action === "ceiling") {
+    } else if (action === "ceiling") {
       // Do not teleport. First ensure we are at a wall, then climb to top and transition.
       // Mark intention so that when climb reaches top it becomes ceiling crawl.
       this._pendingCeilingAfterClimb = true;
@@ -595,15 +637,25 @@ class EnhancedCreature {
     if (action === "stand") {
       // simple idle; then continue
       this._setSprite(frames[0]);
-      this.actionCompletionTimer = setTimeout(() => this.setNextAction(), interval);
+      this.actionCompletionTimer = setTimeout(
+        () => this.setNextAction(),
+        interval
+      );
       return;
     }
 
-    if (action === "sit" || action === "sit_lookup" || action === "sit_spin" || action === "sit_legs_up" || action === "sit_legs_down" || action === "sit_dangle") {
+    if (
+      action === "sit" ||
+      action === "sit_lookup" ||
+      action === "sit_spin" ||
+      action === "sit_legs_up" ||
+      action === "sit_legs_down" ||
+      action === "sit_dangle"
+    ) {
       const duration = config.randomizeDuration
         ? Math.random() * (config.max - config.min) + config.min
         : interval * loops;
-  this._setSprite(frames[0]);
+      this._setSprite(frames[0]);
       this.actionCompletionTimer = setTimeout(() => {
         this.forceWalkAfter = true;
         this.setNextAction();
@@ -613,7 +665,10 @@ class EnhancedCreature {
 
     if (action === "sprawl") {
       this._setSprite(frames[0]);
-      this.actionCompletionTimer = setTimeout(() => this.setNextAction(), interval);
+      this.actionCompletionTimer = setTimeout(
+        () => this.setNextAction(),
+        interval
+      );
       return;
     }
 
@@ -657,7 +712,12 @@ class EnhancedCreature {
       return;
     }
 
-  if (action === "walkwithie" || action === "runwithie" || action === "throwie" || action === "fallwithie") {
+    if (
+      action === "walkwithie" ||
+      action === "runwithie" ||
+      action === "throwie" ||
+      action === "fallwithie"
+    ) {
       this.playAnimation(frames, interval, loops, () => this.setNextAction());
       return;
     }
@@ -668,7 +728,7 @@ class EnhancedCreature {
     }
 
     // Play normal animation
-  this.playAnimation(frames, interval, loops, () => {
+    this.playAnimation(frames, interval, loops, () => {
       if (action === "spin") {
         this.direction *= -1;
         this.updateImageDirection();
@@ -683,8 +743,8 @@ class EnhancedCreature {
   }
 
   _getCreepFrames(defaultFrames) {
-  // Keep creep strictly to frames 20/21; missing frames are handled by _setSprite fallback logic.
-  return defaultFrames;
+    // Keep creep strictly to frames 20/21; missing frames are handled by _setSprite fallback logic.
+    return defaultFrames;
   }
 
   playAnimation(frames, interval, loops, onComplete) {
@@ -788,8 +848,8 @@ class EnhancedCreature {
       side = this.position.x < this.maxPosX / 2 ? "left" : "right";
     }
 
-  // If not yet at the chosen wall, approach it by walking until contact
-  if (!atLeft && !atRight) {
+    // If not yet at the chosen wall, approach it by walking until contact
+    if (!atLeft && !atRight) {
       this._approachWall = { side };
       // Enter a persistent walking animation towards the wall
       this.state = "walk";
@@ -803,7 +863,7 @@ class EnhancedCreature {
       return;
     }
 
-  // We are at a wall: begin climbing up to the ceiling
+    // We are at a wall: begin climbing up to the ceiling
     this.climbTarget = {
       side,
       targetY: 8,
@@ -821,22 +881,22 @@ class EnhancedCreature {
     this.isGrounded = false;
     this.velocity.x = 0;
     this.velocity.y = 0;
-  this.isClimbing = true;
+    this.isClimbing = true;
 
     this.updatePosition();
     this.updateImageDirection();
 
-  const config = this.spriteConfig.climb;
-  // Keep climbing animation looping; physics will transition to ceiling on reach
-  this.playAnimation(config.frames, config.interval, 99999, null);
+    const config = this.spriteConfig.climb;
+    // Keep climbing animation looping; physics will transition to ceiling on reach
+    this.playAnimation(config.frames, config.interval, 99999, null);
   }
 
   // NEW FEATURE: Crawl along top (ceiling)
   startCeilingCrawl() {
-  // Aligns with actions.xml: GrabCeiling -> ClimbCeiling (horizontal move)
-  // Being on the ceiling is a kind of climbing state for logic purposes
-  this.isClimbing = true;
-  this.state = "ceiling";
+    // Aligns with actions.xml: GrabCeiling -> ClimbCeiling (horizontal move)
+    // Being on the ceiling is a kind of climbing state for logic purposes
+    this.isClimbing = true;
+    this.state = "ceiling";
     this.container.classList.add("ceiling");
     // Snap to ceiling
     this.position.y = 0;
@@ -845,10 +905,10 @@ class EnhancedCreature {
     if (this.direction === 0) this.direction = Math.random() > 0.5 ? 1 : -1;
     this.velocity.x = this.direction * (this.spriteConfig.speed * 0.9);
     this.updatePosition();
-  this.updateImageDirection();
+    this.updateImageDirection();
 
-  // Allow user interaction to drop them immediately
-  this._attachCeilingInteraction();
+    // Allow user interaction to drop them immediately
+    this._attachCeilingInteraction();
 
     // Safety: After some time crawling, drop back down or switch action
     clearTimeout(this.actionCompletionTimer);
@@ -857,8 +917,8 @@ class EnhancedCreature {
       this._detachCeilingInteraction();
       // 50% drop, 50% return to normal action
       if (Math.random() < 0.5) {
-  // Drop from current position
-  this.triggerFall({ fromSky: false, allowFromCeiling: true });
+        // Drop from current position
+        this.triggerFall({ fromSky: false, allowFromCeiling: true });
       } else {
         this.forceWalkAfter = true;
         this.setNextAction();
@@ -868,14 +928,14 @@ class EnhancedCreature {
 
   // NEW FEATURE: Jumping
   triggerJump() {
-  if (this.jumpCooldown > 0) return;
+    if (this.jumpCooldown > 0) return;
 
-  this.velocity.y = -this.spriteConfig.jumpForce;
-  this.isGrounded = false;
-  this.jumpCooldown = 120; // ~2s cooldown at 60fps
-  // Takeoff footstep
-  if (window.SFX) window.SFX.play("foot.step");
-  if (window.SFX && Math.random() < 0.3) window.SFX.play("extra.yo");
+    this.velocity.y = -this.spriteConfig.jumpForce;
+    this.isGrounded = false;
+    this.jumpCooldown = 120; // ~2s cooldown at 60fps
+    // Takeoff footstep
+    if (window.SFX) window.SFX.play("foot.step");
+    if (window.SFX && Math.random() < 0.3) window.SFX.play("extra.yo");
 
     const config = this.spriteConfig.jump;
     this.playAnimation(config.frames, config.interval, config.loops, () => {
@@ -890,12 +950,17 @@ class EnhancedCreature {
   //  - triggerFall() or triggerFall({ pushX, pushY }) -> local knockback
   triggerFall(arg) {
     // Do not fall while on ceiling crawl
-  const opts = typeof arg === "object" && arg !== null ? arg : {};
-  const wasCeiling = this.state === "ceiling";
-  if (wasCeiling && !opts.allowFromCeiling) return;
+    const opts = typeof arg === "object" && arg !== null ? arg : {};
+    const wasCeiling = this.state === "ceiling";
+    if (wasCeiling && !opts.allowFromCeiling) return;
 
-  const fromSky = arg === true || opts.fromSky === true;
-    const pushX = typeof opts.pushX === "number" ? opts.pushX : (Math.random() < 0.5 ? -6 : 6);
+    const fromSky = arg === true || opts.fromSky === true;
+    const pushX =
+      typeof opts.pushX === "number"
+        ? opts.pushX
+        : Math.random() < 0.5
+        ? -6
+        : 6;
     const pushY = typeof opts.pushY === "number" ? opts.pushY : -8; // slight pop up before falling
 
     // Reset any active animations/timers to avoid stuck states
@@ -903,19 +968,19 @@ class EnhancedCreature {
     this.forceWalkAfter = true;
     // mark as falling state so landing logic can recover to walk
     this.state = "fall";
-  this.isClimbing = false;
-  this.climbTarget = null;
-  this._approachWall = null;
-  this.container.classList.add("falling");
-  // Ensure ceiling listeners are detached once we start falling
-  this._detachCeilingInteraction();
+    this.isClimbing = false;
+    this.climbTarget = null;
+    this._approachWall = null;
+    this.container.classList.add("falling");
+    // Ensure ceiling listeners are detached once we start falling
+    this._detachCeilingInteraction();
     if (this._climbInterruptAttached) {
       this.container.removeEventListener("click", this._onClickInterrupt);
       this._climbInterruptAttached = false;
     }
 
-  if (opts.allowFromCeiling && wasCeiling) {
-  // No wall nudge when falling from ceiling; keep current X
+    if (opts.allowFromCeiling && wasCeiling) {
+      // No wall nudge when falling from ceiling; keep current X
     }
 
     if (fromSky) {
@@ -975,8 +1040,8 @@ class EnhancedCreature {
   }
 
   createOffspring() {
-  // Deprecated: replaced by egg-based system
-  console.log("createOffspring is deprecated; using egg-based multiply.");
+    // Deprecated: replaced by egg-based system
+    console.log("createOffspring is deprecated; using egg-based multiply.");
   }
 
   // NEW FEATURE: Mouse interaction
@@ -1137,16 +1202,20 @@ class EnhancedCreature {
       const climbDirection =
         this.climbTarget.targetY > this.position.y ? 1 : -1;
       // Apply climb speed override (in px/frame)
-  const baseClimb = this.spriteConfig.climbSpeed;
-  const climbV = this._moveSpeedFor("climb", baseClimb);
-  this.velocity.y = climbDirection * climbV;
-  // Prevent any horizontal movement while climbing and snap to wall edge
-  this.velocity.x = 0;
-  if (this.climbTarget.side === "left") this.position.x = 0;
-  else if (this.climbTarget.side === "right") this.position.x = this.maxPosX;
+      const baseClimb = this.spriteConfig.climbSpeed;
+      const climbV = this._moveSpeedFor("climb", baseClimb);
+      this.velocity.y = climbDirection * climbV;
+      // Prevent any horizontal movement while climbing and snap to wall edge
+      this.velocity.x = 0;
+      if (this.climbTarget.side === "left") this.position.x = 0;
+      else if (this.climbTarget.side === "right")
+        this.position.x = this.maxPosX;
 
       // Reached the top: transition into ceiling crawl if requested, else stop climbing
-      if (Math.abs(this.position.y - this.climbTarget.targetY) < 5 || this.position.y <= 8) {
+      if (
+        Math.abs(this.position.y - this.climbTarget.targetY) < 5 ||
+        this.position.y <= 8
+      ) {
         if (this._climbInterruptAttached) {
           this.container.removeEventListener("click", this._onClickInterrupt);
           this._climbInterruptAttached = false;
@@ -1164,9 +1233,9 @@ class EnhancedCreature {
       }
     }
 
-  // Update position based on velocity
-  this.position.x += this.velocity.x * deltaTime;
-  this.position.y += this.velocity.y * deltaTime;
+    // Update position based on velocity
+    this.position.x += this.velocity.x * deltaTime;
+    this.position.y += this.velocity.y * deltaTime;
 
     // Handle ground collision
     if (this.position.y >= this.maxPosY) {
@@ -1202,7 +1271,8 @@ class EnhancedCreature {
     if (this.position.y <= 0 && this.state !== "ceiling") {
       this.position.y = 0;
       // If moving upward, bounce downward
-      if (this.velocity.y < 0) this.velocity.y = Math.abs(this.velocity.y) * 0.4;
+      if (this.velocity.y < 0)
+        this.velocity.y = Math.abs(this.velocity.y) * 0.4;
       // Ensure we're considered airborne but not in climbing
       this.isGrounded = false;
       if (this.state !== "fall") this.state = "fall";
@@ -1214,21 +1284,27 @@ class EnhancedCreature {
     if (hitLeft || hitRight) {
       const atWallX = hitLeft ? 0 : this.maxPosX;
       // If falling or otherwise airborne (not climbing/ceiling), bounce instead of hard clamp
-      if ((this.state === "fall" || (!this.isGrounded && !this.isClimbing)) && this.state !== "ceiling") {
+      if (
+        (this.state === "fall" || (!this.isGrounded && !this.isClimbing)) &&
+        this.state !== "ceiling"
+      ) {
         this.position.x = hitLeft ? 1 : this.maxPosX - 1;
         this.velocity.x = -(this.velocity.x || 0) * 0.6;
       } else {
         // Grounded locomotion: flip direction
         this.position.x = atWallX;
-        if (!this.isClimbing && (this.state === "walk" || this.state === "ceiling")) {
+        if (
+          !this.isClimbing &&
+          (this.state === "walk" || this.state === "ceiling")
+        ) {
           this.direction = hitLeft ? 1 : -1;
           this.updateImageDirection();
         }
       }
     }
 
-  // Handle ceiling snapping while in ceiling crawl
-  if (this.state === "ceiling") {
+    // Handle ceiling snapping while in ceiling crawl
+    if (this.state === "ceiling") {
       this.position.y = 0;
       this.velocity.y = 0;
     }
@@ -1252,24 +1328,37 @@ class EnhancedCreature {
     // Check mouse interaction
     this.checkMouseInteraction();
 
-  // Handle walking movement
+    // Handle walking movement
     if (
       (this.state === "walk" || this.state === "forced-walk") &&
       this.isGrounded
     ) {
-      this.velocity.x = this.direction * this._moveSpeedFor("walk", this.spriteConfig.speed);
-    } else if ((this.state === "run" || this.state === "dash") && this.isGrounded) {
-      const base = this.state === "dash" ? this.spriteConfig.speed * 2.2 : this.spriteConfig.speed * 1.6;
+      this.velocity.x =
+        this.direction * this._moveSpeedFor("walk", this.spriteConfig.speed);
+    } else if (
+      (this.state === "run" || this.state === "dash") &&
+      this.isGrounded
+    ) {
+      const base =
+        this.state === "dash"
+          ? this.spriteConfig.speed * 2.2
+          : this.spriteConfig.speed * 1.6;
       this.velocity.x = this.direction * this._moveSpeedFor(this.state, base);
     } else if (this.state === "creep" && this.isGrounded) {
-      this.velocity.x = this.direction * this._moveSpeedFor("creep", this.spriteConfig.speed * 0.6);
+      this.velocity.x =
+        this.direction *
+        this._moveSpeedFor("creep", this.spriteConfig.speed * 0.6);
     } else if (this.state === "ceiling") {
       // Crawl along top edge horizontally
-      this.velocity.x = this.direction * this._moveSpeedFor("ceiling", this.spriteConfig.speed * 0.9);
+      this.velocity.x =
+        this.direction *
+        this._moveSpeedFor("ceiling", this.spriteConfig.speed * 0.9);
     } else if (this.state === "walkwithie" || this.state === "runwithie") {
       const mult = this.state === "runwithie" ? 1.2 : 1.0;
-      this.velocity.x = this.direction * this._moveSpeedFor(this.state, this.spriteConfig.speed * mult);
-  } else if (this.state !== "climb" && this.state !== "fall") {
+      this.velocity.x =
+        this.direction *
+        this._moveSpeedFor(this.state, this.spriteConfig.speed * mult);
+    } else if (this.state !== "climb" && this.state !== "fall") {
       this.velocity.x *= 0.9; // Friction when not walking
     } else {
       // While in climb state, lock horizontal velocity
@@ -1310,13 +1399,19 @@ class EnhancedCreature {
       const dx = Math.abs(this.position.x - this._lastPosX);
       const dy = Math.abs(this.position.y - this._lastPosY);
       const movingHoriz = dx > eps;
-  const relevantState = this.state === "walk" || this.state === "forced-walk" || this.state === "ceiling";
+      const relevantState =
+        this.state === "walk" ||
+        this.state === "forced-walk" ||
+        this.state === "ceiling";
       if (relevantState && !movingHoriz) {
         this._stallFrames++;
-        if (this._stallFrames > 45) { // ~0.75s at 60fps
+        if (this._stallFrames > 45) {
+          // ~0.75s at 60fps
           this.direction *= -1;
           this.updateImageDirection();
-          this.velocity.x = this.direction * this._moveSpeedFor("walk", this.spriteConfig.speed);
+          this.velocity.x =
+            this.direction *
+            this._moveSpeedFor("walk", this.spriteConfig.speed);
           this._stallFrames = 0;
         }
       } else {
@@ -1361,24 +1456,25 @@ class EnhancedCreature {
 function spawnCreatures() {
   const w = window.ShimejiFunctions || {};
 
-
-    const configs = [
-      { cfg: MIKU_CONFIG, type: "miku" },
-      { cfg: MIKU_ALT_CONFIG, type: "miku-alt" },
-      { cfg: MIKU_SKETCH_CONFIG, type: "miku-sketch" },
-      { cfg: CLASSIC_CONFIG, type: "classic" },
-    ];
-    //Math. random() * (max - min) + min
-    const random =  Math.floor(Math.random() * configs.length);
-    const pick = configs[random];
-    const c = new EnhancedCreature("init-0", pick.cfg, pick.type);
-    creatures.push(c);
+  const configs = [
+    { cfg: MIKU_CONFIG, type: "miku" },
+    { cfg: MIKU_ALT_CONFIG, type: "miku-alt" },
+    { cfg: MIKU_SKETCH_CONFIG, type: "miku-sketch" },
+    { cfg: CLASSIC_CONFIG, type: "classic" },
+  ];
+  //Math. random() * (max - min) + min
+  const random = Math.floor(Math.random() * configs.length);
+  const pick = configs[random];
+  const c = new EnhancedCreature("init-0", pick.cfg, pick.type);
+  creatures.push(c);
   setTimeout(() => c.triggerFall && c.triggerFall(true), 0);
   // }
 
-
   const eggs = parseInt(localStorage.getItem("diva.eggs") || "0", 10);
-  const extras = parseInt(localStorage.getItem("diva.extraShimejis") || "0", 10);
+  const extras = parseInt(
+    localStorage.getItem("diva.extraShimejis") || "0",
+    10
+  );
   const toSpawn = (isNaN(eggs) ? 0 : eggs) + (isNaN(extras) ? 0 : extras);
   const spawns = [
     w.spawnMiku,
@@ -1390,7 +1486,6 @@ function spawnCreatures() {
     const f = spawns[Math.floor(Math.random() * spawns.length)];
     if (typeof f === "function") f();
   }
-
 }
 
 // Global functions for interaction
@@ -1404,8 +1499,8 @@ window.ShimejiFunctions = {
       );
       creatures.push(miku);
 
-  // Newly spawned fall from the sky
-  setTimeout(() => miku.triggerFall && miku.triggerFall(true), 0);
+      // Newly spawned fall from the sky
+      setTimeout(() => miku.triggerFall && miku.triggerFall(true), 0);
 
       // Reward hearts for new companion!
 
@@ -1433,7 +1528,7 @@ window.ShimejiFunctions = {
         "miku-alt"
       );
       creatures.push(miku);
-  setTimeout(() => miku.triggerFall && miku.triggerFall(true), 0);
+      setTimeout(() => miku.triggerFall && miku.triggerFall(true), 0);
       return miku;
     }
     return null;
@@ -1446,7 +1541,7 @@ window.ShimejiFunctions = {
         "miku-sketch"
       );
       creatures.push(miku);
-  setTimeout(() => miku.triggerFall && miku.triggerFall(true), 0);
+      setTimeout(() => miku.triggerFall && miku.triggerFall(true), 0);
       return miku;
     }
     return null;
@@ -1460,7 +1555,7 @@ window.ShimejiFunctions = {
         "classic"
       );
       creatures.push(classic);
-  setTimeout(() => classic.triggerFall && classic.triggerFall(true), 0);
+      setTimeout(() => classic.triggerFall && classic.triggerFall(true), 0);
       return classic;
     }
     return null;
@@ -1500,7 +1595,7 @@ window.ShimejiFunctions = {
 
   triggerMassFall: () => {
     creatures.forEach((creature) => {
-  creature.triggerFall({ fromSky: false });
+      creature.triggerFall({ fromSky: false });
     });
   },
 
@@ -1535,7 +1630,7 @@ setInterval(() => {
     const randomCreature =
       creatures[Math.floor(Math.random() * creatures.length)];
     if (randomCreature && Math.random() > 0.7) {
-  randomCreature.triggerFall({ fromSky: false });
+      randomCreature.triggerFall({ fromSky: false });
     }
   }
 }, 10000);
