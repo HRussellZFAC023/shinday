@@ -1,32 +1,25 @@
 /* Language Dojo × Project DIVA - Complete Styles */
 
 :root {
-  /* Import pastel theme colors from global styles */
-  --pastel-blue: #bde3ff;
-  --pastel-pink: #ffd1ec;
-  --pastel-mint: #cff6e6;
-  --pastel-purple: #e6d1ff;
-  --pastel-yellow: #fff3d1;
 
   /* Diva Colors - Updated for kawaii consistency */
-  --diva-cyan: var(--pastel-blue);
-  --diva-pink: var(--pastel-pink);
-  --diva-purple: var(--pastel-purple);
-  --diva-blue: var(--pastel-blue);
-  --diva-green: var(--pastel-mint);
-  --diva-yellow: var(--pastel-yellow);
-  --diva-orange: #ffcba4;
+  --diva-cyan: #7eb8da;
+  --diva-pink: #f7a8c7;
+  --diva-purple: #b89cd6;
+  --diva-blue: #7eb8da;
+  --diva-green: #85d4bd;
+  --diva-yellow: #f5d76e;
+  --diva-orange: #ffb085;
 
   /* PlayStation Button Colors */
-  --ps-triangle: #00ff88;
-  --ps-circle: #ff0080;
-  --ps-cross: #0088ff;
-  --ps-square: #ffaa00;
+  --ps-triangle: #5bc0a8;
+  --ps-circle: #e85d8c;
+  --ps-cross: #5b8fc0;
+  --ps-square: #e8a85d;
 
   /* UI Colors */
-  --bg-dark: #1a1a2e;
-  --bg-light: #f8f9fa;
-  --text-primary: #2b2b44;
+  --bg-dark: #2d2d44;
+  --bg-light: #fafbfc;
   --text-light: #ffffff;
   --border: #e0e4e8;
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -51,9 +44,8 @@
 
 /* Study Canvas Styles */
 #study {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%);
+  background: linear-gradient(135deg, var(--diva-purple) 0%, var(--diva-pink) 50%);
   border-radius: 16px;
-  min-height: 100vh;
   position: relative;
 }
 
@@ -147,12 +139,11 @@
 
 /* Main HUD */
 .main-hud {
-    padding:20px;
- 
+  padding: 20px;
   background: linear-gradient(
     180deg,
-    rgba(0, 0, 0, 0.8) 0%,
-    rgba(0, 0, 0, 0.4) 50%,
+    rgba(45, 45, 68, 0.95) 0%,
+    rgba(45, 45, 68, 0.6) 50%,
     transparent 100%
   );
   backdrop-filter: blur(5px);
@@ -177,16 +168,17 @@
 .judge-echo {
   font-size: 18px;
   font-weight: 900;
-  color: var(--pastel-pink);
-  text-shadow: 0 0 15px var(--pastel-pink);
+  color: var(--text-light);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
   padding: 6px 15px;
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-purple));
   border-radius: 15px;
-  border: 2px solid var(--pastel-pink);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   animation: pulseBorder 2s infinite;
   min-width: 80px;
   text-align: center;
   order: 3; /* Places it between timer and lives */
+  letter-spacing: 1px;
 }
 
 @keyframes pulseBorder {
@@ -215,7 +207,7 @@
   padding: 8px 15px;
   background: linear-gradient(135deg, var(--diva-purple), var(--diva-blue));
   border-radius: 20px;
-  box-shadow: 0 0 20px rgba(165, 148, 249, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .level-display .label {
@@ -234,8 +226,8 @@
   flex: 1;
   max-width: 300px;
   height: 24px;
-  background: rgba(0, 0, 0, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(45, 45, 68, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   position: relative;
   overflow: hidden;
@@ -265,7 +257,7 @@
 }
 
 .combo-display {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(45, 45, 68, 0.6);
   padding: 8px 15px;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -273,7 +265,7 @@
 
 .combo-label {
   font-size: 10px;
-  color: var(--diva-yellow);
+  color: var(--text-light);
   font-weight: 700;
   margin-right: 8px;
 }
@@ -281,8 +273,8 @@
 .combo-value {
   font-size: 20px;
   font-weight: 900;
-  color: white;
-  text-shadow: 0 0 10px var(--diva-yellow);
+  color: var(--text-light);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 }
 
 .score-display {
@@ -295,22 +287,22 @@
 .score-label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--pastel-pink);
+  color: var(--text-light);
   margin-bottom: 2px;
 }
 
 .score-value {
   font-size: 20px;
   font-weight: 900;
-  color: var(--pastel-orange);
-  text-shadow: 0 0 10px var(--pastel-orange);
+  color: var(--text-light);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 }
 
 .timer-display {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--pastel-cyan);
+  color: var(--text-light);
   font-weight: 700;
   font-size: 16px;
   order: 2;
@@ -323,8 +315,8 @@
 .timer-value {
   font-size: 18px;
   font-weight: 700;
-  color: var(--pastel-cyan);
-  text-shadow: 0 0 8px var(--pastel-cyan);
+  color: var(--text-light);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
 }
 
 .lives-display {
@@ -335,8 +327,8 @@
 
 .life {
   font-size: 16px;
-  color: var(--pastel-pink);
-  text-shadow: 0 0 8px var(--pastel-pink);
+  color: var(--diva-pink);
+  text-shadow: 0 0 6px rgba(247, 168, 199, 0.6);
   transition: all 0.3s;
 }
 
@@ -420,7 +412,7 @@
   display: block;
   font-size: 24px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--ink);
   margin-bottom: 5px;
 }
 
@@ -448,7 +440,7 @@
   display: block;
   font-weight: 700;
   margin-bottom: 10px;
-  color: var(--text-primary);
+  color: var(--ink);
 }
 
 #difficultySlider {
@@ -492,7 +484,7 @@
 #diffLabel {
   font-size: 14px;
   padding: 5px 10px;
-  background: var(--diva-purple);
+  background: linear-gradient(135deg, var(--diva-purple), var(--diva-pink));
   color: white;
   border-radius: 10px;
 }
@@ -506,16 +498,20 @@
 }
 
 .mode-btn {
-  background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
-  border: 2px solid rgba(0,0,0,.06);
+  background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(250,251,252,.95));
+  border: 2px solid var(--border);
   border-radius: 15px;
   padding: 20px;
   cursor: pointer;
   transition: all 0.3s var(--ease-out);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 6px 18px rgba(20, 38, 64, 0.08);
-  min-height: 170px; /* equalize */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .mode-btn::before {
@@ -554,13 +550,14 @@
 .mode-name {
   font-size: 18px;
   font-weight: 900;
-  color: #2b2b44; /* higher contrast */
+  color: var(--ink);
   margin-bottom: 5px;
 }
 
 .mode-desc {
   font-size: 12px;
-  color: #596286; /* higher contrast */
+  color: #4a5568;
+  font-weight: 600;
 }
 
 /* Word of the Day */
@@ -581,14 +578,14 @@
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 10px;
-  color: var(--text-primary);
+  color: var(--ink);
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .wod-content {
-  min-height: 60px;
+  min-height: 120px;
   margin-bottom: 10px;
   display: flex;
   flex-direction: column;
@@ -596,6 +593,7 @@
   background: rgba(255, 255, 255, 0.5);
   padding: 10px;
   border-radius: 10px;
+  text-align: center;
 }
 
 .wod-word {
@@ -613,12 +611,12 @@
 
 .wod-meaning {
   font-size: 14px;
-  color: var(--text-primary);
+  color: var(--ink);
 }
 
 .wod-next {
   background: linear-gradient(135deg, var(--pastel-mint), var(--pastel-blue));
-  color: var(--text-primary);
+  color: var(--ink);
   border: 2px solid var(--pastel-purple);
   padding: 8px 16px;
   border-radius: 15px;
@@ -648,7 +646,7 @@
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 15px;
-  color: var(--text-primary);
+  color: var(--ink);
 }
 
 .quest-item {
@@ -668,7 +666,7 @@
 .quest-text {
   flex: 1;
   font-size: 14px;
-  color: var(--text-primary);
+  color: var(--ink);
 }
 
 .quest-progress {
@@ -679,7 +677,7 @@
 
 /* Game Area */
 .game-area {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 30px;
@@ -694,10 +692,10 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 300px;
+  height: 250px;
   display: flex;
   justify-content: space-around;
-  padding: 20px;
+  padding: 10px 20px;
   pointer-events: none;
   z-index: 5;
 }
@@ -789,7 +787,7 @@
 
 /* Question Panel */
 .question-panel {
-  margin-top: 320px;
+  margin-top: 260px;
   margin-bottom: 30px;
   text-align: center;
   position: relative;
@@ -832,7 +830,7 @@
 .question-content {
   font-size: 32px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--ink);
   min-height: 80px;
   display: flex;
   align-items: center;
@@ -854,25 +852,18 @@
 /* Answer Grid */
 .answer-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 15px;
   max-width: 600px;
   margin: 0 auto;
-  grid-auto-rows: 1fr; /* Makes all rows same height */
-}
-
-/* Always keep 2x2 layout; allow horizontal scroll on very narrow screens instead of collapsing */
-@media (max-width: 420px) {
-  .answer-grid {
-    min-width: 320px;
-    overflow-x: auto;
-  }
+  min-height: 200px;
 }
 
 .answer-btn {
   position: relative;
   padding: 20px;
-  background: white;
+  background: linear-gradient(135deg, #ffffff, #fafbfc);
   border: 3px solid;
   border-radius: 15px;
   font-size: 18px;
@@ -880,12 +871,12 @@
   cursor: pointer;
   transition: all 0.2s var(--ease-out);
   overflow: hidden;
-  min-height: 80px; /* Ensures minimum height */
+  min-height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: var(--text-primary);
+  color: var(--ink);
 }
 
 .answer-btn[data-ps="triangle"] {
@@ -940,50 +931,45 @@
 
 /* Typing Area */
 .typing-area {
-  font-size: 34px;
-  font-weight: 900;
-  color: var(--text-primary);
-  margin-bottom: 30px;
-  min-height: 80px;
+  max-width: 700px;
+  margin: 60px auto 30px;
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
-  background: rgba(255,255,255,0.9);
-  border: 2px solid var(--pastel-purple);
-  border-radius: 15px;
+  align-items: center;
+  gap: 20px;
   padding: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(250,251,252,0.95));
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.typing-target {
-  font-size: 42px;
-  font-weight: 900;
-  color: var(--text-primary);
-  line-height: 1.4;
-  text-align: center;
-  margin-bottom: 10px;
-}
+.typing-target { text-align: center; margin-bottom: 15px; }
+.typing-target .jp-text { font-size: 48px; font-weight: 900; color: var(--diva-purple); margin-bottom: 8px; }
+.typing-target .sub-text { font-size: 16px; color: #4a5568; font-weight: 600; }
 
 .typing-input {
   width: 100%;
+  max-width: 400px;
   padding: 15px;
   font-size: 24px;
-  border: 3px solid var(--diva-purple);
+  border: 2px solid var(--border);
   border-radius: 15px;
   text-align: center;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .typing-input:focus {
-  border-color: var(--diva-cyan);
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+  border-color: var(--diva-purple);
+  box-shadow: 0 0 15px rgba(184, 156, 214, 0.3);
 }
 
 .typing-feedback {
   margin-top: 20px;
   font-size: 20px;
   font-weight: 700;
+  color: var(--ink);
   min-height: 30px;
 }
 
@@ -1051,7 +1037,7 @@
 }
 
 .modal-content {
-  background: white;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(250, 251, 252, 0.95));
   border-radius: 30px;
   padding: 40px;
   max-width: 500px;
@@ -1064,7 +1050,7 @@
 .song-complete {
   font-size: 32px;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--text-primary), var(--diva-purple));
+  background: linear-gradient(135deg, var(--ink), var(--diva-purple));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1076,7 +1062,7 @@
   font-size: 120px;
   font-weight: 900;
   margin: 20px 0;
-  background: linear-gradient(135deg, var(--pastel-yellow), var(--pastel-mint));
+  background: linear-gradient(135deg, var(--diva-yellow), var(--diva-green));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1103,7 +1089,7 @@
   font-size: 12px;
   font-weight: 800;
   margin-bottom: 5px;
-  color: var(--text-primary);
+  color: var(--ink);
 }
 
 .hit-value {
@@ -1139,25 +1125,26 @@
 .reward-label {
   font-size: 14px;
   font-weight: 800;
-  color: var(--text-primary);
+  color: #4a5568;
   margin-bottom: 10px;
 }
 
 .reward-amount {
   font-size: 36px;
   font-weight: 900;
-  color: var(--text-primary);
+  color: var(--ink);
   margin-bottom: 5px;
 }
 
 .reward-bonus {
   font-size: 12px;
-  color: #5a617a;
+  color: #4a5568;
+  font-weight: 600;
 }
 
 .modal-continue {
   background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-purple));
-  color: var(--text-primary);
+  color: var(--ink);
   border: 2px solid var(--pastel-purple);
   padding: 15px 40px;
   border-radius: 25px;
@@ -1367,6 +1354,7 @@
   border-top-color: var(--diva-purple);
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  margin: auto;
 }
 
 @keyframes spin {
@@ -1395,18 +1383,12 @@
     grid-template-columns: 1fr;
   }
 
-  /* keep two columns even on mobile for consistent 2x2 layout */
-  .answer-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .answer-grid { grid-template-columns: 1fr 1fr; gap: 10px; min-height: 180px; }
+  .answer-btn { padding: 15px 10px; font-size: 16px; min-height: 80px; }
 
-  .rhythm-lanes {
-    height: 200px;
-  }
+  .rhythm-lanes { height: 180px; }
 
-  .question-panel {
-    margin-top: 220px;
-  }
+  .question-panel { margin-top: 200px; }
 
   .floating-miku {
     width: 150px;
@@ -1441,7 +1423,7 @@ select#kanjiDirection {
   border-radius: 10px;
   padding: 8px 32px 8px 10px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--ink);
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
   cursor: pointer;
   transition: all 0.2s var(--ease-out);
@@ -1464,25 +1446,24 @@ select#kanjiDirection:focus {
 
 /* Stage Singer */
 #stageSinger {
-  position: absolute;
-  top: 50%;
+  position: fixed;
+  bottom: 20px;
   right: 20px;
-  transform: translateY(-50%);
-  z-index: 10;
+  z-index: 5;
   pointer-events: none;
+  opacity: 0.7;
+  transition: opacity 0.3s;
 }
 
 #stageSinger img {
-  width: 140px; /* Increased further */
-  height: 140px;
+  width: 120px;
+  height: 120px;
   object-fit: contain;
-  image-rendering: pixelated;
-  filter: drop-shadow(0 4px 15px rgba(0,0,0,.3));
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,.2));
   animation: floatMiku 3s ease-in-out infinite;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-purple));
-  padding: 8px;
 }
+
+.typing-active #stageSinger { opacity: 0.9; }
 
 /* Focus Styles */
 button:focus,

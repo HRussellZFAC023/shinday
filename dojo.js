@@ -247,8 +247,25 @@
     },
 
     async fetchWordOfDay() {
+      // Use difficulty to determine vocabulary level
+      const difficulty = State.difficulty || 3;
+      let keyword = "%23common"; // Default to common words
+      
+      // Map difficulty to JLPT levels and complexity
+      if (difficulty <= 2) {
+        keyword = "%23jlpt-n5"; // Beginner
+      } else if (difficulty <= 4) {
+        keyword = "%23jlpt-n4"; // Elementary  
+      } else if (difficulty <= 6) {
+        keyword = "%23jlpt-n3"; // Intermediate
+      } else if (difficulty <= 8) {
+        keyword = "%23jlpt-n2"; // Upper intermediate
+      } else {
+        keyword = "%23jlpt-n1"; // Advanced
+      }
+      
       const page = Math.floor(Math.random() * 50) + 1;
-      const url = `https://jisho.org/api/v1/search/words?keyword=%23common&page=${page}`;
+      const url = `https://jisho.org/api/v1/search/words?keyword=${keyword}&page=${page}`;
       const data = await this.fetchJsonWithCors(url);
 
       if (data && data.data && data.data.length > 0) {
@@ -344,7 +361,70 @@
       }
       return null;
     },
+
+    // ===== Prefetch Jisho Vocab Pools (JLPT-aware) =====
+    async prefetchVocabPools() {
+      try {
+        const bands = (function jlptBandsForDifficulty(diff) {
+          if (diff <= 2) return ["n5"]; // beginner
+          if (diff === 3) return ["n5", "n4"]; // blend
+          if (diff === 4) return ["n4"]; 
+          if (diff === 5) return ["n4", "n3"]; // blend
+          if (diff === 6) return ["n3"]; 
+          if (diff === 7) return ["n3", "n2"]; // blend
+          if (diff === 8) return ["n2"]; 
+          return ["n1"]; // 9
+        })(State.difficulty || 3);
+
+        const PAGES_PER_BAND = 2;
+        const jobs = [];
+        bands.forEach((band) => {
+          for (let i = 1; i <= PAGES_PER_BAND; i++) {
+            const url = `https://jisho.org/api/v1/search/words?keyword=%23jlpt-${band}%20%23common&page=${i}`;
+            const key = `jlpt_${band}_p${i}`;
+            jobs.push(
+              this.fetchJsonWithCors(url).then((json) => {
+                if (!json || !Array.isArray(json.data)) return;
+                const entries = json.data.map((e) => ({
+                  japanese: e.japanese,
+                  senses: e.senses,
+                  meta: { jlpt: e.jlpt || [], pageKey: key },
+                }));
+                // Store page
+                State.vocabCache.pages.push(entries);
+                // Index per band
+                const arr = State.vocabCache.indexByLevel?.get?.(band) || [];
+                arr.push(...entries);
+                State.vocabCache.indexByLevel?.set?.(band, arr);
+                // Populate sets
+                entries.forEach((entry) => {
+                  const jp = entry.japanese?.[0]?.word || entry.japanese?.[0]?.reading;
+                  const en = entry.senses?.[0]?.english_definitions?.[0];
+                  if (jp) State.vocabCache.jpSurfaces.add(jp);
+                  if (en) State.vocabCache.enDefs.add(en);
+                });
+              })
+            );
+          }
+        });
+        await Promise.all(jobs);
+      } catch (_) {}
+    },
+
+    // Single random entry from pooled cache
+    getRandomVocabEntry() {
+      const pages = State.vocabCache.pages || [];
+      if (!pages.length) return null;
+      const flat = pages.flat();
+      if (!flat.length) return null;
+      return flat[Math.floor(Math.random() * flat.length)];
+    },
   };
+
+  // Helper for kanji grade mapping (aligns with slider)
+  function mapDifficultyToKanjiGrade(diff) {
+    return Math.min(6, Math.max(1, Math.round(diff || 3)));
+  }
 
   // ===== Kana/Romaji Utils =====
   const Kana = (() => {
@@ -501,47 +581,37 @@
   // ===== Question Generation =====
   const QuestionGenerator = {
     async generateVocabQuestion() {
-      // Ensure we have cached data
+      // Ensure we have online pools
       if (State.vocabCache.pages.length < 2) {
-        await API.fetchVocabPage(Math.floor(Math.random() * 50) + 1);
-        await API.fetchVocabPage(Math.floor(Math.random() * 50) + 1);
+        await API.prefetchVocabPools();
       }
+      const entry = API.getRandomVocabEntry();
+      if (!entry) return null;
 
-      const pages = State.vocabCache.pages;
-      if (pages.length === 0) return null;
+      const jp = entry.japanese?.[0]?.word || entry.japanese?.[0]?.reading || "";
+      const reading = entry.japanese?.[0]?.reading || "";
+      const en = entry.senses?.[0]?.english_definitions?.[0] || "";
+      const jlpt = entry.meta?.jlpt || [];
 
-      const page = pages[Math.floor(Math.random() * pages.length)];
-      const entry = page[Math.floor(Math.random() * page.length)];
-
-      const jp = entry.japanese[0].word || entry.japanese[0].reading;
-      const reading = entry.japanese[0].reading;
-      const en = entry.senses[0].english_definitions[0];
+      // Auto-tune difficulty gently (based on JLPT)
 
       const dir = State.vocabDirection;
       if (dir === "jp-en") {
         // distractor EN
         const distractors = new Set();
-        while (distractors.size < 3 && State.vocabCache.enDefs.size > 3) {
-          const defsArr = Array.from(State.vocabCache.enDefs);
+        const defsArr = Array.from(State.vocabCache.enDefs);
+        while (distractors.size < 3 && defsArr.length > 3) {
           const randomDef = defsArr[Math.floor(Math.random() * defsArr.length)];
           if (randomDef !== en) distractors.add(randomDef);
         }
-        const options = [en, ...Array.from(distractors)].sort(
-          () => Math.random() - 0.5
-        );
-        return {
-          type: "vocab",
-          prompt: { jp, reading },
-          correct: en,
-          options,
-          reading,
-        };
+        const options = [en, ...Array.from(distractors)].sort(() => Math.random() - 0.5);
+        return { type: "vocab", prompt: { jp, reading }, correct: en, options, reading };
       } else {
-        // EN→JP distractors
+        // EN→JP
         const jpSet = new Set();
         State.vocabCache.pages.forEach((pg) =>
           pg.forEach((e) => {
-            const surface = e.japanese[0].word || e.japanese[0].reading;
+            const surface = e.japanese?.[0]?.word || e.japanese?.[0]?.reading;
             if (surface) jpSet.add(surface);
           })
         );
@@ -551,9 +621,7 @@
           const randomJp = jpArr[Math.floor(Math.random() * jpArr.length)];
           if (randomJp !== jp) distractors.add(randomJp);
         }
-        const options = [jp, ...Array.from(distractors)].sort(
-          () => Math.random() - 0.5
-        );
+        const options = [jp, ...Array.from(distractors)].sort(() => Math.random() - 0.5);
         return { type: "vocab", prompt: { en }, correct: jp, options, reading };
       }
     },
@@ -637,6 +705,11 @@
 
   // ===== Prefetch System =====
   const Prefetch = {
+    async warm() {
+      // Build vocab pools for current difficulty bands and preload kanji list
+      try { await API.prefetchVocabPools(); } catch {}
+      try { await API.fetchKanjiGrade(mapDifficultyToKanjiGrade(State.difficulty)); } catch {}
+    },
     async ensureQuestions(gameType, count = 10) {
       const needed = Math.min(4, count - State.questionQueue.length);
       if (needed <= 0) return;
@@ -692,6 +765,7 @@
       // Setup event listeners
       this.setupEventListeners();
 
+  State.lives = 5; // Always start with 5 lives
   // Ensure controls reflect saved state
   this.syncControlsFromState();
 
@@ -702,11 +776,10 @@
       // Apply menu covers once SITE_CONTENT is loaded
       this.applyMenuCovers && this.applyMenuCovers();
 
-      // Warm up caches and queues
+      // Warm up caches and queues using the new prefetch workflow
       (async () => {
         try {
-          const p = Math.floor(Math.random() * 50) + 1;
-          await API.fetchVocabPage(p);
+          await Prefetch.warm();
         } catch {}
         await Prefetch.ensureQuestions("vocab", 6);
         await Prefetch.ensureQuestions("kanji", 6);
@@ -732,6 +805,10 @@
         State.difficulty = parseInt(e.target.value);
         this.updateDifficultyDisplay();
         State.saveSettings();
+        
+        // Refresh Word of the Day with new difficulty level
+        this.nextWordOfDay();
+        
         try {
           window.SFX && window.SFX.play("ui.move");
         } catch {}
@@ -825,11 +902,11 @@
       });
 
       // Update timer
-      const minutes = Math.floor(State.songTimer / 60);
-      const seconds = State.songTimer % 60;
-      this.elements.songTimer.textContent = `${minutes}:${seconds
-        .toString()
-        .padStart(2, "0")}`;
+      if (State.songTimer > 0) {
+        const minutes = Math.floor(State.songTimer / 60);
+        const seconds = State.songTimer % 60;
+        this.elements.songTimer.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+      }
 
       // Update quest progress (local tracking) if labels exist in DOM
       if (this.elements.questScore)
@@ -853,7 +930,7 @@
       // Update the judge echo in the HUD
   const judgeEcho = document.getElementById('languageDojoCardJudge');
       if (judgeEcho) {
-        judgeEcho.textContent = type;
+        judgeEcho.textContent = type || 'READY';
         judgeEcho.style.opacity = '1';
         judgeEcho.style.transform = 'scale(1.1)';
         setTimeout(() => {
@@ -994,16 +1071,19 @@
         State.hintTimer = null;
       }
       
-      // Show hiragana and meaning together
-      const displayText = [];
-      if (question.jp || question.word) {
-        displayText.push(question.jp || question.word);
-      }
-      if (question.meaning || question.en) {
-        displayText.push(`(${question.meaning || question.en})`);
-      }
+      // Show kanji/word, hiragana reading, and English meaning
+      const jp = question.jp || question.word || '';
+      const reading = question.reading || '';
+      const meaning = question.meaning || question.en || '';
       
-      this.elements.typingTarget.innerHTML = displayText.join('<br>');
+      this.elements.typingTarget.innerHTML = `
+        <div class="jp-text">${jp}</div>
+        <div class="sub-text">
+          ${reading ? `<span>${reading}</span>` : ''}
+          ${reading && meaning ? ' • ' : ''}
+          ${meaning ? `<span>${meaning}</span>` : ''}
+        </div>
+      `;
       this.elements.typingInput.value = "";
       this.elements.typingFeedback.textContent = "";
       
@@ -1012,7 +1092,6 @@
         State.hintTimer = setTimeout(() => {
           if (this.elements.typingFeedback) {
             this.elements.typingFeedback.textContent = `💡 Hint: ${question.romaji}`;
-            this.elements.typingFeedback.style.color = 'var(--pastel-yellow)';
           }
         }, 5000);
       }
@@ -1040,10 +1119,10 @@
       else if (accuracy >= 0.8) rank = "B";
       else if (accuracy >= 0.7) rank = "C";
 
-      // Calculate rewards
-      const baseReward = 1000;
-      const scoreBonus = Math.floor(State.score / 500); // More generous score bonus
-      const levelBonus = State.userLevel * 100;
+  // Calculate rewards (align with session): base + floor(score/500) + level*100
+  const baseReward = 1000;
+  const scoreBonus = Math.floor(State.score / 500);
+  const levelBonus = State.userLevel * 100;
       const totalReward = baseReward + scoreBonus + levelBonus;
 
       // Update modal content
@@ -1231,21 +1310,23 @@
       if (gameType === "typing") {
         UI.elements.answerGrid.style.display = "none";
         UI.elements.typingArea.style.display = "block";
-        UI.elements.rhythmLanes.style.display = "none";
-        UI.elements.questionContent.style.display = "none"; // Hide question panel for typing
+        UI.elements.rhythmLanes.style.display = "none"; 
+        UI.elements.questionContent.style.display = "none";
         UI.elements.gameArea.classList.add("typing-active");
         
-        // Move floating Miku into game area for typing mode
+        // Move floating Miku into game area for typing mode (single instance)
         try {
           const floatingContainer = document.getElementById("floatingMikusContainer");
           const gameArea = UI.elements.gameArea;
-          if (floatingContainer && gameArea) {
+          if (floatingContainer && gameArea && floatingContainer.parentElement !== gameArea) {
             gameArea.appendChild(floatingContainer);
             floatingContainer.style.position = "absolute";
             floatingContainer.style.top = "20px";
             floatingContainer.style.right = "20px";
             floatingContainer.style.zIndex = "10";
           }
+          // Hide stageSinger in typing to avoid duplicate floating image
+          if (UI.elements.stageSinger) UI.elements.stageSinger.style.display = 'none';
         } catch {}
       } else {
         UI.elements.answerGrid.style.display = "grid";
@@ -1615,7 +1696,7 @@
       if (this.questionInterval) clearInterval(this.questionInterval);
       if (this.noteInterval) clearInterval(this.noteInterval);
 
-      // Restore floating Miku to original position
+  // Restore floating Miku to original position
       try {
         const floatingContainer = document.getElementById("floatingMikusContainer");
         const header = document.getElementById("header");
@@ -1627,6 +1708,9 @@
           floatingContainer.style.zIndex = "";
         }
       } catch {}
+
+  // Restore stage singer visibility
+  try { if (UI.elements.stageSinger) UI.elements.stageSinger.style.display = ''; } catch {}
 
       // Hide modal and game area
       UI.elements.songOverModal.classList.remove("show");

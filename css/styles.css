@@ -77,8 +77,9 @@ body {
   position: fixed;
   inset: 0;
   background: var(--gradient-bg);
+  opacity: 0.6;
   z-index: -2;
-  animation: subtlePulse 10s ease-in-out infinite;
+  animation: subtlePulse 20s ease-in-out infinite;
 }
 
 /* Splash screen */
