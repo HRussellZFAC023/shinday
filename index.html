@@ -249,6 +249,7 @@
                         <span class="timer-icon">⏱️</span>
                         <span class="timer-value" id="songTimer">3:00</span>
                       </div>
+                      <div class="judge-echo" id="languageDojoCardJudge">READY</div>
                       <div class="lives-display" id="livesContainer">
                         <span class="life active">♥</span>
                         <span class="life active">♥</span>
@@ -262,13 +263,57 @@
                   <!-- Judgment Display -->
                   <div class="judgment-display" id="judgmentDisplay"></div>
 
-                  <!-- Dojo Content Container -->
-                  <div class="main-container" id="languageDojoCard">
+                  <!-- Dojo Content Container (card id removed; use module id as hub) -->
+                  <div class="main-container">
                     <div class="menu-panel" id="menuPanel">
                       <div class="dojo-title">
                         <span class="title-jp">言語道場</span>
                         <span class="title-en">Language Dojo</span>
-                        <span class="title-diva">× PROJECT DIVA</span>
+                        <span class="title-diva"><img src="assets/icons/stage.png" class="miku-icon" alt="♪"> PROJECT DIVA</span>
+                      </div>
+                      <!-- Game Modes -->
+                      <div class="game-modes">
+                        <button
+                          class="mode-btn vocab-mode"
+                          data-game="vocab"
+                          onclick="startGame('vocab')"
+                        >
+                          <div class="mode-icon">単</div>
+                          <div class="mode-name"><img src="assets/icons/vibing.png" class="miku-icon" alt="♪"> Vocab Pop</div>
+                          <div class="mode-desc">JP → EN Multiple Choice</div>
+                        </button>
+                        <button
+                          class="mode-btn kanji-mode"
+                          data-game="kanji"
+                          onclick="startGame('kanji')"
+                        >
+                          <div class="mode-icon">漢</div>
+                          <div class="mode-name"><img src="assets/icons/ok sign.png" class="miku-icon" alt="✓"> Kanji Master</div>
+                          <div class="mode-desc">Meaning ↔ Kanji by Grade</div>
+                        </button>
+                        <button
+                          class="mode-btn typing-mode"
+                          data-game="typing"
+                          onclick="startGame('typing')"
+                        >
+                          <div class="mode-icon">⌨</div>
+                          <div class="mode-name"><img src="assets/icons/cheering.png" class="miku-icon" alt="♫"> Miku × Chat Typing</div>
+                          <div class="mode-desc">Keyboard Romaji Typing</div>
+                        </button>
+                        <!-- Word of the Day inside game modes -->
+                        <div class="wod-panel">
+                          <h3><img src="assets/icons/star uwu.png" class="miku-icon" alt="★"> 今日の言葉 Word of the Day</h3>
+                          <div class="wod-content" id="wodContent">
+                            <div class="wod-loading">Loading...</div>
+                          </div>
+                          <button
+                            class="wod-next"
+                            id="wodNext"
+                            onclick="nextWordOfDay()"
+                          >
+                            Next Word <img src="assets/icons/jumping with stars.png" class="miku-icon" alt="→">
+                          </button>
+                        </div>
                       </div>
                       <!-- Difficulty Selector -->
                       <div class="difficulty-selector">
@@ -284,36 +329,6 @@
                           <span id="diffValue">3</span>
                           <span id="diffLabel">NORMAL</span>
                         </div>
-                      </div>
-                      <!-- Game Modes -->
-                      <div class="game-modes">
-                        <button
-                          class="mode-btn vocab-mode"
-                          data-game="vocab"
-                          onclick="startGame('vocab')"
-                        >
-                          <div class="mode-icon">単</div>
-                          <div class="mode-name">Vocab Pop</div>
-                          <div class="mode-desc">JP → EN Multiple Choice</div>
-                        </button>
-                        <button
-                          class="mode-btn kanji-mode"
-                          data-game="kanji"
-                          onclick="startGame('kanji')"
-                        >
-                          <div class="mode-icon">漢</div>
-                          <div class="mode-name">Kanji Master</div>
-                          <div class="mode-desc">Meaning ↔ Kanji by Grade</div>
-                        </button>
-                        <button
-                          class="mode-btn typing-mode"
-                          data-game="typing"
-                          onclick="startGame('typing')"
-                        >
-                          <div class="mode-icon">⌨</div>
-                          <div class="mode-name">Miku × Chat Typing</div>
-                          <div class="mode-desc">Keyboard Romaji Typing</div>
-                        </button>
                       </div>
                       <!-- Mode Options -->
                       <div
@@ -348,20 +363,6 @@
                           </select>
                         </label>
                       </div>
-                      <!-- Word of the Day -->
-                      <div class="wod-panel">
-                        <h3>今日の言葉 Word of the Day</h3>
-                        <div class="wod-content" id="wodContent">
-                          <div class="wod-loading">Loading...</div>
-                        </div>
-                        <button
-                          class="wod-next"
-                          id="wodNext"
-                          onclick="nextWordOfDay()"
-                        >
-                          Next Word →
-                        </button>
-                      </div>
                     </div>
 
                     <!-- Game Area -->
@@ -385,6 +386,8 @@
                           <div class="lane-target">□</div>
                         </div>
                       </div>
+                      <!-- Selected Singer on Stage (optional) -->
+                      <div id="stageSinger" aria-hidden="true" style="position:absolute;left:12px;top:12px;z-index:4"></div>
                       <!-- Question Panel -->
                       <div class="question-panel">
                         <div class="question-timer">
@@ -417,10 +420,10 @@
                           ></div>
                         </div>
                       </div>
+                      <!-- Back to Menu moved under gamepad/question panel -->
                       <button
                         class="modal-continue"
-                        onclick="backToMenu()"
-                        style="position: absolute; top: 20px; right: 20px"
+                        onclick="(function(){try{var el=document.getElementById('rewardAmount'); var n=el?parseInt((el.textContent||'0').replace(/[^0-9]/g,''),10):0; if(window.hearts && window.hearts.lovetoast){ window.hearts.lovetoast('+'+n+' \uD83D\uDC96 added'); }}catch(e){} backToMenu(); })()"
                       >
                         Back to Menu
                       </button>
@@ -465,7 +468,7 @@
                       <button
                         class="modal-continue"
                         id="continueBtn"
-                        onclick="backToMenu()"
+                        onclick="(function(){try{var el=document.getElementById('rewardAmount'); var n=el?parseInt((el.textContent||'0').replace(/[^0-9]/g,''),10):0; if(window.hearts && window.hearts.lovetoast){ window.hearts.lovetoast('+'+n+' \uD83D\uDC96 added'); }}catch(e){} backToMenu(); })()"
                       >
                         Continue
                       </button>

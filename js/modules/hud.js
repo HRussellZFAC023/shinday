@@ -20,17 +20,8 @@
   }
   syncLives();
 
-  // Attach a small in-card HUD overlay (judge text + pulse ring)
-  function attachDivaHud(cardId) {
-    const card = document.getElementById(cardId);
-    if (!card || card.querySelector(".diva-hud")) return;
-    const wrap = document.createElement("div");
-    wrap.className = "diva-hud";
-    wrap.innerHTML =
-      '<div class="judge-echo" id="' + cardId + 'Judge">READY</div>';
-    card.style.position = card.style.position || "relative";
-    card.appendChild(wrap);
-  }
+  // No longer injects a separate diva-hud; judge-echo lives in main-hud
+  function attachDivaHud(cardId) { /* deprecated */ }
 
   // Quick pulse effect on a card
   function pulse(card) {
@@ -46,6 +37,7 @@
   }
 
   function flashJudge(cardId, label) {
+    cardId = cardId || 'languageDojoModule';
     const card = document.getElementById(cardId);
     const el = card && card.querySelector(".judge-echo");
     if (el) {
@@ -223,32 +215,26 @@
         if (tId) clearInterval(tId);
         tId = null;
         const rank = calcRank();
-        const hearts = rewardFor(rank);
+        // Score-based hearts formula (consistent with Dojo modal):
+        // base 1000 + floor(score/500) + level*100
+        const level = (window.Progression?.getProgress?.().level) || 1;
+        const base = 1000;
+        const scoreBonus = Math.floor((window.HUD?.score || 0) / 500);
+        const levelBonus = level * 100;
+        const hearts = base + scoreBonus + levelBonus;
         awardHearts(hearts);
-        // overlay
-        const ov = document.createElement("div");
-        ov.style.cssText =
-          "position:fixed;inset:0;background:rgba(255,255,255,.9);z-index:99999;display:flex;align-items:center;justify-content:center;";
-        const box = document.createElement("div");
-        box.style.cssText =
-          "padding:20px 24px;border:3px solid var(--border);border-radius:14px;background:#fff;box-shadow:var(--shadow);max-width:520px;text-align:center;";
-        box.innerHTML = `
-        <h2 style="margin:0 0 8px;font-size:22px">Session Complete</h2>
-        <p style="margin:4px 0;color:#2b2b44">Rank <strong style="font-size:26px">${rank}</strong> • Score <strong>${HUD.score}</strong></p>
-        <p style="margin:4px 0">COOL ${HUD.counts.COOL} • GREAT ${HUD.counts.GREAT} • FINE ${HUD.counts.FINE} • MISS ${HUD.counts.SAD}</p>
-        <p style="margin:10px 0;font-weight:800">+${hearts.toLocaleString()} 💖</p>
-        <button id="sessionClose" class="pixel-btn">Close</button>
-      `;
-        ov.appendChild(box);
-        document.body.appendChild(ov);
-        const close = () => ov.remove();
-        box.querySelector("#sessionClose").addEventListener("click", close);
-        setTimeout(() => {
-          // also auto-close with click on overlay
-          ov.addEventListener("click", (e) => {
-            if (e.target === ov) close();
-          });
-        }, 0);
+        // Show a lightweight toast instead of a blocking overlay
+        try {
+          const msg = `Session complete — Rank ${rank}. +${hearts.toLocaleString()} hearts!`;
+          if (window.hearts?.lovetoast) window.hearts.lovetoast(msg);
+          else {
+            const t = document.createElement('div');
+            t.style.cssText = 'position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#fff;border:2px solid var(--border);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);z-index:99999;color:#2b2b44;font-weight:700';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2200);
+          }
+        } catch (_) {}
       }
       return { start, finish };
     })());

@@ -348,7 +348,7 @@
 
         const preset = PRESETS.normal;
         saveSelection(s, preset);
-        play(s);
+        window.Jukebox.play(s);
         const cur = document.getElementById("jukeboxCurrent");
         if (cur) cur.textContent = s.title;
         ov.remove();

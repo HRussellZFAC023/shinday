@@ -314,6 +314,7 @@ body {
   gap: 20px;
   position: relative;
   z-index: 10;
+  padding: 20px;
 }
 
 .status-left {
@@ -3967,6 +3968,10 @@ main {
   border-radius: 4px;
   transition: transform 0.2s ease;
   image-rendering: pixelated;
+}
+
+.miku-icon:hover {
+  transform: scale(1.2);
 }
 
 /* Responsive 4-grid layout for Japanese games */

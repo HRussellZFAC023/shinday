@@ -68,7 +68,52 @@
             <div class="dojo-title">
                 <span class="title-jp">言語道場</span>
                 <span class="title-en">Language Dojo</span>
-                <span class="title-diva">× PROJECT DIVA</span>
+                <span class="title-diva"><img src="assets/icons/stage.png" class="miku-icon" alt="♪"> PROJECT DIVA</span>
+            </div>
+            
+            <!-- Game Modes -->
+            <div class="game-modes">
+                <button class="mode-btn vocab-mode" data-game="vocab" onclick="startGame('vocab')">
+                    <div class="mode-icon">単</div>
+                    <div class="mode-name"><img src="assets/icons/vibing.png" class="miku-icon" alt="♪"> Vocab Pop</div>
+                    <div class="mode-desc">JP → EN Multiple Choice</div>
+                </button>
+
+                <button class="mode-btn kanji-mode" data-game="kanji" onclick="startGame('kanji')">
+                    <div class="mode-icon">漢</div>
+                    <div class="mode-name"><img src="assets/icons/ok sign.png" class="miku-icon" alt="✓"> Kanji Master</div>
+                    <div class="mode-desc">Meaning ↔ Kanji by Grade</div>
+                </button>
+
+                <button class="mode-btn typing-mode" data-game="typing" onclick="startGame('typing')">
+                    <div class="mode-icon">⌨</div>
+                    <div class="mode-name"><img src="assets/icons/cheering.png" class="miku-icon" alt="♫"> Miku × Chat Typing</div>
+                    <div class="mode-desc">Keyboard Romaji Typing</div>
+                </button>
+                
+                <!-- Word of the Day inside game modes -->
+                <div class="wod-panel">
+                  <h3><img src="assets/icons/star uwu.png" class="miku-icon" alt="★"> 今日の言葉 Word of the Day</h3>
+                  <div class="wod-content" id="wodContent">
+                    <div class="wod-loading">Loading...</div>
+                  </div>
+                  <button
+                    class="wod-next"
+                    id="wodNext"
+                    onclick="nextWordOfDay()"
+                  >
+                    Next Word <img src="assets/icons/jumping with stars.png" class="miku-icon" alt="→">
+                  </button>
+                </div>
+            </div>            <!-- Difficulty Selector -->
+            <div class="difficulty-selector">
+                <label for="difficultySlider">難易度 Difficulty</label>
+                <input type="range" id="difficultySlider" min="1" max="9" value="3">
+                <div class="diff-display">
+                    <span id="diffValue">3</span>
+                    <span id="diffLabel">NORMAL</span>
+                </div>
+            </div>
             </div>
             
             <!-- Difficulty Selector -->
@@ -171,6 +216,8 @@
                     <div class="lane-target">□</div>
                 </div>
             </div>
+            <!-- Selected Singer on Stage (optional) -->
+            <div id="stageSinger" aria-hidden="true" style="position:absolute;left:12px;top:12px;z-index:4"></div>
             
             <!-- Question Panel -->
             <div class="question-panel">
