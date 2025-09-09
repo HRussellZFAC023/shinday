@@ -1118,19 +1118,6 @@ main {
   border-radius: 10px;
 }
 
-/* Press Start + Start Menu */
-.press-start {
-  font-family: "Press Start 2P", monospace;
-  font-weight: 900;
-  letter-spacing: 2px;
-  color: var(--ink);
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 14px;
-  box-shadow: var(--shadow);
-  animation: blink 1s steps(2, start) infinite;
-}
 .start-menu.hidden {
   display: none;
 }
@@ -1741,7 +1728,7 @@ main {
   background-position: center;
 }
 .result-panel.gamer {
-  background-image: url("../assets/Gamer.png");
+  background-image: url("../assets/win.png");
   background-size: cover;
   background-position: center;
 }

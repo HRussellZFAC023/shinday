@@ -789,6 +789,16 @@
   background: var(--ps-square);
 }
 
+/* Subtle fade-out when note passes target */
+.falling-note.fade-out {
+  animation: noteFadeOut 300ms ease-out forwards;
+}
+
+@keyframes noteFadeOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(10px) scale(0.9); }
+}
+
 /* Question Panel */
 .question-panel {
   margin-top: 260px;

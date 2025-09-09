@@ -61,7 +61,7 @@ const SITE_CONTENT = {
     // Game selector tile covers
     menuCovers: {
       vocab: "./assets/Song-Over.full.2116602.gif",
-      kanji: "./assets/win.jpg",
+      kanji: "./assets/t3kSvA.gif",
       kotoba: "./assets/miku beam.gif",
     },
     // All badges appear only in the Web Badges sidebar

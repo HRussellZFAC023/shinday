@@ -26,11 +26,6 @@
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap"
       rel="stylesheet"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
-      rel="stylesheet"
-    />
-
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/shimeji.css" />
     <!-- Language Dojo styles -->
@@ -276,7 +271,7 @@
                         <button
                           class="mode-btn vocab-mode"
                           data-game="vocab"
-                          onclick="startGame('vocab')"
+                          onclick="window.startGame('vocab')"
                         >
                           <div class="mode-icon">単</div>
                           <div class="mode-name"><img src="assets/icons/vibing.png" class="miku-icon" alt="♪"> Vocab Pop</div>
@@ -285,7 +280,7 @@
                         <button
                           class="mode-btn kanji-mode"
                           data-game="kanji"
-                          onclick="startGame('kanji')"
+                          onclick="window.startGame('kanji')"
                         >
                           <div class="mode-icon">漢</div>
                           <div class="mode-name"><img src="assets/icons/ok sign.png" class="miku-icon" alt="✓"> Kanji Master</div>
@@ -294,7 +289,7 @@
                         <button
                           class="mode-btn typing-mode"
                           data-game="typing"
-                          onclick="startGame('typing')"
+                          onclick="window.startGame('typing')"
                         >
                           <div class="mode-icon">⌨</div>
                           <div class="mode-name"><img src="assets/icons/cheering.png" class="miku-icon" alt="♫"> Miku × Chat Typing</div>
@@ -790,7 +785,6 @@
     <script src="./js/modules/jukebox.js"></script>
     <script src="./js/modules/dex.js"></script>
     <script src="./js/modules/visual-effects.js"></script>
-    <script src="./js/modules/hud.js"></script>
     <script src="./js/modules/quests.js"></script>
     <script src="./js/modules/cursor.js"></script>
     <script src="./js/modules/hearts.js"></script>
@@ -803,40 +797,8 @@
     <script src="./js/modules/shrine-dex.js"></script>
     <script src="./js/modules/mikuUI.js"></script>
     <script src="./js/modules/mikuCore.js"></script>
-
+    <script src="dojo.js"></script>
     <script src="./js/main.js"></script>
 
-    <!-- Dojo module scripts and audio (embedded module uses these) -->
-    <audio
-      id="sfxStart"
-      src="assets/SFX/sega voice clips/sega (shout).wav"
-      preload="auto"
-    ></audio>
-    <audio
-      id="sfxPerfect"
-      src="assets/SFX/result voice clips/miku/perfect.wav"
-      preload="auto"
-    ></audio>
-    <audio
-      id="sfxGreat"
-      src="assets/SFX/result voice clips/miku/great.wav"
-      preload="auto"
-    ></audio>
-    <audio
-      id="sfxMiss"
-      src="assets/SFX/result voice clips/miku/missXtake.wav"
-      preload="auto"
-    ></audio>
-    <audio
-      id="sfxTimeup"
-      src="assets/SFX/menu sounds/unavailable.wav"
-      preload="auto"
-    ></audio>
-    <audio
-      id="sfxClick"
-      src="assets/SFX/menu sounds/menu option select.wav"
-      preload="auto"
-    ></audio>
-    <script src="./dojo.js"></script>
-  </body>
+     </body>
 </html>

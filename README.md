@@ -97,7 +97,7 @@ ShimejiFunctions.removeAll();
 - **Level Up** – 15 hearts
 - **Heart Garden Mini‑game** – 5–15 hearts depending on timing
 - **Memory Game** – 50 hearts (4×4) or 150 hearts (6×6)
-- **Study Sessions** – around 30+ hearts scaled by rank and level
+- **Study Sessions** – base 100 hearts plus score and level bonuses
 - **Rhythm HUD Sessions** – base 20 hearts plus score and level bonuses
 - **Jukebox Love Button** – 1 heart each click
 
