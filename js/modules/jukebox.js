@@ -173,6 +173,10 @@
   function play(song) {
     if (!song) return;
 
+    if (window.Quests?.inc) {
+      window.Quests.inc("play-song", 1);
+    }
+
     if (window.__pauseRadio) window.__pauseRadio();
 
     const wrap = ensurePlayer();

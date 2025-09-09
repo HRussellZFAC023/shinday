@@ -119,15 +119,6 @@
       });
     }
 
-    // Hook jukebox play
-
-    const origPlay = window.Jukebox && Jukebox.play;
-    if (typeof origPlay === "function") {
-      Jukebox.play = function () {
-        inc("play-song", 1);
-        return origPlay.apply(this, arguments);
-      };
-    }
   }
 
   function init() {

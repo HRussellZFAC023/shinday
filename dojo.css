@@ -19,10 +19,8 @@
 
   /* UI Colors */
   --bg-dark: #2d2d44;
-  --bg-light: #fafbfc;
+  --bg-light: var(--panel);
   --text-light: #ffffff;
-  --border: #e0e4e8;
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 
   /* Judgment Colors */
   --judge-cool: #35a7ff;
@@ -541,10 +539,9 @@
   font-size: 48px;
   font-weight: 900;
   margin-bottom: 10px;
-  background: linear-gradient(135deg, var(--diva-purple), var(--diva-pink));
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
+  color:  var(--ink);
 }
 
 .mode-name {
@@ -677,8 +674,15 @@
 
 /* Game Area */
 .game-area {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
+  /* shiny pastel */
+  background: linear-gradient(
+    var(--panel),
+    var(--diva-purple),
+    var(--panel),
+    var(--panel),
+    var(--panel)
+
+  );
   border-radius: 20px;
   padding: 30px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
@@ -837,6 +841,11 @@
   justify-content: center;
   flex-direction: column;
   gap: 10px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(250,251,252,0.95));
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin: 15px;
 }
 
 .question-jp {
