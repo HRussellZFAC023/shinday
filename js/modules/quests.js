@@ -81,9 +81,15 @@
       widget.id = "questsWidget";
       host.appendChild(widget);
     }
-    if (!widget.querySelector(".quests-list"))
-      widget.innerHTML =
-        '<h3>🗒️ Daily Quests</h3><div class="quests-list"></div>';
+    if (!widget.querySelector(".quests-list")) {
+      const C = window.SITE_CONTENT || {};
+      const title = C.status?.right?.quests || "Daily Quests";
+      const iconName = C.status?.right?.questsIcon;
+      const icon = window.MikuCore
+        ? window.MikuCore.mikuIcon(iconName, "✨")
+        : "✨";
+      widget.innerHTML = `<h3>${icon} ${title}</h3><div class="quests-list"></div>`;
+    }
     const list = widget.querySelector(".quests-list");
     const s = ensureState();
     list.innerHTML = QUESTS.map((q) => {

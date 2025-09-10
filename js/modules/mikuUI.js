@@ -783,6 +783,16 @@ window.MikuUI = (function () {
         quickLinksTitle.innerHTML = /*html*/ `${quickLinksIcon} ${right.quickLinks}`;
       }
 
+      // Daily Quests title
+      const questsWidget = document.getElementById("questsWidget");
+      if (questsWidget && right.quests) {
+        const h = questsWidget.querySelector("h3");
+        const questsIcon = right.questsIcon
+          ? window.MikuCore.mikuIcon(right.questsIcon, "✨")
+          : "✨";
+        if (h) h.innerHTML = /*html*/ `${questsIcon} ${right.quests}`;
+      }
+
       // Badges title
       const webBadges = document.getElementById("webBadges");
       if (webBadges && right.badges) {

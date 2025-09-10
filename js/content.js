@@ -597,6 +597,8 @@ const SITE_CONTENT = {
     right: {
       quickLinks: "quick links",
       quickLinksIcon: "cheering",
+      quests: "daily quests",
+      questsIcon: "jumpingStars",
       shop: "shop",
       shopIcon: "okHands",
       badges: "pin badges",

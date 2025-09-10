@@ -66,8 +66,8 @@
     <div class="header-inner">
       <img class="float-miku" alt="Miku" src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Note_quaver.svg" />
       <div>
-        <h1 class="site-title">JP Games — Vocab Pop · Miku × Chat · Kanji Master</h1>
-        <p class="site-sub">Pastel, pixel-cute study games — standalone canvas build</p>
+        <h1 class="site-title">JP Games Vocab Pop · Miku × Chat · Kanji Master</h1>
+        <p class="site-sub">Pastel, pixel-cute study games standalone canvas build</p>
       </div>
       <div class="floating-mikus">
         <img class="float-miku" alt="float1" src="https://upload.wikimedia.org/wikipedia/commons/4/45/Musicalnotes.svg" />
@@ -133,7 +133,7 @@
   const hudStreak = document.getElementById('hudStreak');
   const diag = document.getElementById('diag');
 
-  // Placeholder sprite(s) — load safely with CORS + guards
+  // Placeholder sprite(s) load safely with CORS + guards
   const spriteNote = new Image();
   spriteNote.crossOrigin = 'anonymous';
   let spriteReady = false;
@@ -268,7 +268,7 @@
 
   function renderVocab(){
     pastelBG();
-    drawHeader('Vocab Pop — JP → EN');
+    drawHeader('Vocab Pop JP → EN');
 
     // Japanese prompt card
     ctx.save();
@@ -353,7 +353,7 @@
   }
   function renderChat(){
     pastelBG();
-    drawHeader('Miku × Chat — What does it mean?');
+    drawHeader('Miku × Chat What does it mean?');
     // Miku asks
     drawBubble('ミク: '+chatCurrent.prompt, 60, 120, canvas.width-120, 'miku');
     // Options as smaller bubbles
@@ -385,7 +385,7 @@
   function startKanji(){ state.mode='kanji'; state.streak=0; setHUD(); nextKanji(); }
   function nextKanji(){ state.hitboxes.length=0; state.question = KANJI[Math.floor(Math.random()*KANJI.length)]; renderKanji(); }
   function renderKanji(){
-    pastelBG(); drawHeader('Kanji Master — Meaning → Kanji');
+    pastelBG(); drawHeader('Kanji Master Meaning → Kanji');
     // Meaning card
     ctx.save(); roundRect(60,120, canvas.width-120, 120, 16); ctx.fillStyle='rgba(255,255,255,.9)'; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='#b7d7ff'; ctx.stroke();
     ctx.fillStyle='#2b2b44'; ctx.font='700 36px Nunito, sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -465,7 +465,7 @@
     pastelBG(); drawHeader('Select a mode on the left to begin');
     ctx.fillStyle='#596286'; ctx.font='700 18px Nunito, sans-serif'; ctx.textAlign='center';
     ctx.fillText('Vocab Pop · Miku × Chat · Kanji Master', canvas.width/2, canvas.height/2 - 10);
-    ctx.fillText('Click a tile to start — answers are clickable regions on canvas', canvas.width/2, canvas.height/2 + 24);
+    ctx.fillText('Click a tile to start answers are clickable regions on canvas', canvas.width/2, canvas.height/2 + 24);
   }
   (function boot(){
     // Self-test: ensure drawHeader is safe before image load
