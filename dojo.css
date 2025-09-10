@@ -1466,12 +1466,12 @@ select#kanjiDirection:focus {
 /* Stage Singer */
 #stageSinger {
   position: absolute;
-  right: 20px;
-  top: 40%;
+  right: 80%;
+  top: 0;
   transform: translateY(-50%);
   z-index: 5;
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0.7;
   transition: opacity 0.3s;
 }
 
@@ -1485,7 +1485,7 @@ select#kanjiDirection:focus {
 
 /* typing mode big singer */
 .typing-active #stageSinger {
-  top: 50%;
+  top: -70%;
   left: 50%;
   right: auto;
   transform: translate(-50%, -50%);
@@ -1493,7 +1493,7 @@ select#kanjiDirection:focus {
 }
 
 .typing-active #stageSinger img {
-  width: 320px;
+  width: 160px;
   height: auto;
 }
 
@@ -1541,6 +1541,12 @@ select:focus {
   font-size: 14px;
   box-shadow: 0 6px 20px rgba(0,0,0,.12);
   white-space: nowrap;
+  max-width: 90vw;
+  word-wrap: break-word;
+  hyphens: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 10;
 }
 
 .speech-bubble::after {

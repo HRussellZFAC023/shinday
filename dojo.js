@@ -114,18 +114,55 @@
 
   // ===== API Services =====
   class ApiService {
-    // Fetches a word of the day from the JLPT dataset.  Returns
-    // { word, reading, meaning } or null if none is available.
+    // Fetches a word of the day from the JLPT dataset with difficulty pooling.
+    // Returns { word, reading, meaning } or null if none is available.
     static async fetchWordOfDay(diff = 1) {
-      await (window.JLPT_READY || Promise.resolve());
-      const pack = window.JLPT?.vocab?.[diff] || [];
-      if (!Array.isArray(pack) || !pack.length) return null;
-      const pick = pack[Math.floor(Math.random() * pack.length)];
+      const vocabPool = this.getVocabPool(diff);
+      if (!vocabPool.length) return null;
+      const pick = vocabPool[Math.floor(Math.random() * vocabPool.length)];
       return {
         word: pick.word || pick.reading,
         reading: pick.reading || '',
         meaning: pick.meaning || '',
       };
+    }
+
+    // Gets vocabulary pool including all words from current and lower difficulty levels
+    static getVocabPool(difficulty) {
+      let pool = [];
+      if (difficulty === 10) {
+        // Pool all possible words for difficulty 10
+        for (let i = 1; i <= 9; i++) {
+          const levelPool = window.JLPT?.vocab?.[i] || [];
+          pool = pool.concat(levelPool);
+        }
+      } else {
+        // Include all words from current difficulty and below
+        for (let i = 1; i <= difficulty; i++) {
+          const levelPool = window.JLPT?.vocab?.[i] || [];
+          pool = pool.concat(levelPool);
+        }
+      }
+      return pool;
+    }
+
+    // Gets kanji pool including all kanji from current and lower difficulty levels
+    static getKanjiPool(difficulty) {
+      let pool = [];
+      if (difficulty === 10) {
+        // Pool all possible kanji for difficulty 10
+        for (let i = 1; i <= 9; i++) {
+          const levelPool = window.JLPT?.kanji?.[i] || [];
+          pool = pool.concat(levelPool);
+        }
+      } else {
+        // Include all kanji from current difficulty and below
+        for (let i = 1; i <= difficulty; i++) {
+          const levelPool = window.JLPT?.kanji?.[i] || [];
+          pool = pool.concat(levelPool);
+        }
+      }
+      return pool;
     }
   }
 
@@ -292,7 +329,7 @@
   class QuestionGenerator {
     static async vocab() {
       await (window.JLPT_READY || Promise.resolve());
-      const pool = window.JLPT?.vocab?.[State.difficulty] || [];
+      const pool = ApiService.getVocabPool(State.difficulty);
       if (!pool.length) return null;
       const entry = pool[Math.floor(Math.random() * pool.length)];
       const jp = entry.word || entry.reading;
@@ -325,7 +362,7 @@
     }
     static async kanji() {
       await (window.JLPT_READY || Promise.resolve());
-      const pool = window.JLPT?.kanji?.[State.difficulty] || [];
+      const pool = ApiService.getKanjiPool(State.difficulty);
       if (!pool.length) return null;
       const entry = pool[Math.floor(Math.random() * pool.length)];
       const kanji = entry.kanji;
@@ -350,7 +387,7 @@
     }
     static async typing() {
       await (window.JLPT_READY || Promise.resolve());
-      const pool = window.JLPT?.vocab?.[State.difficulty] || [];
+      const pool = ApiService.getVocabPool(State.difficulty);
       const entry = pool.length
         ? pool[Math.floor(Math.random() * pool.length)]
         : { word: 'fallback', reading: 'fallback', meaning: 'fallback' };
@@ -573,8 +610,8 @@
         q.options.forEach((opt, i) => grid.appendChild(this.makeAnswerBtn(opt, i)));
       }
 
-      // Update the stage singer bubble with the correct answer for this question
-      this.updateStageSinger?.(State.currentGame, q);
+      // Update the stage singer without showing the answer initially
+      this.updateStageSinger?.(State.currentGame, q, false);
     }
     makeAnswerBtn(option, index) {
       const btn = document.createElement('button');
@@ -617,8 +654,8 @@
       this.elements.typingHint.textContent = '';
       this.elements.typingFeedback.textContent = '';
       inp.focus();
-      // Update the stage singer with the correct answer keys for speech bubble
-      this.updateStageSinger?.('typing', q);
+      // Update the stage singer without showing the answer initially
+      this.updateStageSinger?.('typing', q, false);
 
       // Reset mistake flag at the start of each typing question
       State.typingMistakeMade = false;
@@ -652,13 +689,13 @@
     /**
      * Update the on-stage singer image and optional speech bubble based on
      * the current game type and question.  In typing mode the speech bubble
-     * will show the exact key sequence needed (romanised), whereas in other
-     * modes it shows the correct answer for the current question.  When no
-     * game is active the singer is hidden.
+     * will only show when the user makes a mistake. In other modes it only shows
+     * when the user selects an incorrect answer.
      * @param {string|null} gameType
      * @param {object|null} q
+     * @param {boolean} showAnswer - Whether to show the answer in speech bubble
      */
-    updateStageSinger(gameType, q) {
+    updateStageSinger(gameType, q, showAnswer = false) {
       const el = this.elements.stageSinger;
       if (!el) return;
       if (!gameType) {
@@ -671,9 +708,10 @@
         return;
       }
       let bubbleText = '';
-      if (gameType === 'typing' && q) {
+      // Only show speech bubble when showAnswer is true (on errors)
+      if (showAnswer && gameType === 'typing' && q) {
         bubbleText = q.keys || '';
-      } else if (q) {
+      } else if (showAnswer && q) {
         bubbleText = q.correct || '';
       }
       const imgTag = `<img src="${mikuUrl}" alt="Miku">`;
@@ -1059,7 +1097,8 @@
       // correct if answer matches
       const correct = answer === State.currentQuestion.correct;
       if (!correct) {
-        // Wrong answers: do not auto‑progress; treat as MISS
+        // Wrong answers: show speech bubble with correct answer and treat as MISS
+        UI.updateStageSinger?.(State.currentGame, State.currentQuestion, true);
         this.processJudgment('MISS', false);
         return;
       }
@@ -1148,15 +1187,12 @@
       // A wrong keystroke: show the hint if not already shown.
       if (!State.typingMistakeMade) {
         State.typingMistakeMade = true;
-        if (UI.elements.typingHint) {
-          UI.elements.typingHint.textContent = `Keys: ${q.keys}`;
-          UI.elements.typingHint.style.display = '';
-        }
+        // Show speech bubble with answer
+        UI.updateStageSinger?.('typing', q, true);
         const inpEl = UI.elements.typingInput;
         if (inpEl) {
           inpEl.dataset.hint = q.keys;
         }
-        window.SFX?.play?.('quiz.bad');
       }
       // Keep feedback empty to avoid flicker on mistakes
       UI.elements.typingFeedback.textContent = '';
