@@ -48,7 +48,7 @@
     const station =
       C.radio && (C.radio.radioName || C.radio.radioName === 0)
         ? C.radio.radioName
-        : C.radio?.radioName || C.radio?.title || "Kawaii FM";
+        : C.radio?.radioName || C.radio?.title || "Online";
     if (radioDisplayStatus) radioDisplayStatus.textContent = station;
     if (statusDot) statusDot.style.color = "#ffbf00";
 
@@ -221,7 +221,8 @@
 
     function startMetadataPolling() {
       if (metaTimer) return;
-      metaTimer = setInterval(async () => {
+
+      const poll = async () => {
         if (!audio || audio.paused || audio.ended) {
           clearInterval(metaTimer);
           metaTimer = null;
@@ -229,7 +230,10 @@
         }
         const title = await fetchIcyTitle();
         if (title) setNowPlaying(title);
-      }, 15000);
+      };
+
+      poll();
+      metaTimer = setInterval(poll, 15000);
     }
 
     audio.addEventListener("pause", () => {

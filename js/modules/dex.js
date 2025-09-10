@@ -5,6 +5,11 @@
   const LS_FILTER = "Wish.dexFilter";
   const PIXIE_URL = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
 
+  // Check if PixieBel is unlocked
+  function pixieUnlocked() {
+    return localStorage.getItem("pixiebelUnlocked") === "1";
+  }
+
   if (!window.handleVideoError) {
     window.handleVideoError = function (iframe, videoUrl) {
       if (iframe && iframe.parentElement) {
@@ -168,13 +173,17 @@
 
         // PixieBel mystery mask for locked state
         const isPixieBel = /(PixieBel \(bonus\)\.gif)$/i.test(url);
+        const pixieUnlockedState = pixieUnlocked();
         const mysteryOverlay =
           !owned && isPixieBel
             ? '<div class="mystery-cover"><div class="mystery-text">?</div></div>'
             : "";
+        
+        // Add disabled class for locked PixieBel
+        const disabledClass = (isPixieBel && !pixieUnlockedState) ? ' dex-disabled' : '';
 
         return `
-          <div class="dex-card ${ownClass}" data-url="${url}" tabindex="0">
+          <div class="dex-card ${ownClass}${disabledClass}" data-url="${url}" tabindex="0">
           <div class="rarity-ring"></div>
             <div class="dex-stars">${stars(r)}</div>
             <img src="${url}" alt="${name}" loading="lazy" decoding="async" />
@@ -236,9 +245,33 @@
 
     // Tile popovers
     container.querySelectorAll(".dex-card").forEach((card) => {
-      card.addEventListener("click", () =>
-        openDetails(card.getAttribute("data-url"))
-      );
+      const url = card.getAttribute("data-url");
+      const isPixieBel = /(PixieBel \(bonus\)\.gif)$/i.test(url);
+      const pixieUnlockedState = pixieUnlocked();
+      const isDisabled = isPixieBel && !pixieUnlockedState;
+      
+      card.addEventListener("click", () => {
+        // Block clicks on PixieBel if not unlocked
+        if (isDisabled) {
+          // Show a subtle hint instead of opening details
+          if (window.Hearts?.loveToast) {
+            window.Hearts.loveToast("This legendary companion remains hidden... 🔒✨");
+          }
+          return;
+        }
+        
+        openDetails(url);
+      });
+      
+      // Also block keyboard access (Enter key) for disabled cards
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && isDisabled) {
+          e.preventDefault();
+          if (window.Hearts?.loveToast) {
+            window.Hearts.loveToast("This legendary companion remains hidden... 🔒✨");
+          }
+        }
+      });
      
     });
 

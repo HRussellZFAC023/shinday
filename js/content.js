@@ -171,7 +171,7 @@ const SITE_CONTENT = {
   radio: {
     title: "miku radio",
     titleIcon: "vibing",
-    defaultStatus: "Kawaii FM 📻",
+    defaultStatus: "Online",
     playingStatus: "Now Playing",
     stoppedStatus: "Radio Stopped",
     playButton: "▶️",
@@ -342,7 +342,7 @@ const SITE_CONTENT = {
   music: {
     title: "Music Corner",
     titleIcon: "jumpingMusic",
-    radioName: "Kawaii FM",
+    radioName: "",
     radioIcon: "vibing",
     playlistTitle: "Current Favorites",
     playlistIcon: "love",
@@ -413,7 +413,7 @@ const SITE_CONTENT = {
     heartsZone: "Tap to grow more hearts! (੭ˊ꒳ˋ)੭",
     heartsZoneIcon: "chuuu",
     heartsReset: "Reset",
-    WishTitle: "Miku GET Wish",
+    WishTitle: "close your eyes and make a wish~",
     WishIcon: "starUwu",
     WishOpenDex: "📱 Open MikuDex",
   },

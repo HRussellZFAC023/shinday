@@ -39,7 +39,7 @@ window.MikuSystem = (function () {
 
   // UI Management - NO MORE TRY BLOCKS!
   function updateNowPlaying(song) {
-    const title = song?.title || song?.name || "Kawaii FM 📻";
+    const title = song?.title || song?.name || "Online";
     const displayEl = document.getElementById("radioDisplayStatus");
     if (displayEl) displayEl.textContent = title;
     localStorage.setItem("pixelbelle-now-playing", title);

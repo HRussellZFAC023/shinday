@@ -135,12 +135,16 @@
     });
     return owned >= baseOnly.length && baseOnly.length > 0;
   }
-  function awardPixieBel() {
+  function awardPixieBel(skipCeremony = false) {
     const coll = getColl();
     if (!coll[PIXIE_URL])
       coll[PIXIE_URL] = { count: 1, rarity: 6, new: true, multiplier: 6 };
     setColl(coll);
     setPixieUnlocked();
+    
+    // Skip ceremony if PixieBel was pulled normally (ceremony happens in card reveal)
+    if (skipCeremony) return;
+    
     // Ceremony overlay
     const ov = document.createElement("div");
     ov.setAttribute(
@@ -275,9 +279,19 @@
         renderDex();
         const maxR = Math.max(...cards.map((x) => x.rarity || 1));
         if (!isFinite(maxR) || maxR <= 2) SFX.play("Wish.fail");
-        // After results settle, auto-award PixieBel once all base collected
+        
+        // Check if PixieBel was pulled in this set of cards
+        const pulledPixieBel = cards.some(card => card.url === PIXIE_URL);
+        
+        // After results settle, handle PixieBel scenarios
         try {
-          if (!pixieUnlocked() && hasAllBaseCollected()) awardPixieBel();
+          if (pulledPixieBel && !pixieUnlocked()) {
+            // PixieBel was pulled by luck - trigger ceremony
+            setTimeout(() => awardPixieBel(false), 250);
+          } else if (!pixieUnlocked() && hasAllBaseCollected()) {
+            // All base cards collected - award PixieBel
+            awardPixieBel();
+          }
         } catch {}
       },
       2000 + cards.length * 300 + 500,
