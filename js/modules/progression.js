@@ -89,10 +89,10 @@
 
     if (lvl > prev) {
       if (window.SFX) window.SFX.play("hearts.milestone");
-      if (window.hearts?.loveToast)
-        window.hearts.loveToast(`レベルアップ！Level ${lvl} ✨`);
+      if (window.Hearts?.loveToast)
+        window.Hearts.loveToast(`レベルアップ！Level ${lvl} ✨`);
       if (window.Hearts?.add) window.Hearts.add(15);
-      else if (window.hearts?.addHearts) window.hearts.addHearts(15);
+      else if (window.Hearts?.addHearts) window.Hearts.addHearts(15);
     }
 
     emit();

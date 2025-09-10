@@ -165,7 +165,7 @@
       try {
         window.SFX?.play?.("ui.select");
       } catch {}
-      window.hearts?.loveToast?.("PixieBel joins the celebration! ✨");
+      window.Hearts?.loveToast?.("PixieBel joins the celebration! ✨");
       window.refreshFloatingMikus?.();
       close();
     });
@@ -405,7 +405,7 @@
       if (h >= 100) {
         localStorage.setItem("pixelbelle-hearts", String(h - 100));
         addTokens(1);
-        window.hearts.updateCounters && window.hearts.updateCounters();
+        window.Hearts.updateCounters && window.Hearts.updateCounters();
       } else {
         SFX.play("ui.unavailable");
       }

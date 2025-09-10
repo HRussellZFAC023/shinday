@@ -1512,8 +1512,8 @@ window.ShimejiFunctions = {
         window.pixelBelleGarden.addHearts
       ) {
         window.pixelBelleGarden.addHearts(3);
-        if (window.hearts.loveToast)
-          window.hearts.loveToast("New companion! +3💖");
+        if (window.Hearts.loveToast)
+          window.Hearts.loveToast("New companion! +3💖");
       }
 
       return miku;

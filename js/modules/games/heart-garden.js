@@ -26,11 +26,11 @@
         let reward = 5;
         if (diff > 1200 && diff < 1800) reward = 15;
         else if (diff > 800 && diff < 2200) reward = 10;
-        if (window.hearts && window.hearts.addHearts)
-          window.hearts.addHearts(reward);
+        if (window.Hearts && window.Hearts.addHearts)
+          window.Hearts.addHearts(reward);
         const rect = zone.getBoundingClientRect();
-        if (window.hearts && window.hearts.createFloatingHeart)
-          window.hearts.createFloatingHeart(
+        if (window.Hearts && window.Hearts.createFloatingHeart)
+          window.Hearts.createFloatingHeart(
             rect.left + x + size / 2,
             rect.top + y + size / 2,
           );

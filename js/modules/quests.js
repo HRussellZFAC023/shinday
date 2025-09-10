@@ -55,10 +55,10 @@
       it.done = true;
       const reward = QUESTS.find((q) => q.id === id).reward || {};
       if (reward.xp && window.Progression) Progression.addXp(reward.xp);
-      if (reward.hearts && window.hearts?.addHearts) {
-        window.hearts.addHearts(reward.hearts);
-        if (window.hearts?.loveToast)
-          window.hearts.loveToast(`Quest complete! +${reward.hearts} 💖`);
+      if (reward.hearts && window.Hearts?.addHearts) {
+        window.Hearts.addHearts(reward.hearts);
+        if (window.Hearts?.loveToast)
+          window.Hearts.loveToast(`Quest complete! +${reward.hearts} 💖`);
       }
       if (window.MikuUI?.effects?.confetti)
         window.MikuUI.effects.confetti(40);

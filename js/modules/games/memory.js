@@ -169,13 +169,13 @@
 
           // Reward based on difficulty: 4x4 → 50; 6x6 → 150
           const reward = difficulty === "6x6" ? 150 : 50;
-          if (window.hearts && typeof window.hearts.addHearts === "function") {
-            window.hearts.addHearts(reward);
+          if (window.Hearts && typeof window.Hearts.addHearts === "function") {
+            window.Hearts.addHearts(reward);
           }
           // Announce reward as a loveToast
-          if (window.hearts && typeof window.hearts.loveToast === "function") {
+          if (window.Hearts && typeof window.Hearts.loveToast === "function") {
             const amt = (reward && reward.toLocaleString) ? reward.toLocaleString() : String(reward);
-            window.hearts.loveToast(`You won! +${amt} 💖`);
+            window.Hearts.loveToast(`You won! +${amt} 💖`);
           }
           playWin();
 

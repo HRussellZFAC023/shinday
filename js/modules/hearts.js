@@ -1,5 +1,5 @@
 /* Hearts and love system extracted from main.js */
-window.hearts = (function () {
+window.Hearts = (function () {
   const C = window.SITE_CONTENT || {};
   const LOVE_TOASTS = C.love?.toasts || ["ありがとう！💖"];
   const LOVE_MILESTONES = C.love?.milestones || [];
@@ -389,9 +389,9 @@ window.hearts = (function () {
                 sfx.play("swallow.chomp");
                 sfx.play("extra.kya");
               }
-              window.hearts &&
-                window.hearts.loveToast &&
-                window.hearts.loveToast("A Miku was swallowed! 😭");
+              window.Hearts &&
+                window.Hearts.loveToast &&
+                window.Hearts.loveToast("A Miku was swallowed! 😭");
               fadeOut();
               return;
             }
@@ -402,8 +402,8 @@ window.hearts = (function () {
             const amount = 500;
             if (window.Hearts && typeof window.Hearts.add === "function") {
               window.Hearts.add(-amount);
-            } else if (window.hearts && typeof window.hearts.addHearts === "function") {
-              window.hearts.addHearts(-amount);
+            } else if (window.Hearts && typeof window.Hearts.addHearts === "function") {
+              window.Hearts.addHearts(-amount);
             } else {
               // Fallback direct localStorage update
               const have = parseInt(localStorage.getItem("pixelbelle-hearts") || "0", 10) || 0;
@@ -412,8 +412,8 @@ window.hearts = (function () {
               const hc = document.getElementById("heartCount");
               if (hc) hc.textContent = String(next);
             }
-            if (window.hearts && window.hearts.loveToast) {
-              window.hearts.loveToast(`Lost ${amount} hearts 💔`);
+            if (window.Hearts && window.Hearts.loveToast) {
+              window.Hearts.loveToast(`Lost ${amount} hearts 💔`);
             }
             if (sfx && sfx.play) sfx.play("swallow.chomp");
           } catch (_) {}

@@ -7,8 +7,8 @@ window.shop = (function () {
   }
 
   function spendHearts(cost) {
-    if (window.hearts && typeof window.hearts.addHearts === "function") {
-      window.hearts.addHearts(-cost);
+    if (window.Hearts && typeof window.Hearts.addHearts === "function") {
+      window.Hearts.addHearts(-cost);
     } else {
       const h = Math.max(0, getHearts() - cost);
       localStorage.setItem("pixelbelle-hearts", String(h));

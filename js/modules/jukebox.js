@@ -161,10 +161,10 @@
 
         if (window.Hearts?.add) {
           window.Hearts.add(1);
-        } else if (typeof window.hearts.addHearts === "function") {
-          window.hearts.addHearts(1);
+        } else if (typeof window.Hearts.addHearts === "function") {
+          window.Hearts.addHearts(1);
         }
-        window.hearts.shimejiCelebrate();
+        window.Hearts.shimejiCelebrate();
         window.MikuUI.effects.confetti(40);
       });
     return wrap;

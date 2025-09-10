@@ -27,7 +27,7 @@ window.initSite = function () {
   window.AudioMod.initBgm();
   window.Radio.init();
   window.ShimejiFunctions.init();
-  window.hearts.initHearts();
+  window.Hearts.initHearts();
   window.shop && window.shop.initShop();
   window.socials && window.socials.initSocials();
   window.Jukebox.initialize();
@@ -36,6 +36,6 @@ window.initSite = function () {
   const visited = localStorage.getItem("pixelbelle-visited");
   if (!visited) {
     localStorage.setItem("pixelbelle-visited", "1");
-    window.hearts.loveToast("Welcome to Baby Belle's Pixel Garden! ✨", "miku");
+    window.Hearts.loveToast("Welcome to Baby Belle's Pixel Garden! ✨", "miku");
   }
 };

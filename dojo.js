@@ -699,14 +699,12 @@
     }
     initializeHUD() {
       const def = (key, get, set) => {
-        try {
-          Object.defineProperty(this.HUD, key, {
-            configurable: true,
-            enumerable: true,
-            get,
-            set: set || (() => {}),
-          });
-        } catch {}
+        Object.defineProperty(this.HUD, key, {
+          configurable: true,
+          enumerable: true,
+          get,
+          set: set || (() => {}),
+        });
       };
       def(
         "lives",
@@ -830,10 +828,12 @@
       }
     }
     awardHearts(n) {
-      window.Hearts?.add?.(n) || window.hearts?.addHearts?.(n);
+      window.Hearts.loveToast?.(`+${n.toLocaleString()} hearts!`);
+      window.Hearts?.add?.(n);
     }
     addXP(n) {
-      window.Progression?.addXp?.(n) || window.Progression?.addXP?.(n);
+      window.MikuUI.effects.confetti();
+      window.Progression?.addXp?.(n);
     }
     // Determine the rank based on final score.  Uses CONFIG.rankThresholds.
     calcRank() {
@@ -887,11 +887,11 @@
             const rank = hudManager.calcRank();
             const rewards = hudManager.rewards();
             // Award hearts and XP at the end of the session
-            hudManager.awardHearts(rewards.total);
+            hudManager.awardHearts(rewards.total / 10);
             hudManager.addXP(rewards.total / 100);
             // Pop a toast if available
             const msg = `Session complete — Rank ${rank}. +${rewards.total.toLocaleString()} hearts & XP!`;
-            window.hearts?.lovetoast?.(msg) ||
+            window.Hearts?.lovetoast?.(msg) ||
               (function () {
                 const t = document.createElement("div");
                 t.style.cssText =

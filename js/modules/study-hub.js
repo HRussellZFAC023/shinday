@@ -135,7 +135,7 @@
       const reward=Math.round((base+rankBonus)*(1+bonus/100));
       this.reward=reward;
       if(window.Hearts&&Hearts.add) Hearts.add(reward);
-      else if(window.hearts&&hearts.addHearts) hearts.addHearts(reward);
+      else if(window.Hearts&&hearts.addHearts) hearts.addHearts(reward);
       return {rank,score,reward};
     },
     reset(){

@@ -922,7 +922,7 @@ window.MikuUI = (function () {
     badges.push(badgeId);
     localStorage.setItem(BADGE_STORAGE_KEY, JSON.stringify(badges));
 
-    window.hearts.loveToast(`🏆 Badge Unlocked: ${badgeName}`, "miku");
+    window.Hearts.loveToast(`🏆 Badge Unlocked: ${badgeName}`, "miku");
     createConfetti(60);
 
     // Play achievement sound
