@@ -49,7 +49,7 @@ const SITE_CONTENT = {
       okSign: "./assets/icons/ok sign.png",
       pow: "./assets/icons/pow!.png",
       sad: "./assets/pixel-miku/014 - Rolling Girl Miku.png",
-      sparkle: "./assets/pixel-miku/088 - Tell your world.png",
+      sparkle: "./assets/pixel-miku/101 - PixieBel (bonus).gif",
       stage: "./assets/icons/stage.png",
       starUwu: "./assets/icons/star uwu.png",
       thumbsUp: "./assets/icons/Thumbs Up!.png",
