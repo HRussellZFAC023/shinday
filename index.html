@@ -122,24 +122,10 @@
             </div>
 
             <div class="widget">
-              <h3>🐾 Your new best friend~!</h3>
-              <iframe
-                width="314"
-                height="321"
-                scrolling="no"
-                src=""
-                frameborder="0"
-                id="petIframe"
-              ></iframe>
-              <small style="display: block; color: #596286; margin-top: 6px"
-                >Powered by
-                <a
-                  href="https://gifypet.neocities.org/"
-                  target="_blank"
-                  rel="noopener"
-                  >gifypet</a
-                ></small
-              >
+              <h3 id="quickLinksTitle">🌟 Quick Links</h3>
+              <ul class="quick-links" id="quickLinksList">
+                <!-- Will be populated by JS -->
+              </ul>
             </div>
 
             <div class="widget">
@@ -150,21 +136,20 @@
             </div>
 
             <div class="widget">
+              <h3>💫 Web Badges</h3>
+              <div class="badges-collection" id="webBadges"></div>
+            </div>
+
+            <div class="widget">
               <h3>🌸 Site Stats</h3>
               <div class="stats">
-                <!-- Badges moved to Web Badges section -->
                 <div class="visitor-counter">
-                  <span class="counter-label">Visitors:</span>
+                  <span class="counter-label">friends:</span>
                   <span id="visitorCount" class="counter-number"
                     >Loading...</span
                   >
                 </div>
               </div>
-            </div>
-            <!-- Moved Web Badges to left sidebar under Site Stats -->
-            <div class="widget">
-              <h3>💫 Web Badges</h3>
-              <div class="badges-collection" id="webBadges"></div>
             </div>
           </aside>
 
@@ -705,10 +690,24 @@
               </div>
             </div>
             <div class="widget">
-              <h3 id="quickLinksTitle">🌟 Quick Links</h3>
-              <ul class="quick-links" id="quickLinksList">
-                <!-- Will be populated by JS -->
-              </ul>
+              <h3>🐾 Your new best friend~!</h3>
+              <iframe
+                width="314"
+                height="321"
+                scrolling="no"
+                src=""
+                frameborder="0"
+                id="petIframe"
+              ></iframe>
+              <small style="display: block; color: #596286; margin-top: 6px"
+                >Powered by
+                <a
+                  href="https://gifypet.neocities.org/"
+                  target="_blank"
+                  rel="noopener"
+                  >gifypet</a
+                ></small
+              >
             </div>
 
             <!-- Daily Quests moved and merged here -->

@@ -40,6 +40,7 @@ const SITE_CONTENT = {
       ahaha: "./assets/icons/ahaha.png",
       cheering: "./assets/icons/cheering.png",
       chuuu: "./assets/icons/chuuu.png",
+      friendsIcon: "./assets/friendsIcon.png",
       innocent: "./assets/icons/innocent.png",
       jumpingMusic: "./assets/icons/jumping with music notes.png",
       jumpingStars: "./assets/icons/jumping with stars.png",
@@ -163,7 +164,7 @@ const SITE_CONTENT = {
     heartIcon: "love",
     visitorIcon: "cheering",
     // Label used in the Site Stats widget for the visitor counter
-    visitorsLabel: "Visitors:",
+    visitorsLabel: "friends:",
     statusIcon: "starUwu",
   },
 
@@ -485,14 +486,32 @@ const SITE_CONTENT = {
 
   friends: {
     title: "my friends",
-    titleIcon: "ahaha",
+    titleIcon: "friendsIcon",
     items: [
-      { name: "Cinnamoroll Club", url: "#", emoji: "🐶", mikuIcon: "innocent" },
-      { name: "Cozy Gaming Pals", url: "#", emoji: "🎮", mikuIcon: "vibing" },
-      { name: "Kawaii Creators", url: "#", emoji: "🌸", mikuIcon: "starUwu" },
-      { name: "Vocaloid Fans", url: "#", emoji: "🎤", mikuIcon: "stage" },
-      { name: "Study Buddies", url: "#", emoji: "📚", mikuIcon: "thumbsUp" },
-      { name: "Art Friends", url: "#", emoji: "🎨", mikuIcon: "cheering" },
+      { 
+        name: "hachi", 
+        url: "https://x.com/hachimyun", 
+        emoji: "🌊", 
+        mikuIcon: "innocent",
+        theme: "ocean",
+        image: "hachi.jpg"
+      },
+      { 
+        name: "pia", 
+        url: "https://linktr.ee/vae1eri", 
+        emoji: "💻", 
+        mikuIcon: "vibing",
+        theme: "lain",
+        image: "pia.webp"
+      },
+      { 
+        name: "hero", 
+        url: "https://linktr.ee/heroslayer", 
+        emoji: "🎭", 
+        mikuIcon: "stage",
+        theme: "persona",
+        image: "hero.jpg"
+      },
     ],
   },
   quickLinks: {
@@ -590,7 +609,7 @@ const SITE_CONTENT = {
       pet: "your new best friend~!",
       petIcon: "innocent",
       friends: "my friends",
-      friendsIcon: "ahaha",
+      friendsIcon: "friendsIcon",
       stats: "site stats",
       statsIcon: "okSign",
     },

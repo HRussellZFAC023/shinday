@@ -715,7 +715,16 @@ window.MikuUI = (function () {
             const icon = friend.mikuIcon
               ? window.MikuCore.mikuIcon(friend.mikuIcon, friend.emoji || "")
               : friend.emoji || "";
-            return `<a href="${friend.url}" class="friend-button" target="_blank" rel="noopener">${icon} ${friend.name}</a>`;
+            const themeClass = friend.theme ? `friend-${friend.theme}` : '';
+            const imageUrl = friend.image ? `./assets/${friend.image}` : '';
+            const imageHtml = imageUrl ? `<img src="${imageUrl}" alt="${friend.name}" class="friend-image" />` : '';
+            return `<a href="${friend.url}" class="friend-button ${themeClass}" target="_blank" rel="noopener">
+              ${imageHtml}
+              <div class="friend-content">
+                <span class="friend-icon">${icon}</span>
+                <span class="friend-name">${friend.name}</span>
+              </div>
+            </a>`;
           })
           .join("");
         lists.forEach((el) => (el.innerHTML = markup));
@@ -769,7 +778,7 @@ window.MikuUI = (function () {
           const icon = C.status?.visitorIcon
             ? window.MikuCore.mikuIcon(C.status.visitorIcon, "")
             : "";
-          const label = (C.status && C.status.visitorsLabel) || "Visitors:";
+          const label = (C.status && C.status.visitorsLabel) || "friends:";
           visitorLabel.innerHTML = /*html*/ `${icon}${label}`;
         }
       }
