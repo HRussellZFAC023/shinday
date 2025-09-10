@@ -49,8 +49,8 @@
     // exactly the threshold you get that rank.  Ranks are checked from
     // highest to lowest.
     rankThresholds: [
-      { score: 9000, rank: 'SSS' },
-      { score: 7000, rank: 'SS' },
+      { score: 7000, rank: 'SSS' },
+      { score: 6000, rank: 'SS' },
       { score: 5000, rank: 'S' },
       { score: 3000, rank: 'A' },
       { score: 2000, rank: 'B' },
@@ -846,7 +846,7 @@
               const rewards = hudManager.rewards();
               // Award hearts and XP at the end of the session
               hudManager.awardHearts(rewards.total);
-              hudManager.addXP(rewards.total);
+              hudManager.addXP(rewards.total / 100);
               // Pop a toast if available
               const msg = `Session complete — Rank ${rank}. +${rewards.total.toLocaleString()} hearts & XP!`;
               window.hearts?.lovetoast?.(msg) || (function () {
