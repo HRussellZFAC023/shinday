@@ -382,38 +382,39 @@
     init() {
       // Grab all the elements we need once up front
       this.elements = {
-        menuPanel: byId("menuPanel"),
-        gameArea: byId("gameArea"),
-        userLevel: byId("userLevel"),
-        voltageBar: byId("voltageBar"),
-        comboCount: byId("comboCount"),
-        scoreValue: byId("scoreValue"),
-        songTimer: byId("songTimer"),
-        livesContainer: byId("livesContainer"),
-        judgmentDisplay: byId("judgmentDisplay"),
-        questionContent: byId("questionContent"),
-        answerGrid: byId("answerGrid"),
-        typingArea: byId("typingArea"),
-        typingTarget: byId("typingTarget"),
-        typingInput: byId("typingInput"),
-        typingFeedback: byId("typingFeedback"),
-        questionTimerBar: byId("questionTimerBar"),
-        questionTimerText: byId("questionTimerText"),
-        rhythmLanes: byId("rhythmLanes"),
-        songOverModal: byId("songOverModal"),
-        effectsLayer: byId("effectsLayer"),
-        difficultySlider: byId("difficultySlider"),
-        diffValue: byId("diffValue"),
-        diffLabel: byId("diffLabel"),
-        wodContent: byId("wodContent"),
-        wodNext: byId("wodNext"),
-        rankDisplay: byId("rankDisplay"),
-        coolCount: byId("coolCount"),
-        greatCount: byId("greatCount"),
-        fineCount: byId("fineCount"),
-        missCount: byId("missCount"),
-        rewardAmount: byId("rewardAmount"),
-        rewardBonus: byId("rewardBonus"),
+        menuPanel: byId('menuPanel'),
+        gameArea: byId('gameArea'),
+        userLevel: byId('userLevel'),
+        voltageBar: byId('voltageBar'),
+        comboCount: byId('comboCount'),
+        scoreValue: byId('scoreValue'),
+        songTimer: byId('songTimer'),
+        livesContainer: byId('livesContainer'),
+        judgmentDisplay: byId('judgmentDisplay'),
+        questionContent: byId('questionContent'),
+        answerGrid: byId('answerGrid'),
+        typingArea: byId('typingArea'),
+        typingTarget: byId('typingTarget'),
+        typingInput: byId('typingInput'),
+        typingFeedback: byId('typingFeedback'),
+        questionTimerBar: byId('questionTimerBar'),
+        questionTimerText: byId('questionTimerText'),
+        rhythmLanes: byId('rhythmLanes'),
+        songOverModal: byId('songOverModal'),
+        effectsLayer: byId('effectsLayer'),
+        difficultySlider: byId('difficultySlider'),
+        diffValue: byId('diffValue'),
+        diffLabel: byId('diffLabel'),
+        wodContent: byId('wodContent'),
+        wodNext: byId('wodNext'),
+        rankDisplay: byId('rankDisplay'),
+        coolCount: byId('coolCount'),
+        greatCount: byId('greatCount'),
+        fineCount: byId('fineCount'),
+        missCount: byId('missCount'),
+        rewardAmount: byId('rewardAmount'),
+        rewardBonus: byId('rewardBonus'),
+        stageSinger: byId('stageSinger'),
       };
       this.setupEvents();
       // Load difficulty from localStorage if available
@@ -534,13 +535,11 @@
       const content = this.elements.questionContent;
       const grid = this.elements.answerGrid;
       if (!content || !grid) return;
-      content.style.display = "block";
-      grid.style.display = "grid";
-      if (q.type === "vocab") {
-        if (State.vocabDirection === "jp-en") {
-          content.innerHTML = `<div class="question-jp">${
-            q.prompt.jp
-          }</div><div class="question-sub">${q.reading || ""}</div>`;
+      content.style.display = 'block';
+      grid.style.display = 'grid';
+      if (q.type === 'vocab') {
+        if (State.vocabDirection === 'jp-en') {
+          content.innerHTML = `<div class="question-jp">${q.prompt.jp}</div><div class="question-sub">${q.reading || ''}</div>`;
         } else {
           content.innerHTML = `<div class="question-sub">English:</div><div class="question-jp">${
             q.prompt.en || ""
@@ -575,9 +574,9 @@
     }
     startTypingQuestion(q) {
       // Hide multiple choice elements
-      this.elements.questionContent.style.display = "none";
-      this.elements.answerGrid.style.display = "none";
-      this.elements.typingArea.style.display = "block";
+      this.elements.questionContent.style.display = 'none';
+      this.elements.answerGrid.style.display = 'none';
+      this.elements.typingArea.style.display = 'block';
       // Compose target line: kanji/surface + hiragana + english
       const surface = q.jp;
       const hira = q.reading;
@@ -593,6 +592,24 @@
       inp.dataset.hint = q.keys;
       this.elements.typingFeedback.textContent = "";
       inp.focus();
+    }
+    updateStageSinger(gameType) {
+      const el = this.elements.stageSinger;
+      if (!el) return;
+      if (!gameType) {
+        el.innerHTML = '';
+        return;
+      }
+      const url = window.MikuSystem?.getCurrentMikuUrl?.();
+      if (!url) {
+        el.innerHTML = '';
+        return;
+      }
+      el.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = 'Miku';
+      el.appendChild(img);
     }
     showSongOverModal(rank, rewardsDisplay) {
       // Update counts
@@ -630,6 +647,7 @@
   }
   const byId = (id) => document.getElementById(id);
   const UI = new UIManager();
+  window.refreshStageSinger = () => UI.updateStageSinger(State.currentGame);
 
   // ===== Effects =====
   class EffectsManager {
@@ -922,9 +940,11 @@
     async start(gameType) {
       State.currentGame = gameType;
       State.resetRuntime();
-      window.SFX?.play?.("start");
-      UI.elements.menuPanel.style.display = "none";
-      UI.elements.gameArea.style.display = "block";
+      window.SFX?.play?.('start');
+      UI.elements.menuPanel.style.display = 'none';
+      UI.elements.gameArea.style.display = 'block';
+      UI.updateStageSinger(gameType);
+      document.body.classList.toggle('typing-active', gameType === 'typing');
       // If a global HUD exists attach it
       window.attachDivaHud?.("languageDojoCard");
       if (window.DivaSessionOptIn) {
@@ -1188,6 +1208,8 @@
       UI.elements.gameArea.style.display = "none";
       UI.elements.menuPanel.style.display = "block";
       State.lives = 5;
+      document.body.classList.remove('typing-active');
+      UI.updateStageSinger(null);
       UI.updateHUD();
     }
   }

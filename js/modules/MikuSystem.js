@@ -17,6 +17,9 @@ window.MikuSystem = (function () {
     localStorage.setItem("singer.current", url || "");
     refresh(); // Auto-refresh display
     refreshFloatingMikus();
+    if (typeof window.refreshStageSinger === "function") {
+      window.refreshStageSinger();
+    }
   }
 
   function normalize(path) {

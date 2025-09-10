@@ -1465,9 +1465,10 @@ select#kanjiDirection:focus {
 
 /* Stage Singer */
 #stageSinger {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
+  position: absolute;
+  top: 50%;
+  right: -140px;
+  transform: translateY(-50%);
   z-index: 5;
   pointer-events: none;
   opacity: 0.7;
@@ -1476,13 +1477,25 @@ select#kanjiDirection:focus {
 
 #stageSinger img {
   width: 120px;
-  height: 120px;
+  height: auto;
   object-fit: contain;
   filter: drop-shadow(0 4px 10px rgba(0,0,0,.2));
   animation: floatMiku 3s ease-in-out infinite;
 }
 
-.typing-active #stageSinger { opacity: 0.9; }
+/* typing mode big singer */
+.typing-active #stageSinger {
+  top: 50%;
+  left: 50%;
+  right: auto;
+  transform: translate(-50%, -50%);
+  opacity: 0.9;
+}
+
+.typing-active #stageSinger img {
+  width: 300px;
+  height: auto;
+}
 
 /* Focus Styles */
 button:focus,
