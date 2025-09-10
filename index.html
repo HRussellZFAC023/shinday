@@ -74,7 +74,7 @@
           <div class="status-left">
             <div class="status-item">
               <span class="blink" id="statusDot">●</span>
-              <span id="onlineStatus"></span>
+              <span id="onlineStatus">Online</span>
             </div>
             <div class="status-item">💖 <span id="heartCount">0</span></div>
           </div>
@@ -101,7 +101,7 @@
               <div class="radio-widget">
                 <div class="retro-radio">
                   <div class="radio-display">
-                    <span id="radioDisplayStatus"></span>
+                    <span id="radioDisplayStatus">Kawaii FM 📻</span>
                     <div class="eq-bars">
                       <div class="bar"></div>
                       <div class="bar"></div>
@@ -122,6 +122,27 @@
             </div>
 
             <div class="widget">
+              <h3>🐾 Your new best friend~!</h3>
+              <iframe
+                width="314"
+                height="321"
+                scrolling="no"
+                src=""
+                frameborder="0"
+                id="petIframe"
+              ></iframe>
+              <small style="display: block; color: #596286; margin-top: 6px"
+                >Powered by
+                <a
+                  href="https://gifypet.neocities.org/"
+                  target="_blank"
+                  rel="noopener"
+                  >gifypet</a
+                ></small
+              >
+            </div>
+
+            <div class="widget">
               <h3>👥 MyFriends</h3>
               <div class="friends-list" id="friendsList">
                 <!-- Will be populated by JS -->
@@ -129,27 +150,21 @@
             </div>
 
             <div class="widget">
-              <h3 id="quickLinksTitle">🌟 Quick Links</h3>
-              <ul class="quick-links" id="quickLinksList">
-                <!-- Will be populated by JS -->
-              </ul>
-            </div>
-
-            <div class="widget">
-              <h3>💫 Web Badges</h3>
-              <div class="badges-collection" id="webBadges"></div>
-            </div>
-
-            <div class="widget">
               <h3>🌸 Site Stats</h3>
               <div class="stats">
+                <!-- Badges moved to Web Badges section -->
                 <div class="visitor-counter">
-                  <span class="counter-label">friends:</span>
+                  <span class="counter-label">Visitors:</span>
                   <span id="visitorCount" class="counter-number"
-                    ></span
+                    >Loading...</span
                   >
                 </div>
               </div>
+            </div>
+            <!-- Moved Web Badges to left sidebar under Site Stats -->
+            <div class="widget">
+              <h3>💫 Web Badges</h3>
+              <div class="badges-collection" id="webBadges"></div>
             </div>
           </aside>
 
@@ -284,7 +299,7 @@
                         <div class="wod-panel">
                           <h3><img src="assets/icons/star uwu.png" class="miku-icon" alt="★"> 今日の言葉 Word of the Day</h3>
                           <div class="wod-content" id="wodContent">
-                            <div class="wod-loading"></div>
+                            <div class="wod-loading">Loading...</div>
                           </div>
                           <button
                             class="wod-next"
@@ -384,18 +399,15 @@
                           style="display: none"
                         >
                           <div class="typing-target" id="typingTarget">
-                            
+                            Loading...
                           </div>
                           <input
                             type="text"
                             class="typing-input"
                             id="typingInput"
-                            placeholder="Type here..."
                           />
-                          <div
-                            class="typing-feedback"
-                            id="typingFeedback"
-                          ></div>
+                          <div id="typingHint" class="typing-hint" style="display:none"></div>
+                          <div class="typing-feedback" id="typingFeedback"></div>
                         </div>
                         <!-- Floating singer -->
                         <div id="stageSinger" aria-hidden="true"></div>
@@ -422,20 +434,16 @@
                       <div class="rank-display" id="rankDisplay">A</div>
                       <div class="hit-counts">
                         <div class="hit-stat cool">
-                          <span class="hit-label">COOL</span
-                          ><span class="hit-value" id="coolCount">0</span>
+                          <span class="hit-label">COOL</span><span class="hit-value" id="coolCount">0</span>
                         </div>
                         <div class="hit-stat great">
-                          <span class="hit-label">GREAT</span
-                          ><span class="hit-value" id="greatCount">0</span>
+                          <span class="hit-label">GREAT</span><span class="hit-value" id="greatCount">0</span>
                         </div>
                         <div class="hit-stat fine">
-                          <span class="hit-label">FINE</span
-                          ><span class="hit-value" id="fineCount">0</span>
+                          <span class="hit-label">FINE</span><span class="hit-value" id="fineCount">0</span>
                         </div>
                         <div class="hit-stat miss">
-                          <span class="hit-label">MISS</span
-                          ><span class="hit-value" id="missCount">0</span>
+                          <span class="hit-label">MISS</span><span class="hit-value" id="missCount">0</span>
                         </div>
                       </div>
                       <div class="reward-display">
@@ -469,7 +477,6 @@
                   </div>
                   <button id="resetMemory" class="pixel-btn">Reset Game</button>
                 </div>
-
                 <div class="game-widget">
                   <h3>💖 Heart Collector</h3>
                   <div class="heart-game">
@@ -483,7 +490,6 @@
                     <!-- Reset button removed: heart collector persists and cannot be reset from UI -->
                   </div>
                 </div>
-
                 <div class="game-widget">
                   <div
                     class="social-embed"
@@ -503,28 +509,16 @@
                     ></iframe>
                   </div>
                 </div>
-
                 <div class="game-widget">
                   <p>
-                    <a
-                      href="https://mikusquared.itch.io/rpg"
-                      target="_blank"
-                      rel="noopener"
-                      >🕹️ Miku RPG (opens in new window)</a
-                    >
+                    <a href="https://mikusquared.itch.io/rpg" target="_blank" rel="noopener">🕹️ Miku RPG (opens in new window)</a>
                   </p>
                   <p>
-                    <a
-                      href="https://mikusquared.itch.io/ttj2"
-                      target="_blank"
-                      rel="noopener"
-                      >🕹️ Miku Jetpack (opens in new window)</a
-                    >
+                    <a href="https://mikusquared.itch.io/ttj2" target="_blank" rel="noopener">🕹️ Miku Jetpack (opens in new window)</a>
                   </p>
                 </div>
               </div>
             </section>
-
             <section id="Wish" class="content-section">
               <h2>🎰 Miku Wish</h2>
               <div class="game-widget">
@@ -535,18 +529,11 @@
                     </div>
                     <div class="Wish-actions">
                       <button id="WishPull1" class="pixel-btn">Pull x1</button>
-                      <button id="WishPull10" class="pixel-btn">
-                        Pull x10
-                      </button>
-                      <button id="WishDaily" class="pixel-btn">
-                        Daily Ticket
-                      </button>
-                      <button id="WishConvert" class="pixel-btn">
-                        100💖 → +1
-                      </button>
+                      <button id="WishPull10" class="pixel-btn">Pull x10</button>
+                      <button id="WishDaily" class="pixel-btn">Daily Ticket</button>
+                      <button id="WishConvert" class="pixel-btn">100💖 → +1</button>
                     </div>
                   </div>
-                  <!-- Persistent Wish preview slot machine (idle state) -->
                   <div id="WishRotation" class="Wish-rotation">
                     <div class="Wish-preview">
                       <div class="preview-reel">
@@ -554,44 +541,28 @@
                       </div>
                     </div>
                   </div>
-                  <!-- Results panel replaces rotation after a pull -->
                   <div id="WishResults" class="Wish-results" hidden></div>
                   <div class="Wish-footer">
-                    <button id="WishCollectionBtn" class="pixel-btn">
-                      Open MikuDex
-                    </button>
+                    <button id="WishCollectionBtn" class="pixel-btn">Open MikuDex</button>
                   </div>
                   <div id="mikuDex" class="Wish-collection hidden"></div>
                 </div>
               </div>
             </section>
-
-            <!-- Shrine section -->
             <section id="shrine" class="content-section">
               <h2></h2>
               <div class="shrine-content">
                 <div class="shrine-altar">
-                  <img
-                    src=""
-                    alt="Miku Shrine"
-                    class="shrine-image"
-                    id="shrineMiku"
-                  />
+                  <img src="" alt="Miku Shrine" class="shrine-image" id="shrineMiku" />
                   <div class="offering-candles">
                     <div class="candle">🕯️</div>
                     <div class="candle">🕯️</div>
                     <div class="candle">🕯️</div>
                   </div>
                 </div>
-
                 <div class="shrine-info">
                   <h3>💙 About Hatsune Miku</h3>
-                  <p>
-                    Miku has been my inspiration for creativity, music, and
-                    digital art. This shrine celebrates the magic of vocaloid
-                    music and the amazing community around it!
-                  </p>
-
+                  <p>Miku has been my inspiration for creativity, music, and digital art. This shrine celebrates the magic of vocaloid music and the amazing community around it!</p>
                   <h3>🎵 Favorite Songs</h3>
                   <ul class="song-list">
                     <li>World is Mine - ryo</li>
@@ -601,76 +572,34 @@
                   </ul>
                 </div>
               </div>
-
-              <div class="image-gallery" id="mikuGallery">
-                <!-- Will be populated by JS -->
-              </div>
+              <div class="image-gallery" id="mikuGallery"></div>
               <br />
               <div class="game-widget">
-                <iframe
-                  src="https://www.mikucollection.com/en/art-gallery"
-                  title="Miku Collection Art Gallery"
-                  style="width: 100%; height: 600px; border: none"
-                  loading="lazy"
-                ></iframe>
+                <iframe src="https://www.mikucollection.com/en/art-gallery" title="Miku Collection Art Gallery" style="width: 100%; height: 600px; border: none" loading="lazy"></iframe>
               </div>
             </section>
           </main>
-
-          <!-- Right sidebar -->
           <aside id="rightSidebar">
             <div class="widget" id="jpHudWidget">
               <h3>🎤 Diva HUD</h3>
               <div class="jp-hud-widget">
-                <!-- Moved Level bar into Diva HUD -->
                 <div class="hud-line" id="hudLevelWrap">
                   <strong>⭐ Level:</strong>
                   <span id="hudLevelText">Level 1</span>
                   <div class="progress-bar" id="hudLevelBar">
-                    <div
-                      class="progress"
-                      id="hudLevelProgress"
-                      style="width: 0%"
-                    ></div>
+                    <div class="progress" id="hudLevelProgress" style="width: 0%"></div>
                   </div>
                 </div>
                 <div class="hud-line">
-                  <strong>❤️ Lives:</strong> <span id="hudLives">5</span>/<span
-                    id="hudMaxLives"
-                    >5</span
-                  >
+                  <strong>❤️ Lives:</strong> <span id="hudLives">5</span>/<span id="hudMaxLives">5</span>
                 </div>
-                <!-- Difficulty control that actually affects gameplay -->
-                <div
-                  class="hud-controls"
-                  id="hudDifficultyWrap"
-                  style="display: none"
-                >
-                  <label class="hud-label" for="hudDifficulty"
-                    >Difficulty:</label
-                  >
-                  <input
-                    type="range"
-                    min="1"
-                    max="9"
-                    step="1"
-                    value="3"
-                    id="hudDifficulty"
-                  />
+                <div class="hud-controls" id="hudDifficultyWrap" style="display: none">
+                  <label class="hud-label" for="hudDifficulty">Difficulty:</label>
+                  <input type="range" min="1" max="9" step="1" value="3" id="hudDifficulty" />
                   <span id="hudDifficultyLabel">3</span>
                 </div>
-                <!-- Rhythm controls moved to Game Settings overlay -->
-                <div
-                  class="hud-controls"
-                  id="hudBpmWrap"
-                  style="display: none"
-                ></div>
-                <div
-                  class="hud-controls"
-                  id="hudMetWrap"
-                  style="display: none"
-                ></div>
-                <!-- HUD singer image removed per request -->
+                <div class="hud-controls" id="hudBpmWrap" style="display: none"></div>
+                <div class="hud-controls" id="hudMetWrap" style="display: none"></div>
                 <div class="hud-controls">
                   <label class="hud-label">Game:</label>
                   <select id="hudGame" class="pixel-btn">
@@ -685,90 +614,41 @@
                     <option value="meaning">Meaning→Kanji</option>
                     <option value="reading">Kanji→Reading</option>
                   </select>
-                  <!-- Timed moved to Game Settings overlay -->
                 </div>
               </div>
             </div>
             <div class="widget">
-              <h3>🐾 Your new best friend~!</h3>
-              <iframe
-                width="314"
-                height="321"
-                scrolling="no"
-                src=""
-                frameborder="0"
-                id="petIframe"
-              ></iframe>
-              <small style="display: block; color: #596286; margin-top: 6px"
-                >Powered by
-                <a
-                  href="https://gifypet.neocities.org/"
-                  target="_blank"
-                  rel="noopener"
-                  >gifypet</a
-                ></small
-              >
+              <h3 id="quickLinksTitle">🌟 Quick Links</h3>
+              <ul class="quick-links" id="quickLinksList"></ul>
             </div>
-
-            <!-- Daily Quests moved and merged here -->
             <div class="widget" id="questsWidget">
               <h3>daily quests</h3>
               <div class="quests-list"></div>
             </div>
-
             <div class="widget">
               <h3>🛍️ Shop</h3>
               <div class="shop-panel">
                 <div class="shop-item">
-                  <button
-                    id="shopShield"
-                    class="pixel-btn"
-                    title="Ward hearts briefly"
-                  >
-                    ⛨ Shield (50💖)
-                  </button>
+                  <button id="shopShield" class="pixel-btn" title="Ward hearts briefly">⛨ Shield (50💖)</button>
                 </div>
                 <div class="shop-item">
-                  <button
-                    id="shopDecoy"
-                    class="pixel-btn"
-                    title="Distract the swallower"
-                  >
-                    🍪 Decoy (5💖)
-                  </button>
+                  <button id="shopDecoy" class="pixel-btn" title="Distract the swallower">🍪 Decoy (5💖)</button>
                 </div>
               </div>
             </div>
-
-            <!-- Web Badges moved to left sidebar -->
           </aside>
         </div>
-
-        <!-- Footer -->
         <footer id="footer">
-          <p>
-            Cinnamoroll Approved • This site is always under construction! ✨
-          </p>
+          <p>Cinnamoroll Approved • This site is always under construction! ✨</p>
           <div class="tooltip">
-            <img
-              src="./assets/madeByGif.gif"
-              alt="Made by us gaming together"
-              title="Made with ♥ by Hero & Shin"
-              data-tooltip="Made with ♥ by Hero & Shin"
-              class="made-by-gif"
-            />
+            <img src="./assets/madeByGif.gif" alt="Made by us gaming together" title="Made with ♥ by Hero & Shin" data-tooltip="Made with ♥ by Hero & Shin" class="made-by-gif" />
           </div>
         </footer>
       </div>
-
-      <!-- Background animations -->
       <div class="bg-animations">
         <div class="floating-hearts"></div>
       </div>
     </div>
-
-    <!-- 🌸 MIKU CORE - EVERYTHING IN ONE PLACE! 🌸 -->
-    <!-- Prefetch Word-of-the-Day and Miku image manifest before splash wiring -->
     <script src="./js/modules/jlpt.js"></script>
     <script src="./js/modules/miku-manifest.js"></script>
     <script src="./js/content.js"></script>
@@ -798,6 +678,5 @@
     <script src="./js/modules/mikuCore.js"></script>
     <script src="dojo.js"></script>
     <script src="./js/main.js"></script>
-
-     </body>
+  </body>
 </html>
