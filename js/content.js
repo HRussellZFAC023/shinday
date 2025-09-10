@@ -30,7 +30,7 @@ const SITE_CONTENT = {
     ogImage: "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png",
     splashMiku: "./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png",
     heroMiku: "./assets/hatsune_miku_render_by_jimmyisaac_d68ibgy-pre.png",
-    shrineMiku: "./assets/hatsune-miku-happy-birthday-xa3kasez005ghjih.webp",
+    shrineMiku: "./assets/11293373_65ee2.gif",
     headerBg: "./assets/pt_top.png",
     // Optional: add extra Miku image URLs (singing/idle sprites) to show in floating Mikus
     extraMikus: [],
@@ -682,12 +682,19 @@ function initializeSplash() {
   }
 
   const enterSite = async () => {
-    window.SFX && window.SFX.play("ui.teleport");
     enterButton.disabled = true;
+    
     // Show loading state during gating
     const prev = enterButton.textContent;
-    enterButton.textContent = "Loading…";
+    // enterButton.textContent = "Loading…";
+    
+    // Play teleport sound
+    if (window.SFX) {
+      window.SFX.play("ui.teleport");
+    }
+    
     await gateReady();
+    
     // Apply WOD to UI if available and MikuUI loaded later
     if (window.WOD && window.SITE_CONTENT?.study?.wordOfDay) {
       window.SITE_CONTENT.study.wordOfDay.japanese =
@@ -697,11 +704,32 @@ function initializeSplash() {
       window.SITE_CONTENT.study.wordOfDay.meaning =
         window.WOD.meaning || window.SITE_CONTENT.study.wordOfDay.meaning;
     }
+    
+    // Add fancy fade-out transition
+    splash.style.transition = "opacity 0.8s ease-out, transform 0.8s ease-out";
+    splash.style.opacity = "0";
+    splash.style.transform = "scale(0.95)";
+    
+    // Wait for fade-out to complete
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
     splash.style.display = "none";
     mainSite.classList.remove("hidden");
+    
+    // Fade in the main site
+    mainSite.style.opacity = "0";
+    mainSite.style.transform = "scale(1.05)";
+    mainSite.style.transition = "opacity 0.6s ease-out, transform 0.6s ease-out";
+    
+    // Trigger fade-in
+    requestAnimationFrame(() => {
+      mainSite.style.opacity = "1";
+      mainSite.style.transform = "scale(1)";
+    });
 
     const initFunction = window.initSite || (() => {});
     initFunction();
+    
     // Restore label
     enterButton.textContent = prev;
   };

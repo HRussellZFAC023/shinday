@@ -98,7 +98,7 @@ function makeShimejiConfig(basePath) {
       "scared",
     ],
     mouseReactionDistance: 100,
-    multiplyChance: 0.05,
+    multiplyChance: 0.3,
     maxCreatures: 99,
   };
 }

@@ -1500,8 +1500,9 @@ select#kanjiDirection:focus {
 /* Focus Styles */
 button:focus,
 input:focus,
-select:focus {
-  outline: 3px solid var(--diva-purple);
+select:focus,
+a:focus {
+  outline: 3px solid var(--accent-2);
   outline-offset: 2px;
 }
 

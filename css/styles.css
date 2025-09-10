@@ -145,16 +145,18 @@ body {
 
 .enter-btn {
   background: linear-gradient(45deg, var(--pastel-blue), var(--pastel-pink));
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 20px;
   padding: 15px 30px;
   font-size: 1.1rem;
   font-weight: 800;
   color: var(--ink);
   cursor: pointer;
-  transition: all 0.3s ease;
+  /* transition: all 0.3s ease; */
   box-shadow: var(--shadow);
+  
 }
+
 
 .enter-btn:hover {
   transform: translateY(-2px);
@@ -162,6 +164,7 @@ body {
     0 4px 0 rgba(43, 43, 68, 0.2),
     0 12px 32px rgba(43, 43, 68, 0.15);
 }
+
 
 .hidden {
   display: none;
@@ -363,7 +366,6 @@ body {
   text-decoration: none;
   color: var(--ink);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  border-color: var(--accent);
 }
 
 /* Hover effects now rely on background/transform only (no overlays) */
@@ -756,9 +758,10 @@ main {
   animation: gentle-glow 3s ease-in-out infinite;
 }
 
+
 .visitor-counter {
   background: linear-gradient(135deg, #FFE5F1, #E5F3FF, #F0E5FF);
-  border: 2px solid #D1A3E1;
+  border: 2px dotted #D1A3E1;
   border-radius: 16px;
   padding: 12px 16px;
   margin: 8px 0;
@@ -779,7 +782,7 @@ main {
     radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.4) 2px, transparent 2px),
     radial-gradient(circle at 75% 75%, rgba(255, 192, 203, 0.3) 1px, transparent 1px);
   background-size: 15px 15px, 20px 20px;
-  animation: sparkleFloat 6s ease-in-out infinite;
+  animation: sparkleFloat 30s ease-in-out infinite;
   z-index: 1;
 }
 
@@ -790,14 +793,14 @@ main {
 }
 
 .counter-label {
-  color: #8B5A9F;
+  color: var(--ink-soft);
   font-size: 0.9em;
-  margin-right: 8px;
+  margin-right: 1px;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .counter-number {
-  color: #D1A3E1;
+  color: var(--ink-soft);
   font-family: "Nunito", sans-serif;
   font-weight: 800;
   font-size: 1.1em;
@@ -978,42 +981,110 @@ main {
 
 /* Radio widget for sidebar */
 .radio-widget .retro-radio {
-  background: linear-gradient(22deg,  var(--pastel-yellow), var(--pastel-purple ));
-  border: 1px solid #999;
-  border-radius: 12px;
-  padding: 12px;
+  background: linear-gradient(145deg, #f0f2f5,  var(--pastel-purple),var(--pastel-yellow), #d8dde6);
+  border: 3px solid #bcc4d1;
+  border-radius: 20px;
+  padding: 16px;
   box-shadow:
-    inset 2px 2px 5px rgba(0, 0, 0, 0.3),
-    2px 2px 8px rgba(0, 0, 0, 0.2);
+    inset 3px 3px 8px rgba(255, 255, 255, 0.7),
+    inset -3px -3px 8px rgba(0, 0, 0, 0.15),
+    0 8px 20px rgba(0, 0, 0, 0.1);
   max-width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.radio-widget .retro-radio::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    rgba(189, 227, 255, 0.1) 0%,
+    rgba(255, 182, 193, 0.1) 50%,
+    rgba(221, 160, 221, 0.1) 100%);
+  border-radius: 17px;
+  z-index: 1;
+}
+
+.radio-widget .retro-radio > * {
+  position: relative;
+  z-index: 2;
 }
 
 .radio-widget .radio-display {
-  background: #001100;
-  color: #00ffe7;
-  border: 2px inset #666;
-  border-radius: 4px;
-  padding: 8px;
-  font-family: "Courier New", monospace;
-  margin-bottom: 10px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+  color: #00ffd4;
+  border: 3px solid #333;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-family: "Courier New", "Monaco", "Lucida Console", monospace;
+  margin-bottom: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  box-shadow: 
+    inset 2px 2px 6px rgba(0, 0, 0, 0.8),
+    inset -1px -1px 3px rgba(255, 255, 255, 0.1);
+  text-shadow: 0 0 8px #00ffd4, 0 0 16px #00ffd4;
+  position: relative;
+  overflow: hidden;
+}
+
+.radio-widget .radio-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 255, 212, 0.2) 50%, 
+    transparent 100%);
+  animation: scanline 3s ease-in-out infinite;
+}
+
+@keyframes scanline {
+  0% { left: -100%; }
+  100% { left: 100%; }
 }
 
 .radio-widget .eq-bars {
   display: flex;
-  gap: 2px;
+  gap: 3px;
   align-items: end;
+  height: 24px;
 }
 
 .radio-widget .bar {
-  width: 3px;
-  background: #00ffe7;
-  border-radius: 1px;
-  animation: eq 0.8s ease-in-out infinite;
+  width: 4px;
+  background: linear-gradient(180deg, #00ffd4 0%, #00cc88 100%);
+  border-radius: 2px;
+  animation: eq 1.2s ease-in-out infinite;
   animation-play-state: paused;
+  box-shadow: 
+    0 0 6px rgba(0, 255, 212, 0.6),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.3);
+  position: relative;
+}
+
+.radio-widget .bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.4) 0%, 
+    transparent 50%);
+  border-radius: 2px;
 }
 
 .radio-widget .bar:nth-child(1) {
@@ -1022,21 +1093,72 @@ main {
 }
 .radio-widget .bar:nth-child(2) {
   height: 16px;
-  animation-delay: 0.2s;
+  animation-delay: 0.3s;
 }
 .radio-widget .bar:nth-child(3) {
   height: 12px;
-  animation-delay: 0.4s;
+  animation-delay: 0.6s;
 }
 .radio-widget .bar:nth-child(4) {
   height: 20px;
-  animation-delay: 0.6s;
+  animation-delay: 0.9s;
 }
 
 .radio-widget .radio-controls {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   justify-content: center;
+  margin-top: 4px;
+}
+
+/* Playing state enhancements */
+.radio-widget.playing .bar {
+  animation-play-state: running;
+}
+
+.radio-widget.playing .radio-display {
+  animation: radioGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes radioGlow {
+  0% {
+    box-shadow: 
+      inset 2px 2px 6px rgba(0, 0, 0, 0.8),
+      inset -1px -1px 3px rgba(255, 255, 255, 0.1),
+      0 0 16px rgba(0, 255, 212, 0.3);
+    text-shadow: 0 0 8px #00ffd4, 0 0 16px #00ffd4;
+  }
+  100% {
+    box-shadow: 
+      inset 2px 2px 6px rgba(0, 0, 0, 0.8),
+      inset -1px -1px 3px rgba(255, 255, 255, 0.1),
+      0 0 24px rgba(0, 255, 212, 0.6);
+    text-shadow: 0 0 12px #00ffd4, 0 0 24px #00ffd4, 0 0 36px #00ffd4;
+  }
+}
+
+/* Radio widget title enhancement */
+.radio-widget h3 {
+  background: linear-gradient(45deg, var(--pastel-purple), var(--pastel-pink));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  text-shadow: none;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.radio-widget h3::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(45deg, var(--pastel-purple), var(--pastel-pink));
+  border-radius: 1px;
+  opacity: 0.5;
 }
 
 
@@ -1106,7 +1228,45 @@ main {
 
 /* Radio controls reuse pixel-btn styling */
 .radio-btn {
-  padding: 6px 10px;
+  padding: 10px 16px;
+  font-size: 1.1rem;
+  border: 3px solid #bcc4d1;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #e8ecf1, #d0d8e2);
+  color: var(--ink);
+  box-shadow: 
+    3px 3px 8px rgba(0, 0, 0, 0.15),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.radio-btn:hover {
+  background: linear-gradient(145deg, #f0f4f9, #d8e2ed);
+  transform: translateY(-1px);
+  box-shadow: 
+    4px 4px 12px rgba(0, 0, 0, 0.2),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.radio-btn:active {
+  transform: translateY(1px);
+  box-shadow: 
+    1px 1px 4px rgba(0, 0, 0, 0.2),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.8),
+    inset 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.radio-btn:focus {
+  outline: none;
+  box-shadow: 
+    3px 3px 8px rgba(0, 0, 0, 0.15),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.8),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.1),
+    0 0 0 3px rgba(189, 227, 255, 0.5);
 }
 
 /* Study section */
@@ -2711,9 +2871,6 @@ main {
 
 /* Highlight active/selected buttons */
 .pixel-btn.active {
-  box-shadow:
-    0 0 0 3px var(--border),
-    0 0 8px rgba(0, 0, 0, 0.2);
   background: linear-gradient(45deg, var(--pastel-purple), var(--pastel-pink));
 }
 
@@ -3708,9 +3865,14 @@ main {
   0%,
   100% {
     height: 5px;
+    background: linear-gradient(180deg, #00ffd4 0%, #00cc88 100%);
+    box-shadow: 0 0 4px rgba(0, 255, 212, 0.4);
   }
+
   50% {
     height: 25px;
+    background: linear-gradient(180deg, #44ffd4 0%, #00ff88 30%, #00ffd4 70%, #00cc88 100%);
+    box-shadow: 0 0 12px rgba(0, 255, 212, 1);
   }
 }
 
