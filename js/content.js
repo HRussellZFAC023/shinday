@@ -156,9 +156,9 @@ const SITE_CONTENT = {
   ],
 
   status: {
-    onlineLabel: "Online",
-    radioOffLabel: "Radio Off",
-    radioOnLabel: "Playing",
+    onlineLabel: "",
+    radioOffLabel: "",
+    radioOnLabel: "",
     nowPlayingPlaceholder: "Enter current mood/song...",
     heartsLabel: "Hearts collected:",
     heartIcon: "love",
@@ -413,7 +413,7 @@ const SITE_CONTENT = {
     heartsZone: "Tap to grow more hearts! (੭ˊ꒳ˋ)੭",
     heartsZoneIcon: "chuuu",
     heartsReset: "Reset",
-    WishTitle: "Miku Collection Wish",
+    WishTitle: "Miku GET Wish",
     WishIcon: "starUwu",
     WishOpenDex: "📱 Open MikuDex",
   },

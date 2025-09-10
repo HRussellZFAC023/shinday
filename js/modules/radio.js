@@ -38,18 +38,18 @@
       const status = C.radio?.stoppedStatus || "Radio Stopped";
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
       if (onlineStatus)
-        onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
+        onlineStatus.textContent = C.status?.radioOffLabel || "";
       stopEqualizer();
       if (statusDot) statusDot.style.color = "#ff4d4d";
     };
 
     if (onlineStatus)
-      onlineStatus.textContent = C.status?.radioOffLabel || "Radio Off";
+      onlineStatus.textContent = C.status?.radioOffLabel || "";
     const station =
       C.radio && (C.radio.radioName || C.radio.radioName === 0)
         ? C.radio.radioName
         : C.radio?.radioName || C.radio?.title || "Kawaii FM";
-    if (radioDisplayStatus) radioDisplayStatus.textContent = station + " 📻";
+    if (radioDisplayStatus) radioDisplayStatus.textContent = station;
     if (statusDot) statusDot.style.color = "#ffbf00";
 
     if (playBtn)
@@ -57,7 +57,7 @@
         const status = C.radio?.playingStatus || "Now Playing";
         if (radioDisplayStatus) radioDisplayStatus.textContent = status;
         if (onlineStatus)
-          onlineStatus.textContent = C.status?.radioOnLabel || "Playing";
+          onlineStatus.textContent = C.status?.radioOnLabel || "";
         if (window.__stopBgm) window.__stopBgm(true);
         audio.play().catch(() => {});
         startEqualizer();
