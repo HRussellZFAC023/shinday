@@ -221,8 +221,7 @@
 
     function startMetadataPolling() {
       if (metaTimer) return;
-
-      const poll = async () => {
+      metaTimer = setInterval(async () => {
         if (!audio || audio.paused || audio.ended) {
           clearInterval(metaTimer);
           metaTimer = null;
@@ -230,10 +229,7 @@
         }
         const title = await fetchIcyTitle();
         if (title) setNowPlaying(title);
-      };
-
-      poll();
-      metaTimer = setInterval(poll, 15000);
+      }, 15000);
     }
 
     audio.addEventListener("pause", () => {

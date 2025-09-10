@@ -117,6 +117,8 @@
     // Fetches a word of the day from the JLPT dataset with difficulty pooling.
     // Returns { word, reading, meaning } or null if none is available.
     static async fetchWordOfDay(diff = 1) {
+      // Wait for JLPT data to be ready
+      await (window.JLPT_READY || Promise.resolve());
       const vocabPool = this.getVocabPool(diff);
       if (!vocabPool.length) return null;
       const pick = vocabPool[Math.floor(Math.random() * vocabPool.length)];
@@ -578,6 +580,8 @@
     async loadWordOfDay() {
       const content = this.elements.wodContent;
       content.innerHTML = '<div class="loading"></div>';
+      // Wait for JLPT data to be ready before fetching
+      await (window.JLPT_READY || Promise.resolve());
       const wod = await ApiService.fetchWordOfDay(State.difficulty);
       content.innerHTML = wod
         ? `<div class="wod-word">${wod.word || ''}</div><div class="wod-reading">${wod.reading || ''}</div><div class="wod-meaning">${wod.meaning || ''}</div>`
@@ -1120,6 +1124,7 @@
       // Normalised kana reading and canonical key sequence
       const kanaTarget = Kana.normalize(Kana.kataToHira(q.reading));
       const keysTarget = Kana.normalize(q.keys || '');
+      const kanjiTarget = Kana.normalize(q.jp || ''); // Add kanji as valid input
       // Normalise the user's typed input (accept romaji or kana)
       let typedRaw = Kana.normalize(Kana.kataToHira(input));
       // Unify romaji synonyms to canonical forms for comparison.  This allows
@@ -1149,11 +1154,10 @@
       };
       const unifiedTyped = unifySynonyms(typedRaw, keysTarget);
       const unifiedKeys = unifySynonyms(keysTarget, keysTarget);
-      // If the player has completed the answer (either the kana reading or
-      // the romanised key sequence) judge based on remaining time.  Do not
-      // penalise mid-typing mistakes; judgment depends solely on how much
-      // time is left when the answer is complete.
-      if (unifiedTyped === kanaTarget || unifiedTyped === unifiedKeys) {
+      // If the player has completed the answer (kanji, kana reading, or romanised key sequence)
+      // judge based on remaining time. Do not penalise mid-typing mistakes; judgment depends 
+      // solely on how much time is left when the answer is complete.
+      if (unifiedTyped === kanjiTarget || unifiedTyped === kanaTarget || unifiedTyped === unifiedKeys) {
         clearInterval(this.questionInterval);
         const remaining = State.questionTimer;
         let judgment;
@@ -1177,10 +1181,10 @@
         }, 600);
         return;
       }
-      // If current input is a prefix of the expected reading or keys (after
+      // If current input is a prefix of the expected reading, keys, or kanji (after
       // normalisation) do nothing.  This prevents premature hints while the
       // user is still typing correctly.
-      if (kanaTarget.startsWith(typedRaw) || unifiedKeys.startsWith(unifiedTyped)) {
+      if (kanaTarget.startsWith(typedRaw) || unifiedKeys.startsWith(unifiedTyped) || kanjiTarget.startsWith(typedRaw)) {
         UI.elements.typingFeedback.textContent = '';
         return;
       }
@@ -1193,6 +1197,7 @@
         if (inpEl) {
           inpEl.dataset.hint = q.keys;
         }
+        window.SFX?.play?.('quiz.bad');
       }
       // Keep feedback empty to avoid flicker on mistakes
       UI.elements.typingFeedback.textContent = '';

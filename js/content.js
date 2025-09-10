@@ -156,11 +156,11 @@ const SITE_CONTENT = {
   ],
 
   status: {
-    onlineLabel: "",
-    radioOffLabel: "",
-    radioOnLabel: "",
+    onlineLabel: "Now Playing",
+    radioOffLabel: "Ready",
+    radioOnLabel: "Now Playing",
     nowPlayingPlaceholder: "Enter current mood/song...",
-    heartsLabel: "Hearts collected:",
+    heartsLabel: "hearts blesssed",
     heartIcon: "love",
     visitorIcon: "cheering",
     // Label used in the Site Stats widget for the visitor counter
@@ -425,7 +425,7 @@ const SITE_CONTENT = {
     items: {
       shield: {
         title: "Heart Shield",
-  description: "Protect your precious Mikus and  hearts for 35 minutes!",
+        description: "Protect your precious Mikus and  hearts for 35 minutes!",
         cost: 50,
         icon: "⛨",
       },
@@ -488,29 +488,29 @@ const SITE_CONTENT = {
     title: "my friends",
     titleIcon: "friendsIcon",
     items: [
-      { 
-        name: "hachi", 
-        url: "https://x.com/hachimyun", 
-        emoji: "🌊", 
+      {
+        name: "hachi",
+        url: "https://x.com/hachimyun",
+        emoji: "🌊",
         mikuIcon: "innocent",
         theme: "ocean",
-        image: "hachi.jpg"
+        image: "hachi.jpg",
       },
-      { 
-        name: "pia", 
-        url: "https://linktr.ee/vae1eri", 
-        emoji: "💻", 
+      {
+        name: "pia",
+        url: "https://linktr.ee/vae1eri",
+        emoji: "💻",
         mikuIcon: "vibing",
         theme: "lain",
-        image: "pia.webp"
+        image: "pia.webp",
       },
-      { 
-        name: "hero", 
-        url: "https://linktr.ee/heroslayer", 
-        emoji: "🎭", 
+      {
+        name: "hero",
+        url: "https://linktr.ee/heroslayer",
+        emoji: "🎭",
         mikuIcon: "stage",
         theme: "persona",
-        image: "hero.jpg"
+        image: "hero.jpg",
       },
     ],
   },
@@ -551,7 +551,7 @@ const SITE_CONTENT = {
   },
 
   footer: {
-    text: "hand-crafted for you • ✨ this site is always under construction! ✨ • cinnamoroll approved",
+    text: "I picked these pixels just for you! ✨ • If you were a pixel, I'd download you every day! • ✨  Dont step on the WIFI! a Miku is growing there... ",
   },
 
   love: {
@@ -683,18 +683,18 @@ function initializeSplash() {
 
   const enterSite = async () => {
     enterButton.disabled = true;
-    
+
     // Show loading state during gating
     const prev = enterButton.textContent;
     // enterButton.textContent = "Loading…";
-    
+
     // Play teleport sound
     if (window.SFX) {
       window.SFX.play("ui.teleport");
     }
-    
+
     await gateReady();
-    
+
     // Apply WOD to UI if available and MikuUI loaded later
     if (window.WOD && window.SITE_CONTENT?.study?.wordOfDay) {
       window.SITE_CONTENT.study.wordOfDay.japanese =
@@ -704,23 +704,24 @@ function initializeSplash() {
       window.SITE_CONTENT.study.wordOfDay.meaning =
         window.WOD.meaning || window.SITE_CONTENT.study.wordOfDay.meaning;
     }
-    
+
     // Add fancy fade-out transition
     splash.style.transition = "opacity 0.8s ease-out, transform 0.8s ease-out";
     splash.style.opacity = "0";
     splash.style.transform = "scale(0.95)";
-    
+
     // Wait for fade-out to complete
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
     splash.style.display = "none";
     mainSite.classList.remove("hidden");
-    
+
     // Fade in the main site
     mainSite.style.opacity = "0";
     mainSite.style.transform = "scale(1.05)";
-    mainSite.style.transition = "opacity 0.6s ease-out, transform 0.6s ease-out";
-    
+    mainSite.style.transition =
+      "opacity 0.6s ease-out, transform 0.6s ease-out";
+
     // Trigger fade-in
     requestAnimationFrame(() => {
       mainSite.style.opacity = "1";
@@ -729,7 +730,7 @@ function initializeSplash() {
 
     const initFunction = window.initSite || (() => {});
     initFunction();
-    
+
     // Restore label
     enterButton.textContent = prev;
   };
@@ -740,7 +741,7 @@ function initializeSplash() {
     (event) => {
       if (event.key === "Enter") enterSite();
     },
-    { capture: true },
+    { capture: true }
   );
 }
 

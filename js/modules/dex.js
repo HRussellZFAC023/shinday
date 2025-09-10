@@ -358,18 +358,8 @@
                 : ""
             }
 
-    ${
-      links.length
-        ? `<div class="dex-links" style="margin-top:10px">${links
-            .map(
-              (l, i) =>
-                `<a href="${l}" target="_blank" rel="noopener" class="pixel-btn" style="margin-right:8px">Link ${
-                  i + 1
-                }</a>`
-            )
-            .join("")}</div>`
-        : ""
-    }
+   
+    
   </div>
 </div>
 <div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">

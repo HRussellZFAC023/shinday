@@ -47,7 +47,6 @@
         fallback: "./assets/bgm.ogg",
         jacket: "./assets/pt_top.png",
         theme: "#66bbff",
-        recommend: { game: "vocab", direction: "jp-en" },
       },
     ];
   }
