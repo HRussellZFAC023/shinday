@@ -135,29 +135,6 @@ window.MikuUI = (function () {
           })
           .join(" <br />");
       }
-
-      // Render stacked hero messages (chips) under the hero paragraph
-      if (C.home.stackedMessages && Array.isArray(C.home.stackedMessages)) {
-        const heroText = document.querySelector("#home .hero-text");
-        if (heroText) {
-          let stack = heroText.querySelector("#heroStackedMessages");
-          if (!stack) {
-            stack = document.createElement("div");
-            stack.id = "heroStackedMessages";
-            stack.className = "stacked-messages";
-            // Insert just after the first paragraph if present; otherwise append
-            const firstP = heroText.querySelector("p");
-            if (firstP && firstP.nextSibling) {
-              heroText.insertBefore(stack, firstP.nextSibling);
-            } else {
-              heroText.appendChild(stack);
-            }
-          }
-          stack.innerHTML = C.home.stackedMessages
-            .map((msg) => `<div class="stack-item">${msg}</div>`) 
-            .join("");
-        }
-      }
       const heartBtn = document.getElementById("heartBtn");
       if (heartBtn && C.home.heartButton) {
         const heartIcon = C.home.heartButtonIcon
@@ -874,9 +851,35 @@ window.MikuUI = (function () {
     }
 
     // Footer
-    if (C.footer?.text) {
+    {
       const p = document.querySelector("#footer p");
-      if (p) p.textContent = C.footer.text;
+      if (p) {
+        // Prefer explicit lines; otherwise split the legacy text on separators
+        let parts = Array.isArray(C.footer?.lines)
+          ? C.footer.lines.filter((x) => typeof x === "string" && x.trim())
+          : [];
+        if (!parts.length && typeof C.footer?.text === "string") {
+          // Split on centered dot or pipes and collapse whitespace
+          parts = C.footer.text
+            .split(/[•|]+/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+        }
+
+        if (parts.length) {
+          p.classList.add("footer-text");
+          p.innerHTML = "";
+          parts.forEach((line) => {
+            const span = document.createElement("span");
+            span.className = "footer-line";
+            span.textContent = line;
+            p.appendChild(span);
+          });
+        } else if (C.footer?.text) {
+          // Fallback to a single block
+          p.textContent = C.footer.text;
+        }
+      }
     }
   }
 

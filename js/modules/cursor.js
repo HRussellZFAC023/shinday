@@ -78,7 +78,10 @@
       }
 
       // Load .ani cursors from GitHub raw to avoid host file-type limits
-      const base = encodeURI(
+      // Prefer same-origin JSON embeds (avoids CSP connect-src blocks on free hosts)
+      const EMBED_BASE = "./assets/ani-embed/";
+      // Fallback remote base (works where CSP allows cross-origin fetch)
+      const REMOTE_BASE = encodeURI(
         "https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/ani file-animation WxS/",
       );
       const aniCssCache = new Map();
@@ -93,9 +96,33 @@
       async function getAniCss(selector, fileName) {
         const key = `${selector}::${fileName}`;
         if (aniCssCache.has(key)) return aniCssCache.get(key);
-
-        const res = await fetch(`${base}${encodeURIComponent(fileName)}`);
-        const buf = await res.arrayBuffer();
+        let buf = null;
+        // 1) Try same-origin JSON embed first: ./assets/ani-embed/<name>.json -> { b64 }
+        try {
+          const embedRes = await fetch(
+            `${EMBED_BASE}${encodeURIComponent(fileName)}.json`,
+          );
+          if (embedRes.ok) {
+            const data = await embedRes.json();
+            const b64 = typeof data === 'string' ? data : data.b64 || '';
+            if (b64) {
+              const bin = atob(b64);
+              const arr = new Uint8Array(bin.length);
+              for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+              buf = arr.buffer;
+            }
+          }
+        } catch (_) {}
+        // 2) Fallback to remote .ani (may be blocked by CSP on some hosts)
+        if (!buf) {
+          try {
+            const res = await fetch(`${REMOTE_BASE}${encodeURIComponent(fileName)}`);
+            if (res.ok) buf = await res.arrayBuffer();
+          } catch (_) {
+            // Give up quietly; we'll just skip animated cursors
+            return '';
+          }
+        }
         const convert =
           mod.convertAniBinaryToCSS ||
           (mod.default && mod.default.convertAniBinaryToCSS);
@@ -118,21 +145,23 @@
         }
       }
 
-      await Promise.all([
-        applyAni("html, body", roleToFile.normal),
-        applyAni(
-          "a, button, .pixel-btn, .heart-btn, .radio-btn, .enter-btn, .quick-links a",
-          roleToFile.link,
-        ),
-        applyAni(
-          'input, textarea, [contenteditable="true"], .editable',
-          roleToFile.text,
-        ),
-        applyAni(
-          ".memory-card, .Wish-card, .dex-card, .memory-grid, canvas, svg",
-          roleToFile.precision,
-        ),
-      ]);
+      try {
+        await Promise.all([
+          applyAni("html, body", roleToFile.normal),
+          applyAni(
+            "a, button, .pixel-btn, .heart-btn, .radio-btn, .enter-btn, .quick-links a",
+            roleToFile.link,
+          ),
+          applyAni(
+            'input, textarea, [contenteditable="true"], .editable',
+            roleToFile.text,
+          ),
+          applyAni(
+            ".memory-card, .Wish-card, .dex-card, .memory-grid, canvas, svg",
+            roleToFile.precision,
+          ),
+        ]);
+      } catch (_) {}
 
       const applyLater = () =>
         Promise.all([
@@ -141,10 +170,7 @@
             roleToFile.person,
           ),
           // Use the hand/person animated cursor when hovering/grabbing shimeji containers
-          applyAni(
-            ".webmeji-container",
-            roleToFile.alternate,
-          ),
+          applyAni(".webmeji-container", roleToFile.alternate),
           applyAni(
             ".help, [title], .widget h3, .status-item, .hud-line",
             roleToFile.help,
@@ -161,7 +187,7 @@
             ".badge, .pin, .pinned, .candle, .blink, #statusDot",
             roleToFile.pin,
           ),
-        ]);
+        ]).catch(() => {});
 
       if (window.requestIdleCallback) requestIdleCallback(() => applyLater());
       else setTimeout(applyLater, 1500);

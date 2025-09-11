@@ -3611,6 +3611,21 @@ main {
   position: relative;
 }
 
+/* Responsive footer text: inline like one sentence; stacks under 900px */
+#footer p.footer-text {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.6ch; /* tighter, sentence-like spacing */
+  margin: 0;
+  white-space: normal;
+}
+
+#footer p.footer-text .footer-line {
+  display: inline;
+}
+
 .footer-badges {
   margin-top: 15px;
   display: flex;
@@ -3637,11 +3652,16 @@ main {
 }
 
 /* Prevent overlap on small screens: stack gif below text */
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
   .made-by-gif {
     position: static;
     display: block;
     margin: 0 auto;
+  }
+  /* Stack footer text under 900px */
+  #footer p.footer-text {
+    flex-direction: column;
+    gap: 6px;
   }
 }
 
@@ -3681,7 +3701,7 @@ main {
 }
 
 /* Responsive design */
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
   #flex {
     flex-direction: column;
   }
@@ -3717,7 +3737,7 @@ main {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
   #container {
     padding: 5px;
   }
@@ -5642,43 +5662,4 @@ main {
     filter: hue-rotate(360deg) saturate(0) brightness(0)
       drop-shadow(0 0 0px transparent);
   }
-}
-/* Stacked messages (chips) under hero text */
-.stacked-messages {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.stack-item {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  max-width: 100%;
-  padding: 6px 12px;
-  font-weight: 800;
-  color: var(--ink);
-  background: linear-gradient(45deg, var(--pastel-mint), var(--pastel-blue));
-  border: 2px solid var(--border);
-  border-radius: 14px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  white-space: normal;
-  word-break: break-word;
-}
-
-.stack-item::before {
-  content: "";
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--accent);
-  margin-right: 8px;
-  box-shadow: 0 0 0 2px rgba(107, 195, 255, 0.25);
-}
-
-.stack-item:hover {
-  transform: translateY(-1px);
-  transition: transform 0.15s ease-out;
 }

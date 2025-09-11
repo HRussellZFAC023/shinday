@@ -107,7 +107,8 @@ function makeShimejiConfig(basePath) {
 const MIKU_CONFIG = makeShimejiConfig("./assets/webmeji/miku");
 const MIKU_ALT_CONFIG = makeShimejiConfig("./assets/webmeji/Miku_alternitive");
 const MIKU_SKETCH_CONFIG = makeShimejiConfig("./assets/webmeji/Miku_sketch");
-const CLASSIC_CONFIG = makeShimejiConfig("./assets/webmeji/shimeji");
+// Fix case sensitivity for classic set on case-sensitive hosts (Neocities)
+const CLASSIC_CONFIG = makeShimejiConfig("./assets/webmeji/Shimeji");
 
 // Action name aliases (normalize external names to internal canonical actions)
 const ACTION_ALIASES = Object.freeze({

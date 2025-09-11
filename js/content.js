@@ -190,12 +190,6 @@ const SITE_CONTENT = {
       "Come, explore and make yourself at home!",
       "Let's be good friends!",
     ],
-    // Stacked hero messages (rendered as chips under hero text)
-    stackedMessages: [
-      "cked these pixels just for you! ✨",
-      "If you were a pixel, I'd download you every day!",
-      "✨ Dont step on the WIFI! a Miku is growing there...",
-    ],
     heartButton: "Send Love",
     heartButtonIcon: "love",
 
@@ -557,7 +551,15 @@ const SITE_CONTENT = {
   },
 
   footer: {
-    text: "I picked these pixels just for you! ✨ • If you were a pixel, I'd download you every day! • ✨  Dont step on the WIFI! a Miku is growing there... ",
+    // Three-part footer lines; rendered as responsive spans
+    lines: [
+      "I picked these pixels just for you! ✨",
+      "If you were a pixel, I'd download you every day!",
+      "✨  Dont step on the WIFI! a Miku is growing there...",
+    ],
+    // Fallback single text (kept for backward compatibility)
+    text:
+      "I picked these pixels just for you! ✨ • If you were a pixel, I'd download you every day! • ✨  Dont step on the WIFI! a Miku is growing there... ",
   },
 
   love: {
@@ -668,8 +670,48 @@ function initializeSplash() {
 
   splash.dataset.wired = "1";
 
+  // Preload a few critical assets so first interaction feels snappy
+  function preloadImage(src) {
+    return new Promise((res) => {
+      const img = new Image();
+      img.onload = img.onerror = () => res();
+      img.src = src;
+    });
+  }
+
+  async function preloadCriticalAssets() {
+    const tasks = [];
+    // Shimeji: warm first frames for each set + avoid case-sensitivity 404s
+    const sh = [
+      "./assets/webmeji/miku/shime1.png",
+      "./assets/webmeji/miku/shime2.png",
+      "./assets/webmeji/miku/shime3.png",
+      "./assets/webmeji/Shimeji/shime1.png",
+      "./assets/webmeji/Shimeji/shime2.png",
+      "./assets/webmeji/Shimeji/shime3.png",
+    ];
+    sh.forEach((s) => tasks.push(preloadImage(s)));
+    // Hero/splash art
+    if (window.SITE_CONTENT?.images?.splashMiku)
+      tasks.push(preloadImage(window.SITE_CONTENT.images.splashMiku));
+    if (window.SITE_CONTENT?.images?.heroMiku)
+      tasks.push(preloadImage(window.SITE_CONTENT.images.heroMiku));
+    // Hint BGM element to browser cache (play still waits for user gesture)
+    try {
+      if (window.AudioMod && typeof AudioMod.ensureBgm === "function") {
+        const a = AudioMod.ensureBgm();
+        a.load?.();
+      }
+    } catch (_) {}
+    // Let cursor module fetch same-origin ani-embeds if present
+    try {
+      fetch("./assets/ani-embed/index.json", { cache: "no-store" }).then(() => {});
+    } catch (_) {}
+    await Promise.race([Promise.all(tasks), new Promise((r) => setTimeout(r, 2000))]);
+  }
+
   async function gateReady() {
-    // Wait for critical data: MIKU images + WOD
+    // Wait for critical data: MIKU images + WOD + minimal asset preload
     try {
       const waits = [];
       if (
@@ -679,11 +721,11 @@ function initializeSplash() {
         waits.push(window.MIKU_IMAGES_READY);
       if (window.WOD_READY && typeof window.WOD_READY.then === "function")
         waits.push(window.WOD_READY);
-      if (waits.length)
-        await Promise.race([
-          Promise.all(waits),
-          new Promise((r) => setTimeout(r, 4500)),
-        ]);
+      waits.push(preloadCriticalAssets());
+      await Promise.race([
+        Promise.all(waits),
+        new Promise((r) => setTimeout(r, 4500)),
+      ]);
     } catch (_) {}
   }
 

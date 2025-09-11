@@ -210,7 +210,13 @@ window.SFX = (function initSfxEngine() {
       p("menu sounds/unavailable.wav"),
     ],
   };
-  const ctxState = { ctx: null, master: null, enabled: true, volume: 0.6 };
+  const ctxState = {
+    ctx: null,
+    master: null,
+    enabled: true,
+    volume: 0.6,
+    elementMode: false, // fallback when CSP blocks fetch/decode
+  };
   const buffers = new Map();
   const lastPlayAt = Object.create(null);
   const minInterval = {
@@ -240,10 +246,15 @@ window.SFX = (function initSfxEngine() {
     if (!ctx) return Promise.resolve(null);
     const prom = fetch(path)
       .then((r) => r.arrayBuffer())
-      .then(
-        (ab) => new Promise((res, rej) => ctx.decodeAudioData(ab, res, rej)),
+      .then((ab) =>
+        new Promise((res, rej) => ctx.decodeAudioData(ab, res, rej)),
       )
-      .catch(() => null);
+      .catch((err) => {
+        // Likely blocked by CSP (connect-src). Switch to element-based mode.
+        try { console.warn('SFX: switching to element mode (', String(err), ')'); } catch {}
+        ctxState.elementMode = true;
+        return null;
+      });
     buffers.set(path, prom);
     return prom;
   }
@@ -252,24 +263,45 @@ window.SFX = (function initSfxEngine() {
     { volume = 1, rate = 1, detune = 0, pan = 0 } = {},
   ) {
     if (!ctxState.enabled) return;
+    const vol = Math.max(0, Math.min(1, ctxState.volume * (volume || 1)));
+    if (ctxState.elementMode) {
+      try {
+        const el = new Audio(path);
+        el.crossOrigin = 'anonymous';
+        el.preload = 'auto';
+        el.volume = vol;
+        // Note: HTMLAudio doesn’t support detune/pan without WebAudio graph
+        await el.play().catch(() => {});
+      } catch {}
+      return;
+    }
     const ctx = ensureCtx();
     if (!ctx) return;
     const buf = await loadBuffer(path);
-    if (!buf) return;
+    if (!buf) {
+      // Decode failed or CSP blocked: fallback once to element playback
+      try {
+        const el = new Audio(path);
+        el.crossOrigin = 'anonymous';
+        el.preload = 'auto';
+        el.volume = vol;
+        await el.play().catch(() => {});
+      } catch {}
+      return;
+    }
     const src = ctx.createBufferSource();
     const g = ctx.createGain();
     const pnn = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
     src.buffer = buf;
     if (src.detune) src.detune.value = detune;
     src.playbackRate.value = rate;
-    g.gain.value = volume;
+    g.gain.value = vol;
     if (pnn) {
       pnn.pan.value = pan;
       src.connect(g).connect(pnn).connect(ctxState.master);
     } else {
       src.connect(g).connect(ctxState.master);
     }
-
     src.start();
   }
   function pick(arr) {
