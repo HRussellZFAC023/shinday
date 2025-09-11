@@ -1,0 +1,39 @@
+stages:
+  - deploy
+
+deploy_github_pages:
+  stage: deploy
+  image: alpine:3.20
+  variables:
+    PAGES_BRANCH: "gh-pages"
+    PAGES_DIR: "."
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  before_script:
+    - apk add --no-cache git rsync
+  script:
+    - |
+      if [ -z "$GITHUB_REPO" ] || [ -z "$GITHUB_TOKEN" ]; then
+        echo "GITHUB_REPO and GITHUB_TOKEN must be set in CI variables" >&2
+        exit 1
+      fi
+    - rm -rf out
+    - mkdir -p out
+    - rsync -av --delete --exclude='.git' --exclude='node_modules' --exclude='.gitlab-ci.yml' "$PAGES_DIR"/ out/
+    - touch out/.nojekyll
+    - |
+      if [ -n "$CNAME" ]; then
+        echo "$CNAME" > out/CNAME
+      fi
+    - cd out
+    - git init
+    - git config user.name "${GIT_AUTHOR_NAME:-GitLab CI}"
+    - git config user.email "${GIT_AUTHOR_EMAIL:-ci@example.com}"
+    - git add .
+    - git commit -m "Deploy from GitLab CI: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    - git branch -M "$PAGES_BRANCH"
+    - git remote add origin "https://oauth2:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git"
+    - git push -f origin "$PAGES_BRANCH"
+  environment:
+    name: github_pages
+    url: https://$GITHUB_REPO#project-pages

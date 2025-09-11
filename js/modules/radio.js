@@ -203,25 +203,54 @@
         localStorage.getItem("radio.meta.auto") ||
         (await autoDetectMetaUrl());
       if (!metaUrl) return null;
-      const res = await fetch(metaUrl, { cache: "no-store" }).then(
-        null,
-        () => null,
-      );
-      if (!res || !res.ok) return null;
-      const ct = (res.headers.get("content-type") || "").toLowerCase();
-      if (ct.includes("application/json")) {
-        const data = await res.json().then(null, () => null);
-        return titleFromJson(data);
-      } else {
-        const text = await res.text().then(null, () => "");
-        if (metaUrl.endsWith("/7.html")) return titleFromSevenHtml(text);
-        return titleFromStatusHtml(text);
+
+      async function tryDirect(url) {
+        const res = await fetch(url, { cache: "no-store" }).then(
+          null,
+          () => null,
+        );
+        if (!res || !res.ok) return null;
+        const ct = (res.headers.get("content-type") || "").toLowerCase();
+        if (ct.includes("application/json")) {
+          const data = await res.json().then(null, () => null);
+          return titleFromJson(data);
+        } else {
+          const text = await res.text().then(null, () => "");
+          if (url.endsWith("/7.html")) return titleFromSevenHtml(text);
+          return titleFromStatusHtml(text);
+        }
       }
+
+      // 1) Try direct (works outside strict CSP like local/dev)
+      let title = await tryDirect(metaUrl);
+      if (title) return title;
+
+      // 2) Try proxy fallback if configured (useful when CORS is ok but CSP blocks direct host)
+      try {
+        const tpl = C.radio && C.radio.metaProxy;
+        if (tpl && tpl.includes("{url}")) {
+          const proxied = tpl.replace("{url}", encodeURIComponent(metaUrl));
+          title = await tryDirect(proxied);
+          if (title) return title;
+        }
+      } catch (_) {}
+
+      // 3) Try iframe CSP proxy (hosted on GitHub Pages)
+      try {
+        if (window.CspProxy && window.SITE_CONTENT?.proxy?.pageUrl) {
+          await window.CspProxy.ensure(window.SITE_CONTENT.proxy.pageUrl);
+          const res = await window.CspProxy.request("fetchRadioMeta", { url: metaUrl }, 9000);
+          if (res && res.title) return res.title;
+        }
+      } catch (_) {}
+
+      return null;
     }
 
     function startMetadataPolling() {
       if (metaTimer) return;
-      metaTimer = setInterval(async () => {
+
+      const poll = async () => {
         if (!audio || audio.paused || audio.ended) {
           clearInterval(metaTimer);
           metaTimer = null;
@@ -229,7 +258,10 @@
         }
         const title = await fetchIcyTitle();
         if (title) setNowPlaying(title);
-      }, 15000);
+      };
+
+      poll();
+      metaTimer = setInterval(poll, 15000);
     }
 
     audio.addEventListener("pause", () => {

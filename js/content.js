@@ -186,10 +186,15 @@ const SITE_CONTENT = {
     // Example (Radio.co public status): "https://public.radio.co/stations/{station_id}/status"
     // Example (Shoutcast/Icecast): a proxy that returns { title: "Artist - Track" }
     metaUrl: "https://vocaloid.radioca.st/status-json.xsl",
-    // Use AllOrigins to bypass CORS for metadata on Neocities
     metaProxy: "https://api.allorigins.win/raw?url={url}",
-    // On Neocities (strict connect-src), metadata fetch will be disabled unless this is true
-    allowCrossFetchOnNeo: false,
+  },
+
+  // External CSP proxy configuration (for Neocities free accounts)
+  // This page is hosted on GitHub Pages (see .gitlab-ci.yml) and used via a hidden iframe
+  // to fetch cross-origin data, then postMessage back.
+  proxy: {
+    // If you fork/rename, update this to your GH Pages URL
+    pageUrl: "https://HRussellZFAC023.github.io/shinday/proxy/proxy.html",
   },
 
   home: {

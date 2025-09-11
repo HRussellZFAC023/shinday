@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CSP Proxy</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+    </style>
+  </head>
+  <body>
+    <script>
+      // Lightweight proxy worker running on GitHub Pages (or any origin without restrictive CSP)
+      // Receives messages from parent and returns fetched data.
+
+      function reply(event, id, ok, payload, error) {
+        event.source.postMessage({ __cspProxy: true, id, ok, payload, error }, event.origin);
+      }
+
+      function titleFromJson(data) {
+        if (!data || typeof data !== "object") return null;
+        if (data.icestats && data.icestats.source) {
+          const src = Array.isArray(data.icestats.source) ? data.icestats.source[0] : data.icestats.source;
+          if (!src) return null;
+          const t = src.title || src.song || src.songtitle || src.stream_title || src.streamTitle || null;
+          if (t) return t;
+        }
+        if (data.songtitle) return data.songtitle;
+        if (data.title) return data.title;
+        if (data.now) return data.now;
+        if (data.song) return data.song;
+        return null;
+      }
+
+      function titleFromStatusHtml(html) {
+        const m = html.match(/Current\s*Song.*?<td[^>]*>([^<]*)/i) || html.match(/Stream\s*Title.*?<td[^>]*>([^<]*)/i);
+        return m && m[1] ? m[1].trim() : null;
+      }
+
+      function titleFromSevenHtml(text) {
+        const parts = (text || "").trim().split(",");
+        const last = parts[parts.length - 1];
+        return last && last.length > 0 ? last.trim() : null;
+      }
+
+      async function fetchJson(url) {
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) throw new Error("status " + res.status);
+        return res.json();
+      }
+
+      async function fetchText(url) {
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) throw new Error("status " + res.status);
+        return res.text();
+      }
+
+      async function getNeocitiesInfo(sitename) {
+        const base = "https://neocities.org/api/info?sitename=" + encodeURIComponent(sitename);
+        try {
+          const data = await fetchJson(base);
+          return data && data.info ? data.info : null;
+        } catch (_) {
+          // Fallback via AllOrigins
+          const via = "https://api.allorigins.win/raw?url=" + encodeURIComponent(base);
+          try {
+            const res = await fetch(via, { cache: "no-store" });
+            const ct = (res.headers.get("content-type") || "").toLowerCase();
+            let data;
+            if (ct.includes("application/json")) data = await res.json();
+            else data = JSON.parse(await res.text());
+            return data && data.info ? data.info : null;
+          } catch (e2) {
+            return null;
+          }
+        }
+      }
+
+      async function getRadioTitle(url) {
+        try {
+          // Try JSON first
+          const ctGuess = url.toLowerCase();
+          if (ctGuess.endsWith(".xsl") || ctGuess.includes("json")) {
+            const data = await fetchJson(url).catch(() => null);
+            const t = titleFromJson(data);
+            if (t) return t;
+          }
+          // Fallbacks
+          const text = await fetchText(url).catch(() => "");
+          if (url.endsWith("/7.html")) return titleFromSevenHtml(text);
+          return titleFromStatusHtml(text);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      window.addEventListener("message", async (event) => {
+        const msg = event.data || {};
+        if (!msg || typeof msg !== "object" || msg.__cspProxy !== true) return;
+        const { id, action, params } = msg;
+        try {
+          if (action === "fetchNeocitiesInfo") {
+            const info = await getNeocitiesInfo(String(params?.sitename || ""));
+            if (info) reply(event, id, true, { views: info.views, hits: info.hits, raw: info });
+            else reply(event, id, false, null, "no info");
+          } else if (action === "fetchRadioMeta") {
+            const url = String(params?.url || "");
+            const title = url ? await getRadioTitle(url) : null;
+            if (title) reply(event, id, true, { title });
+            else reply(event, id, false, null, "no title");
+          } else {
+            reply(event, id, false, null, "unknown action");
+          }
+        } catch (e) {
+          reply(event, id, false, null, String(e && e.message ? e.message : e));
+        }
+      });
+    </script>
+  </body>
+  </html>
+
