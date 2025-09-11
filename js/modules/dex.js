@@ -308,7 +308,7 @@
   const sm = (typeof window.getSingerScoreMult === 'function' ? getSingerScoreMult() : 1) - 1;
   const sh = (typeof window.getSingerShieldMult === 'function' ? getSingerShieldMult() : 1) - 1;
   const rb = (typeof window.getSingerRareDropBonus === 'function' ? getSingerRareDropBonus() : 0);
-  const effectsText = `Effects: +${Math.round(Math.max(0, sm) * 100)}% score, +${Math.round(Math.max(0, sh) * 100)}% shield time, +${Math.round(Math.max(0, rb) * 100)}% rare drop`;
+  const effectsText = ''//Effects: +${Math.round(Math.max(0, sm) * 100)}% score, +${Math.round(Math.max(0, sh) * 100)}% shield time, +${Math.round(Math.max(0, rb) * 100)}% rare drop`;
 
     const ov = document.createElement("div");
     ov.className = "image-modal";

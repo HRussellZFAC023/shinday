@@ -217,6 +217,13 @@ window.SFX = (function initSfxEngine() {
     volume: 0.6,
     elementMode: false, // fallback when CSP blocks fetch/decode
   };
+  // Neocities and similar strict CSP hosts block fetch/XHR to other domains via connect-src.
+  // Force element mode there to avoid console errors from fetch(); HTMLAudio falls under media-src.
+  try {
+    if (/\.neocities\.org$/i.test((location && location.hostname) || "")) {
+      ctxState.elementMode = true;
+    }
+  } catch (_) {}
   const buffers = new Map();
   const lastPlayAt = Object.create(null);
   const minInterval = {

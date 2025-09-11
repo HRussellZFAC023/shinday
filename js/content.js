@@ -56,6 +56,8 @@ const SITE_CONTENT = {
       thumbsUp: "./assets/icons/Thumbs Up!.png",
       vibing: "./assets/icons/vibing.png",
       wallHide: "./assets/icons/wall hide.png",
+      // Unique alias for guestbook header (reuses a cute pixel Miku)
+      guestbookSeal: "./assets/pixel-miku/025 - Maneki Miku (Lucky Cat).png",
     },
     // Optional swallow gif path for the swallow mascot
     swallowGif: "./assets/swallow.gif",
@@ -165,6 +167,10 @@ const SITE_CONTENT = {
     visitorIcon: "cheering",
     // Label used in the Site Stats widget for the visitor counter
     visitorsLabel: "friends:",
+    // Optional: image-based visitor badge template for strict CSP hosts
+    // {site} will be replaced with your Neocities site name
+    visitorBadgeTemplate:
+      "https://visitor-badge.laobi.icu/badge?page_id={site}.neocities.org&left_text=friends:",
     statusIcon: "starUwu",
   },
 
@@ -180,6 +186,10 @@ const SITE_CONTENT = {
     // Example (Radio.co public status): "https://public.radio.co/stations/{station_id}/status"
     // Example (Shoutcast/Icecast): a proxy that returns { title: "Artist - Track" }
     metaUrl: "https://vocaloid.radioca.st/status-json.xsl",
+    // Use AllOrigins to bypass CORS for metadata on Neocities
+    metaProxy: "https://api.allorigins.win/raw?url={url}",
+    // On Neocities (strict connect-src), metadata fetch will be disabled unless this is true
+    allowCrossFetchOnNeo: false,
   },
 
   home: {
@@ -192,6 +202,10 @@ const SITE_CONTENT = {
     ],
     heartButton: "Send Love",
     heartButtonIcon: "love",
+
+    // Guestbook header localization
+    guestbookTitle: "BBG ! babybelle's guestbook ˚ʚ♡ɞ˚",
+    guestbookIcon: "Admiring",
 
     // Unified presentation slides
     presentationTitle: "Getting to Know Baby Belle",
@@ -425,7 +439,7 @@ const SITE_CONTENT = {
     items: {
       shield: {
         title: "Heart Shield",
-        description: "Protect your precious Mikus and  hearts for 35 minutes!",
+        description: "Protect your precious Mikus and  hearts for 25 minutes!",
         cost: 50,
         icon: "⛨",
       },

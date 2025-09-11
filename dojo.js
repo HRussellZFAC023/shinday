@@ -39,9 +39,26 @@
     // lowest.
     scoringPerHit: { COOL: 1000, GREAT: 600, FINE: 250 },
     voltagePerHit: { COOL: 15, GREAT: 10, FINE: 5 },
-    // Reward calculation for the end of a session.  Total reward =
+    // Reward calculation for the end of a session.  Total points =
     // BASE + final score + LEVEL_MULT × playerLevel.
+    // Hearts/XP actually granted are scaled from score so the economy stays sane.
     rewards: { BASE: 100, LEVEL_MULT: 10 },
+    payouts: {
+      // Hearts roughly in the 25–75 range for typical songs.
+      hearts: {
+        BASE: 20,           // base hearts for completing
+        SCORE_DIV: 300,     // hearts += floor(score / SCORE_DIV)
+        LEVEL_MULT: 2,      // hearts += level * LEVEL_MULT
+        MIN: 5,             // minimum hearts on completion
+      },
+      // XP tuned so early levels take ~2–4 songs; later, longer.
+      xp: {
+        BASE: 10,           // base XP for completing
+        SCORE_DIV: 200,     // xp += floor(score / SCORE_DIV)
+        LEVEL_MULT: 1,      // xp += level * LEVEL_MULT
+        MIN: 5,             // minimum XP on completion
+      },
+    },
     // Score thresholds for letter ranks at the end of a song.  These
     // thresholds are deliberately generous so players can earn high ranks
     // during the short one‑minute songs.  Adjust if you find ranks are too
@@ -56,6 +73,9 @@
       { score: 2000, rank: 'B' },
       { score: 1000, rank: 'C' },
     ],
+    // Extra weights to fold combo and voltage into the payout score used
+    // for Hearts/XP rewards (keeps UI score unchanged, but rewards feel better).
+    scoringWeights: { COMBO: 25, VOLTAGE: 15 },
   });
 
   const PS_SYMBOLS = ['△', '○', '×', '□'];
@@ -671,10 +691,19 @@
       this.elements.greatCount && (this.elements.greatCount.textContent = State.judgmentCounts.GREAT);
       this.elements.fineCount && (this.elements.fineCount.textContent = State.judgmentCounts.FINE);
       this.elements.missCount && (this.elements.missCount.textContent = State.judgmentCounts.MISS);
-      // Reward display
-      if (this.elements.rewardAmount) this.elements.rewardAmount.textContent = rewardsDisplay.total.toLocaleString();
+      // Reward display — concise & cute: two spans, no + or dot
+      if (this.elements.rewardAmount) {
+        const hearts = rewardsDisplay.hearts | 0;
+        const xp = rewardsDisplay.xp | 0;
+        this.elements.rewardAmount.dataset.hearts = String(hearts);
+        this.elements.rewardAmount.dataset.xp = String(xp);
+        this.elements.rewardAmount.innerHTML = `
+          <span class="reward-hearts"><span class="num">${hearts.toLocaleString()}</span> <span class="unit">💖</span></span>
+          <span class="reward-xp"><span class="num">${xp.toLocaleString()}</span> <span class="unit">XP</span></span>
+        `;
+      }
       if (this.elements.rewardBonus) {
-        this.elements.rewardBonus.textContent = `Base (${CONFIG.rewards.BASE}) + Score (${rewardsDisplay.score}) + Level (${rewardsDisplay.level}×${CONFIG.rewards.LEVEL_MULT})`;
+        this.elements.rewardBonus.textContent = rewardsDisplay.cuteLine || 'base + score boost + level perk';
       }
       // Ensure the modal is pinned to the viewport by placing it at body level
       const modal = this.elements.songOverModal;
@@ -711,10 +740,27 @@
         el.innerHTML = '';
         return;
       }
-      const mikuUrl = window.MikuSystem?.getCurrentMikuUrl?.();
+      // Resolve a singer image URL robustly, with fallbacks for fresh sessions
+      let mikuUrl = window.MikuSystem?.getCurrentMikuUrl?.();
       if (!mikuUrl) {
-        el.innerHTML = '';
-        return;
+        const pool = Array.isArray(window.MIKU_IMAGES) ? window.MIKU_IMAGES : [];
+        const pick = pool.find((u) => /\/assets\/pixel-miku\//i.test(u)) || pool[0];
+        if (pick) {
+          mikuUrl = pick;
+          try { window.MikuSystem?.setCurrentMiku?.(pick); } catch {}
+        } else if (
+          window.MIKU_IMAGES_READY &&
+          typeof window.MIKU_IMAGES_READY.then === 'function'
+        ) {
+          window.MIKU_IMAGES_READY.then(() => {
+            try { this.updateStageSinger(gameType, q, showAnswer); } catch {}
+          });
+          el.innerHTML = '';
+          return;
+        } else {
+          el.innerHTML = '';
+          return;
+        }
       }
       let bubbleText = '';
       // Only show speech bubble when showAnswer is true (on errors)
@@ -924,7 +970,9 @@
       }
     }
     awardHearts(n) {
-       window.hearts?.addHearts?.(n);
+      if (window.Hearts?.addHearts) return window.Hearts.addHearts(n);
+      if (window.Hearts?.add) return window.Hearts.add(n);
+      if (window.hearts?.addHearts) return window.hearts.addHearts(n);
     }
     addXP(n) {
       window.Progression?.addXp?.(n) || window.Progression?.addXP?.(n);
@@ -937,12 +985,28 @@
       }
       return 'D';
     }
-    // Calculate rewards (hearts & XP).  Both hearts and XP are equal to
-    // BASE + final score + LEVEL_MULT × level.  A single number is returned.
+    // Calculate rewards for display and the actual hearts/XP payout.
     rewards() {
       const level = window.Progression?.getProgress?.().level || State.userLevel || 1;
-      const total = CONFIG.rewards.BASE + (State.score | 0) + level * CONFIG.rewards.LEVEL_MULT;
-      return { total, level, score: State.score | 0 };
+      const score = State.score | 0;
+      // Fold combo and voltage into a payout-only score bonus (keeps on-screen
+      // score stable during play, but rewards feel better at the end)
+      const comboPts = Math.round((State.maxCombo || 0) * (CONFIG.scoringWeights.COMBO || 0));
+      const voltagePts = Math.round((State.voltage || 0) * (CONFIG.scoringWeights.VOLTAGE || 0));
+      const payoutScore = Math.max(0, score + comboPts + voltagePts);
+      // Display total (points) — based on payoutScore
+      const total = CONFIG.rewards.BASE + payoutScore + level * CONFIG.rewards.LEVEL_MULT;
+      // Hearts payout
+      const hCfg = CONFIG.payouts.hearts;
+      const heartsRaw = (hCfg.BASE | 0) + Math.floor(payoutScore / (hCfg.SCORE_DIV | 1)) + level * (hCfg.LEVEL_MULT | 0);
+      const hearts = Math.max(hCfg.MIN | 0, heartsRaw | 0);
+      // XP payout
+      const xCfg = CONFIG.payouts.xp;
+      const xpRaw = (xCfg.BASE | 0) + Math.floor(payoutScore / (xCfg.SCORE_DIV | 1)) + level * (xCfg.LEVEL_MULT | 0);
+      const xp = Math.max(xCfg.MIN | 0, xpRaw | 0);
+      // Single cute descriptor line; no math shown in UI
+      const cuteLine = 'base + score boost + level perk';
+      return { total, level, score: payoutScore, hearts, xp, cuteLine };
     }
     initializeSession() {
       this.Session = window.Session = window.Session || (() => {
@@ -971,12 +1035,12 @@
           tId = null;
           const rank = hudManager.calcRank();
           const rewards = hudManager.rewards();
-          // Award hearts and XP at the end of the session
-          hudManager.awardHearts(rewards.total / 100);
-          hudManager.addXP(rewards.total / 100);
+          // Award hearts and XP at the end of the session (balanced payouts)
+          hudManager.awardHearts(rewards.hearts);
+          hudManager.addXP(rewards.xp);
           // Pop a toast if available
-          const msg = `Session complete — Rank ${rank}. +${rewards.total.toLocaleString()} hearts & XP!`;
-          window.hearts?.lovetoast?.(msg) || (function () {
+          const msg = `Session complete — Rank ${rank}. +${rewards.hearts} 💖, +${rewards.xp} XP!`;
+          (window.Hearts?.loveToast?.(msg) || window.hearts?.lovetoast?.(msg)) || (function () {
             const t = document.createElement('div');
             t.style.cssText = 'position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#fff;border:2px solid var(--border);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);z-index:99999;color:#2b2b44;font-weight:700';
             t.textContent = msg;
@@ -994,6 +1058,13 @@
     }
   }
   const hudManager = new HUDManager();
+  // Provide a global flashJudge bridge so other modules (e.g., Quests) can hook it.
+  if (typeof window !== 'undefined') {
+    window.flashJudge = function (cardId, label) {
+      try { hudManager.flashJudge(cardId, label); } catch {}
+      return true;
+    };
+  }
 
   // ===== Game Engine =====
   class GameEngine {
@@ -1221,7 +1292,9 @@
         State.voltage = clamp(State.voltage + vDelta, 0, 100);
         // Quest progress updates
         State.questProgress.score = Math.max(State.questProgress.score, State.score);
-        if (judgment === 'COOL') State.questProgress.coolHits++;
+        if (judgment === 'COOL') {
+          State.questProgress.coolHits++;
+        }
         State.questProgress.maxCombo = Math.max(State.questProgress.maxCombo, State.combo);
         // Effects and HUD updates
         const cx = innerWidth / 2;
@@ -1234,7 +1307,8 @@
           window.HUD.counts = window.HUD.counts || { COOL: 0, GREAT: 0, FINE: 0, SAD: 0 };
           window.HUD.counts[judgment] = (window.HUD.counts[judgment] || 0) + 1;
         }
-        hudManager.flashJudge('languageDojoCard', judgment);
+        // Route via global to allow quests module to hook COOL counts
+        (window.flashJudge && window.flashJudge('languageDojoCard', judgment)) || hudManager.flashJudge('languageDojoCard', judgment);
         hudManager.addVoltage(CONFIG.voltagePerHit[judgment] || 0, 'languageDojoCard');
         hudManager.addCombo('languageDojoCard');
       } else {
@@ -1385,8 +1459,35 @@
     Game.start(gameType);
   };
   window.nextWordOfDay = function () {
+    // Advance to the next word
     window.SFX?.play?.('ui.change');
     UI.nextWordOfDay();
+
+    // Mirror the "Send Love" action when requesting a new word
+    try {
+      const Hearts = window.Hearts || {};
+      const btn = document.activeElement && document.activeElement.id === 'wodNext'
+        ? document.activeElement
+        : document.getElementById('wodNext');
+
+      // Award a small heart and celebrate
+      if (typeof Hearts.addHearts === 'function') Hearts.addHearts(1);
+
+      // Visual feedback near the button if available
+      if (btn && typeof btn.getBoundingClientRect === 'function') {
+        const r = btn.getBoundingClientRect();
+        if (typeof Hearts.createFloatingHeart === 'function') {
+          Hearts.createFloatingHeart(r.left + r.width / 2, r.top);
+        }
+        if (typeof Hearts.createSparkleEffect === 'function') {
+          Hearts.createSparkleEffect(btn);
+        }
+      }
+
+      if (typeof Hearts.shimejiCelebrate === 'function') Hearts.shimejiCelebrate();
+      // Optional click sfx to match the heart button feel
+      window.SFX?.play?.('hearts.click');
+    } catch (_) {}
   };
   window.backToMenu = function () {
     window.SFX?.play?.('ui.back');

@@ -5,6 +5,7 @@
     let currentSlide = 0;
     let isAutoPlaying = false;
     let autoPlayInterval = null;
+    let fixedContainerHeight = 0; // max slide height to prevent layout shifts
 
     const slides = document.querySelectorAll(".presentation-slide");
     const totalSlides = slides.length;
@@ -64,18 +65,13 @@
       currentSlide = newSlide;
       slides[currentSlide].classList.add("active");
 
-      // Sync container height to active slide for zero-scroll experience
+      // Keep container height stable across different slide heights
       const container = document.querySelector(".presentation-content");
       if (container) {
-        // measure active after paint
-        requestAnimationFrame(() => {
-          const active = slides[currentSlide];
-          if (active) {
-            const targetH = active.offsetHeight;
-            // Lock height to avoid layout jump during transition
-            container.style.height = targetH + "px";
-          }
-        });
+        // Ensure container uses precomputed max height
+        if (fixedContainerHeight > 0) {
+          container.style.height = fixedContainerHeight + "px";
+        }
       }
 
       // Update indicators
@@ -235,11 +231,39 @@
 
     // Initialize
     createFloatingElements();
-    // Pre-set container height to first slide
-    const firstContainer = document.querySelector(".presentation-content");
-    if (firstContainer && slides[0]) {
-      firstContainer.style.height = slides[0].offsetHeight + "px";
+
+    // Pre-compute a stable container height as the max of all slides
+    const container = document.querySelector(".presentation-content");
+    if (container) {
+      // Measure after render
+      const computeMax = () => {
+        let maxH = 0;
+        slides.forEach((s) => {
+          // Temporarily force visibility to measure inactive slides accurately
+          const wasActive = s.classList.contains("active");
+          if (!wasActive) s.style.display = "block";
+          const h = s.offsetHeight;
+          if (!wasActive) s.style.display = "";
+          if (h > maxH) maxH = h;
+        });
+        // Add a small buffer for dynamic decorations
+        fixedContainerHeight = Math.ceil(maxH + 8);
+        container.style.height = fixedContainerHeight + "px";
+      };
+      // Initial compute
+      computeMax();
+      // Recompute on resize to respect reflow (debounced)
+      let resizeTimer = null;
+      window.addEventListener(
+        "resize",
+        () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(computeMax, 150);
+        },
+        { passive: true },
+      );
     }
+
     updateSlide(0, false);
 
     // Auto-start presentation after 1.5 seconds
@@ -267,10 +291,10 @@
     // Expose controls for navigation hide/show
     window._presentationControl = {
       onShow: () => {
-        // Ensure container height syncs after being hidden
+        // Ensure container uses the fixed height after being hidden
         const container = document.querySelector(".presentation-content");
-        if (container && slides[currentSlide]) {
-          container.style.height = slides[currentSlide].offsetHeight + "px";
+        if (container && fixedContainerHeight > 0) {
+          container.style.height = fixedContainerHeight + "px";
         }
         if (isAutoPlaying && !autoPlayInterval) startAutoPlay();
       },

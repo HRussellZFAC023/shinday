@@ -443,6 +443,19 @@ window.MikuUI = (function () {
           // Initialize card pagination
           initCardPagination();
         }
+
+        // Guestbook heading: cute Miku themed and localized
+        const guest = document.getElementById("guestbookCard");
+        if (guest) {
+          const h = guest.querySelector("h3");
+          if (h) {
+            const icon = C.home?.guestbookIcon
+              ? window.MikuCore.mikuIcon(C.home.guestbookIcon, "📖")
+              : "📖";
+            const title = C.home?.guestbookTitle || "guestbook";
+            h.innerHTML = `${icon} ${title}`;
+          }
+        }
       }
     }
 

@@ -187,6 +187,24 @@
               <div class="content-grid" id="homeGrid">
                 <!-- Will be rebuilt by JS (about, likes, dislikes, dreams) -->
               </div>
+
+              <!-- Guestbook (embedded) -->
+              <div class="card guestbook-card" id="guestbookCard">
+                <h3>新book Guestbook</h3>
+                <div class="guestbook-container">
+                  <iframe
+                    id="guestbookFrame"
+                    class="guestbook-frame"
+                    title="Guestbook"
+                    loading="lazy"
+                    referrerpolicy="no-referrer"
+                    src="https://babybelle.atabook.org/"
+                  ></iframe>
+                </div>
+                <small class="guestbook-note">
+                  Powered by <a href="https://atabook.org/" target="_blank" rel="noopener">atabook.org</a>
+                </small>
+              </div>
             </section>
 
             <!-- Socials section -->
@@ -508,7 +526,7 @@
                       <button
                         class="modal-continue"
                         id="continueBtn"
-                        onclick="(function(){try{var el=document.getElementById('rewardAmount'); var n=el?parseInt((el.textContent||'0').replace(/[^0-9]/g,''),10):0; if(window.Hearts && window.Hearts.lovetoast){ window.Hearts.lovetoast('+'+n+' \uD83D\uDC96 added'); }}catch(e){} backToMenu(); })()"
+                        onclick="(function(){try{var el=document.getElementById('rewardAmount'); var n=el?parseInt(el.dataset.hearts||'0',10):0; if(window.Hearts && window.Hearts.loveToast){ window.Hearts.loveToast('+'+n+' \uD83D\uDC96'); }}catch(e){} backToMenu(); })()"
                       >
                         Continue
                       </button>
