@@ -178,9 +178,10 @@
           !owned && isPixieBel
             ? '<div class="mystery-cover"><div class="mystery-text">?</div></div>'
             : "";
-        
+
         // Add disabled class for locked PixieBel
-        const disabledClass = (isPixieBel && !pixieUnlockedState) ? ' dex-disabled' : '';
+        const disabledClass =
+          isPixieBel && !pixieUnlockedState ? " dex-disabled" : "";
 
         return `
           <div class="dex-card ${ownClass}${disabledClass}" data-url="${url}" tabindex="0">
@@ -249,30 +250,33 @@
       const isPixieBel = /(PixieBel \(bonus\)\.gif)$/i.test(url);
       const pixieUnlockedState = pixieUnlocked();
       const isDisabled = isPixieBel && !pixieUnlockedState;
-      
+
       card.addEventListener("click", () => {
         // Block clicks on PixieBel if not unlocked
         if (isDisabled) {
           // Show a subtle hint instead of opening details
           if (window.Hearts?.loveToast) {
-            window.Hearts.loveToast("This legendary companion remains hidden... 🔒✨");
+            window.Hearts.loveToast(
+              "This legendary companion remains hidden... 🔒✨"
+            );
           }
           return;
         }
-        
+
         openDetails(url);
       });
-      
+
       // Also block keyboard access (Enter key) for disabled cards
       card.addEventListener("keydown", (e) => {
         if (e.key === "Enter" && isDisabled) {
           e.preventDefault();
           if (window.Hearts?.loveToast) {
-            window.Hearts.loveToast("This legendary companion remains hidden... 🔒✨");
+            window.Hearts.loveToast(
+              "This legendary companion remains hidden... 🔒✨"
+            );
           }
         }
       });
-     
     });
 
     // Clear new flags when Dex renders (but preserve the localStorage NEW set)
@@ -304,11 +308,20 @@
     const entry = coll[url];
     const owned = !!entry;
 
-  // Singer effects (fixed bonuses when set)
-  const sm = (typeof window.getSingerScoreMult === 'function' ? getSingerScoreMult() : 1) - 1;
-  const sh = (typeof window.getSingerShieldMult === 'function' ? getSingerShieldMult() : 1) - 1;
-  const rb = (typeof window.getSingerRareDropBonus === 'function' ? getSingerRareDropBonus() : 0);
-  const effectsText = ''//Effects: +${Math.round(Math.max(0, sm) * 100)}% score, +${Math.round(Math.max(0, sh) * 100)}% shield time, +${Math.round(Math.max(0, rb) * 100)}% rare drop`;
+    // Singer effects (fixed bonuses when set)
+    const sm =
+      (typeof window.getSingerScoreMult === "function"
+        ? getSingerScoreMult()
+        : 1) - 1;
+    const sh =
+      (typeof window.getSingerShieldMult === "function"
+        ? getSingerShieldMult()
+        : 1) - 1;
+    const rb =
+      typeof window.getSingerRareDropBonus === "function"
+        ? getSingerRareDropBonus()
+        : 0;
+    const effectsText = ""; //Effects: +${Math.round(Math.max(0, sm) * 100)}% score, +${Math.round(Math.max(0, sh) * 100)}% shield time, +${Math.round(Math.max(0, rb) * 100)}% rare drop`;
 
     const ov = document.createElement("div");
     ov.className = "image-modal";

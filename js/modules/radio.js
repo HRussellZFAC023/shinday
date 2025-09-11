@@ -45,13 +45,11 @@
 
     if (onlineStatus)
       onlineStatus.textContent = C.status?.radioOffLabel || "";
-    const lastNp = localStorage.getItem("pixelbelle-now-playing");
     const station =
       C.radio && (C.radio.radioName || C.radio.radioName === 0)
         ? C.radio.radioName
         : C.radio?.radioName || C.radio?.title || "Online";
-    if (radioDisplayStatus)
-      radioDisplayStatus.textContent = lastNp || station;
+    if (radioDisplayStatus) radioDisplayStatus.textContent = station;
     if (statusDot) statusDot.style.color = "#ffbf00";
 
     if (playBtn)
@@ -99,10 +97,6 @@
     }
 
     let metaTimer = null;
-    const isNeo = /\.neocities\.org$/i.test((location && location.hostname) || "");
-    // On strict CSP hosts like Neocities, cross-origin fetch is blocked by connect-src.
-    // Allow opt-in override via content config: set C.radio.allowCrossFetchOnNeo = true
-    const allowMeta = !isNeo || !!(C.radio && C.radio.allowCrossFetchOnNeo);
 
     function setNowPlaying(text) {
       const titleOnly = (text || "").split(/\s*-\s*/).pop().trim();
@@ -226,16 +220,7 @@
     }
 
     function startMetadataPolling() {
-      if (!allowMeta) return; // avoid CSP errors on strict hosts
       if (metaTimer) return;
-
-      // Fetch immediately so the user sees Now Playing right away
-      (async () => {
-        const title = await fetchIcyTitle();
-        if (title) setNowPlaying(title);
-      })();
-
-      // Continue polling while playing
       metaTimer = setInterval(async () => {
         if (!audio || audio.paused || audio.ended) {
           clearInterval(metaTimer);

@@ -480,6 +480,33 @@ main {
   font-size: 1.1rem;
   font-weight: 800;
 }
+
+/* Enhanced widget with sparkle animation */
+.widget {
+  position: relative;
+  background: linear-gradient(135deg, 
+    rgba(255, 182, 193, 0.15), 
+    rgba(221, 160, 221, 0.15), 
+    rgba(173, 216, 230, 0.15)
+  );
+  border: 2px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.widget-sparkle {
+  animation: sparkleFloat 3s ease-in-out infinite;
+}
+
+@keyframes sparkleFloat {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg); 
+    opacity: 0.8;
+  }
+  50% { 
+    transform: translateY(-4px) rotate(10deg); 
+    opacity: 1;
+  }
+}
 .link-container a {
   display: inline-block;
   background: linear-gradient(135deg, var(--pastel-purple), var(--pastel-pink));
@@ -860,6 +887,39 @@ main {
   margin: 10px 0;
 }
 
+/* Visitor counter badge specific styling */
+.badge[alt*="friends:"],
+a[data-visitor-counter] .badge {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(189,227,255,0.4), 0 2px 6px rgba(255,209,236,0.3) !important;
+  transition: all 0.3s ease !important;
+  filter: saturate(1.1) !important;
+  border: 2px solid rgba(189,227,255,0.3) !important;
+}
+
+.badge[alt*="friends:"]:hover,
+a[data-visitor-counter] .badge:hover {
+  transform: scale(1.05) translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(189,227,255,0.6), 0 4px 8px rgba(255,209,236,0.4) !important;
+  filter: saturate(1.2) brightness(1.05) !important;
+  border-color: rgba(189,227,255,0.6) !important;
+}
+
+/* Visitor counter fallback text styling */
+.visitor-fallback {
+  background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-pink)) !important;
+  border: 2px solid rgba(189,227,255,0.3) !important;
+  color: var(--ink) !important;
+  font-weight: 700 !important;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.8) !important;
+  transition: all 0.3s ease !important;
+}
+
+.visitor-fallback:hover {
+  transform: scale(1.05) translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(189,227,255,0.4) !important;
+}
+
 .badge {
   width: 88px;
   height: 31px;
@@ -1229,6 +1289,21 @@ main {
   gap: 12px;
   justify-content: center;
   margin-top: 4px;
+}
+
+/* Merged Site Stats + Badges styling */
+#statsAndBadges .badges-subtitle {
+  margin: 12px 0 8px;
+  font-weight: 800;
+  color: #2b2b44;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: lowercase;
+}
+/* Space badges nicely from stats block */
+#statsAndBadges .badges-collection {
+  margin-top: 6px;
 }
 
 /* Playing state enhancements */
