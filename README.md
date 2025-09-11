@@ -6,7 +6,6 @@
 A beautiful, retro-inspired personal website with interactive Hatsune Miku companions and kawaii aesthetics.
 
 ## 🌸 Features
-[![Baby Belle](https://babybelle.neocities.org/assets/discordServerBanner.png)](https://babybelle.neocities.org/)
 ### ✨ Interactive Elements
 
 - **Enhanced Shimeji Companions**: Pixel Miku friends that walk, jump, climb walls, fall from the sky, multiply, and react to mouse interactions
