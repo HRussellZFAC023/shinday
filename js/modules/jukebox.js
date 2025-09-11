@@ -43,8 +43,8 @@
         title: "Default BGM",
         bpm: 120,
         req: 0,
-        audio: "./assets/background.ogg",
-        fallback: "./assets/bgm.ogg",
+        audio: "https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/bgm.ogg",
+        fallback: "https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/bgm.ogg",
         jacket: "./assets/pt_top.png",
         theme: "#66bbff",
       },
@@ -203,7 +203,11 @@
       if (iframe) iframe.src = "about:blank";
       if (wrap) wrap.style.display = "none";
       if (window.AudioMod && typeof AudioMod.setBgmSource === "function") {
-        AudioMod.setBgmSource(song.audio, song.fallback || "./assets/bgm.ogg");
+        AudioMod.setBgmSource(
+          song.audio,
+          song.fallback ||
+            "https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/bgm.ogg",
+        );
       }
       // Resume bgm
       if (window.__resumeBgm) window.__resumeBgm();

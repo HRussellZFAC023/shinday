@@ -11,16 +11,16 @@ class MikuClawMachine {
       cardRevealDelay: 200
     };
     
-    // Sound system
+    // Sound system (load .ogg from GitHub raw to bypass host restrictions)
     this.sounds = {
-      clawMove: new Audio('assets/SFX/claw-move.ogg'),
-      clawDrop: new Audio('assets/SFX/claw-drop.ogg'),
-      mikuGrab: new Audio('assets/SFX/miku-grab.ogg'),
-      cardReveal: new Audio('assets/SFX/card-reveal.ogg'),
-      rareCard: new Audio('assets/SFX/rare-card.ogg'),
-      legendaryCard: new Audio('assets/SFX/legendary-card.ogg'),
-      success: new Audio('assets/SFX/success.ogg'),
-      ambience: new Audio('assets/SFX/arcade-ambience.ogg')
+      clawMove: new Audio('https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/SFX/claw-move.ogg'),
+      clawDrop: new Audio('https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/SFX/claw-drop.ogg'),
+      mikuGrab: new Audio('https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/SFX/miku-grab.ogg'),
+      cardReveal: new Audio('https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/SFX/card-reveal.ogg'),
+      rareCard: new Audio('https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/SFX/rare-card.ogg'),
+      legendaryCard: new Audio('https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/SFX/legendary-card.ogg'),
+      success: new Audio('https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/SFX/success.ogg'),
+      ambience: new Audio('https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/SFX/arcade-ambience.ogg')
     };
     
     this.setupSounds();

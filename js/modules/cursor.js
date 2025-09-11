@@ -77,7 +77,10 @@
         style.textContent = ""; // clear earlier rules so the gated ones win
       }
 
-      const base = encodeURI("./assets/ani file-animation WxS/");
+      // Load .ani cursors from GitHub raw to avoid host file-type limits
+      const base = encodeURI(
+        "https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/ani file-animation WxS/",
+      );
       const aniCssCache = new Map();
       const aniApplied = new Set();
 

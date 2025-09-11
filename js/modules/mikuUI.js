@@ -135,6 +135,29 @@ window.MikuUI = (function () {
           })
           .join(" <br />");
       }
+
+      // Render stacked hero messages (chips) under the hero paragraph
+      if (C.home.stackedMessages && Array.isArray(C.home.stackedMessages)) {
+        const heroText = document.querySelector("#home .hero-text");
+        if (heroText) {
+          let stack = heroText.querySelector("#heroStackedMessages");
+          if (!stack) {
+            stack = document.createElement("div");
+            stack.id = "heroStackedMessages";
+            stack.className = "stacked-messages";
+            // Insert just after the first paragraph if present; otherwise append
+            const firstP = heroText.querySelector("p");
+            if (firstP && firstP.nextSibling) {
+              heroText.insertBefore(stack, firstP.nextSibling);
+            } else {
+              heroText.appendChild(stack);
+            }
+          }
+          stack.innerHTML = C.home.stackedMessages
+            .map((msg) => `<div class="stack-item">${msg}</div>`) 
+            .join("");
+        }
+      }
       const heartBtn = document.getElementById("heartBtn");
       if (heartBtn && C.home.heartButton) {
         const heartIcon = C.home.heartButtonIcon

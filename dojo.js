@@ -676,7 +676,12 @@
       if (this.elements.rewardBonus) {
         this.elements.rewardBonus.textContent = `Base (${CONFIG.rewards.BASE}) + Score (${rewardsDisplay.score}) + Level (${rewardsDisplay.level}×${CONFIG.rewards.LEVEL_MULT})`;
       }
-      this.elements.songOverModal?.classList.add('show');
+      // Ensure the modal is pinned to the viewport by placing it at body level
+      const modal = this.elements.songOverModal;
+      if (modal && modal.parentElement !== document.body) {
+        document.body.appendChild(modal);
+      }
+      modal?.classList.add('show');
     }
     applyMenuCovers() {
       const covers = (window.SITE_CONTENT || window.SRC || {})?.images?.menuCovers;
@@ -919,7 +924,7 @@
       }
     }
     awardHearts(n) {
-      window.Hearts?.add?.(n) || window.hearts?.addHearts?.(n);
+       window.hearts?.addHearts?.(n);
     }
     addXP(n) {
       window.Progression?.addXp?.(n) || window.Progression?.addXP?.(n);
@@ -967,8 +972,8 @@
           const rank = hudManager.calcRank();
           const rewards = hudManager.rewards();
           // Award hearts and XP at the end of the session
-          hudManager.awardHearts(rewards.total);
-          hudManager.addXP(rewards.total);
+          hudManager.awardHearts(rewards.total / 100);
+          hudManager.addXP(rewards.total / 100);
           // Pop a toast if available
           const msg = `Session complete — Rank ${rank}. +${rewards.total.toLocaleString()} hearts & XP!`;
           window.hearts?.lovetoast?.(msg) || (function () {

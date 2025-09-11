@@ -190,6 +190,12 @@ const SITE_CONTENT = {
       "Come, explore and make yourself at home!",
       "Let's be good friends!",
     ],
+    // Stacked hero messages (rendered as chips under hero text)
+    stackedMessages: [
+      "cked these pixels just for you! ✨",
+      "If you were a pixel, I'd download you every day!",
+      "✨ Dont step on the WIFI! a Miku is growing there...",
+    ],
     heartButton: "Send Love",
     heartButtonIcon: "love",
 

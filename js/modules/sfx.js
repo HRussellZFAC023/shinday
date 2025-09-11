@@ -1,7 +1,15 @@
 // SFX engine extracted from main.js • attaches window.SFX
 window.SFX = (function initSfxEngine() {
-  const BASE = "./assets/SFX";
-  const p = (sub) => `${BASE}/${sub}`;
+  // Load SFX from GitHub raw to bypass free-host file-type limits
+  const RAW_BASE =
+    "https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/assets/SFX";
+  // Encode each path segment to safely handle spaces, parentheses, apostrophes
+  const encodePath = (rel) =>
+    rel
+      .split("/")
+      .map((seg) => encodeURIComponent(seg))
+      .join("/");
+  const p = (sub) => `${RAW_BASE}/${encodePath(sub)}`;
   const MAP = {
     // UI and navigation
     "ui.move": [

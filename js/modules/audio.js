@@ -1,11 +1,20 @@
 // Audio module: BGM and Radio controls
 (function () {
+  // Map audio/video asset paths to raw.githubusercontent.com to avoid host restrictions
+  const RAW_BASE = "https://raw.githubusercontent.com/HRussellZFAC023/shinday/main/";
+  const toRaw = (p) => {
+    if (!p) return p;
+    if (/^https?:\/\//.test(p)) return p;
+    if (/\.(ogg|avi|wav|mp3)$/i.test(p)) return RAW_BASE + p.replace(/^\.\//, "");
+    return p;
+  };
   function ensureBgm() {
     if (!window.__bgmAudio) {
-      const a = new Audio("./assets/bgm.ogg");
+      const a = new Audio(toRaw("./assets/bgm.ogg"));
       a.loop = true;
       a.preload = "auto";
       a.volume = 0.35;
+      try { a.crossOrigin = "anonymous"; } catch (_) {}
       window.__bgmAudio = a;
       window.__bgmKilled = false;
     }
@@ -44,11 +53,11 @@
   function setBgmSource(src, fallback) {
     const bgm = ensureBgm();
     const apply = (url) => {
-      bgm.src = url;
+      bgm.src = toRaw(url);
     };
     const onErr = () => {
-      if (fallback && bgm.src.indexOf(fallback) === -1) {
-        apply(fallback);
+      if (fallback && bgm.src.indexOf(toRaw(fallback)) === -1) {
+        apply(toRaw(fallback));
         bgm.play().catch(() => {});
       }
     };
