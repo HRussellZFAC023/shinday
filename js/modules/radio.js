@@ -246,6 +246,7 @@
 
       return null;
     }
+    
 
     function startMetadataPolling() {
       if (metaTimer) return;
