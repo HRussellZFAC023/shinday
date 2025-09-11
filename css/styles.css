@@ -317,7 +317,6 @@ body {
   flex-wrap: wrap;
   gap: 20px;
   position: relative;
-  z-index: 10;
   padding: 20px;
 }
 
