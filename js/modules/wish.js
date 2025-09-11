@@ -104,6 +104,69 @@
     if (window.MikuDex) window.MikuDex.renderInto(dex);
   }
 
+  // New: results helpers for redesigned panel
+  function getResultsGrid() {
+    const { results } = els();
+    if (!results) return null;
+    // Prefer an explicit inner grid if present
+    let grid = results.querySelector('.cm-results-grid');
+    if (grid) return grid;
+    // Fallback to the standard pastel container acting as the grid
+    grid = results.querySelector('.cm-results-container');
+    if (grid) return grid;
+    // Create a container if missing entirely
+    const container = document.createElement('div');
+    container.className = 'cm-results-container';
+    results.appendChild(container);
+    return container;
+  }
+
+  function clearResultsUI() {
+    const { results } = els();
+    const grid = getResultsGrid();
+    if (results && grid) {
+      // Smooth fade out for previous results
+      results.style.transition = 'opacity .35s ease';
+      results.style.opacity = '0';
+      setTimeout(() => {
+        grid.innerHTML = '';
+        results.hidden = true;
+        results.style.transition = '';
+        results.style.opacity = '';
+      }, 350);
+    }
+    // Clear floating text from enhanced flow if any
+    document.querySelectorAll('.cm-floating-text').forEach(el => el.remove());
+  }
+
+  // Render lots of random Mikus in rows at the bottom of the cabinet
+  function renderBottomMikus() {
+    try {
+      const pool = window.MIKU_IMAGES || [];
+      const host = document.getElementById('bottomSprites');
+      if (!host || !pool.length) return;
+      host.innerHTML = '';
+
+      const rows = 3;
+      const perRow = 28;
+      for (let r = 0; r < rows; r++) {
+        const rowEl = document.createElement('div');
+        rowEl.style.cssText = 'position:absolute;left:0;right:0;display:flex;gap:6px;align-items:flex-end;pointer-events:none;';
+        const y = 6 + r * 8;
+        rowEl.style.bottom = `${y}px`;
+        rowEl.style.justifyContent = (r % 2 === 0) ? 'flex-start' : 'flex-end';
+        for (let i = 0; i < perRow; i++) {
+          const img = document.createElement('img');
+          img.src = pool[Math.floor(Math.random() * pool.length)];
+          img.alt = 'miku';
+          img.style.cssText = 'width:28px;height:28px;image-rendering:pixelated;opacity:.9;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))';
+          rowEl.appendChild(img);
+        }
+        host.appendChild(rowEl);
+      }
+    } catch {}
+  }
+
   function clearNewSet() {
     try {
       localStorage.setItem("Wish.newIds", "[]");
@@ -181,21 +244,24 @@
   function showResults(cards) {
     const { results, rotation } = els();
     if (!results || !rotation) return;
-    // Hide preview and results container initially
     rotation.hidden = true;
     results.hidden = true;
-    // Determine container for cards (supports claw machine grid)
-    const container = results.querySelector(".cm-results-container");
-    // Build card HTML simultaneously (no slot spin)
+
+    const grid = getResultsGrid();
+    if (!grid) return;
+    const pullAttr = cards.length > 1 ? 'multi' : 'single';
+    grid.setAttribute('data-pull-type', pullAttr);
+    try { els().results.setAttribute('data-pull-type', pullAttr); } catch {}
+
+    // Build card HTML
     const cardHTMLs = [];
     let maxRarity = 1;
     let pulledPixie = false;
     cards.forEach((card) => {
-      // Update collection and check if new
       const isNew = addToCollection(card);
       if (card.url === PIXIE_URL) pulledPixie = true;
       if (card.rarity && card.rarity > maxRarity) maxRarity = card.rarity;
-      const newBadge = isNew ? '<div class="Wish-new">NEW!</div>' : "";
+      const newBadge = isNew ? '<div class="Wish-new">NEW!</div>' : '';
       cardHTMLs.push(`
         <div class="Wish-card revealing rarity-${card.rarity}">
           <div class="Wish-stars">${stars(card.rarity)}</div>
@@ -204,59 +270,66 @@
         </div>
       `);
     });
-    // Insert into container or results
-    if (container) {
-      container.innerHTML = cardHTMLs.join("");
-    } else {
-      results.innerHTML = cardHTMLs.join("");
-    }
-    // Play reveal sound once
-    try {
-      SFX.play("Wish.reveal");
-    } catch {}
-    // Play legendary thanks if a ★5 card is present
-    if (maxRarity >= 5) {
-      try {
-        SFX.play("extra.thanks");
-      } catch {}
-    }
 
-    // Determine highlight strategy: single or multi
-    let highlightDuration = 1800;
+    grid.innerHTML = cardHTMLs.join('');
+
+    // Play reveal
+    try { SFX.play('Wish.reveal'); } catch {}
+    if (maxRarity >= 5) { try { SFX.play('extra.thanks'); } catch {} }
+
+    // Optional highlight timing window (if highlight hooks exist)
+    let highlightDuration = 1200;
     try {
       if (cards.length > 1 && typeof window.clawMachineHighlightMultiple === 'function') {
-        // Multi highlight: show each card in rapid succession
         window.clawMachineHighlightMultiple(cards);
-        // Compute total duration for multi highlight (approx. 520ms per card + base pop time)
-        highlightDuration = cards.length * 520 + 1800;
+        highlightDuration = cards.length * 520 + 1200;
       } else if (typeof window.clawMachineHighlightCard === 'function') {
-        // Single highlight
         window.clawMachineHighlightCard(cards);
       }
     } catch {}
 
-    // Hide the results until the highlight sequence finishes for a cleaner reveal
-    if (results) {
-      results.hidden = true;
-    }
-
-    // Schedule showing the results grid after the highlight
+    // Reveal after highlight/animation (no panel fly-in)
     setTimeout(() => {
-      if (results) {
-        results.hidden = false;
-        results.style.opacity = "1";
-      }
-      // Refresh MikuDex when results become visible
-      renderDex();
-      // Handle PixieBel scenarios (legendary bonus)
+      results.hidden = false;
+      results.style.opacity = '1';
+
+      // Spawn soft overlay orbs for atmosphere
       try {
-        if (pulledPixie && !pixieUnlocked()) {
-          // PixieBel obtained by luck
-          setTimeout(() => awardPixieBel(false), 250);
-        } else if (!pixieUnlocked() && hasAllBaseCollected()) {
-          // Unlock PixieBel after completing base collection
-          awardPixieBel();
+        const container = getResultsGrid();
+        if (container) {
+          const rect = container.getBoundingClientRect();
+          const count = Math.min(24, Math.max(12, Math.round(rect.width / 60)));
+          for (let i = 0; i < count; i++) {
+            const orb = document.createElement('div');
+            const size = 18 + Math.random() * 36;
+            orb.className = 'cm-orb';
+            orb.style.left = Math.round(Math.random() * 90) + '%';
+            orb.style.top = Math.round(Math.random() * 70) + '%';
+            orb.style.width = orb.style.height = size + 'px';
+            orb.style.animationDelay = (Math.random() * 2).toFixed(2) + 's';
+            container.appendChild(orb);
+            setTimeout(() => orb.remove(), 3600);
+          }
         }
+      } catch {}
+
+      // Flashing tags
+      try {
+        const tagHost = document.getElementById('ArcadeTags') || results;
+        const flash = (text, cls) => {
+          const t = document.createElement('div'); t.className = `wish-tag ${cls}`; t.textContent = text;
+          t.style.left = (20 + Math.random()*60) + '%'; t.style.top = (35 + Math.random()*30) + '%';
+          tagHost.appendChild(t); setTimeout(()=>t.remove(), 1400);
+        };
+        if (maxRarity >= 5) flash('RATE UP!', 'rate-up');
+        else if (maxRarity >= 4) flash('BONUS', 'bonus');
+        flash('GET!', 'get');
+      } catch {}
+
+      renderDex();
+      try {
+        if (pulledPixie && !pixieUnlocked()) setTimeout(() => awardPixieBel(false), 250);
+        else if (!pixieUnlocked() && hasAllBaseCollected()) awardPixieBel();
       } catch {}
     }, highlightDuration);
   }
@@ -336,25 +409,53 @@
     }
     return out;
   }
-  function startRoll(n) {
+  async function startRoll(n) {
     if (!poolReady()) return;
     if (!spendTokens(n)) {
       SFX.play("ui.unavailable");
       return;
     }
 
+    // Hide rotation preview immediately for smooth animation
+    const { rotation } = els();
+    if (rotation) rotation.style.opacity = "0";
+
+    // Clear any previous results panel contents smoothly
+    clearResultsUI();
+
     // Check pity system
     const pityCount = getPityCount();
     const shouldGuarantee = pityCount >= 10 && n === 10; // only apply to x10 pulls
 
     const cards = pickRandom(n, shouldGuarantee);
+    // Make selected card visible to animation layer
+    try { window.currentPickedMiku = cards[0]?.url; } catch {}
 
     // Increment pity for each pull (will be reset in pickRandom if missing miku obtained)
     for (let i = 0; i < n; i++) {
       incrementPity();
     }
 
+    // Trigger the advanced claw animation (with selected Miku attached)
+    const pullType = n > 1 ? 'multi' : 'single';
+    try {
+      if (typeof window.triggerClawAnimation === 'function') {
+        await window.triggerClawAnimation(pullType);
+      }
+    } catch (error) {
+      console.warn('Claw animation failed, proceeding to results:', error);
+    }
+
+    // Show the card results in the redesigned panel
     showResults(cards);
+
+    // Restore preview gradually after animation
+    setTimeout(() => {
+      if (rotation) rotation.style.opacity = "0.6";
+    }, 2000);
+
+    // Refresh the bottom mikus to keep it lively after each roll
+    renderBottomMikus();
   }
   function resetUI() {
     const { results, rotation, dex, dexBtn } = els();
@@ -380,11 +481,13 @@
   }
   function wire() {
     const e = els();
-    if (!Object.values(e).every(Boolean)) return;
+    // Be resilient: proceed even if some elements are missing
     updateTokens();
-    e.pull1.onclick = () => startRoll(1);
-    e.pull10.onclick = () => startRoll(10);
-    e.convert.onclick = () => {
+    
+    if (e.pull1) e.pull1.onclick = () => startRoll(1);
+    if (e.pull10) e.pull10.onclick = () => startRoll(10);
+    
+    if (e.convert) e.convert.onclick = () => {
       const h = parseInt(localStorage.getItem("pixelbelle-hearts") || "0", 10);
       if (h >= 100) {
         localStorage.setItem("pixelbelle-hearts", String(h - 100));
@@ -394,14 +497,16 @@
         SFX.play("ui.unavailable");
       }
     };
-    e.daily.onclick = () => {
+    
+    if (e.daily) e.daily.onclick = () => {
       if (canDaily()) {
         takeDaily();
       } else {
         SFX.play("ui.unavailable");
       }
     };
-    e.dexBtn.onclick = () => {
+    
+    if (e.dexBtn) e.dexBtn.onclick = () => {
       e.dex.classList.toggle("hidden");
       if (!e.dex.classList.contains("hidden")) {
         renderDex();
@@ -416,16 +521,31 @@
       SFX.play("ui.change");
       if (Math.random() < 0.3) SFX.play("extra.fx1");
     };
-    const reel = e.rotation && e.rotation.querySelector(".preview-image");
+    
+    // Ensure a preview image exists in the rotation area
+    let reel = e.rotation && e.rotation.querySelector(".preview-image");
+    if (!reel && e.rotation) {
+      reel = document.createElement('img');
+      reel.className = 'preview-image';
+      reel.alt = 'Miku preview';
+      reel.style.maxHeight = '72px';
+      reel.style.objectFit = 'contain';
+      reel.style.opacity = '0.65';
+      reel.style.transition = 'opacity .3s ease';
+      e.rotation.appendChild(reel);
+    }
     if (reel) {
       const tick = () => {
         if (!poolReady()) return;
         const [card] = pickRandom(1);
         reel.src = card.url;
       };
+      tick(); // Initialize immediately
       setInterval(tick, 1200);
     }
+    
     resetUI();
+    renderBottomMikus();
   }
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", wire);

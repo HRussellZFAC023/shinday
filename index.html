@@ -28,6 +28,8 @@
     />
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/shimeji.css" />
+    <!-- Scoped neon 3D styling for the claw machine (non-conflicting) -->
+    <link rel="stylesheet" href="./css/claw-neon-3d.css" />
     <!-- Language Dojo styles -->
     <link rel="stylesheet" href="./dojo.css" />
   </head>
@@ -583,15 +585,19 @@
               </div>
             </section>
             <section id="Wish" class="content-section">
-                            <div class="ClawMachine" id="mikuWish">
-                <!-- Dynamic Title from localization -->
-                <div class="cm-marquee">
-                  <div class="cm-marquee-icon" id="wishIcon"></div>
-                  <div class="cm-marquee-text">
-                    <span class="cm-title" id="wishTitle"></span>
+              <div class="ClawMachine cm-3d" id="mikuWish">
+                <!-- Status Bar (Pinned) with LCD Inside -->
+                <div class="cm-status-bar">
+                  <div class="cm-lcd-marquee">
+                    <div class="cm-lcd-screen">
+                      <div class="cm-lcd-track">
+                        <span class="cm-lcd-text" id="wishTitle">close your eyes and make a wish~</span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="cm-ticket">
-                    🎟️ <span id="WishTokens">0</span>
+                  <div class="cm-status-info">
+                    <div class="cm-marquee-icon" id="wishIcon"></div>
+                    <div class="cm-ticket">🎟️ <span id="WishTokens">0</span></div>
                   </div>
                 </div>
 
@@ -605,7 +611,7 @@
                       <div class="cm-rail-glow"></div>
                     </div>
                     
-                    <!-- Hanging Claw (Behind Mikus) -->
+                    <!-- Hanging Claw (Behind Mikus) - pastel structure -->
                     <div class="cm-claw" id="ClawMechanism">
                       <div class="cm-claw-cable"></div>
                       <div class="cm-claw-head">
@@ -645,11 +651,9 @@
                       </div>
                     </div>
 
-                    <!-- Scrollable Results Area -->
-                    <div id="WishResults" class="cm-results-scroll" hidden>
-                      <div class="cm-results-container">
-                        <!-- Cards appear here in a compact, scrollable layout -->
-                      </div>
+                    <!-- Results Panel (pastel) -->
+                    <div id="WishResults" class="cm-results-panel" hidden>
+                      <div class="cm-results-container" data-pull-type="single"></div>
                     </div>
 
                     <!-- Prize Chute with Animation -->

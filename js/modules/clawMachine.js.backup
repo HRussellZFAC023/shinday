@@ -1,0 +1,915 @@
+// 🎮 Premium Miku Gacha Experience - Physics Engine & Sound Design
+class MikuClawMachine {
+  constructor() {
+    this.isAnimating = false;
+    this.currentPhase = 0;
+    this.animationSettings = {
+      clawMoveSpeed: 800,
+      clawDropSpeed: 1200,
+      mikuGrabDuration: 600,
+      mikuDropDuration: 1400,
+      cardRevealDelay: 200
+    };
+    
+    // Sound system
+    this.sounds = {
+      clawMove: new Audio('assets/SFX/claw-move.ogg'),
+      clawDrop: new Audio('assets/SFX/claw-drop.ogg'),
+      mikuGrab: new Audio('assets/SFX/miku-grab.ogg'),
+      cardReveal: new Audio('assets/SFX/card-reveal.ogg'),
+      rareCard: new Audio('assets/SFX/rare-card.ogg'),
+      legendaryCard: new Audio('assets/SFX/legendary-card.ogg'),
+      success: new Audio('assets/SFX/success.ogg'),
+      ambience: new Audio('assets/SFX/arcade-ambience.ogg')
+    };
+    
+    this.setupSounds();
+    this.ensureElements();
+    this.startAmbience();
+  }
+
+  setupSounds() {
+    // Configure all sounds with fallbacks
+    Object.keys(this.sounds).forEach(key => {
+      const sound = this.sounds[key];
+      sound.volume = 0.3;
+      sound.preload = 'auto';
+      
+      // Fallback if audio file doesn't exist
+      sound.addEventListener('error', () => {
+        console.log(`Audio file not found: ${key}, using silent mode`);
+        this.sounds[key] = { 
+          play: () => {}, 
+          pause: () => {}, 
+          volume: 0 
+        };
+      });
+    });
+    
+    this.sounds.ambience.volume = 0.1;
+    this.sounds.ambience.loop = true;
+  }
+
+  startAmbience() {
+    if (this.sounds.ambience) {
+      this.sounds.ambience.play().catch(() => {
+        console.log('Ambience audio requires user interaction');
+      });
+    }
+  }
+
+  ensureElements() {
+    this.ensureStageElements();
+    this.ensureClawSystem();
+    this.ensureLCD();
+    this.ensurePreviewSystem();
+      }
+    })();
+
+    // Load localized content
+    loadLocalizedContent();
+    
+    // Ensure required stage elements exist
+    ensureStageElements();
+
+    // Get all the arcade elements
+    const lever = document.getElementById("WishLever");
+    const claw = document.getElementById("ClawMechanism");
+    const arcadeTags = document.getElementById("ArcadeTags");
+    const results = document.getElementById("WishResults");
+    const preview = document.getElementById("WishRotation");
+    const ticketAnimation = document.getElementById("ticketAnimation");
+    const cardStage = document.getElementById("cardStage");
+    
+    // Get stage elements (refreshed after ensuring they exist)
+    let mikuRender = document.getElementById("mikuRender");
+    let cardReveal = document.getElementById("cardReveal");
+    let bottomSprites = document.getElementById("bottomSprites");
+
+    // All the buttons
+    const pullButtons = [
+      document.getElementById("WishPull1"),
+      document.getElementById("WishPull10"),
+    ].filter(Boolean);
+
+    const utilityButtons = [
+      document.getElementById("WishDaily"),
+      document.getElementById("WishConvert"),
+    ].filter(Boolean);
+
+    let isAnimating = false;
+
+    // 🎨 Load Content from Localization
+    function loadLocalizedContent() {
+      const iconEl = document.getElementById("wishIcon");
+      const titleEl = document.getElementById("wishTitle");
+      const dexEl = document.getElementById("wishOpenDex");
+
+      if (typeof SITE_CONTENT !== "undefined" && SITE_CONTENT?.ui) {
+        if (iconEl && SITE_CONTENT.images?.mikuIcons?.[SITE_CONTENT.ui.WishIcon]) {
+          iconEl.style.backgroundImage = `url(${SITE_CONTENT.images.mikuIcons[SITE_CONTENT.ui.WishIcon]})`;
+        }
+        if (titleEl) {
+          titleEl.textContent = SITE_CONTENT.ui.WishTitle || "close your eyes and make a wish~";
+        }
+        if (dexEl) {
+          dexEl.textContent = SITE_CONTENT.ui.WishOpenDex || "📱 Open MikuDex";
+        }
+      } else {
+        // Fallbacks when localization isn't loaded
+        if (titleEl && !titleEl.textContent) {
+          titleEl.textContent = "close your eyes and make a wish~";
+        }
+        if (iconEl && !iconEl.style.backgroundImage) {
+          iconEl.style.backgroundImage = 'url(./assets/icon.jpg)';
+        }
+      }
+    }
+
+    // Ensure card stage sub-elements exist
+    function ensureStageElements() {
+      try {
+        const stage = document.getElementById('cardStage');
+        if (!stage) return;
+        
+        // Miku render sprite
+        let render = document.getElementById('mikuRender');
+        if (!render) {
+          render = document.createElement('div');
+          render.id = 'mikuRender';
+          render.className = 'cm-miku-render';
+          stage.appendChild(render);
+        }
+        
+        // Stars/rarity overlay
+        let reveal = document.getElementById('cardReveal');
+        if (!reveal) {
+          reveal = document.createElement('div');
+          reveal.id = 'cardReveal';
+          reveal.className = 'cm-card-reveal';
+          stage.appendChild(reveal);
+        }
+        
+        // Bottom sprite layer
+        let bottom = document.getElementById('bottomSprites');
+        if (!bottom) {
+          bottom = document.createElement('div');
+          bottom.id = 'bottomSprites';
+          bottom.className = 'cm-bottom-sprites';
+          bottom.style.position = 'absolute';
+          bottom.style.left = '0';
+          bottom.style.right = '0';
+          bottom.style.bottom = '0';
+          bottom.style.top = 'auto';
+          bottom.style.height = '36px';
+          stage.appendChild(bottom);
+        }
+      } catch (error) {
+        console.warn('Could not ensure stage elements:', error);
+      }
+    }
+
+    // 🎮 Initialize Random Bottom Sprites
+    function initializeBottomSprites() {
+      if (!bottomSprites) return;
+
+      // Add random Miku sprites at the bottom
+      const sprites = [
+        "./assets/pixel-miku/001 - Hatsune Miku (Original).png",
+        "./assets/pixel-miku/002 - Hatsune Miku V2 (Classic).png",
+        "./assets/pixel-miku/010 - Hachune Miku.png",
+        "./assets/pixel-miku/004 - Sakura Miku (Cherries).png",
+        "./assets/pixel-miku/008 - Deep-Sea Girl Miku.png",
+      ];
+
+      for (let i = 0; i < 6; i++) {
+        const sprite = document.createElement("div");
+        sprite.style.position = "absolute";
+        sprite.style.bottom = "0";
+        sprite.style.left = Math.random() * 80 + "%";
+        sprite.style.width = "24px";
+        sprite.style.height = "24px";
+        sprite.style.backgroundImage = `url(${
+          sprites[Math.floor(Math.random() * sprites.length)]
+        })`;
+        sprite.style.backgroundSize = "cover";
+        sprite.style.opacity = "0.6";
+        sprite.style.transform = `scale(${0.8 + Math.random() * 0.4})`;
+        sprite.style.zIndex = "1";
+        bottomSprites.appendChild(sprite);
+      }
+    }
+
+    // 🔄 Refresh Bottom Sprites on each pull to add variety
+    function refreshBottomSprites() {
+      if (!bottomSprites) return;
+      // Clear existing sprites
+      while (bottomSprites.firstChild) {
+        bottomSprites.removeChild(bottomSprites.firstChild);
+      }
+      // Reinitialize with random sprites
+      initializeBottomSprites();
+    }
+
+    // Expose refresh function globally for reuse
+    window.refreshBottomSprites = refreshBottomSprites;
+
+    // 🔄 Reset highlight state to avoid leftover Miku renders when navigating away or before a new pull
+    function resetHighlight() {
+      if (mikuRender) {
+        mikuRender.className = "cm-miku-render";
+        mikuRender.style.backgroundImage = "";
+        // Reset transform so the render is hidden offscreen
+        mikuRender.style.transform = "translate(-50%, -50%) scale(0)";
+      }
+      if (cardReveal) {
+        cardReveal.className = "cm-card-reveal";
+        cardReveal.innerHTML = "";
+      }
+    }
+    // Expose reset for external calls (e.g. Wish reset)
+    window.clawMachineResetHighlight = resetHighlight;
+
+    // 🎟️ Ticket Insert Animation
+    function animateTicketInsert() {
+      if (!ticketAnimation) return Promise.resolve();
+
+      return new Promise((resolve) => {
+        const ticket = ticketAnimation.querySelector(".cm-ticket-flying");
+        ticket.classList.add("inserting");
+
+        // Reduce animation duration to sync with faster CSS (0.4s)
+        setTimeout(() => {
+          ticket.classList.remove("inserting");
+          resolve();
+        }, 400);
+      });
+    }
+
+    // 🤖 Enhanced Claw Chaos Animation: Center → Left → Right → Random Chaos → Center
+    function triggerClawChaos() {
+      if (!claw) return Promise.resolve();
+
+      return new Promise((resolve) => {
+        const railEl = document.querySelector('.cm-claw-rail');
+        if (!railEl) return resolve();
+        
+        const railRect = railEl.getBoundingClientRect();
+        const railWidth = railRect.width;
+        
+        // Define key positions
+        const centerX = 0; // Center relative to claw's default position
+        const leftX = -railWidth * 0.35; // 35% left of center
+        const rightX = railWidth * 0.35; // 35% right of center
+        
+        let step = 0;
+        const sequence = [
+          { x: centerX, duration: 200, ease: 'ease-out' }, // Start at center
+          { x: leftX, duration: 300, ease: 'ease-in-out' }, // Move to left
+          { x: rightX, duration: 400, ease: 'ease-in-out' }, // Swing to right
+        ];
+        
+        function executeStep() {
+          if (step < sequence.length) {
+            const move = sequence[step];
+            try { SFX.play("ui.teleport"); } catch {}
+            
+            claw.style.transition = `transform ${move.duration}ms ${move.ease}`;
+            claw.style.transform = `translateX(calc(-50% + ${move.x}px)) translateY(0px)`;
+            
+            step++;
+            setTimeout(executeStep, move.duration + 50);
+          } else {
+            // Random chaos phase (4-6 wild movements)
+            performRandomChaos();
+          }
+        }
+        
+        function performRandomChaos() {
+          let chaosCount = 0;
+          const maxChaos = 5;
+          
+          function chaosMove() {
+            if (chaosCount >= maxChaos) {
+              // Return to center smoothly
+              claw.style.transition = "transform 400ms ease-out";
+              claw.style.transform = "translateX(-50%) translateY(0px)";
+              setTimeout(resolve, 450);
+              return;
+            }
+            
+            // Wild random movements
+            const randomX = -railWidth * 0.4 + Math.random() * railWidth * 0.8;
+            const randomY = -5 + Math.random() * 15;
+            
+            try { SFX.play("ui.teleport"); } catch {}
+            claw.style.transition = "transform 200ms ease-in-out";
+            claw.style.transform = `translateX(calc(-50% + ${randomX}px)) translateY(${randomY}px)`;
+            
+            chaosCount++;
+            setTimeout(chaosMove, 220);
+          }
+          
+          chaosMove();
+        }
+        
+        executeStep();
+      });
+    }
+
+    // 🦾 Complete Claw Sequence: Descent → Grab → Ascent → Move Right → Drop
+    function triggerClawAnimation(mikuCard = null) {
+      if (!claw) return Promise.resolve();
+
+      return new Promise((resolve) => {
+        const railEl = document.querySelector('.cm-claw-rail');
+        const railRect = railEl ? railEl.getBoundingClientRect() : null;
+        const railWidth = railRect ? railRect.width : 300;
+        
+        // Ensure mikuRender element exists
+        if (!mikuRender) {
+          mikuRender = document.getElementById('mikuRender');
+          if (!mikuRender) {
+            ensureStageElements();
+            mikuRender = document.getElementById('mikuRender');
+          }
+        }
+        
+        // Phase 1: Slow descent with cable stretch
+        claw.style.transition = "transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+        claw.style.transform = "translateX(-50%) translateY(120px)";
+        
+        // Stretch cable during descent
+        const cable = claw.querySelector(".cm-claw-cable");
+        if (cable) {
+          cable.style.transition = "height 1200ms ease-out";
+          cable.style.height = "180px";
+        }
+
+        // Phase 2: Grab the Miku plushie (show sprite if provided)
+        setTimeout(() => {
+          claw.classList.add("close");
+          spawnArcadeTag("GRAB!", "get");
+          
+          // Show Miku sprite being grabbed if card data provided
+          if (mikuCard && mikuRender) {
+            mikuRender.style.backgroundImage = `url(${mikuCard.url})`;
+            mikuRender.style.transform = "translate(-50%, -50%) scale(1)";
+            mikuRender.classList.add("pulling-up");
+            mikuRender.style.zIndex = "15"; // Above claw
+          }
+          
+          try { SFX.play("Wish.grab"); } catch {}
+        }, 600);
+
+        // Phase 3: Slow ascent with Miku attached to claw
+        setTimeout(() => {
+          claw.style.transition = "transform 1000ms ease-out";
+          claw.style.transform = "translateX(-50%) translateY(0px)";
+          
+          // Retract cable
+          if (cable) {
+            cable.style.transition = "height 1000ms ease-in";
+            cable.style.height = "60px";
+          }
+          
+          // Keep Miku attached to claw during ascent (no separate animation)
+          if (mikuCard && mikuRender) {
+            mikuRender.style.transition = "none"; // Lock to claw movement
+            // Position relative to claw center, slightly below
+            mikuRender.style.transform = "translate(-50%, -35%) scale(0.8)";
+          }
+        }, 1800);
+
+        // Phase 4: Slow move to the right with Miku attached
+        setTimeout(() => {
+          const rightPosition = railWidth * 0.3; // Move 30% to the right
+          claw.style.transition = "transform 800ms ease-in-out";
+          claw.style.transform = `translateX(calc(-50% + ${rightPosition}px)) translateY(0px)`;
+          
+          // Miku moves with claw (no independent animation)
+          if (mikuCard && mikuRender) {
+            mikuRender.style.transition = "none";
+            mikuRender.style.transform = `translate(calc(-50% + ${rightPosition}px), -35%) scale(0.8)`;
+          }
+        }, 2900);
+
+        // Phase 5: Drop the Miku
+        setTimeout(() => {
+          claw.classList.remove("close");
+          spawnArcadeTag("DROP!", "bonus");
+          
+          // Drop Miku with gravity effect
+          if (mikuCard && mikuRender) {
+            mikuRender.style.transition = "transform 600ms cubic-bezier(0.5, 0, 0.9, 1)";
+            mikuRender.style.transform = `translate(calc(-50% + ${railWidth * 0.3}px), 50%) scale(1)`;
+            mikuRender.style.zIndex = "5"; // Below claw
+            
+            // Add a bounce effect
+            setTimeout(() => {
+              if (mikuRender) {
+                mikuRender.style.transition = "transform 300ms ease-out";
+                mikuRender.style.transform = `translate(calc(-50% + ${railWidth * 0.3}px), 40%) scale(0.95)`;
+              }
+            }, 400);
+            
+            // Final settle
+            setTimeout(() => {
+              if (mikuRender) {
+                mikuRender.style.transition = "transform 200ms ease-out";
+                mikuRender.style.transform = `translate(calc(-50% + ${railWidth * 0.3}px), 45%) scale(1)`;
+              }
+            }, 700);
+          }
+          
+          try { SFX.play("Wish.drop"); } catch {}
+        }, 3800);
+
+        // Phase 6: Return claw to center and cleanup
+        setTimeout(() => {
+          claw.style.transition = "transform 600ms ease-out";
+          claw.style.transform = "translateX(-50%) translateY(0px)";
+          
+          // Reset cable
+          if (cable) {
+            cable.style.height = "";
+            cable.style.transition = "";
+          }
+          
+          // Clear claw transition
+          setTimeout(() => {
+            claw.style.transition = "";
+            resolve();
+          }, 650);
+        }, 4500);
+
+        // Cleanup Miku render after animation and show gacha cards
+        setTimeout(() => {
+          if (mikuRender) {
+            mikuRender.style.transition = "opacity 500ms ease-out";
+            mikuRender.style.opacity = "0";
+            setTimeout(() => {
+              if (mikuRender) {
+                mikuRender.style.transform = "translate(-50%, -50%) scale(0)";
+                mikuRender.style.backgroundImage = "";
+                mikuRender.style.opacity = "1";
+                mikuRender.style.transition = "";
+                mikuRender.className = "cm-miku-render";
+                mikuRender.style.zIndex = "10";
+              }
+            }, 500);
+          }
+        }, 6000);
+      });
+    }
+
+    // We no longer override card reveal – the legacy gacha handles SFX and reveal UI.
+
+    // 🎊 Enhanced Lever Animation
+    function triggerLeverAnimation() {
+      if (!lever) return Promise.resolve();
+
+      return new Promise((resolve) => {
+        lever.classList.add("pulling");
+
+        setTimeout(() => {
+          lever.classList.remove("pulling");
+          resolve();
+        }, 800);
+      });
+    }
+
+    // ✨ Arcade Tag Spawning System
+    function spawnArcadeTag(text, type = "get") {
+      if (!arcadeTags) return;
+
+      const tag = document.createElement("div");
+      tag.className = `wish-tag ${type}`;
+      tag.textContent = text;
+
+      // Random positioning for variety
+      const x = Math.random() * 60 + 20; // 20% - 80%
+      const y = Math.random() * 20 + 40; // 40% - 60%
+      tag.style.left = x + "%";
+      tag.style.top = y + "%";
+
+      arcadeTags.appendChild(tag);
+
+      // Remove after animation
+      setTimeout(() => {
+        tag.remove();
+      }, 2500);
+    }
+
+    // Helper function to get card data from wish system
+    async function getCardFromWish() {
+      try {
+        // Access the wish system's card generation
+        if (typeof window.MIKU_IMAGES !== 'undefined' && window.MIKU_IMAGES.length > 0) {
+          // Use the same logic as wish.js to pick a card
+          const images = window.MIKU_IMAGES;
+          const randomUrl = images[Math.floor(Math.random() * images.length)];
+          
+          // Calculate rarity (same as wish.js)
+          const hashCode = (s) => {
+            let h = 0;
+            for (let i = 0; i < s.length; i++) {
+              h = (h << 5) - h + s.charCodeAt(i);
+              h |= 0;
+            }
+            return h >>> 0;
+          };
+          
+          const r = hashCode(randomUrl) % 100;
+          let rarity = 1;
+          if (r < 12) rarity = 1;
+          else if (r < 30) rarity = 2;
+          else if (r < 60) rarity = 3;
+          else if (r < 85) rarity = 4;
+          else rarity = 5;
+          
+          return { url: randomUrl, rarity };
+        }
+      } catch (error) {
+        console.warn('Could not get card from wish system:', error);
+      }
+      return null;
+    }
+
+    // 🎪 Complete Pull Sequence with Maximum Suspense
+    async function executePullSequence(pullType, startOriginalWish) {
+      if (isAnimating) return;
+      isAnimating = true;
+
+      try {
+        // Reset previous highlight before starting a new animation
+        resetHighlight();
+        // Hide preview immediately
+        if (preview) preview.style.opacity = "0";
+        // Play initial roll sound for suspense
+        try {
+          SFX.play("Wish.roll");
+        } catch {}
+        // Step 1: Ticket insertion animation with coin sound
+        await animateTicketInsert();
+        try {
+          SFX.play("extra.coin");
+        } catch {}
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        // Step 2: Lever pull with select sound
+        await triggerLeverAnimation();
+        try {
+          SFX.play("ui.select");
+        } catch {}
+        await new Promise((resolve) => setTimeout(resolve, 150));
+        // Step 3: Claw goes absolutely crazy with teleport/fx sound
+        spawnArcadeTag("CALCULATING...", "bonus");
+        try {
+          SFX.play("ui.teleport");
+        } catch {}
+        await triggerClawChaos();
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        // Step 4: Suspense building
+        spawnArcadeTag("TARGETING...", "rate-up");
+        await new Promise((resolve) => setTimeout(resolve, 700));
+        // Step 5: Final claw animation with Miku card data
+        const chosenCard = typeof startOriginalWish === 'function' ? 
+          await getCardFromWish() : null;
+        await triggerClawAnimation(chosenCard);
+        try {
+          SFX.play("Wish.reveal");
+        } catch {}
+        // Step 6: Refresh bottom sprites before showing results
+        if (typeof refreshBottomSprites === "function") refreshBottomSprites();
+        // Step 7: Now trigger the original gacha logic (cards will display)
+        if (typeof startOriginalWish === "function") startOriginalWish();
+        try {
+          SFX.play("Wish.reveal");
+        } catch {}
+        // Step 6: Refresh bottom sprites before showing results
+        if (typeof refreshBottomSprites === "function") refreshBottomSprites();
+        // Step 7: Now trigger the original gacha logic (cards will display)
+        if (typeof startOriginalWish === "function") startOriginalWish();
+        // Optional: small container pop to celebrate results area appearance
+        if (results) {
+          setTimeout(() => {
+            results.hidden = false;
+            results.style.opacity = "1";
+            results.animate(
+              [{ transform: "scale(0.98)" }, { transform: "scale(1)" }],
+              { duration: 220, easing: "ease-out" }
+            );
+          }, 80);
+        }
+        // Restore preview after animation gradually
+        setTimeout(() => {
+          if (preview) preview.style.opacity = "0.6";
+        }, 2500);
+      } catch (error) {
+        console.error("Pull sequence error:", error);
+      } finally {
+        isAnimating = false;
+      }
+    }
+
+    // 🎮 Button Event Handlers
+    pullButtons.forEach((btn) => {
+      if (!btn) return;
+
+      const originalHandler = btn.onclick;
+      btn.onclick = async function (e) {
+        e.preventDefault();
+        const pullType = btn.id.includes("10") ? "multi" : "single";
+
+        // Guard: ensure enough tokens before we animate
+        const tokensEl = document.getElementById("WishTokens");
+        const have = parseInt(tokensEl?.textContent || "0", 10) || 0;
+        const need = pullType === "multi" ? 10 : 1;
+        if (have < need) {
+          try {
+            window.SFX?.play?.("ui.unavailable");
+          } catch {}
+          this.animate(
+            [
+              { transform: "translateY(0)" },
+              { transform: "translateY(2px)" },
+              { transform: "translateY(0)" },
+            ],
+            { duration: 200 }
+          );
+          return;
+        }
+
+        // Run our macro animation first, then kick off the original wish
+        await executePullSequence(pullType, () => {
+          if (originalHandler) originalHandler.call(this, e);
+        });
+      };
+    });
+
+    // Utility buttons don't trigger pull animations
+    utilityButtons.forEach((btn) => {
+      if (!btn) return;
+
+      btn.addEventListener("click", () => {
+        // Just add a simple feedback without pull sequence
+        spawnArcadeTag("SUCCESS!", "get");
+      });
+    });
+
+    // 🌟 Enhanced Results Observer
+    if (results) {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1 && node.classList.contains("Wish-card")) {
+              // Add entrance animation to new cards
+              node.style.animation =
+                "revealPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)";
+            }
+          });
+        });
+      });
+
+      observer.observe(results, { childList: true, subtree: true });
+    }
+
+    // 🎯 Initialize all systems
+    initializeBottomSprites();
+
+    // Add custom CSS for enhanced claw machine animations
+    const style = document.createElement("style");
+    style.textContent = `
+      @keyframes revealPop {
+        0% {
+          opacity: 0;
+          transform: scale(0.8) translateY(20px);
+        }
+        60% {
+          opacity: 1;
+          transform: scale(1.1) translateY(-5px);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      /* Enhanced Miku render styling */
+      .cm-miku-render {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        width: 48px;
+        height: 48px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        image-rendering: pixelated;
+        z-index: 10;
+        transition: transform 0.3s ease-out;
+        pointer-events: none;
+      }
+
+      .cm-miku-render.pulling-up {
+        transform: translate(-50%, -50%) scale(1);
+        animation: mikuPullUp 0.8s ease-out;
+      }
+
+      @keyframes mikuPullUp {
+        0% {
+          transform: translate(-50%, -50%) scale(0) rotate(0deg);
+          opacity: 0;
+        }
+        30% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(0.6) rotate(-5deg);
+        }
+        70% {
+          transform: translate(-50%, -50%) scale(1.1) rotate(2deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(1) rotate(0deg);
+          opacity: 1;
+        }
+      }
+
+      /* Enhanced cable stretch animation */
+      .cm-claw-cable {
+        transition: height 0.3s ease-out;
+      }
+
+      /* Claw grabbing animation */
+      .cm-claw.close {
+        animation: clawGrab 0.4s ease-in-out;
+      }
+
+      @keyframes clawGrab {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Highlight Card in Render Stage
+    function highlightCard(cards) {
+      if (!cards || !cards.length) return;
+      // Determine highest rarity card (first by highest, then first encountered)
+      const sorted = cards.slice().sort((a, b) => {
+        const ra = a.rarity || 1;
+        const rb = b.rarity || 1;
+        return rb - ra;
+      });
+      const chosen = sorted[0];
+      if (!chosen) return;
+      // Reset previous highlight state
+      if (mikuRender) {
+        // Clear previous classes and hide
+        mikuRender.className = "cm-miku-render";
+        mikuRender.style.backgroundImage = "";
+        mikuRender.style.transform = "translate(-50%, -50%) scale(0)";
+      }
+      if (cardReveal) {
+        cardReveal.className = "cm-card-reveal";
+        cardReveal.innerHTML = "";
+      }
+      // Determine star string for chosen rarity
+      const starString = "★".repeat(chosen.rarity || 1);
+      // Stage 1: animate the Miku sprite being pulled up
+      if (mikuRender) {
+        mikuRender.style.backgroundImage = `url(${chosen.url})`;
+        mikuRender.classList.add("pulling-up");
+      }
+      // Determine SFX based on rarity
+      try {
+        if (chosen.rarity >= 5) {
+          SFX.play("Wish.high");
+        } else if (chosen.rarity >= 4) {
+          SFX.play("Wish.mid");
+        } else if (chosen.rarity >= 3) {
+          SFX.play("Wish.low");
+        } else {
+          SFX.play("Wish.fail");
+        }
+      } catch {}
+      // After pull-up animation ends, pop full card
+      setTimeout(() => {
+        if (cardReveal) {
+          cardReveal.innerHTML = `<div class="Wish-stars">${starString}</div><img src="${chosen.url}" alt="Highlight" class="reveal-image"/>`;
+          cardReveal.classList.add("full-pop");
+        }
+        // Pop sound for card appearance
+        try {
+          SFX.play("Wish.pop");
+        } catch {}
+      }, 850);
+
+      // Once the highlight has had time to display, clear the stage so results are fully visible
+      setTimeout(() => {
+        if (mikuRender) {
+          mikuRender.style.transform = "translate(-50%, -50%) scale(0)";
+          mikuRender.style.backgroundImage = "";
+        }
+        if (cardReveal) {
+          cardReveal.className = "cm-card-reveal";
+          cardReveal.innerHTML = "";
+        }
+      }, 1800);
+      
+      // Don't trigger additional claw animation here since main sequence handles it
+      
+      // Spawn an arcade tag based on rarity
+      if (chosen.rarity >= 5) {
+        spawnArcadeTag("RATE UP!", "rate-up");
+      } else if (chosen.rarity >= 4) {
+        spawnArcadeTag("BONUS", "bonus");
+      } else {
+        spawnArcadeTag("GET!", "get");
+      }
+    }
+    window.clawMachineHighlightCard = highlightCard;
+    // Multi-highlight function for multi-pulls: rapid mini grabs for each card
+    async function highlightMultiple(cards) {
+      if (!Array.isArray(cards) || cards.length === 0) return;
+      
+      for (let i = 0; i < Math.min(cards.length, 10); i++) {
+        const card = cards[i];
+        
+        // Brief chaos movement before each grab
+        await new Promise(resolve => {
+          if (!claw) return resolve();
+          const railEl = document.querySelector('.cm-claw-rail');
+          const railRect = railEl ? railEl.getBoundingClientRect() : null;
+          const railWidth = railRect ? railRect.width : 300;
+          
+          const randomX = railWidth * (0.2 + Math.random() * 0.6);
+          claw.style.transition = 'transform 180ms ease-in-out';
+          claw.style.transform = `translateX(calc(-50% + ${randomX - railWidth/2}px)) translateY(0px)`;
+          
+          try { SFX.play("ui.teleport"); } catch {}
+          setTimeout(resolve, 200);
+        });
+        
+        // Quick descent and grab
+        await new Promise(resolve => {
+          if (!claw || !mikuRender) return resolve();
+          
+          // Show Miku sprite for this card
+          mikuRender.style.backgroundImage = `url(${card.url})`;
+          mikuRender.style.transform = "translate(-50%, -50%) scale(0.8)";
+          mikuRender.style.opacity = "1";
+          mikuRender.style.zIndex = "15";
+          
+          // Quick claw descent
+          claw.style.transition = 'transform 300ms ease-out';
+          claw.style.transform = claw.style.transform.replace(/translateY\([^)]*\)/, 'translateY(60px)');
+          
+          setTimeout(() => {
+            // Grab animation
+            claw.classList.add('close');
+            try { SFX.play("Wish.grab"); } catch {}
+            
+            setTimeout(() => {
+              // Quick ascent
+              claw.style.transition = 'transform 250ms ease-in';
+              claw.style.transform = claw.style.transform.replace(/translateY\([^)]*\)/, 'translateY(0px)');
+              claw.classList.remove('close');
+              
+              // Hide Miku sprite
+              mikuRender.style.opacity = "0";
+              
+              setTimeout(resolve, 280);
+            }, 150);
+          }, 320);
+        });
+        
+        // Small delay between cards
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      // Return claw to center after all grabs
+      if (claw) {
+        claw.style.transition = 'transform 400ms ease-out';
+        claw.style.transform = 'translateX(-50%) translateY(0px)';
+        setTimeout(() => {
+          claw.style.transition = '';
+        }, 450);
+      }
+      
+      // Clean up Miku render
+      if (mikuRender) {
+        mikuRender.style.transform = "translate(-50%, -50%) scale(0)";
+        mikuRender.style.backgroundImage = "";
+        mikuRender.style.opacity = "1";
+        mikuRender.style.zIndex = "10";
+      }
+    }
+    window.clawMachineHighlightMultiple = highlightMultiple;
+    // Global functions for external use
+    window.clawMachineSpawnTag = spawnArcadeTag;
+    window.clawMachineExecutePull = executePullSequence;
+
+    console.log("🎰 Ultimate Refined Miku Claw Machine initialized! ✨");
+  });
+})();

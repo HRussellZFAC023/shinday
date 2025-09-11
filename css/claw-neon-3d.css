@@ -1,0 +1,74 @@
+/* Scoped 3D + neon look for the Wish cabinet without clashing the global pastel theme */
+
+:root {
+  --miku-teal: #00d4d4;
+  --miku-cyan: #00ffff;
+  --miku-pink: #ff1493;
+  --miku-purple: #8a2be2;
+  --miku-blue: #00bfff;
+  --miku-light: #f0feff;
+  --miku-bright: #e6ffff;
+  --miku-accent: #ffff00;
+  --hologram: linear-gradient(45deg, #ff1493, #00d4d4, #8a2be2, #00bfff, #ffff00);
+  --bright-glow: 0 0 30px rgba(0, 255, 255, 0.3);
+  --deep-shadow: 0 16px 50px rgba(0,0,0,0.25), 0 30px 80px rgba(0,0,0,0.15);
+}
+
+.ClawMachine.cm-3d .cm-window {
+  background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(245,248,255,0.92));
+  box-shadow:
+    inset 0 8px 20px rgba(173,216,230,0.08),
+    0 16px 40px rgba(0,0,0,0.20),
+    0 0 30px rgba(0, 255, 255, 0.1);
+  border: 2px solid rgba(0,255,255,0.25);
+}
+
+.ClawMachine.cm-3d .cm-window::after{
+  content:'';
+  position:absolute; inset:8px; border-radius:12px;
+  background: radial-gradient(120% 80% at 50% 10%, rgba(180,200,255,.25), transparent 50%),
+              linear-gradient(180deg, rgba(250,252,255,.6), rgba(240,244,255,.35));
+  pointer-events:none; z-index:0;
+}
+
+.ClawMachine.cm-3d .cm-rail-glow {
+  filter: drop-shadow(0 0 8px rgba(0,255,255,0.8));
+}
+
+.ClawMachine.cm-3d .cm-results-panel {
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.86));
+  border: 2px solid var(--border);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+}
+
+.ClawMachine.cm-3d .Wish-card.revealing {
+  animation: neon-holo 950ms cubic-bezier(.68,-.55,.27,1.55);
+}
+
+@keyframes neon-holo {
+  0% { opacity: 0; transform: scale(.2) rotateY(180deg) rotateX(30deg); filter: blur(10px); }
+  60% { opacity: .9; transform: scale(1.12) rotateY(0) rotateX(-6deg); filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) rotateY(0) rotateX(0); }
+}
+
+.ClawMachine.cm-3d .cm-lcd-marquee {
+  border: 2px solid rgba(0,255,255,0.35);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.4), 0 0 10px rgba(0,255,255,0.25);
+}
+
+.ClawMachine.cm-3d .cm-ticket {
+  background: var(--hologram);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.35);
+}
+.ClawMachine.cm-3d .cm-status-bar{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.78));
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display:flex; align-items:center; gap:12px; justify-content:space-between;
+  box-shadow: 0 10px 30px rgba(43,43,68,.12), inset 0 1px 0 rgba(255,255,255,.9);
+}
