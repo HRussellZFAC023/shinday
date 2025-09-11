@@ -41,6 +41,8 @@
         onlineStatus.textContent = C.status?.radioOffLabel || "";
       stopEqualizer();
       if (statusDot) statusDot.style.color = "#ff4d4d";
+      // Clear last known title so next play shows placeholder until metadata arrives
+      lastTitle = null;
     };
 
     if (onlineStatus)
@@ -54,8 +56,11 @@
 
     if (playBtn)
       playBtn.addEventListener("click", () => {
-        const status = C.radio?.playingStatus || "Now Playing";
-        if (radioDisplayStatus) radioDisplayStatus.textContent = status;
+        // Only show placeholder if we don't yet have a track title
+        if (!lastTitle) {
+          const status = C.radio?.playingStatus || "Now Playing";
+          if (radioDisplayStatus) radioDisplayStatus.textContent = status;
+        }
         if (onlineStatus)
           onlineStatus.textContent = C.status?.radioOnLabel || "";
         if (window.__stopBgm) window.__stopBgm(true);
@@ -77,8 +82,11 @@
     });
 
     audio.addEventListener("playing", () => {
-      const status = C.radio?.playingStatus || "Now Playing";
-      if (radioDisplayStatus) radioDisplayStatus.textContent = status;
+      // Avoid overwriting the fetched title if we already have one
+      if (!lastTitle) {
+        const status = C.radio?.playingStatus || "Now Playing";
+        if (radioDisplayStatus) radioDisplayStatus.textContent = status;
+      }
       startMetadataPolling();
     });
 
@@ -97,9 +105,11 @@
     }
 
     let metaTimer = null;
+    let lastTitle = null;
 
     function setNowPlaying(text) {
       const titleOnly = (text || "").split(/\s*-\s*/).pop().trim();
+      lastTitle = titleOnly || lastTitle;
       if (
         window.MikuSystem &&
         typeof window.MikuSystem.updateNowPlaying === "function"

@@ -24,12 +24,12 @@ window.MikuUI = (function () {
       if (fav) fav.setAttribute("href", C.images.favicon);
     }
 
-    // Header background image (override)
-    if (C.images?.headerBg) {
-      const header = document.getElementById("header");
-      if (header)
-        header.style.backgroundImage = /*html*/ `linear-gradient(135deg, rgba(189,227,255,.9), rgba(255,209,236,.9)), url('${C.images.headerBg}')`;
-    }
+    // // Header background image (override)
+    // if (C.images?.headerBg) {
+    //   const header = document.getElementById("header");
+    //   if (header)
+    //     header.style.backgroundImage = /*html*/ `linear-gradient(135deg, rgba(189,227,255,.9), rgba(255,209,236,.9)), url('${C.images.headerBg}')`;
+    // }
 
     // Splash/hero/shrine images
 
@@ -792,7 +792,8 @@ window.MikuUI = (function () {
             ? window.MikuCore.mikuIcon(C.status.visitorIcon, "")
             : "";
           const label = (C.status && C.status.visitorsLabel) || "friends:";
-          visitorLabel.innerHTML = /*html*/ `${icon}${label}`;
+          const statsUrl = "https://neocities.org/site/babybelle";
+          visitorLabel.innerHTML = /*html*/ `<a href="${statsUrl}" target="_blank" rel="noopener" class="counter-link">${icon}${label}</a>`;
         }
       }
 
