@@ -31,6 +31,20 @@ window.MikuUI = (function () {
     //     header.style.backgroundImage = /*html*/ `linear-gradient(135deg, rgba(189,227,255,.9), rgba(255,209,236,.9)), url('${C.images.headerBg}')`;
     // }
 
+    // Hero wrapper background image (absolute positioned)
+    if (C.images?.heroBackground) {
+      const heroWrap = document.querySelector(".hero-wrap");
+      if (heroWrap) {
+        const style = document.createElement("style");
+        style.textContent = `
+          .hero-wrap::before {
+            background-image: url('${C.images.heroBackground}') !important;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }
+
     // Splash/hero/shrine images
 
     const heroMiku = document.getElementById("heroMiku");

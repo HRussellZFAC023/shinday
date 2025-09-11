@@ -62,7 +62,7 @@ body {
   /* Performance optimizations (avoid forcing new stacking context on body) */
   -webkit-font-smoothing: antialiased;
   background: url("../assets/root.png") center/cover no-repeat fixed;
-
+  z-index: -3;
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
@@ -73,14 +73,13 @@ body {
 
 
 /* Root Background */
-/* .root-bg {
+.root-bg {
   position: fixed;
   inset: 0;
   background: var(--gradient-bg);
-  opacity: 0.6;
   z-index: -2;
   animation: subtlePulse 20s ease-in-out infinite;
-} */
+}
 
 /* Splash screen */
 .splash-screen {
@@ -140,6 +139,25 @@ body {
   }
   100% {
     transform: translateY(0);
+  }
+}
+
+@keyframes subtleHeaderFloat {
+  0%, 100% {
+    transform: translateY(0px);
+    filter: brightness(1);
+  }
+  25% {
+    transform: translateY(-3px);
+    filter: brightness(1.02);
+  }
+  50% {
+    transform: translateY(-5px);
+    filter: brightness(1.03);
+  }
+  75% {
+    transform: translateY(-2px);
+    filter: brightness(1.01);
   }
 }
 
@@ -233,38 +251,76 @@ body {
   position: relative;
 }
 
-/* Cohesive hero wrap (header + nav share one background image) */
 .hero-wrap {
   position: relative;
   border: 2px solid var(--border);
   border-radius: 20px;
   box-shadow: var(--shadow);
   overflow: hidden;
-
- 
-  
+  animation: subtleHeaderFloat 8s ease-in-out infinite;
+  /* No background here - let the pseudo-element handle it */
 }
 
-/* Header sits inside the wrapper; remove its own bg/border */
+.hero-wrap::before {
+  content: "";
+  position: absolute;
+  top: -300px; 
+  left: 0;
+  right: 0;
+  bottom: -40px; /* Extend below to maintain coverage */
+  background-image: url("../assets/pt_top.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+  animation: heroImageFloat 10s ease-in-out infinite;
+}
+
+.hero-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(189, 227, 255, 0.8), rgba(255, 209, 236, 0.7));
+  z-index: 0;
+  pointer-events: none;
+  filter: saturate(1.1) brightness(1.05);
+  backdrop-filter: blur(1px);
+}
+
+@keyframes heroImageFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  25% {
+    transform: translateY(-5px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  75% {
+    transform: translateY(-3px);
+  }
+}
+
 #header {
   height: 180px;
-    border: 1px solid var(--border);
-       background:
-    linear-gradient(135deg, rgba(189, 227, 255, 0.9), rgba(255, 209, 236, 0.9)),
-    url("../assets/pt_top.png");
-     background-size: cover;
+  border: 1px solid var(--border);
   background-position: center;
   border-radius: 20px 20px 0 0;
   box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
-
+  z-index: 1; /* Above gradient overlay */
 }
 
 .header-content {
   position: absolute;
   left: 30px;
   bottom: 20px;
+  z-index: 2;
   z-index: 2;
 }
 
@@ -332,7 +388,7 @@ body {
   gap: 20px;
   position: relative;
   padding: 20px;
-  
+  z-index: 1; /* Above gradient overlay */
 }
 
 .status-left {
@@ -2683,13 +2739,9 @@ a[data-visitor-counter] .badge:hover {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Removed hover highlight to prevent card hiding issues.
-   The filter() combined with 3D transforms can flatten layers
-   and hide the flipped face on various browsers. */
 
    @media (hover: hover) and (pointer: fine) {
   .memory-card:hover:not(.flipped):not(.matched) {
-    /* filter: brightness(1.03); */
     transform: translateY(-4px) scale(1.02);
    filter: brightness(1.05);
   }

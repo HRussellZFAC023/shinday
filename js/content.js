@@ -32,6 +32,8 @@ const SITE_CONTENT = {
     heroMiku: "./assets/hatsune_miku_render_by_jimmyisaac_d68ibgy-pre.png",
     shrineMiku: "./assets/11293373_65ee2.gif",
     headerBg: "./assets/pt_top.png",
+    // Hero wrapper background image (configurable Cinnamoroll/kawaii background)
+    heroBackground: "./assets/pt_top.png",
     // Optional: add extra Miku image URLs (singing/idle sprites) to show in floating Mikus
     extraMikus: [],
     // Miku emoji/icon replacements
@@ -102,9 +104,9 @@ const SITE_CONTENT = {
         link: "https://2cherrish.neocities.org/",
       },
       {
-        src: "https://cloverbell.neocities.org/buttons/cherrylotusbutton.png",
-        alt: "CherryLotus",
-        link: "https://cherrylotus.neocities.org/",
+        src: "./assets/buttons/nyaabanner.gif",
+        alt: "nyaa",
+        link: "https://nyaa.neocities.org/",
       },
       {
         src: "https://cabbagesorter.neocities.org/buttons/cabbagesorter.gif",
