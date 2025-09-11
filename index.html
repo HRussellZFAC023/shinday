@@ -28,8 +28,6 @@
     />
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/shimeji.css" />
-    <!-- Scoped neon 3D styling for the claw machine (non-conflicting) -->
-    <link rel="stylesheet" href="./css/claw-neon-3d.css" />
     <!-- Language Dojo styles -->
     <link rel="stylesheet" href="./dojo.css" />
   </head>
@@ -525,14 +523,14 @@
             <section id="games" class="content-section">
               <h2>🎮 Interactive Toys</h2>
               <div class="games-grid">
-                <div class="widget">
+                <div class="game-widget">
                   <h3>🧩 Miku Memory Game</h3>
                   <div id="memoryGame" class="memory-grid precision">
                     <!-- Will be populated by JS -->
                   </div>
                   <button id="resetMemory" class="pixel-btn">Reset Game</button>
                 </div>
-                <div class="widget">
+                <div class="game-widget">
                   <h3>💖 Heart Collector</h3>
                   <div class="heart-game">
                     <div id="heartZone" class="heart-zone precision">
@@ -545,7 +543,7 @@
                     <!-- Reset button removed: heart collector persists and cannot be reset from UI -->
                   </div>
                 </div>
-                <div class="widget">
+                <div class="game-widget">
                   <div
                     class="social-embed"
                     style="
@@ -564,7 +562,7 @@
                     ></iframe>
                   </div>
                 </div>
-                <div class="widget link-container ">
+                <div class="game-widget link-container">
                   <p>
                     <a
                       href="https://mikusquared.itch.io/rpg"
@@ -585,133 +583,42 @@
               </div>
             </section>
             <section id="Wish" class="content-section">
-              <div class="ClawMachine cm-3d" id="mikuWish">
-                <!-- Status Bar (Pinned) with LCD Inside -->
-                <div class="cm-status-bar">
-                  <div class="cm-lcd-marquee">
-                    <div class="cm-lcd-screen">
-                      <div class="cm-lcd-track">
-                        <span class="cm-lcd-text" id="wishTitle">close your eyes and make a wish~</span>
+              <h2>🎰 Miku Wish</h2>
+              <div class="game-widget">
+                <div class="Wish precision" id="mikuWish">
+                  <div class="Wish-header">
+                    <div class="Wish-tokens">
+                      🎟️ Tickets: <span id="WishTokens">0</span>
+                    </div>
+                    <div class="Wish-actions">
+                      <button id="WishPull1" class="pixel-btn">Pull x1</button>
+                      <button id="WishPull10" class="pixel-btn">
+                        Pull x10
+                      </button>
+                      <button id="WishDaily" class="pixel-btn">
+                        Daily Ticket
+                      </button>
+                      <button id="WishConvert" class="pixel-btn">
+                        100💖 → +1
+                      </button>
+                    </div>
+                  </div>
+                  <div id="WishRotation" class="Wish-rotation">
+                    <div class="Wish-preview">
+                      <div class="preview-reel">
+                        <img class="preview-image" src="" alt="Wish preview" />
                       </div>
                     </div>
                   </div>
-                  <div class="cm-status-info">
-                    <div class="cm-marquee-icon" id="wishIcon"></div>
-                    <div class="cm-ticket">🎟️ <span id="WishTokens">0</span></div>
-                  </div>
-                </div>
-
-                <!-- Main 3D Arcade Cabinet -->
-                <div class="cm-cabinet">
-                  <!-- Glass Window with Enhanced Depth -->
-                  <div class="cm-window">
-                    <!-- Claw Rail System -->
-                    <div class="cm-claw-rail">
-                      <div class="cm-rail-track"></div>
-                      <div class="cm-rail-glow"></div>
-                    </div>
-                    
-                    <!-- Hanging Claw (Behind Mikus) - pastel structure -->
-                    <div class="cm-claw" id="ClawMechanism">
-                      <div class="cm-claw-cable"></div>
-                      <div class="cm-claw-head">
-                        <div class="cm-claw-arm cm-claw-left"></div>
-                        <div class="cm-claw-arm cm-claw-right"></div>
-                        <div class="cm-claw-center"></div>
-                      </div>
-                    </div>
-
-                    <!-- Enhanced Capsule Pool with Random Miku Sprites -->
-                    <div class="cm-capsule-pool">
-                      <div class="cm-bottom-sprites" id="bottomSprites">
-                        <!-- Random Miku sprites will be layered here -->
-                      </div>
-                      <div class="cm-pixel-capsules" id="pixelCapsules">
-                        <!-- Auto-generated pixel capsules -->
-                      </div>
-                    </div>
-
-                    <!-- Card Animation Area (No BG, Just Renders) -->
-                    <div class="cm-card-stage" id="cardStage">
-                      <!-- Miku render appears here during pull animation -->
-                      <div class="cm-miku-render" id="mikuRender"></div>
-                      <div class="cm-card-reveal" id="cardReveal"></div>
-                    </div>
-
-                    <!-- Ticket Insert Animation -->
-                    <div class="cm-ticket-animation" id="ticketAnimation">
-                      <div class="cm-ticket-flying">🎟️</div>
-                    </div>
-
-                    <!-- Preview Rotation (Subtle, Non-Clashing) -->
-                    <div id="WishRotation" class="cm-preview-rotation">
-                      <div class="cm-preview-subtle">
-                        <div class="preview-glow"></div>
-                        <img class="preview-image" src="" alt="Preview" />
-                      </div>
-                    </div>
-
-                    <!-- Results Panel (pastel) -->
-                    <div id="WishResults" class="cm-results-panel" hidden>
-                      <div class="cm-results-container" data-pull-type="single"></div>
-                    </div>
-
-                    <!-- Prize Chute with Animation -->
-                    <div class="cm-prize-chute">
-                      <div class="cm-chute-door"></div>
-                      <div class="cm-chute-glow"></div>
-                    </div>
-                  </div>
-
-                  <!-- 3D Control Panel -->
-                  <div class="cm-panel">
-                    <!-- Ticket Slot with Insert Animation -->
-                    <div class="cm-ticket-slot">
-                      <div class="cm-slot-opening"></div>
-                      <div class="cm-slot-indicator"></div>
-                    </div>
-
-                    <!-- Refined Candy Buttons (No Pull Trigger for Convert/Daily) -->
-                    <div class="cm-candy-buttons">
-                      <button id="WishPull1" class="cm-candy-btn cm-btn-pink" data-pull="true">
-                        <span class="cm-btn-label">Pull ×1</span>
-                        <div class="cm-btn-surface"></div>
-                      </button>
-                      <button id="WishPull10" class="cm-candy-btn cm-btn-blue" data-pull="true">
-                        <span class="cm-btn-label">Pull ×10</span>
-                        <div class="cm-btn-surface"></div>
-                      </button>
-                      <button id="WishDaily" class="cm-candy-btn cm-btn-mint" data-pull="false">
-                        <span class="cm-btn-label">Daily Ticket</span>
-                        <div class="cm-btn-surface"></div>
-                      </button>
-                      <button id="WishConvert" class="cm-candy-btn cm-btn-purple" data-pull="false">
-                        <span class="cm-btn-label">100💖 → +1</span>
-                        <div class="cm-btn-surface"></div>
-                      </button>
-                    </div>
-
-                    <!-- Enhanced Lever -->
-                    <div class="cm-lever" id="WishLever">
-                      <div class="cm-lever-mount"></div>
-                      <div class="cm-lever-arm">
-                        <div class="cm-lever-knob"></div>
-                      </div>
-                    </div>
-
-                    <!-- MikuDex Button -->
-                    <button id="WishCollectionBtn" class="cm-dex-btn">
-                      <span id="wishOpenDex"></span>
+                  <div id="WishResults" class="Wish-results" hidden></div>
+                  <div class="Wish-footer">
+                    <button id="WishCollectionBtn" class="pixel-btn">
+                      Open MikuDex
                     </button>
                   </div>
+                  <div id="mikuDex" class="Wish-collection hidden"></div>
                 </div>
-
-                <!-- Floating Arcade Tags with Better Positioning -->
-                <div class="cm-arcade-tags" id="ArcadeTags"></div>
-
-                <!-- MikuDex Collection Panel -->
-                <div id="mikuDex" class="cm-collection-panel hidden"></div>
-             
+              </div>
             </section>
             <section id="shrine" class="content-section">
               <h2></h2>
@@ -729,7 +636,6 @@
                     <div class="candle">🕯️</div>
                   </div>
                 </div>
-
                 <div class="shrine-info">
                   <h3>💙 About Hatsune Miku</h3>
                   <p>
@@ -763,7 +669,7 @@
               </div>
               <div class="image-gallery" id="mikuGallery"></div>
               <br />
-              <div class="widget">
+              <div class="game-widget">
                 <iframe
                   src="https://www.mikucollection.com/en/art-gallery"
                   title="Miku Collection Art Gallery"
@@ -898,7 +804,6 @@
     <script src="./js/modules/games/heart-garden.js"></script>
     <script src="./js/modules/shop.js"></script>
     <script src="./js/modules/wish.js"></script>
-    <script src="./js/modules/clawMachine.js"></script>
     <script src="./js/modules/shrine-dex.js"></script>
     <script src="./js/modules/socials.js"></script>
     <script src="./js/modules/shrine-dex.js"></script>
