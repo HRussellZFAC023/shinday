@@ -138,7 +138,22 @@
         const passesScope =
           filter.scope === "all" ? true : filter.scope === "owned" ? owned : !owned;
         const passesRarity = !filter.rarity || filter.rarity === r;
-        const passesSearch = !filter.search || name.toLowerCase().includes(filter.search.toLowerCase());
+        // Enhanced search: allow numeric queries to match by index/id or digit substrings
+        const q = (filter.search || "").toString().trim();
+        let passesSearch = true;
+        if (q) {
+          const ql = q.toLowerCase();
+          // If query is purely numeric, match by meta.id OR fallback to name/url contains
+          if (/^\d+$/.test(ql)) {
+            const qn = Number(ql);
+            const idMatch = meta && Number.isFinite(meta.id) && Number(meta.id) === qn;
+            const nameMatch = name.toLowerCase().includes(ql);
+            const urlMatch = (url || "").toLowerCase().includes(ql);
+            passesSearch = idMatch || nameMatch || urlMatch;
+          } else {
+            passesSearch = name.toLowerCase().includes(ql);
+          }
+        }
         if (!(passesScope && passesRarity && passesSearch)) return "";
 
         const ownClass = owned ? `owned rarity-${r}` : "locked";
@@ -254,6 +269,11 @@
   function updateModalContent(modal, url) {
     const panel = modal.querySelector(".image-panel");
     if (!panel) return;
+    // Stop any video playback before changing content
+    try {
+      const iframe = panel.querySelector('iframe');
+      if (iframe && iframe.src) iframe.src = 'about:blank';
+    } catch (_) {}
     panel.classList.add("transitioning");
     // Play camera sound on navigation
     try { window.SFX?.play?.("extra.camera"); } catch {}
@@ -269,6 +289,18 @@
     const d = DX();
     modal.innerHTML = `<div class="image-panel"><div class="loading">${d.loading || 'Loading...'}</div></div>`;
     document.body.appendChild(modal);
+    // Record whether BGM was playing and pause it for the modal view.
+    try {
+      const bgmAudio = window.__bgmAudio || (window.AudioMod && typeof window.AudioMod.ensureBgm === 'function' ? window.AudioMod.ensureBgm() : null);
+      if (bgmAudio) {
+        // store state on the modal so we only resume if we paused earlier
+        modal.dataset.bgmWasPlaying = (!bgmAudio.paused && !bgmAudio.ended) ? '1' : '0';
+        if (modal.dataset.bgmWasPlaying === '1' && typeof window.__pauseBgm === 'function') {
+          try { window.__pauseBgm(); } catch (_) {}
+        }
+      }
+    } catch (_) {}
+
     populateModalContent(modal, url);
     setupModalHandlers(modal);
     try { window.SFX?.play?.("extra.camera"); } catch {}
@@ -321,8 +353,9 @@
             }</div>` : '' }
           ${ vid ? `
             <div class="video-container" style="margin-top:10px">
-              <iframe style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" loading="lazy" onload="this.style.opacity=1" onerror="window.handleVideoError && window.handleVideoError(this, '${escapedVideoUrl}')"></iframe>
+              <iframe style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="no-referrer-when-downgrade" loading="lazy" onload="this.style.opacity=1" onerror="window.handleVideoError && window.handleVideoError(this, '${escapedVideoUrl}')"></iframe>
             </div>` : '' }
+            
         </div>
       </div>
       <div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
@@ -334,6 +367,24 @@
   function setupModalHandlers(modal) {
     const close = () => {
       try { window.SFX?.play?.("ui.back"); } catch {}
+      // Stop any playing iframe/video
+      try {
+        const panel = modal.querySelector('.image-panel');
+        if (panel) {
+          const iframe = panel.querySelector('iframe');
+          if (iframe && iframe.src) iframe.src = 'about:blank';
+          const video = panel.querySelector('video');
+          if (video && !video.paused) { try { video.pause(); } catch (_) {} }
+        }
+      } catch (_) {}
+      // If we paused the BGM when opening, resume it now.
+      try {
+        if (modal && modal.dataset && modal.dataset.bgmWasPlaying === '1') {
+          if (typeof window.__resumeBgm === 'function') {
+            try { window.__resumeBgm(); } catch (_) {}
+          }
+        }
+      } catch (_) {}
       modal.remove();
     };
 

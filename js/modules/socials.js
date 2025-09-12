@@ -62,7 +62,7 @@ window.socials = (function () {
             <div class="social-item" style="--accent:${color}">
               <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
               <div class="social-embed" style="aspect-ratio:16/9">
-                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed/${vid}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed/${vid}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
               </div>
             </div>
           `;
@@ -73,7 +73,7 @@ window.socials = (function () {
             <div class="social-item" style="--accent:${color}">
               <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
               <div class="social-embed" style="aspect-ratio:16/9">
-                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed?listType=user_uploads&list=${handle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed?listType=user_uploads&list=${handle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
               </div>
             </div>
           `;
@@ -154,7 +154,7 @@ window.socials = (function () {
           <div class="social-item" style="--accent:${color}">
             <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
             <div class="social-embed" style="height:420px">
-              <iframe src="${url}" style="border:0;width:100%;height:100%;border-radius:12px" loading="lazy" referrerpolicy="no-referrer"></iframe>
+              <iframe src="${url}" style="border:0;width:100%;height:100%;border-radius:12px" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
             </div>
           </div>
         `;
@@ -165,7 +165,7 @@ window.socials = (function () {
         <div class="social-item" style="--accent:${color}">
           <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
           <div class="social-embed">
-            <iframe src="${url}" style="border:0;width:100%;height:400px;border-radius:12px" loading="lazy" referrerpolicy="no-referrer"></iframe>
+            <iframe src="${url}" style="border:0;width:100%;height:400px;border-radius:12px" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
           </div>
         </div>
       `;

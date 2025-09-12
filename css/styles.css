@@ -238,7 +238,10 @@ body {
 #typingHighway + #typingHitbar[aria-live]::after {
   content: attr(data-judge);
 }
-
+#petIframe
+{
+  background-image: url("../assets/root.png");
+}
 /* Main site */
 .main-site {
   animation: slideIn 0.8s ease-out;

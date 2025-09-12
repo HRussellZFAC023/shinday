@@ -106,7 +106,7 @@
         </div>
       </div>
       <div style="width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;border-bottom-left-radius:12px;border-bottom-right-radius:12px">
-  <iframe id="jukeboxIframe" style="width:100%;height:100%;border:0;display:block" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <iframe id="jukeboxIframe" style="width:100%;height:100%;border:0;display:block" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="no-referrer-when-downgrade" loading="lazy"></iframe>
       </div>`;
     document.body.appendChild(wrap);
     const handle = wrap.firstElementChild;
@@ -152,13 +152,40 @@
     const loveBtn = document.getElementById("jukeboxLove");
     if (loveBtn) loveBtn.title = (C.music?.ui?.sendLove) || loveBtn.title || 'send love';
 
-    document.getElementById("jukeboxClose").onclick = () => {
-      document.getElementById("jukeboxIframe").src = "about:blank";
-
-      wrap.style.display = "none";
-
-      if (window.__resumeBgm) window.__resumeBgm();
+    const rebuildIframe = () => {
+      const old = document.getElementById('jukeboxIframe');
+      if (!old || !old.parentElement) return null;
+      const fresh = old.cloneNode(false);
+      fresh.removeAttribute('src');
+      fresh.src = 'about:blank';
+      old.parentElement.replaceChild(fresh, old);
+      return fresh;
     };
+
+    const stopIframePlayback = () => {
+      try {
+        const iframeEl = document.getElementById('jukeboxIframe');
+        if (!iframeEl) return;
+        // If it's a YT embed with API enabled, ask it to stop first
+        if (/youtube\.com\/embed\//i.test(iframeEl.src)) {
+          try {
+            iframeEl.contentWindow && iframeEl.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'stopVideo', args: [] }), '*');
+          } catch (_) {}
+        }
+        // Force unload by clearing src then rebuilding element (prevents audio continuation edge cases)
+        try { iframeEl.src = 'about:blank'; } catch (_) {}
+        rebuildIframe();
+      } catch (_) {}
+    };
+
+    const closeBtn = wrap.querySelector('#jukeboxClose');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        stopIframePlayback();
+        wrap.style.display = 'none';
+        if (window.__resumeBgm) window.__resumeBgm();
+      });
+    }
     if (loveBtn)
       loveBtn.addEventListener("click", () => {
         // Prefer Hearts module, then global addHearts, then MikuUI effects
@@ -205,7 +232,9 @@
     if (song.audio) {
       // Use site BGM, no mini-player
 
-      if (iframe) iframe.src = "about:blank";
+      if (iframe) {
+        try { iframe.src = "about:blank"; } catch (_) {}
+      }
       if (wrap) wrap.style.display = "none";
       if (window.AudioMod && typeof AudioMod.setBgmSource === "function") {
         AudioMod.setBgmSource(
@@ -227,10 +256,16 @@
       if (window.__pauseBgm) window.__pauseBgm();
 
       const vid = song.yt || "";
-      const url = `https://www.youtube.com/embed/${encodeURIComponent(
-        vid,
-      )}?autoplay=1&rel=0&playsinline=1&modestbranding=1&color=white`;
-      if (iframe) iframe.src = url;
+      const url = `https://www.youtube.com/embed/${encodeURIComponent(vid)}?autoplay=1&rel=0&playsinline=1&modestbranding=1&color=white&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
+      if (iframe) {
+        // stop any previous playback first
+        try { iframe.src = 'about:blank'; } catch (_) {}
+        // Rebuild iframe to guarantee a clean player instance
+        let target = iframe;
+        try { target = rebuildIframe() || iframe; } catch (_) {}
+        target.id = 'jukeboxIframe';
+        target.src = url;
+      }
       if (wrap) wrap.style.display = "block";
     }
     if (now) now.textContent = song.title;
@@ -240,10 +275,9 @@
 
   function stop() {
     try {
-      const wrap = document.getElementById("jukeboxPlayer");
-      const iframe = document.getElementById("jukeboxIframe");
-      if (iframe) iframe.src = "about:blank";
-      if (wrap) wrap.style.display = "none";
+      const wrap = document.getElementById('jukeboxPlayer');
+      stopIframePlayback();
+      if (wrap) wrap.style.display = 'none';
       if (window.__resumeBgm) window.__resumeBgm();
     } catch (_) {}
   }

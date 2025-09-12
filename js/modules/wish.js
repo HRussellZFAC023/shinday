@@ -59,20 +59,12 @@
     updateTokens();
     return true;
   }
-  function hashCode(s) {
-    let h = 0;
-    for (let i = 0; i < s.length; i++) {
-      h = (h << 5) - h + s.charCodeAt(i);
-      h |= 0;
-    }
-    return h >>> 0;
-  }
+ 
   function rarityFor(url) {
-    // Prefer explicit rarity from metadata (same source used by dex)
     const meta =
-      typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
+       window.getMikuMeta(url);
 
-    if (meta && Number.isFinite(meta.rarity)) return meta.rarity; // 1..6
+    if (meta) return meta.rarity; // 1..6
 
     return 5;
   }
