@@ -452,12 +452,14 @@
   window.Jukebox = {
     songs: SONGS,
     unlocked,
-    play,
+  play,
   stop,
-    attachHudSelect,
-    openSongSelect,
-    getPreset,
-    refresh,
-    initialize,
+  ensurePlayer,
+  saveSelection,
+  attachHudSelect,
+  openSongSelect,
+  getPreset,
+  refresh,
+  initialize,
   };
 })();
