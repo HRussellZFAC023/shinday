@@ -23,6 +23,62 @@ window.socials = (function () {
       return m ? m[1] : null;
     }
 
+    // ---- Spring/Teespring helpers (official Store Drop widget) ----
+    const SPRING_WIDGET_ORIGIN = "https://embed.creator-spring.com";
+    const DEFAULTS = {
+      per: 6,           // number of products to show
+      bg: "ffffff",     // widget background (hex, no #)
+      txtcolor: "000000",
+      page: 1
+    };
+
+    function springSlugFromUrl(u) {
+      if (!u || typeof u !== "string") return null;
+      const host = (u.match(/^https?:\/\/([^\/?#]+)/i) || [,""])[1].toLowerCase();
+      const path = (u.match(/^https?:\/\/[^\/?#]+(\/[^?#]*)/i) || [,""])[1];
+
+      // {slug}.creator-spring.com
+      if (host.endsWith(".creator-spring.com")) {
+        // take the label immediately before "creator-spring"
+        const parts = host.split(".");
+        const idx = parts.findIndex(p => p === "creator-spring");
+        if (idx > 0) return parts[idx - 1];
+        // fallback: first label
+        return parts[0];
+      }
+
+      // teespring.com/stores/{slug}
+      if (host === "teespring.com" || host.endsWith(".teespring.com")) {
+        const m = path.match(/\/stores\/([^\/?#]+)/i);
+        if (m) return m[1];
+      }
+
+      // could not infer
+      return null;
+    }
+
+    function buildSpringWidgetUrl(slug, overrides = {}) {
+      const params = new URLSearchParams({
+        slug,
+        per: String(overrides.per ?? DEFAULTS.per),
+        bg: (overrides.bg || DEFAULTS.bg).replace(/^#/, ""),
+        txtcolor: (overrides.txtcolor || DEFAULTS.txtcolor).replace(/^#/, ""),
+        page: String(overrides.page ?? DEFAULTS.page)
+      });
+      
+      // Add width and height if provided
+      if (overrides.width) {
+        params.append('width', overrides.width);
+      }
+      if (overrides.height) {
+        params.append('height', overrides.height);
+      }
+      
+      return `${SPRING_WIDGET_ORIGIN}/widget?${params.toString()}`;
+    }
+
+    // ---------------------------------------------------------------
+
     const SPOTIFY_PROFILE =
       "https://open.spotify.com/user/31hkk7assbfbsaqjfybnyfmuakqq";
 
@@ -31,6 +87,8 @@ window.socials = (function () {
       const displayIcon = mikuIconName
         ? window.MikuCore.mikuIcon(mikuIconName, icon)
         : icon;
+      // ensure we have a safe href for the title link
+      const linkHref = url ? url : '#';
       let domain =
         (url &&
           (url.match(/^https?:\/\/([^\/]+)/i) || ["", ""])[1].replace(
@@ -41,28 +99,26 @@ window.socials = (function () {
 
       // Blocklist some sites that should not be embedded (e.g., jigsawplanet)
       if (domain.includes("jigsawplanet.com")) {
-        return `
-          <div class="social-item" style="--accent:${color}">
-            <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
-            <div class="social-embed">
-              <a class="pixel-btn" href="${url}" target="_blank" rel="noopener">Open Puzzle in new tab</a>
+          return `
+            <div class="social-item" style="--accent:${color}">
+              <div class="social-embed">
+                <a class="social-title" href="${linkHref}" target="_blank" rel="noopener"><span class="icon">${displayIcon}</span> ${label}</a>
+                <a class="pixel-btn" href="${url}" target="_blank" rel="noopener">Open Puzzle in new tab</a>
+              </div>
             </div>
-          </div>
-        `;
+          `;
       }
 
       // YouTube video/channel fallback
-
       if (domain.includes("youtube.com") || domain === "youtu.be") {
-        // Force a specific default video if not explicitly given
         const forced = "YTinkSv10Qs"; // requested video ID
         const vid = ytVideoIdFromUrl(url) || forced;
         if (vid) {
           return `
             <div class="social-item" style="--accent:${color}">
-              <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
               <div class="social-embed" style="aspect-ratio:16/9">
-                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed/${vid}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <a class="social-title" href="${linkHref}" target="_blank" rel="noopener"><span class="icon">${displayIcon}</span> ${label}</a>
+                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube-nocookie.com/embed/${vid}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
               </div>
             </div>
           `;
@@ -71,17 +127,19 @@ window.socials = (function () {
         if (handle) {
           return `
             <div class="social-item" style="--accent:${color}">
-              <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
               <div class="social-embed" style="aspect-ratio:16/9">
-                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube.com/embed?listType=user_uploads&list=${handle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <a class="social-title" href="${linkHref}" target="_blank" rel="noopener"><span class="icon">${displayIcon}</span> ${label}</a>
+                <iframe style="width:100%;height:100%;border:0;border-radius:12px" src="https://www.youtube-nocookie.com/embed?listType=user_uploads&list=${handle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
               </div>
             </div>
           `;
         }
         return `
           <div class="social-item" style="--accent:${color}">
-            <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
-            <div class="social-embed"><a class="pixel-btn" href="${url}" target="_blank" rel="noopener">Open YouTube</a></div>
+            <div class="social-embed">
+              <a class="social-title" href="${linkHref}" target="_blank" rel="noopener"><span class="icon">${displayIcon}</span> ${label}</a>
+              <a class="pixel-btn" href="${url}" target="_blank" rel="noopener">Open YouTube</a>
+            </div>
           </div>
         `;
       }
@@ -92,8 +150,8 @@ window.socials = (function () {
         if (id) {
           return `
             <div class="social-item" style="--accent:${color}">
-              <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
               <div class="social-embed">
+                <a class="social-title" href="${linkHref}" target="_blank" rel="noopener"><span class="icon">${displayIcon}</span> ${label}</a>
                 <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/${id}" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
               </div>
             </div>
@@ -105,10 +163,10 @@ window.socials = (function () {
       if (domain.includes("discord.gg") || domain.includes("discord.com")) {
         const banner = "./assets/discordServerBanner.png";
         const logo = "./assets/discordServerLogo.png";
-        return `
-          <div class="social-item" style="--accent:${color}">
-            <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
-            <div class="social-embed" style="border-radius:12px; overflow:hidden;">
+          return `
+            <div class="social-item" style="--accent:${color}">
+              <div class="social-embed" style="border-radius:12px; overflow:hidden;">
+                <a class="social-title" href="${linkHref}" target="_blank" rel="noopener"><span class="icon">${displayIcon}</span> ${label}</a>
               <div style="background:#2b2d31;color:#fff;border-radius:12px;display:flex;flex-direction:column;gap:0;overflow:hidden;border:2px solid var(--border)">
                 <div style="position:relative;height:140px;background:#202225">
                   <img src="${banner}" alt="Discord banner" style="width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.05)" />
@@ -135,37 +193,58 @@ window.socials = (function () {
           return m ? m[1] : "";
         })();
         const parent = location.hostname || "localhost";
-        return `
-          <div class="social-item" style="--accent:${color}">
-            <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
-            <div class="social-embed" style="aspect-ratio:16/9">
+          return `
+            <div class="social-item" style="--accent:${color}">
+              <div class="social-embed" style="aspect-ratio:16/9">
+                <a class="social-title" href="${linkHref}" target="_blank" rel="noopener"><span class="icon">${displayIcon}</span> ${label}</a>
               <iframe src="https://player.twitch.tv/?channel=${ch}&parent=${parent}&muted=true" allowfullscreen style="border:0;width:100%;height:100%;border-radius:12px"></iframe>
             </div>
           </div>
         `;
       }
 
-      // Spring/Teespring store (simple iframe embed)
-      if (
-        domain.includes("creator-spring.com") ||
-        domain.includes("teespring.com")
-      ) {
+      // Spring / Teespring — use the official Store Drop widget with pastel Miku theming
+      if (domain.includes("creator-spring.com") || domain.includes("teespring.com")) {
+        const slug = springSlugFromUrl(url);
+        if (slug) {
+          const embedUrl = buildSpringWidgetUrl(slug, {
+            per: 8,                // more items so the width feels intentional
+            bg: "F7FBFF",          // airy sky-white
+            txtcolor: "103B53",    // soft ink
+            page: 1,
+            width: "100%",         // fill available width
+            height: "600px"        // better height for product display
+          });
+          return `
+            <div class="social-item pastel-miku" data-kind="spring" style="--accent:${color}">
+              <div class="social-embed spring-embed">
+                <a class="social-title" href="${linkHref}" target="_blank" rel="noopener"><span class="icon">${displayIcon}</span> ${label}</a>
+                <iframe src="${embedUrl}" title="Store widget" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+              </div>
+            </div>
+          `;
+        }
         return `
-          <div class="social-item" style="--accent:${color}">
-            <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
-            <div class="social-embed" style="height:420px">
-              <iframe src="${url}" style="border:0;width:100%;height:100%;border-radius:12px" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+          <div class="social-item pastel-miku" data-kind="spring" style="--accent:${color}">
+            <div class="social-embed">
+              <a class="social-title" href="${linkHref}" target="_blank" rel="noopener"><span class="icon">${displayIcon}</span> ${label}</a>
+              <a class="pixel-btn" href="${url}" target="_blank" rel="noopener">Open Store</a>
             </div>
           </div>
         `;
       }
 
+      // Spring/Teespring store (legacy) — REMOVED in favor of Store Drop widget
+      // (left here for reference)
+      // if (domain.includes("creator-spring.com") || domain.includes("teespring.com")) { ... }
+
       // Fallback: iframe
-      return `
+        return `
         <div class="social-item" style="--accent:${color}">
-          <div class="social-title"><span class="icon">${displayIcon}</span> ${label}</div>
+          <a class="social-title" href="${linkHref}" target="_blank" rel="noopener"><span class="icon">${displayIcon}</span> ${label}</a>
           <div class="social-embed">
-            <iframe src="${url}" style="border:0;width:100%;height:400px;border-radius:12px" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+            <iframe src="${url}" style="border:0;width:100%;height:400px;border-radius:12px" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
           </div>
         </div>
       `;

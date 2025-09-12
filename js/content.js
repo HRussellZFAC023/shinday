@@ -373,10 +373,11 @@ const EN_CONTENT = {
         mikuIcon: "jumpingMusic",
       },
       {
-        label: "Spring Shop",
+        label: "O Kaimono O Kaimono",
         url: "https://shinun-merch.creator-spring.com/",
         icon: "🛍️",
         color: "#ff6b35",
+        mikuIcon: "okHands",
       },
     ],
   },
@@ -623,6 +624,12 @@ const EN_CONTENT = {
     description: "Explore Miku art and collections",
     iframeSrc: "https://www.mikucollection.com/en/art-gallery",
     iframeTitle: "Miku Collection Art Gallery"
+  },
+
+  vocaloidDb: {
+    title: "🎼 VocaloidDB",
+    iframeSrc: "https://vocadb.net/",
+    iframeTitle: "Vocaloid Database"
   },
 
   friends: {
@@ -2099,26 +2106,33 @@ function initializeSplash() {
   // Language selector (top-right)
   const existingSel = document.getElementById('langSelector');
   if (!existingSel) {
-    const selWrap = document.createElement('div');
-    selWrap.style.position = 'absolute';
-    selWrap.style.top = '10px';
-    selWrap.style.right = '10px';
-    selWrap.style.zIndex = '10';
+  const selWrap = document.createElement('div');
+  // Use fixed positioning and a very high z-index so the selector stays visible
+  // even when the splash overlay is scaled beyond the viewport (120%+).
+  selWrap.style.position = 'fixed';
+  selWrap.style.top = '12px';
+  // Nudge left slightly so the expanded dropdown menu doesn't get clipped
+  selWrap.style.right = '20px';
+  selWrap.style.zIndex = '11001';
     selWrap.style.backdropFilter = 'blur(6px)';
     selWrap.style.background = 'rgba(255,255,255,0.35)';
     selWrap.style.border = '1px solid rgba(255,255,255,0.6)';
     selWrap.style.borderRadius = '10px';
     selWrap.style.padding = '6px 8px';
     selWrap.style.boxShadow = '0 4px 14px rgba(43,43,68,0.15)';
+  selWrap.style.pointerEvents = 'auto';
     const sel = document.createElement('select');
     sel.id = 'langSelector';
     sel.setAttribute('aria-label', 'Language');
-    sel.style.fontFamily = 'Nunito, system-ui, -apple-system, sans-serif';
-    sel.style.fontSize = '14px';
-    sel.style.color = '#2b2b44';
-    sel.style.background = 'transparent';
-    sel.style.border = 'none';
-    sel.style.outline = 'none';
+  sel.style.fontFamily = 'Nunito, system-ui, -apple-system, sans-serif';
+  sel.style.fontSize = '14px';
+  sel.style.color = '#2b2b44';
+  sel.style.background = 'transparent';
+  sel.style.border = 'none';
+  sel.style.outline = 'none';
+  // Use pointer cursor (hand) for interactive dropdowns; the cursor module
+  // may replace it with animated cursors later but default to pointer now.
+  sel.style.cursor = 'pointer';
     const opts = [
       ['en','English'],
       ['ja','日本語'],

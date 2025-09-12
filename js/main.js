@@ -43,22 +43,38 @@ console.log("🎵 Initializing Miku systems...");
     try {
       const tpl = window.SITE_CONTENT?.status?.visitorBadgeTemplate;
       if (!tpl) return false;
-      const wrap = el.closest(".visitor-counter");
+      let wrap = el.closest(".visitor-counter");
       if (!wrap) return false;
-      const label = document.createElement("span");
-      label.className = "counter-label";
-      const icon = window.MikuCore?.mikuIcon
-        ? window.MikuCore.mikuIcon(window.SITE_CONTENT?.status?.visitorIcon || "", "")
-        : "";
-      label.innerHTML = `${icon}${(window.SITE_CONTENT?.status?.visitorsLabel) || "friends:"}`;
+      // Ensure wrapper is an anchor so the entire box is clickable
+      if (wrap.tagName.toLowerCase() !== 'a') {
+        const a = document.createElement('a');
+        a.className = wrap.className || 'visitor-counter';
+        a.setAttribute('data-visitor-counter', '');
+        a.setAttribute('target', '_blank');
+        a.setAttribute('rel', 'noopener');
+        // preserve position in DOM
+        wrap.parentNode.replaceChild(a, wrap);
+        a.appendChild(wrap);
+        wrap = a;
+      }
+
+      // Clear the textual counter label when showing an image badge fallback
+      const existingLabel = wrap.querySelector('.counter-label');
+      if (existingLabel) existingLabel.textContent = '';
+
       const img = document.createElement("img");
       img.alt = "visitor count";
       img.className = "visitor-badge";
-      img.referrerPolicy = "no-referrer-when-downgrade";
+      img.referrerPolicy = "strict-origin-when-cross-origin";
       img.src = tpl.replace("{site}", SITE_NAME);
-      wrap.innerHTML = "";
-      wrap.appendChild(label);
+
+      // Replace inner content with image (and keep label element if needed for layout)
+      wrap.innerHTML = '';
       wrap.appendChild(img);
+
+      // If SITE_CONTENT provides a stats URL, use it for the anchor href
+      const statsUrl = (window.SITE_CONTENT && window.SITE_CONTENT.status && window.SITE_CONTENT.status.statsUrl) || `https://neocities.org/site/${SITE_NAME}`;
+      try { wrap.setAttribute('href', statsUrl); } catch(_) {}
       return true;
     } catch (_) {
       return false;

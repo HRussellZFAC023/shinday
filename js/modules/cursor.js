@@ -149,7 +149,7 @@
         await Promise.all([
           applyAni("html, body", roleToFile.normal),
           applyAni(
-            "a, button, .pixel-btn, .heart-btn, .radio-btn, .enter-btn, .quick-links a",
+            "a, button, select, .pixel-btn, .heart-btn, .radio-btn, .enter-btn, .quick-links a",
             roleToFile.link,
           ),
           applyAni(
@@ -166,7 +166,7 @@
       const applyLater = () =>
         Promise.all([
           applyAni(
-            ".hero-miku, .splash-miku, .float-miku, .shrine-image, #shrineMiku, #heroMiku, #splashMiku, .avatar, .friend-avatar",
+            ".hero-miku, .splash-miku, .float-miku, .shrine-image, #shrineMiku, #heroMiku, #splashMiku, .avatar, .friend-avatar, .miku-speech-bubble, img",
             roleToFile.person,
           ),
           // Use the hand/person animated cursor when hovering/grabbing shimeji containers

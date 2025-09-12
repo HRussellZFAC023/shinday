@@ -237,6 +237,21 @@
         if (cardIndex === 0) SFX.play("Wish.reveal");
         SFX.play("Wish.pop");
         if (c.rarity >= 4) SFX.play("Wish.high");
+          // Add floating glowing text effect
+          function showFloatingText(msg, color) {
+            const float = document.createElement('div');
+            float.className = 'Wish-float-text';
+            float.textContent = msg;
+            if (color) float.style.setProperty('--float-color', color);
+            cardEl.appendChild(float);
+            setTimeout(() => { float.classList.add('fade'); }, 50);
+            setTimeout(() => { float.remove(); }, 1800);
+          }
+          if (c.rarity >= 4) {
+            showFloatingText('RATE UP!', '#6bc3ff');
+          } else {
+            showFloatingText('GET!', '#ff69b4');
+          }
         if (c.rarity >= 5) {
           // Legendary flourish: rainbow glow + screen flash + thanks
           try {

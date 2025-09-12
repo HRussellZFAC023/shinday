@@ -831,6 +831,33 @@ window.MikuUI = (function () {
       }
     }
 
+    // VocaloidDB collapsible section (mirror Miku Search behavior)
+    const vocaloidToggle = document.getElementById("vocaloidDbToggle");
+    const vocaloidContent = document.getElementById("vocaloidDbContent");
+    if (vocaloidToggle && vocaloidContent) {
+      vocaloidToggle.setAttribute("aria-expanded", "false");
+      vocaloidToggle.addEventListener("click", () => {
+        const isExpanded = vocaloidToggle.getAttribute("aria-expanded") === "true";
+        if (isExpanded) {
+          vocaloidContent.classList.add("collapsed");
+          vocaloidToggle.setAttribute("aria-expanded", "false");
+        } else {
+          vocaloidContent.classList.remove("collapsed");
+          vocaloidToggle.setAttribute("aria-expanded", "true");
+        }
+      });
+
+      // If SITE_CONTENT provides vocaloidDb config, wire iframe src/title
+      try {
+        const vd = (window.SITE_CONTENT && window.SITE_CONTENT.vocaloidDb) || null;
+        const iframe = vocaloidContent.querySelector("iframe");
+        if (iframe && vd) {
+          if (vd.iframeSrc) iframe.src = vd.iframeSrc;
+          if (vd.iframeTitle) iframe.title = vd.iframeTitle;
+        }
+      } catch (_) {}
+    }
+
     // Friends section and sidebar widget
     if (C.friends) {
       const friendsIcon = C.friends.titleIcon
@@ -926,8 +953,15 @@ window.MikuUI = (function () {
             ? window.MikuCore.mikuIcon(C.status.visitorIcon, "")
             : "";
           const label = (C.status && C.status.visitorsLabel) || "friends:";
-          const statsUrl = "https://neocities.org/site/babybelle";
-          visitorLabel.innerHTML = /*html*/ `<a href="${statsUrl}" target="_blank" rel="noopener" class="counter-link">${icon}${label}</a>`;
+          // Set the outer visitor-counter anchor href instead of nesting an anchor
+          const wrapper = visitorLabel.closest('.visitor-counter');
+          if (wrapper && wrapper.tagName.toLowerCase() === 'a') {
+            const statsUrl = (C.status && C.status.statsUrl) || "https://neocities.org/site/babybelle";
+            try { wrapper.setAttribute('href', statsUrl); } catch(_) {}
+            wrapper.classList.add('has-stats-link');
+          }
+          // Insert plain content into the label element
+          visitorLabel.innerHTML = `${icon}${label}`;
         }
       }
 

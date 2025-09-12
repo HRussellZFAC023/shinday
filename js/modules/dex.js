@@ -239,12 +239,27 @@
       const lockedPixie = isPixieBel && !pixieUnlocked();
 
       card.addEventListener("click", () => {
-        if (lockedPixie) {
-          const t = DX();
-          window.Hearts?.loveToast?.(t.hiddenToast || "This legendary companion remains hidden... 🔒✨");
-          return;
-        }
-        openDetails(url);
+          if (lockedPixie) {
+            const t = DX();
+            window.Hearts?.loveToast?.(t.hiddenToast || "This legendary companion remains hidden... 🔒✨");
+            return;
+          }
+          // Clear NEW badge if present
+          const badge = card.querySelector('.Wish-new');
+          if (badge) {
+            badge.remove();
+            // Remove from Wish.newIds in localStorage
+            try {
+              const raw = localStorage.getItem("Wish.newIds") || "[]";
+              const arr = JSON.parse(raw);
+              const idx = arr.indexOf(url);
+              if (idx !== -1) {
+                arr.splice(idx, 1);
+                localStorage.setItem("Wish.newIds", JSON.stringify(arr));
+              }
+            } catch {}
+          }
+          openDetails(url);
       });
       card.addEventListener("keydown", (e) => {
         if (e.key === "Enter") card.click();
@@ -353,14 +368,15 @@
             }</div>` : '' }
           ${ vid ? `
             <div class="video-container" style="margin-top:10px">
-              <iframe style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="no-referrer-when-downgrade" loading="lazy" onload="this.style.opacity=1" onerror="window.handleVideoError && window.handleVideoError(this, '${escapedVideoUrl}')"></iframe>
+              <iframe style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" src="https://www.youtube-nocookie.com/embed/${vid}?rel=0&modestbranding=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy" onload="this.style.opacity=1" onerror="window.handleVideoError && window.handleVideoError(this, '${escapedVideoUrl}')"></iframe>
             </div>` : '' }
             
         </div>
       </div>
       <div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
-        ${ owned ? `<button class="pixel-btn" id="setSingerBtn" data-url="${url}">${d.btnSetSinger || 'Set as Singer'}</button>` : `<button class="pixel-btn" disabled>${d.btnWinInWish || 'Win in Wish'}</button>` }
-        <button class="pixel-btn" id="dexCloseBtn">${d.btnClose || 'Close'}</button>
+    ${ owned ? `<button class="pixel-btn" id="setSingerBtn" data-url="${url}">${d.btnSetSinger || 'Set as Singer'}</button>
+    <button class="pixel-btn" id="setSongBtn" data-url="${url}">${d.btnSetSong || 'Set as Song'}</button>` : `<button class="pixel-btn" disabled>${d.btnWinInWish || 'Win in Wish'}</button>` }
+    <button class="pixel-btn" id="dexCloseBtn">${d.btnClose || 'Close'}</button>
       </div>`;
   }
 
@@ -393,6 +409,13 @@
     const keyHandler = (e) => {
       if (e.key === "Escape") {
         close();
+        // Show Jukebox mini-player after Dex closes
+        try {
+          if (window.Jukebox && typeof window.Jukebox.ensurePlayer === 'function') {
+            const wrap = window.Jukebox.ensurePlayer();
+            if (wrap) wrap.style.display = 'block';
+          }
+        } catch {}
         document.removeEventListener("keydown", keyHandler);
       } else if (e.key === "ArrowLeft") {
         const prevBtn = modal.querySelector('#prevMikuBtn');
@@ -427,6 +450,24 @@
           window.SFX?.play?.("ui.select");
         } catch {}
         close();
+        } else if (t.id === 'setSongBtn') {
+          const url = t.getAttribute('data-url');
+          try {
+            // Find meta/song info
+            const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
+            if (meta && meta.song) {
+              // Find matching Jukebox song object
+              if (window.Jukebox && typeof window.Jukebox.songs === 'object') {
+                const songObj = window.Jukebox.songs.find(s => s.title === meta.name || s.jacket === url || s.id === `miku-${meta.id}`);
+                if (songObj) {
+                  window.Jukebox.saveSelection(songObj, window.Jukebox.getPreset());
+                  window.Jukebox.play(songObj);
+                  window.SFX?.play?.("ui.select");
+                }
+              }
+            }
+          } catch {}
+          close();
       }
     });
   }

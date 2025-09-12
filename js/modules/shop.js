@@ -563,6 +563,12 @@ window.shop = (function () {
       border-width: 6px 6px 6px 0;
       border-color: transparent rgba(0, 0, 0, 0.1) transparent transparent;
       }
+
+  /* Match header character hover: lift and subtle rotate for the speech bubble */
+  .miku-speech-bubble:hover {
+  transform: translateY(-6px) rotate(-4deg) scale(1.02);
+  box-shadow: 0 14px 34px rgba(57, 174, 239, 0.12);
+  }
       
       /* Use grid so cards form a 2x2 layout; rows sized to content (auto height) */
       .miku-items-container {

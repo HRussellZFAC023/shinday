@@ -72,6 +72,14 @@
 
     if (pauseBtn)
       pauseBtn.addEventListener("click", () => {
+        // If no radio stream is active, pause background music instead
+        const ra = window.__radioAudio;
+        const radioActive = !!(ra && !ra.paused && !ra.ended);
+        if (!radioActive && typeof window.__pauseBgm === "function") {
+          try {
+            window.__pauseBgm();
+          } catch (_) {}
+        }
         if (typeof window.__pauseRadio === "function") window.__pauseRadio();
       });
 

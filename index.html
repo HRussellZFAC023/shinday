@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <meta name="theme-color" content="#bde3ff" />
     <meta name="color-scheme" content="light" />
     <meta name="robots" content="index, follow" />
@@ -14,14 +17,22 @@
       id="metaDescription"
       content="A cozy pastel web home for Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) - links, music, games, study corner, and interactive Miku companions!"
     />
-    <meta property="og:title" id="metaOgTitle" content="Baby Belle - Pastel Miku Garden" />
+    <meta
+      property="og:title"
+      id="metaOgTitle"
+      content="Baby Belle - Pastel Miku Garden"
+    />
     <meta
       property="og:description"
       id="metaOgDescription"
       content="A magical retro website with interactive Miku friends and kawaii vibes"
     />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" id="metaOgSiteName" content="Baby Belle's Pixel Garden" />
+    <meta
+      property="og:site_name"
+      id="metaOgSiteName"
+      content="Baby Belle's Pixel Garden"
+    />
     <meta property="og:url" id="metaOgUrl" content="" />
     <meta property="og:locale" id="metaOgLocale" content="en_US" />
     <meta
@@ -43,20 +54,37 @@
     <link rel="alternate" class="i18n-alt" hreflang="zh" href="./?lang=zh" />
     <!-- Twitter cards -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" id="metaTwitterTitle" content="Baby Belle - Pastel Miku Garden" />
-    <meta name="twitter:description" id="metaTwitterDescription" content="A magical retro website with interactive Miku friends and kawaii vibes" />
-    <meta name="twitter:image" id="metaTwitterImage" content="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png" />
+    <meta
+      name="twitter:title"
+      id="metaTwitterTitle"
+      content="Baby Belle - Pastel Miku Garden"
+    />
+    <meta
+      name="twitter:description"
+      id="metaTwitterDescription"
+      content="A magical retro website with interactive Miku friends and kawaii vibes"
+    />
+    <meta
+      name="twitter:image"
+      id="metaTwitterImage"
+      content="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png"
+    />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <!-- Preload critical assets -->
-    <link rel="preload" href="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png" as="image" fetchpriority="high" />
+    <link
+      rel="preload"
+      href="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png"
+      as="image"
+      fetchpriority="high"
+    />
     <link rel="preload" href="./js/main.js" as="script" />
     <link rel="preload" href="./css/styles.css" as="style" />
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap"
       rel="stylesheet"
     />
-    
+
     <!-- Critical CSS for above-the-fold content -->
     <style>
       :root {
@@ -66,7 +94,14 @@
         --pastel-purple: #e6d1ff;
         --pastel-yellow: #fff3d1;
         --ink: #2b2b44;
-        --gradient-bg: linear-gradient(135deg, #bde3ff 0%, #ffd1ec 25%, #cff6e6 50%, #e6d1ff 75%, #fff3d1 100%);
+        --gradient-bg: linear-gradient(
+          135deg,
+          #bde3ff 0%,
+          #ffd1ec 25%,
+          #cff6e6 50%,
+          #e6d1ff 75%,
+          #fff3d1 100%
+        );
       }
 
       * {
@@ -76,7 +111,7 @@
       }
 
       body {
-        font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+        font-family: "Nunito", system-ui, -apple-system, sans-serif;
         color: var(--ink);
         line-height: 1.6;
         background: var(--gradient-bg);
@@ -86,15 +121,17 @@
 
       .splash-screen {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: -10% !important;
+        left: -10% !important;
+        min-width: 120% !important;
+        min-height: 120% !important;
         background: var(--gradient-bg);
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 10000;
+        border-radius: 48px;
+        overflow: visible;
       }
 
       .splash-content {
@@ -113,28 +150,45 @@
       }
 
       @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     </style>
-    
+
     <link rel="stylesheet" href="./css/styles.css" />
-    <link rel="stylesheet" href="./css/shimeji.css" media="print" onload="this.media='all'" />
+    <link
+      rel="stylesheet"
+      href="./css/shimeji.css"
+      media="print"
+      onload="this.media='all'"
+    />
     <!-- Language Dojo styles -->
-        <!-- Language Dojo styles -->
-    <link rel="preload" href="./dojo.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <!-- Language Dojo styles -->
+    <link
+      rel="preload"
+      href="./dojo.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
     <noscript><link rel="stylesheet" href="./dojo.css" /></noscript>
-    
+
     <!-- Service Worker Registration -->
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-            .then(registration => {
-              console.log('SW registered: ', registration);
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("./sw.js")
+            .then((registration) => {
+              console.log("SW registered: ", registration);
             })
-            .catch(registrationError => {
-              console.log('SW registration failed: ', registrationError);
+            .catch((registrationError) => {
+              console.log("SW registration failed: ", registrationError);
             });
         });
       }
@@ -181,29 +235,34 @@
                 where sweet dreams come to life ♡ • べべベルのデジタル庭
               </p>
             </div>
-            <div id="floatingMikusContainer" class="floating-mikus person"></div>
+            <div
+              id="floatingMikusContainer"
+              class="floating-mikus person"
+            ></div>
           </header>
           <!-- Status bar with integrated navigation -->
           <div id="statusBar" class="status-bar">
-          <div class="status-left">
-            <div class="status-item">
-              <span class="blink" id="statusDot">●</span>
-              <span id="onlineStatus">Online</span>
+            <div class="status-left">
+              <div class="status-item">
+                <span class="blink" id="statusDot">●</span>
+                <span id="onlineStatus">Online</span>
+              </div>
+              <div class="status-item">💖 <span id="heartCount">0</span></div>
             </div>
-            <div class="status-item">💖 <span id="heartCount">0</span></div>
-          </div>
-          <nav id="navbar" class="status-nav">
-            <ul>
-              <li><a href="#home" data-section="home">🏠 Home</a></li>
-              <li><a href="#socials" data-section="socials">🔗 Socials</a></li>
-              <li><a href="#study" data-section="study">📚 日本語</a></li>
-              <li><a href="#games" data-section="games">🎮 Games</a></li>
-              <li><a href="#Wish" data-section="Wish">🎰 Wish</a></li>
-              <li>
-                <a href="#shrine" data-section="shrine">⛩️ Shrine</a>
-              </li>
-            </ul>
-          </nav>
+            <nav id="navbar" class="status-nav">
+              <ul>
+                <li><a href="#home" data-section="home">🏠 Home</a></li>
+                <li>
+                  <a href="#socials" data-section="socials">🔗 Socials</a>
+                </li>
+                <li><a href="#study" data-section="study">📚 日本語</a></li>
+                <li><a href="#games" data-section="games">🎮 Games</a></li>
+                <li><a href="#Wish" data-section="Wish">🎰 Wish</a></li>
+                <li>
+                  <a href="#shrine" data-section="shrine">⛩️ Shrine</a>
+                </li>
+              </ul>
+            </nav>
           </div>
         </section>
 
@@ -268,12 +327,18 @@
             <div class="widget">
               <h3>🌸 Site Stats</h3>
               <div class="stats">
-                <div class="visitor-counter">
+                <a
+                  class="visitor-counter"
+                  href="#"
+                  data-visitor-counter
+                  target="_blank"
+                  rel="noopener"
+                >
                   <span class="counter-label">Visitors:</span>
                   <span id="visitorCount" class="counter-number"
                     >Loading...</span
                   >
-                </div>
+                </a>
               </div>
             </div>
             <!-- Moved Web Badges to left sidebar under Site Stats -->
@@ -288,7 +353,14 @@
             <!-- Home section -->
             <section id="home" class="content-section active">
               <div class="hero-banner">
-                <img src="" alt="Miku Hero" class="hero-miku" id="heroMiku" decoding="async" loading="lazy" />
+                <img
+                  src=""
+                  alt="Miku Hero"
+                  class="hero-miku"
+                  id="heroMiku"
+                  decoding="async"
+                  loading="lazy"
+                />
                 <div class="hero-text">
                   <h2>Welcome to my garden! 🌸</h2>
                   <p>
@@ -313,12 +385,15 @@
                     class="guestbook-frame"
                     title="Guestbook"
                     loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
+                    referrerpolicy="strict-origin-when-cross-origin"
                     src="https://babybelle.atabook.org/"
                   ></iframe>
                 </div>
                 <small class="guestbook-note">
-                  Powered by <a href="https://atabook.org/" target="_blank" rel="noopener">atabook.org</a>
+                  Powered by
+                  <a href="https://atabook.org/" target="_blank" rel="noopener"
+                    >atabook.org</a
+                  >
                 </small>
               </div>
             </section>
@@ -804,7 +879,10 @@
                   <span id="mikuSearchTitle">🔍 Miku Search</span>
                   <span class="toggle-icon">▼</span>
                 </button>
-                <div class="collapsible-content collapsed" id="mikuSearchContent">
+                <div
+                  class="collapsible-content collapsed"
+                  id="mikuSearchContent"
+                >
                   <div class="game-widget">
                     <iframe
                       src="https://www.mikucollection.com/en/art-gallery"
@@ -814,6 +892,25 @@
                     ></iframe>
                   </div>
                 </div>
+                </div>
+                <div class="collapsible-section">
+                  <button class="collapsible-header" id="vocaloidDbToggle">
+                    <span id="vocaloidDbTitle">🎼 VocaloidDB</span>
+                    <span class="toggle-icon">▼</span>
+                  </button>
+                  <div
+                    class="collapsible-content collapsed"
+                    id="vocaloidDbContent"
+                  >
+                    <div class="game-widget">
+                      <iframe
+                        src="https://vocadb.net/"
+                        title="Vocaloid Database"
+                        style="width: 100%; height: 600px; border: none"
+                        loading="lazy"
+                      ></iframe>
+                    </div>
+                  </div>
               </div>
             </section>
           </main>
@@ -866,7 +963,7 @@
                   id="hudMetWrap"
                   style="display: none"
                 ></div>
-          </div>
+              </div>
             </div>
             <div class="widget">
               <h3 id="quickLinksTitle">🌟 Quick Links</h3>
@@ -952,7 +1049,7 @@
     <script src="./js/modules/shrine-dex.js" defer></script>
     <script src="./js/modules/mikuUI.js" defer></script>
     <script src="./js/modules/mikuCore.js" defer></script>
-  <script src="./js/modules/accessibility-fixes.js" defer></script>
+    <script src="./js/modules/accessibility-fixes.js" defer></script>
     <script src="dojo.js" defer></script>
   </body>
 </html>

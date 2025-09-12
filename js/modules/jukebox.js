@@ -106,7 +106,7 @@
         </div>
       </div>
       <div style="width:100%;aspect-ratio:16/9;overflow:hidden;background:#000;border-bottom-left-radius:12px;border-bottom-right-radius:12px">
-  <iframe id="jukeboxIframe" style="width:100%;height:100%;border:0;display:block" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="no-referrer-when-downgrade" loading="lazy"></iframe>
+  <iframe id="jukeboxIframe" style="width:100%;height:100%;border:0;display:block" src="about:blank" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" loading="lazy"></iframe>
       </div>`;
     document.body.appendChild(wrap);
     const handle = wrap.firstElementChild;
@@ -256,7 +256,7 @@
       if (window.__pauseBgm) window.__pauseBgm();
 
       const vid = song.yt || "";
-      const url = `https://www.youtube.com/embed/${encodeURIComponent(vid)}?autoplay=1&rel=0&playsinline=1&modestbranding=1&color=white&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
+  const url = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(vid)}?autoplay=1&rel=0&playsinline=1&modestbranding=1&color=white&enablejsapi=1&origin=${encodeURIComponent(location.origin)}`;
       if (iframe) {
         // stop any previous playback first
         try { iframe.src = 'about:blank'; } catch (_) {}
@@ -278,7 +278,35 @@
       const wrap = document.getElementById('jukeboxPlayer');
       stopIframePlayback();
       if (wrap) wrap.style.display = 'none';
-      if (window.__resumeBgm) window.__resumeBgm();
+      // Determine if radio is currently active
+      const radioActive = (() => {
+        try {
+          const ra = window.__radioAudio;
+          return !!(ra && !ra.paused && !ra.ended);
+        } catch (_) { return false; }
+      })();
+      // If no radio is active, pause (not resume) site BGM as per requirement
+      if (!radioActive) {
+        if (typeof window.__pauseBgm === 'function') {
+          try { window.__pauseBgm(); } catch (_) {}
+        }
+      } else {
+        // If radio is active let radio continue; ensure bgm stays stopped
+        if (typeof window.__stopBgm === 'function') {
+          try { window.__stopBgm(true); } catch (_) {}
+        }
+      }
+      // Update status indicator text
+      try {
+        const nowEl = document.getElementById('jukeboxNow');
+        if (nowEl) nowEl.textContent = '—';
+      } catch (_) {}
+      // Update system-wide now playing status
+      try {
+        if (window.MikuSystem && typeof window.MikuSystem.updateNowPlaying === 'function') {
+          window.MikuSystem.updateNowPlaying(null);
+        }
+      } catch (_) {}
     } catch (_) {}
   }
 
