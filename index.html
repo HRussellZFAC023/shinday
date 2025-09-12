@@ -2,18 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#bde3ff" />
+    <meta name="color-scheme" content="light" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Baby Belle" />
+    <meta name="generator" content="Hand-crafted with love" />
     <title>Baby Belle - Pixel Miku Garden ✨</title>
     <meta
       name="description"
+      id="metaDescription"
       content="A cozy pastel web home for Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) - links, music, games, study corner, and interactive Miku companions!"
     />
-    <meta property="og:title" content="Baby Belle - Pastel Miku Garden" />
+    <meta property="og:title" id="metaOgTitle" content="Baby Belle - Pastel Miku Garden" />
     <meta
       property="og:description"
+      id="metaOgDescription"
       content="A magical retro website with interactive Miku friends and kawaii vibes"
     />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" id="metaOgSiteName" content="Baby Belle's Pixel Garden" />
+    <meta property="og:url" id="metaOgUrl" content="" />
+    <meta property="og:locale" id="metaOgLocale" content="en_US" />
     <meta
       property="og:image"
       content="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png"
@@ -21,15 +31,114 @@
     />
 
     <link rel="icon" href="./assets/icon.jpg" id="faviconLink" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="canonical" id="canonicalLink" href="./" />
+    <!-- Static alternates; JS will refine URLs to absolute -->
+    <link rel="alternate" class="i18n-alt" hreflang="x-default" href="./" />
+    <link rel="alternate" class="i18n-alt" hreflang="en" href="./?lang=en" />
+    <link rel="alternate" class="i18n-alt" hreflang="ja" href="./?lang=ja" />
+    <link rel="alternate" class="i18n-alt" hreflang="es" href="./?lang=es" />
+    <link rel="alternate" class="i18n-alt" hreflang="de" href="./?lang=de" />
+    <link rel="alternate" class="i18n-alt" hreflang="fr" href="./?lang=fr" />
+    <link rel="alternate" class="i18n-alt" hreflang="zh" href="./?lang=zh" />
+    <!-- Twitter cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" id="metaTwitterTitle" content="Baby Belle - Pastel Miku Garden" />
+    <meta name="twitter:description" id="metaTwitterDescription" content="A magical retro website with interactive Miku friends and kawaii vibes" />
+    <meta name="twitter:image" id="metaTwitterImage" content="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- Preload critical assets -->
+    <link rel="preload" href="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png" as="image" fetchpriority="high" />
+    <link rel="preload" href="./js/main.js" as="script" />
+    <link rel="preload" href="./css/styles.css" as="style" />
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap"
       rel="stylesheet"
     />
+    
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+      :root {
+        --pastel-blue: #bde3ff;
+        --pastel-pink: #ffd1ec;
+        --pastel-mint: #cff6e6;
+        --pastel-purple: #e6d1ff;
+        --pastel-yellow: #fff3d1;
+        --ink: #2b2b44;
+        --gradient-bg: linear-gradient(135deg, #bde3ff 0%, #ffd1ec 25%, #cff6e6 50%, #e6d1ff 75%, #fff3d1 100%);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+        color: var(--ink);
+        line-height: 1.6;
+        background: var(--gradient-bg);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+      }
+
+      .splash-content {
+        text-align: center;
+        animation: fadeIn 1s ease-in;
+      }
+
+      .splash-miku {
+        max-width: 300px;
+        height: auto;
+        margin-bottom: 2rem;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+    
     <link rel="stylesheet" href="./css/styles.css" />
-    <link rel="stylesheet" href="./css/shimeji.css" />
+    <link rel="stylesheet" href="./css/shimeji.css" media="print" onload="this.media='all'" />
     <!-- Language Dojo styles -->
-    <link rel="stylesheet" href="./dojo.css" />
+        <!-- Language Dojo styles -->
+    <link rel="preload" href="./dojo.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="./dojo.css" /></noscript>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </head>
   <body>
     <div class="root-bg"></div>
@@ -42,6 +151,10 @@
           alt="Miku"
           class="splash-miku"
           id="splashMiku"
+          width="900"
+          height="540"
+          decoding="async"
+          fetchpriority="high"
         />
         <h1 class="glitch" data-text="Baby Belle's Pixel Garden">
           Baby Belle's Pixel Garden
@@ -132,6 +245,7 @@
                 src=""
                 frameborder="0"
                 id="petIframe"
+                loading="lazy"
               ></iframe>
               <small style="display: block; color: #596286; margin-top: 6px"
                 >Powered by
@@ -174,7 +288,7 @@
             <!-- Home section -->
             <section id="home" class="content-section active">
               <div class="hero-banner">
-                <img src="" alt="Miku Hero" class="hero-miku" id="heroMiku" />
+                <img src="" alt="Miku Hero" class="hero-miku" id="heroMiku" decoding="async" loading="lazy" />
                 <div class="hero-text">
                   <h2>Welcome to my garden! 🌸</h2>
                   <p>
@@ -290,6 +404,8 @@
                             src="assets/icons/stage.png"
                             class="miku-icon"
                             alt="♪"
+                            loading="lazy"
+                            decoding="async"
                           />
                           PROJECT DIVA</span
                         >
@@ -307,6 +423,8 @@
                               src="assets/icons/vibing.png"
                               class="miku-icon"
                               alt="♪"
+                              loading="lazy"
+                              decoding="async"
                             />
                             Vocab Pop
                           </div>
@@ -323,6 +441,8 @@
                               src="assets/icons/ok sign.png"
                               class="miku-icon"
                               alt="✓"
+                              loading="lazy"
+                              decoding="async"
                             />
                             Kanji Master
                           </div>
@@ -339,6 +459,8 @@
                               src="assets/icons/cheering.png"
                               class="miku-icon"
                               alt="♫"
+                              loading="lazy"
+                              decoding="async"
                             />
                             Miku × Chat Typing
                           </div>
@@ -578,6 +700,7 @@
                       style="width: 100%; height: 520px"
                       frameborder="0"
                       allowfullscreen
+                      loading="lazy"
                     ></iframe>
                   </div>
                 </div>
@@ -671,31 +794,26 @@
                   </ul>
                 </div>
               </div>
-              <div>
-                <h3>ⓘ Media Credits</h3>
-                <p>
-                  Our shrine uses fan-made assets and borrowed media. All rights remain with the original creators:
-                </p>
-                <ul>
-                  <li><strong>Hatsune Miku</strong> - © Crypton Future Media</li>
-                  <li><strong>Pixel Art</strong> - illufinch <a href="https://illufinch.tumblr.com/post/667463046903545856/100-mikus-patreon-twitter">100 Mikus</a></li>
-                  <li><strong>Webmeji Sprites</strong> - <a href="https://neocities.org/site/webmeji">webmeji on Neocities</a></li>
-                  <li><strong>Sound Effects</strong> - onlinesaipa</li>
-                  <li><strong>Additional Images</strong> - Maki_Ilu and JimmyIsaac</li>
-                </ul>
-                <p>
-                  <em>These assets are used here for tribute purposes only.</em>
-                </p>
-              </div>
               <div class="image-gallery" id="mikuGallery"></div>
               <br />
-              <div class="game-widget">
-                <iframe
-                  src="https://www.mikucollection.com/en/art-gallery"
-                  title="Miku Collection Art Gallery"
-                  style="width: 100%; height: 600px; border: none"
-                  loading="lazy"
-                ></iframe>
+              <div class="media-credits" id="mediaCredits">
+                <!-- Content populated by JavaScript from localization -->
+              </div>
+              <div class="collapsible-section">
+                <button class="collapsible-header" id="mikuSearchToggle">
+                  <span id="mikuSearchTitle">🔍 Miku Search</span>
+                  <span class="toggle-icon">▼</span>
+                </button>
+                <div class="collapsible-content collapsed" id="mikuSearchContent">
+                  <div class="game-widget">
+                    <iframe
+                      src="https://www.mikucollection.com/en/art-gallery"
+                      title="Miku Collection Art Gallery"
+                      style="width: 100%; height: 600px; border: none"
+                      loading="lazy"
+                    ></iframe>
+                  </div>
+                </div>
               </div>
             </section>
           </main>
@@ -794,6 +912,8 @@
               title="Made with ♥ by Hero & Shin"
               data-tooltip="Made with ♥ by Hero & Shin"
               class="made-by-gif"
+              loading="lazy"
+              decoding="async"
             />
           </div>
         </footer>
@@ -802,35 +922,37 @@
         <div class="floating-hearts"></div>
       </div>
     </div>
-    <script src="./js/modules/jlpt.js"></script>
-    <script src="./js/modules/miku-manifest.js"></script>
-    <script src="./js/content.js"></script>
-    <script src="./js/shimeji.js"></script>
-    <script src="./js/modules/sfx.js"></script>
-    <script src="./js/modules/audio.js"></script>
-    <script src="./js/modules/csp-proxy.js"></script>
-    <script src="./js/modules/radio.js"></script>
-    <script src="./js/modules/MikuSystem.js"></script>
-    <script src="./js/modules/navigation.js"></script>
-    <script src="./js/modules/presentation.js"></script>
-    <script src="./js/modules/progression.js"></script>
-    <script src="./js/modules/achievements.js"></script>
-    <script src="./js/modules/jukebox.js"></script>
-    <script src="./js/modules/dex.js"></script>
-    <script src="./js/modules/visual-effects.js"></script>
-    <script src="./js/modules/quests.js"></script>
-    <script src="./js/modules/cursor.js"></script>
-    <script src="./js/modules/hearts.js"></script>
-    <script src="./js/modules/games/memory.js"></script>
-    <script src="./js/modules/games/heart-garden.js"></script>
-    <script src="./js/modules/shop.js"></script>
-    <script src="./js/modules/wish.js"></script>
-    <script src="./js/modules/shrine-dex.js"></script>
-    <script src="./js/modules/socials.js"></script>
-    <script src="./js/modules/shrine-dex.js"></script>
-    <script src="./js/modules/mikuUI.js"></script>
-    <script src="./js/modules/mikuCore.js"></script>
-    <script src="dojo.js"></script>
+    <script src="./js/modules/jlpt.js" defer></script>
+    <script src="./js/modules/miku-manifest.js" defer></script>
+    <!-- Load orchestrator early to set language before splash renders -->
     <script src="./js/main.js"></script>
+    <script src="./js/content.js" defer></script>
+    <script src="./js/shimeji.js" defer></script>
+    <script src="./js/modules/sfx.js" defer></script>
+    <script src="./js/modules/audio.js" defer></script>
+    <script src="./js/modules/csp-proxy.js" defer></script>
+    <script src="./js/modules/radio.js" defer></script>
+    <script src="./js/modules/MikuSystem.js" defer></script>
+    <script src="./js/modules/navigation.js" defer></script>
+    <script src="./js/modules/presentation.js" defer></script>
+    <script src="./js/modules/progression.js" defer></script>
+    <script src="./js/modules/achievements.js" defer></script>
+    <script src="./js/modules/jukebox.js" defer></script>
+    <script src="./js/modules/dex.js" defer></script>
+    <script src="./js/modules/visual-effects.js" defer></script>
+    <script src="./js/modules/quests.js" defer></script>
+    <script src="./js/modules/cursor.js" defer></script>
+    <script src="./js/modules/hearts.js" defer></script>
+    <script src="./js/modules/games/memory.js" defer></script>
+    <script src="./js/modules/games/heart-garden.js" defer></script>
+    <script src="./js/modules/shop.js" defer></script>
+    <script src="./js/modules/wish.js" defer></script>
+    <script src="./js/modules/shrine-dex.js" defer></script>
+    <script src="./js/modules/socials.js" defer></script>
+    <script src="./js/modules/shrine-dex.js" defer></script>
+    <script src="./js/modules/mikuUI.js" defer></script>
+    <script src="./js/modules/mikuCore.js" defer></script>
+  <script src="./js/modules/accessibility-fixes.js" defer></script>
+    <script src="dojo.js" defer></script>
   </body>
 </html>

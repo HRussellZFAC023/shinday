@@ -99,9 +99,9 @@
       "position:fixed;right:16px;bottom:16px;width:360px;z-index:9999;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border:2px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(43,43,68,.25)";
     wrap.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border)">
-        <div style=\"font-weight:900;display:flex;align-items:center;gap:8px\">🎵 Miku Jukebox <span id=\"jukeboxNow\">Ready</span></div>
+        <div style=\"font-weight:900;display:flex;align-items:center;gap:8px\">🎵 Miku Jukebox <span id=\"jukeboxNow\"></span></div>
         <div style=\"display:flex;align-items:center;gap:6px\">
-          <button id=\"jukeboxLove\" title=\"send love\" class=\"pixel-btn\" style=\"padding:4px 8px;line-height:1\">💖</button>
+          <button id=\"jukeboxLove\" class=\"pixel-btn\" style=\"padding:4px 8px;line-height:1\">💖</button>
           <button id=\"jukeboxClose\" class=\"pixel-btn\" style=\"padding:4px 8px\">✖</button>
         </div>
       </div>
@@ -146,6 +146,12 @@
     }
     handle.addEventListener("mousedown", dragStart);
     handle.addEventListener("touchstart", dragStart, { passive: false });
+    const C = window.SITE_CONTENT || {};
+    const now = document.getElementById("jukeboxNow");
+    if (now) now.textContent = (C.status?.radioOffLabel) || (C.music?.ui?.jukeboxReady) || 'Ready';
+    const loveBtn = document.getElementById("jukeboxLove");
+    if (loveBtn) loveBtn.title = (C.music?.ui?.sendLove) || loveBtn.title || 'send love';
+
     document.getElementById("jukeboxClose").onclick = () => {
       document.getElementById("jukeboxIframe").src = "about:blank";
 
@@ -153,7 +159,6 @@
 
       if (window.__resumeBgm) window.__resumeBgm();
     };
-    const loveBtn = document.getElementById("jukeboxLove");
     if (loveBtn)
       loveBtn.addEventListener("click", () => {
         // Prefer Hearts module, then global addHearts, then MikuUI effects
@@ -250,13 +255,16 @@
     const wrap = document.createElement("div");
     wrap.className = "hud-line";
     const current = getCurrentSong();
+    const C = window.SITE_CONTENT || {};
+    const songLabel = (C.music?.ui?.songLabel) || 'Song:';
+    const btnLabel = (C.music?.ui?.songSelect) || 'Song Select';
     wrap.innerHTML = `
-      <strong>🎶 Song:</strong>
+      <strong>🎶 ${songLabel}</strong>
       <span id="jukeboxCurrent" style="font-weight:800;color:#596286">${
-        current ? current.title : "None"
+        current ? current.title : "—"
       }</span>
       <div class="spacer"></div>
-      <button id="jukeboxOpen" class="pixel-btn">Song Select…</button>`;
+      <button id="jukeboxOpen" class="pixel-btn">${btnLabel}</button>`;
     hud.appendChild(wrap);
     wrap.querySelector("#jukeboxOpen").onclick = openSongSelect;
     // Theme accent hook
@@ -314,14 +322,17 @@
         </div>`;
         })
         .join("");
+      const C = window.SITE_CONTENT || {};
+      const tSongSel = (C.music?.ui?.songSelect) || 'Song Select';
+      const tClick = (C.music?.ui?.clickToPlay) || 'Click a song to play';
       ov.innerHTML = `
         <div class="song-panel" style="background:#fff;border:3px solid var(--border);border-radius:14px;box-shadow:var(--shadow);width:min(820px,95vw);max-height:90vh;overflow:auto;padding:14px;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
-            <h3 style="margin:0">Song Select</h3>
+            <h3 style="margin:0">${tSongSel}</h3>
             <button id="songClose" class="pixel-btn">✕</button>
           </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:10px">${grid}</div>
-      <div style="opacity:.8;font-size:12px;text-align:right">Click a song to play</div>
+      <div style="opacity:.8;font-size:12px;text-align:right">${tClick}</div>
         </div>`;
       document.body.appendChild(ov);
 

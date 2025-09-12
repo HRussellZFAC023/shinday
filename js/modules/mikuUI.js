@@ -17,7 +17,19 @@ window.MikuUI = (function () {
     // Meta and icons
     if (C.images?.ogImage) {
       const og = document.getElementById("metaOgImage");
-      if (og) og.setAttribute("content", C.images.ogImage);
+      if (og) {
+        try {
+          const origin = (location && location.origin) ? location.origin : '';
+          const path = (location && location.pathname) ? location.pathname : '/';
+          const img = C.images.ogImage;
+          const absolute = /^https?:\/\//i.test(img)
+            ? img
+            : origin + (img.startsWith('/') ? img : (path.replace(/[^/]*$/, '') + img));
+          og.setAttribute("content", absolute);
+        } catch (_) {
+          og.setAttribute("content", C.images.ogImage);
+        }
+      }
     }
     if (C.images?.favicon) {
       const fav = document.getElementById("faviconLink");
@@ -168,6 +180,11 @@ window.MikuUI = (function () {
           const presentationTitle =
             C.home.presentationTitle || "Getting to Know Baby Belle";
 
+          // Localized navigation labels for presentation controls
+          const dexI18n = (window.SITE_CONTENT && window.SITE_CONTENT.dex) || {};
+          const prevLabel = dexI18n.navPrev || "Previous";
+          const nextLabel = dexI18n.navNext || "Next";
+
           // Build unified presentation
           const slidesHtml = C.home.presentationSlides
             .map((slide, index) => {
@@ -206,16 +223,16 @@ window.MikuUI = (function () {
                 <div class="presentation-header">
                   <h2>${presentationIcon}${presentationTitle}</h2>
                   <div class="presentation-controls">
-                    <button class="presentation-btn prev-slide" data-direction="prev">
-                      ${window.MikuCore.mikuIcon("wallHide", "◀")} Previous
+                    <button class="presentation-btn prev-slide" data-direction="prev" aria-label="${prevLabel}" title="${prevLabel}">
+                      ${window.MikuCore.mikuIcon("wallHide", "◀")} ${prevLabel}
                     </button>
                     <div class="slide-indicator">
                       <span class="current-slide">1</span> / ${
                         C.home.presentationSlides.length
                       }
                     </div>
-                    <button class="presentation-btn next-slide" data-direction="next">
-                      Next ${window.MikuCore.mikuIcon("cheering", "▶")}
+                    <button class="presentation-btn next-slide" data-direction="next" aria-label="${nextLabel}" title="${nextLabel}">
+                      ${nextLabel} ${window.MikuCore.mikuIcon("cheering", "▶")}
                     </button>
                   </div>
                   <div class="presentation-progress">
@@ -468,9 +485,29 @@ window.MikuUI = (function () {
               : "📖";
             const title = C.home?.guestbookTitle || "guestbook";
             h.innerHTML = `${icon} ${title}`;
-          }
-        }
       }
+    }
+
+    // Localize tooltips/titles across index
+    const tips = C.tooltips || {};
+    // Guestbook iframe title
+    const gb = document.getElementById('guestbookFrame');
+    if (gb && tips.guestbook) gb.setAttribute('title', tips.guestbook);
+    // Puzzle iframe title
+    const puzzle = document.querySelector('#games iframe[title], #games iframe[src*="jigsawplanet"]');
+    if (puzzle && tips.puzzle) puzzle.setAttribute('title', tips.puzzle);
+    // Shrine gallery iframe title
+    const shrineFrame = document.querySelector('#shrine iframe[title], #shrine iframe[src*="mikucollection"]');
+    if (shrineFrame && tips.shrineGallery) shrineFrame.setAttribute('title', tips.shrineGallery);
+    // Shop button titles
+    const btnShield = document.getElementById('shopShield');
+    if (btnShield && tips.shopShield) btnShield.setAttribute('title', tips.shopShield);
+    const btnDecoy = document.getElementById('shopDecoy');
+    if (btnDecoy && tips.shopDecoy) btnDecoy.setAttribute('title', tips.shopDecoy);
+    // WOD next button title
+    const nextBtn = document.getElementById('wodNext');
+    if (nextBtn && C.study?.dojo?.wod?.next) nextBtn.setAttribute('title', C.study.dojo.wod.next);
+  }
     }
 
     // Socials section title
@@ -583,7 +620,7 @@ window.MikuUI = (function () {
           const zoneIcon = C.games.heartsZoneIcon
             ? window.MikuCore.mikuIcon(C.games.heartsZoneIcon, "💖")
             : "💖";
-          zone.innerHTML = /*html*/ `Click to collect hearts! ${zoneIcon}`;
+          zone.innerHTML = /*html*/ `${C.games.heartsZone} ${zoneIcon}`;
         }
         const btn = document.getElementById("resetHearts");
         if (btn && C.games.heartsReset) btn.textContent = C.games.heartsReset;
@@ -598,8 +635,23 @@ window.MikuUI = (function () {
           WishHeader.innerHTML = /*html*/ `${WishIcon} ${C.games.WishTitle}`;
         }
         const dexBtn = document.getElementById("WishCollectionBtn");
-        if (dexBtn && C.games.WishOpenDex)
-          dexBtn.textContent = C.games.WishOpenDex;
+        if (dexBtn && C.games.WishOpenDex) dexBtn.textContent = C.games.WishOpenDex;
+
+        // Tokens line
+        const tokensWrap = WishSection.querySelector('.Wish-tokens');
+        if (tokensWrap && C.games.WishTokensLabel) {
+          const count = tokensWrap.querySelector('#WishTokens')?.outerHTML || '<span id="WishTokens">0</span>';
+          tokensWrap.innerHTML = `🎟️ ${C.games.WishTokensLabel} ${count}`;
+        }
+        // Buttons
+        const b1 = document.getElementById('WishPull1');
+        if (b1 && C.games.WishPull1) b1.textContent = C.games.WishPull1;
+        const b10 = document.getElementById('WishPull10');
+        if (b10 && C.games.WishPull10) b10.textContent = C.games.WishPull10;
+        const bd = document.getElementById('WishDaily');
+        if (bd && C.games.WishDaily) bd.textContent = C.games.WishDaily;
+        const bc = document.getElementById('WishConvert');
+        if (bc && C.games.WishConvert) bc.textContent = C.games.WishConvert;
       }
     }
 
@@ -709,6 +761,74 @@ window.MikuUI = (function () {
       const galTitle = document.querySelector("#shrine .gallery h3");
       if (galTitle && C.shrine.galleryTitle)
         galTitle.textContent = C.shrine.galleryTitle;
+    }
+
+    // Media Credits section
+    if (C.mediaCredits) {
+      const creditsContainer = document.getElementById("mediaCredits");
+      if (creditsContainer) {
+        const creditsListItems = C.mediaCredits.credits.map(credit => {
+          let attributionText = `<strong>${credit.category}</strong>`;
+          
+          if (credit.attribution) {
+            attributionText += ` - ${credit.attribution}`;
+          }
+          
+          if (credit.link) {
+            const linkText = credit.linkText || credit.link;
+            attributionText += credit.attribution ? 
+              ` <a href="${credit.link}">${linkText}</a>` : 
+              ` - <a href="${credit.link}">${linkText}</a>`;
+          }
+          
+          return `<li>${attributionText}</li>`;
+        }).join('');
+
+        creditsContainer.innerHTML = /*html*/ `
+          <h3>${C.mediaCredits.title}</h3>
+          <p>${C.mediaCredits.description}</p>
+          <ul>
+            ${creditsListItems}
+          </ul>
+          <p><em>${C.mediaCredits.disclaimer}</em></p>
+        `;
+      }
+    }
+
+    // Miku Search collapsible section
+    if (C.mikuSearch) {
+      const mikuSearchTitle = document.getElementById("mikuSearchTitle");
+      if (mikuSearchTitle) {
+        mikuSearchTitle.textContent = C.mikuSearch.title;
+      }
+
+      // Set up collapsible functionality
+      const toggleButton = document.getElementById("mikuSearchToggle");
+      const content = document.getElementById("mikuSearchContent");
+      
+      if (toggleButton && content) {
+        // Set initial state
+        toggleButton.setAttribute("aria-expanded", "false");
+        
+        toggleButton.addEventListener("click", () => {
+          const isExpanded = toggleButton.getAttribute("aria-expanded") === "true";
+          
+          if (isExpanded) {
+            content.classList.add("collapsed");
+            toggleButton.setAttribute("aria-expanded", "false");
+          } else {
+            content.classList.remove("collapsed");
+            toggleButton.setAttribute("aria-expanded", "true");
+          }
+        });
+      }
+
+      // Update iframe attributes from content
+      const iframe = content?.querySelector("iframe");
+      if (iframe) {
+        iframe.src = C.mikuSearch.iframeSrc;
+        iframe.title = C.mikuSearch.iframeTitle;
+      }
     }
 
     // Friends section and sidebar widget
@@ -908,7 +1028,98 @@ window.MikuUI = (function () {
           p.textContent = C.footer.text;
         }
       }
+      // Made-by tooltip/text
+      const made = document.querySelector('.made-by-gif');
+      if (made && C.madeBy?.text) {
+        made.setAttribute('title', C.madeBy.text);
+        made.setAttribute('data-tooltip', C.madeBy.text);
+        if (!made.getAttribute('alt')) made.setAttribute('alt', C.madeBy.text);
+      }
+
+      // Reward modal labels
+      const rewardLabel = document.querySelector('.reward-label');
+      if (rewardLabel && C.study?.reward?.label) rewardLabel.textContent = C.study.reward.label;
+      const rewardBonus = document.getElementById('rewardBonus');
+      if (rewardBonus && C.study?.reward?.bonus) rewardBonus.textContent = C.study.reward.bonus;
+      const continueBtn = document.getElementById('continueBtn');
+      if (continueBtn && C.study?.reward?.continue) continueBtn.textContent = C.study.reward.continue;
     }
+
+    // Dojo i18n (Language Dojo + HUD labels)
+    (function applyDojoI18N() {
+      const DROOT = C.study || {};
+      const M = document.getElementById("languageDojoModule");
+      if (!M || !DROOT) return;
+      const D = DROOT.dojo || {};
+      // Titles
+      const tEn = M.querySelector(".dojo-title .title-en");
+      if (tEn && D.titleEn) tEn.textContent = D.titleEn;
+      const tDiva = M.querySelector(".dojo-title .title-diva");
+      if (tDiva && D.titleDiva) {
+        const icon = `<img src="assets/icons/stage.png" class="miku-icon" alt="♪" />`;
+        tDiva.innerHTML = `${icon} ${D.titleDiva}`;
+      }
+      // HUD labels
+      if (D.hud) {
+        const lv = M.querySelector(".level-display .label");
+        const vol = M.querySelector(".voltage-label");
+        const combo = M.querySelector(".combo-label");
+        const score = M.querySelector(".score-label");
+        const judge = document.getElementById("languageDojoCardJudge");
+        if (lv && D.hud.lv) lv.textContent = D.hud.lv;
+        if (vol && D.hud.voltage) vol.textContent = D.hud.voltage;
+        if (combo && D.hud.combo) combo.textContent = D.hud.combo;
+        if (score && D.hud.score) score.textContent = D.hud.score;
+        if (judge && D.hud.ready) judge.textContent = D.hud.ready;
+      }
+      // Modes
+      if (D.modes) {
+        const mV = M.querySelector(".vocab-mode");
+        const mK = M.querySelector(".kanji-mode");
+        const mT = M.querySelector(".typing-mode");
+        function setMode(el, name, desc) {
+          if (!el) return;
+          const nameEl = el.querySelector(".mode-name");
+          const descEl = el.querySelector(".mode-desc");
+          if (nameEl && name) {
+            const icon = nameEl.querySelector("img");
+            nameEl.textContent = "";
+            if (icon) nameEl.appendChild(icon);
+            nameEl.appendChild(document.createTextNode(" " + name));
+          }
+          if (descEl && desc) descEl.textContent = desc;
+        }
+        if (D.modes.vocab)
+          setMode(mV, D.modes.vocab.name, D.modes.vocab.desc);
+        if (D.modes.kanji)
+          setMode(mK, D.modes.kanji.name, D.modes.kanji.desc);
+        if (D.modes.typing)
+          setMode(mT, D.modes.typing.name, D.modes.typing.desc);
+      }
+      // WOD panel
+      if (D.wod) {
+        const h3 = M.querySelector(".wod-panel h3");
+        const loading = M.querySelector(".wod-loading");
+        const next = document.getElementById("wodNext");
+        if (h3 && D.wod.title) {
+          h3.innerHTML = `<img src="assets/icons/star uwu.png" class="miku-icon" alt="★" /> ${D.wod.title}`;
+        }
+        if (loading && D.wod.loading) loading.textContent = D.wod.loading;
+        if (next && D.wod.next) { next.textContent = D.wod.next; next.title = D.wod.next; }
+      }
+      // Right HUD labels
+      const RH = DROOT.hudRight || {};
+      const lvlStrong = document.querySelector("#hudLevelWrap strong");
+      if (lvlStrong && RH.levelLabel) lvlStrong.textContent = `⭐ ${RH.levelLabel}`;
+      const hudLines = document.querySelectorAll("#jpHudWidget .hud-line strong");
+      hudLines.forEach((s) => {
+        if (/Lives|Vies|Leben|ライフ|生命|Vidas|Vite|生命|Lives/i.test(s.textContent) && RH.livesLabel) {
+          s.textContent = `❤️ ${RH.livesLabel}`;
+        }
+      });
+      const diffLabel = document.querySelector("#hudDifficultyWrap label.hud-label");
+      if (diffLabel && RH.difficultyLabel) diffLabel.textContent = RH.difficultyLabel;
+    })();
   }
 
   function createConfetti(count = 80) {

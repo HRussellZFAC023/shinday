@@ -24,3 +24,19 @@
     </div>
   </div>
 </section>
+<script src="./js/main.js"></script>
+<script src="./js/content.js"></script>
+<script>
+  (function(){
+    try{
+      const C = window.SITE_CONTENT || {};
+      const btn = document.getElementById('WishCollectionBtn');
+      if(btn){ btn.textContent = (C.games?.WishOpenDex) || btn.textContent; }
+      const h2 = document.querySelector('#Wish h2');
+      if(h2 && C.games?.WishTitle){
+        const icon = '🎰';
+        h2.innerHTML = icon + ' ' + C.games.WishTitle;
+      }
+    }catch(_){}
+  })();
+</script>

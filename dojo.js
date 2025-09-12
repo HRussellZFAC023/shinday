@@ -529,19 +529,11 @@
       });
     }
     updateDifficultyDisplay() {
-      const labels = [
-        'Beginner',
-        'Easy',
-        'Standard',
-        'Hard',
-        'Expert',
-        'Master',
-        'Extreme',
-        'Chaos',
-        'Impossible',
-      ];
+      const D = (window.SITE_CONTENT && window.SITE_CONTENT.study && window.SITE_CONTENT.study.dojo) || {};
+      const fallback = ['Beginner','Easy','Standard','Hard','Expert','Master','Extreme','Chaos','Impossible'];
+      const labels = Array.isArray(D.difficulties) && D.difficulties.length ? D.difficulties : fallback;
       this.elements.diffValue.textContent = State.difficulty;
-      this.elements.diffLabel.textContent = labels[State.difficulty - 1] || 'Unknown';
+      this.elements.diffLabel.textContent = labels[State.difficulty - 1] || (D.unknown || 'Unknown');
     }
 
     /**
@@ -554,22 +546,23 @@
      * and whenever the direction selectors change.
      */
     updateModeDescriptions() {
+      const D = (window.SITE_CONTENT && window.SITE_CONTENT.study && window.SITE_CONTENT.study.dojo) || {};
       // Vocab mode description
       const vocabDesc = document.querySelector('.mode-btn.vocab-mode .mode-desc');
       if (vocabDesc) {
-        const dir = State.vocabDirection === 'jp-en' ? 'JP → EN' : 'EN → JP';
-        vocabDesc.textContent = `${dir} Multiple Choice`;
+        const dir = State.vocabDirection === 'jp-en' ? (D.dirJPEN || 'JP → EN') : (D.dirENJP || 'EN → JP');
+        vocabDesc.textContent = `${dir} ${D.multipleChoice || 'Multiple Choice'}`;
       }
       // Kanji mode description
       const kanjiDesc = document.querySelector('.mode-btn.kanji-mode .mode-desc');
       if (kanjiDesc) {
-        const dir = State.kanjiDirection === 'meaning-kanji' ? 'Meaning → Kanji' : 'Kanji → Meaning';
-        kanjiDesc.textContent = `${dir} by Grade`;
+        const dir = State.kanjiDirection === 'meaning-kanji' ? (D.dirMeaningKanji || 'Meaning → Kanji') : (D.dirKanjiMeaning || 'Kanji → Meaning');
+        kanjiDesc.textContent = `${dir} ${D.byGrade || 'by Grade'}`;
       }
       // Typing mode description
       const typingDesc = document.querySelector('.mode-btn.typing-mode .mode-desc');
       if (typingDesc) {
-        typingDesc.textContent = `Hiragana & Katakana Typing`;
+        typingDesc.textContent = D.typingLabel || `Hiragana & Katakana Typing`;
       }
     }
     updateHUD() {
@@ -603,9 +596,10 @@
       // Wait for JLPT data to be ready before fetching
       await (window.JLPT_READY || Promise.resolve());
       const wod = await ApiService.fetchWordOfDay(State.difficulty);
+      const D = (window.SITE_CONTENT && window.SITE_CONTENT.study && window.SITE_CONTENT.study.dojo) || {};
       content.innerHTML = wod
         ? `<div class="wod-word">${wod.word || ''}</div><div class="wod-reading">${wod.reading || ''}</div><div class="wod-meaning">${wod.meaning || ''}</div>`
-        : '<div class="wod-error">Could not load word</div>';
+        : `<div class="wod-error">${(D.wod && D.wod.error) || 'Could not load word'}</div>`;
     }
     nextWordOfDay() {
       return this.loadWordOfDay();
@@ -1076,7 +1070,7 @@
     async start(gameType) {
       State.currentGame = gameType;
       State.resetRuntime();
-      window.SFX?.play?.('start');
+      window.SFX?.play?.('sega.tag');
       UI.elements.menuPanel.style.display = 'none';
       UI.elements.gameArea.style.display = 'block';
       // Toggle the typing-active class on the body so CSS can adjust layout
@@ -1273,7 +1267,7 @@
         if (inpEl) {
           inpEl.dataset.hint = q.keys;
         }
-        window.SFX?.play?.('quiz.bad');
+        // window.SFX?.play?.('quiz.bad');
       }
       // Keep feedback empty to avoid flicker on mistakes
       UI.elements.typingFeedback.textContent = '';
@@ -1294,6 +1288,8 @@
         State.questProgress.score = Math.max(State.questProgress.score, State.score);
         if (judgment === 'COOL') {
           State.questProgress.coolHits++;
+          // Ensure daily quest 'Hit 10 COOL judgments' progresses even if quests.js loads after dojo
+          try { window.Quests?.inc && window.Quests.inc('cool-judges', 1); } catch {}
         }
         State.questProgress.maxCombo = Math.max(State.questProgress.maxCombo, State.combo);
         // Effects and HUD updates

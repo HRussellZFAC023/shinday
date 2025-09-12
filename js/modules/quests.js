@@ -3,26 +3,19 @@
   const LS_Q = "quests.daily";
   const DAY = 24 * 60 * 60 * 1000;
 
-  const QUESTS = [
-    {
-      id: "play-song",
-      text: "Play any song in the Jukebox",
-      amount: 1,
-      reward: { xp: 20, hearts: 10 },
-    },
-    {
-      id: "cool-judges",
-      text: "Hit 10 COOL judgments",
-      amount: 10,
-      reward: { xp: 30, hearts: 15 },
-    },
-    {
-      id: "answers-right",
-      text: "Answer 15 study prompts",
-      amount: 15,
-      reward: { xp: 50, hearts: 20 },
-    },
-  ];
+  function getQuestsDef() {
+    const C = window.SITE_CONTENT || {};
+    if (C.quests && Array.isArray(C.quests.items) && C.quests.items.length) {
+      return C.quests.items;
+    }
+    // Fallback EN
+    return [
+      { id: "play-song", text: "Play any song in the Jukebox", amount: 1, reward: { xp: 20, hearts: 10 } },
+      { id: "cool-judges", text: "Hit 10 COOL judgments", amount: 10, reward: { xp: 30, hearts: 15 } },
+      { id: "answers-right", text: "Answer 15 study prompts", amount: 15, reward: { xp: 50, hearts: 20 } },
+    ];
+  }
+  const QUESTS = getQuestsDef();
 
   function todayKey() {
     return new Date().toDateString();
@@ -57,8 +50,10 @@
       if (reward.xp && window.Progression) Progression.addXp(reward.xp);
       if (reward.hearts && window.Hearts?.addHearts) {
         window.Hearts.addHearts(reward.hearts);
+        const C = window.SITE_CONTENT || {};
+        const msg = (C.quests && C.quests.strings && C.quests.strings.completed) || "✓ Completed";
         if (window.Hearts?.loveToast)
-          window.Hearts.loveToast(`Quest complete! +${reward.hearts} 💖`);
+          window.Hearts.loveToast(`${msg} +${reward.hearts} 💖`);
       }
       if (window.MikuUI?.effects?.confetti)
         window.MikuUI.effects.confetti(40);
@@ -83,8 +78,8 @@
     }
     if (!widget.querySelector(".quests-list")) {
       const C = window.SITE_CONTENT || {};
-      const title = C.status?.right?.quests || "Daily Quests";
-      const iconName = C.status?.right?.questsIcon;
+      const title = (C.sidebarTitles && C.sidebarTitles.right && C.sidebarTitles.right.quests) || "daily quests";
+      const iconName = C.sidebarTitles?.right?.questsIcon;
       const icon = window.MikuCore
         ? window.MikuCore.mikuIcon(iconName, "✨")
         : "✨";

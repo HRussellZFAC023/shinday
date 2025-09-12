@@ -3,11 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Link to us • Baby Belle's Pixel Garden ✨</title>
-    <meta
-      name="description"
-      content="Grab a kawaii badge to link to Baby Belle's garden! Copy-paste HTML, Markdown, or BBCode snippets."
-    />
+    <title id="badgeTitle">Link to us • Baby Belle's Pixel Garden ✨</title>
+    <meta name="description" id="badgeDesc" content="Grab a kawaii badge to link to Baby Belle's garden! Copy-paste HTML, Markdown, or BBCode snippets." />
     <link rel="preload" as="image" href="./assets/discordServerBanner.png" />
     <link rel="icon" href="./assets/icon.jpg" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,6 +14,8 @@
     />
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/badge.css" />
+    <script src="./js/main.js"></script>
+    <script src="./js/content.js"></script>
   </head>
   <body class="badge-page">
     <div class="badge-container">
@@ -30,7 +29,7 @@
           </p>
         </div>
         <a href="./" class="back-link" aria-label="Back to garden"
-          >← Back to Garden</a
+          >← <span id="badgeBack">Back to Garden</span></a
         >
       </header>
 
@@ -71,9 +70,7 @@
             <div class="code-section">
               <div class="code-header">
                 <span class="code-label">💝 HTML (Recommended)</span>
-                <button class="copy-btn" data-copy="html-main">
-                  Copy Code
-                </button>
+                <button class="copy-btn" data-copy="html-main">Copy Code</button>
               </div>
               <textarea id="html-main" class="code-textarea" readonly>
 <a href="https://babybelle.neocities.org/" target="_blank" rel="noopener">
@@ -136,9 +133,7 @@
             <div class="code-section">
               <div class="code-header">
                 <span class="code-label">💝 HTML</span>
-                <button class="copy-btn" data-copy="html-tiny">
-                  Copy Code
-                </button>
+                <button class="copy-btn" data-copy="html-tiny">Copy Code</button>
               </div>
               <textarea id="html-tiny" class="code-textarea" readonly>
 <a href="https://babybelle.neocities.org/" target="_blank" rel="noopener">
@@ -181,6 +176,28 @@
     </div>
 
     <script>
+      // Localize static strings using SITE_CONTENT if present
+      (function i18nBadge(){
+        try{
+          const C = window.SITE_CONTENT || {};
+          // Page title + meta description
+          const t = C.badgePage?.title || C.badge?.pageTitle;
+          if (t) { document.title = t; const el=document.getElementById('badgeTitle'); if (el) el.textContent=t; }
+          const d = C.badgePage?.description || C.badge?.description;
+          if (d) { const md=document.querySelector('meta[name="description"]'); if (md) md.setAttribute('content', d); }
+          const back = document.getElementById('badgeBack');
+          if (back && C.badge?.back) {
+            back.textContent = C.badge.back;
+            const link = back.closest('a');
+            if (link) link.setAttribute('aria-label', C.badge.back);
+          }
+          const copyBtns = document.querySelectorAll('.copy-btn');
+          copyBtns.forEach(btn=>{ if(C.badge?.copy) btn.textContent = C.badge.copy; });
+          const header = document.querySelector('.badge-header h1');
+          if (header && C.badge?.title) header.innerHTML = C.badge.title;
+        }catch(_){}
+      })();
+
       // Copy button functionality
       document.querySelectorAll(".copy-btn").forEach((btn) => {
         btn.addEventListener("click", async () => {
@@ -190,11 +207,13 @@
           if (!textarea) return;
 
           await navigator.clipboard.writeText(textarea.value);
-          btn.textContent = "Copied! ✨";
+          const C = window.SITE_CONTENT || {};
+          btn.textContent = (C.badge?.copied) || "Copied! ✨";
           btn.classList.add("copied");
 
           setTimeout(() => {
-            btn.textContent = "Copy Code";
+            const C = window.SITE_CONTENT || {};
+            btn.textContent = (C.badge?.copy) || "Copy Code";
             btn.classList.remove("copied");
           }, 2000);
         });

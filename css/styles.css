@@ -185,7 +185,7 @@ body {
 
 
 .hidden {
-  display: none;
+  visibility: hidden;
 }
 
 /* Typing × DIVA visuals */
@@ -680,7 +680,7 @@ main {
   display: flex;
   align-items: center;
   gap: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   padding: 20px;
   background: linear-gradient(
     45deg,
@@ -1068,6 +1068,23 @@ a[data-visitor-counter] .badge:hover {
   font-size: 0.9em;
   margin-right: 1px;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.counter-link {
+  color: inherit;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+}
+
+.counter-link:hover {
+  color: var(--accent);
+  background: rgba(124, 58, 237, 0.1);
+  text-decoration: none;
+  transform: translateY(-1px);
+  text-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
 }
 
 .counter-number {
@@ -3331,6 +3348,130 @@ a[data-visitor-counter] .badge:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
+/* Media credits container */
+.media-credits {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.8),
+    rgba(189, 227, 255, 0.4)
+  );
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: var(--shadow);
+}
+
+.media-credits h3 {
+  margin-top: 0;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.media-credits ul {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.media-credits li {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 6px 0;
+  transition: all 0.3s ease;
+}
+
+.media-credits li:hover {
+  background: rgba(189, 227, 255, 0.6);
+  transform: translateX(3px);
+}
+
+.media-credits a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.media-credits a:hover {
+  text-decoration: underline;
+  color: var(--accent-hover);
+}
+
+.media-credits em {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+}
+
+/* Collapsible section */
+.collapsible-section {
+  margin: 20px 0;
+}
+
+.collapsible-header {
+  width: 100%;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.8),
+    rgba(189, 227, 255, 0.4)
+  );
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 15px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+}
+
+.collapsible-header:hover {
+  background: linear-gradient(
+    145deg,
+    rgba(189, 227, 255, 0.6),
+    rgba(255, 255, 255, 0.8)
+  );
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.collapsible-header .toggle-icon {
+  transition: transform 0.3s ease;
+  font-size: 0.8em;
+}
+
+.collapsible-header[aria-expanded="true"] .toggle-icon {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  max-height: 1000px;
+}
+
+.collapsible-content.collapsed {
+  max-height: 0;
+}
+
+.collapsible-content .game-widget {
+  padding: 20px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.7),
+    rgba(189, 227, 255, 0.3)
+  );
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 15px 15px;
+  box-shadow: var(--shadow);
+}
+
 /* Gallery item wrappers for mystery covers */
 .gallery-item {
   position: relative;
@@ -3509,11 +3650,30 @@ a[data-visitor-counter] .badge:hover {
   box-shadow: var(--shadow);
   padding: 16px;
   transform: scale(0.9);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.2s ease;
 }
 
 .image-modal.open .image-panel {
   transform: scale(1);
+}
+
+/* Smooth content transitions */
+.image-modal .image-panel.transitioning {
+  opacity: 0.3;
+  transform: scale(0.98);
+}
+
+.image-modal .top {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.image-modal .top img {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.image-modal .meta {
+  transition: opacity 0.2s ease;
+  flex: 1;
 }
 
 .image-modal .top {
@@ -3521,10 +3681,7 @@ a[data-visitor-counter] .badge:hover {
   gap: 16px;
   align-items: flex-start;
   margin-bottom: 16px;
-}
-
-.image-modal .meta {
-  flex: 1;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .image-modal .meta h3 {
@@ -3568,6 +3725,99 @@ a[data-visitor-counter] .badge:hover {
 
   .image-modal .actions {
     justify-content: center;
+  }
+}
+
+/* MikuDex Navigation */
+.image-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
+.image-modal .modal-counter {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(189, 227, 255, 0.3);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.image-modal .nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(189, 227, 255, 0.4));
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-modal .nav-btn:hover:not(.disabled) {
+  background: linear-gradient(145deg, rgba(189, 227, 255, 0.8), rgba(255, 255, 255, 0.9));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.image-modal .nav-btn:active:not(.disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.image-modal .nav-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: rgba(200, 200, 200, 0.3);
+}
+
+.image-modal .nav-btn .nav-icon {
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.image-modal .nav-btn .nav-text {
+  font-size: 12px;
+}
+
+.image-modal .prev-btn .nav-icon {
+  margin-right: 2px;
+}
+
+.image-modal .next-btn .nav-icon {
+  margin-left: 2px;
+}
+
+/* Mobile responsive navigation */
+@media (max-width: 600px) {
+  .image-modal .modal-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .image-modal .nav-btn .nav-text {
+    display: none;
+  }
+  
+  .image-modal .nav-btn {
+    padding: 10px;
+    border-radius: 50%;
+    min-width: 40px;
+    min-height: 40px;
+    justify-content: center;
+  }
+  
+  .image-modal .modal-counter {
+    order: -1;
   }
 }
 
@@ -5534,7 +5784,7 @@ a[data-visitor-counter] .badge:hover {
   content: "";
   position: absolute;
   inset: 0;
-  background: url("../assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png") center right/contain no-repeat;
+  background: url("../assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.webp") center right/contain no-repeat;
   opacity: 0.22;
   pointer-events: none;
   mix-blend-mode: multiply;

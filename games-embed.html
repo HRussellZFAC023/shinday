@@ -163,7 +163,21 @@
                     >
                       Shield ⛨
                     </button>
-                  </div>
+</div>
+<script src="./js/main.js"></script>
+<script src="./js/content.js"></script>
+<script>
+  (function(){
+    try{
+      const C = window.SITE_CONTENT || {};
+      const tips = C.tooltips || {};
+      const decoy = document.querySelector('button#shopDecoy, [title*="decoy"], [data-decoy]');
+      if (decoy && tips.shopDecoy) decoy.setAttribute('title', tips.shopDecoy);
+      const shield = document.querySelector('button#shopShield, [title*="ward"], [data-shield]');
+      if (shield && tips.shopShield) shield.setAttribute('title', tips.shopShield);
+    }catch(_){}
+  })();
+</script>
                 </div>
               </div>
 

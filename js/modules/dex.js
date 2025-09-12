@@ -1,19 +1,25 @@
-// Reusable MikuDex renderer with filters, search, and popover details
+// Reusable MikuDex renderer with filters, search, and popover details (i18n-aware)
 (function () {
   if (window.MikuDex) return;
 
   const LS_FILTER = "Wish.dexFilter";
   const PIXIE_URL = "./assets/pixel-miku/101 - PixieBel (bonus).gif";
 
-  // Check if PixieBel is unlocked
+  function DX() {
+    return (window.SITE_CONTENT && window.SITE_CONTENT.dex) || {};
+  }
+
   function pixieUnlocked() {
     return localStorage.getItem("pixiebelUnlocked") === "1";
   }
 
   if (!window.handleVideoError) {
     window.handleVideoError = function (iframe, videoUrl) {
+      const t = DX();
       if (iframe && iframe.parentElement) {
-        iframe.parentElement.innerHTML = `<div class="video-error">Video unavailable<br><a href="${videoUrl}" target="_blank" rel="noopener">Watch on YouTube</a></div>`;
+        const vu = t.videoUnavailable || "Video unavailable";
+        const wy = t.watchOnYouTube || "Watch on YouTube";
+        iframe.parentElement.innerHTML = `<div class="video-error">${vu}<br><a href="${videoUrl}" target="_blank" rel="noopener">${wy}</a></div>`;
       }
     };
   }
@@ -39,9 +45,7 @@
   }
 
   function rarityFor(url) {
-    // Prefer meta rarity; fallback hash
-    const meta =
-      typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
+    const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
     if (meta && Number.isFinite(meta.rarity)) return meta.rarity;
     let h = 0;
     for (let i = 0; i < url.length; i++) h = (h << 5) - h + url.charCodeAt(i);
@@ -57,37 +61,32 @@
     if (!url) return null;
     try {
       const u = new URL(url);
-      if (
-        u.hostname.includes("youtube.com") ||
-        u.hostname.includes("youtu.be")
-      ) {
-        if (u.hostname.includes("youtu.be"))
-          return u.pathname.replace(/^\//, "");
-        const v = u.searchParams.get("v");
-        if (v) return v;
-      }
+      if (u.hostname.includes("youtu.be")) return u.pathname.replace(/^\//, "");
+      if (u.hostname.includes("youtube.com")) return u.searchParams.get("v");
     } catch {}
     return null;
   }
 
   function buildControlsHtml(filter) {
-    return /*Html*/ `
+    const d = DX();
+    const t = (s, fb) => (s != null ? s : fb);
+    const scopeLabel = t(d.scopeLabel, "Scope");
+    const scopes = d.scopes || {};
+    const rarityLabel = t(d.rarityLabel, "Rarity");
+    const rarityAll = t(d.rarityAll, "All");
+    const searchLabel = t(d.searchLabel, "Search");
+    const searchPh = t(d.searchPlaceholder, "name...");
+    return /*html*/ `
       <div class="dex-controls">
-        <label for="dexScope">Scope</label>
+        <label for="dexScope">${scopeLabel}</label>
         <select id="dexScope">
-          <option value="all" ${
-            filter.scope === "all" ? "selected" : ""
-          }>All</option>
-          <option value="owned" ${
-            filter.scope === "owned" ? "selected" : ""
-          }>Owned</option>
-          <option value="missing" ${
-            filter.scope === "missing" ? "selected" : ""
-          }>Missing</option>
+          <option value="all" ${filter.scope === "all" ? "selected" : ""}>${t(scopes.all, "All")}</option>
+          <option value="owned" ${filter.scope === "owned" ? "selected" : ""}>${t(scopes.owned, "Owned")}</option>
+          <option value="missing" ${filter.scope === "missing" ? "selected" : ""}>${t(scopes.missing, "Missing")}</option>
         </select>
-        <label for="dexRarity">Rarity</label>
+        <label for="dexRarity">${rarityLabel}</label>
         <select id="dexRarity">
-          <option value="0" ${!filter.rarity ? "selected" : ""}>All</option>
+          <option value="0" ${!filter.rarity ? "selected" : ""}>${rarityAll}</option>
           <option value="1" ${filter.rarity === 1 ? "selected" : ""}>★1</option>
           <option value="2" ${filter.rarity === 2 ? "selected" : ""}>★2</option>
           <option value="3" ${filter.rarity === 3 ? "selected" : ""}>★3</option>
@@ -95,10 +94,8 @@
           <option value="5" ${filter.rarity === 5 ? "selected" : ""}>★5</option>
           <option value="6" ${filter.rarity === 6 ? "selected" : ""}>★6</option>
         </select>
-        <label for="dexSearch">Search</label>
-        <input id="dexSearch" type="search" placeholder="name..." value="${(
-          filter.search || ""
-        ).replace(/"/g, "&quot;")}"/>
+        <label for="dexSearch">${searchLabel}</label>
+        <input id="dexSearch" type="search" placeholder="${searchPh}" value="${(filter.search || "").replace(/"/g, "&quot;")}"/>
       </div>`;
   }
 
@@ -114,95 +111,68 @@
     localStorage.setItem(LS_FILTER, JSON.stringify(f));
   }
 
-  function renderInto(container) {
+  function renderInto(container, opts) {
+    const options = opts || {};
     if (!container || !poolReady()) return;
+
     const coll = getColl();
     const base = (window.MIKU_IMAGES || []).slice();
-    const includePixie = true;
-    const urls =
-      includePixie && base.indexOf(PIXIE_URL) === -1
-        ? base.concat([PIXIE_URL])
-        : base;
+    // Always show PixieBel tile (locked if not owned)
+    const urls = base.includes(PIXIE_URL) ? base : base.concat([PIXIE_URL]);
     const filter = currentFilter();
 
     const ownedCount = Object.keys(coll).length;
-    const totalCount = base.length; // exclude Pixie for header progress
+    const totalCount = base.length; // Header excludes Pixie bonus
 
     const tiles = urls
       .map((url) => {
-        const meta =
-          typeof window.getMikuMeta === "function"
-            ? window.getMikuMeta(url)
-            : null;
+        const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
         const name =
           meta?.name ||
           meta?.title ||
           (url.split("/").pop() || "Miku").replace(/\.[a-z0-9]+$/i, "");
-        const r =
-          meta?.rarity ||
-          (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
+        const r = meta?.rarity || (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
         const entry = coll[url];
         const owned = !!entry;
+
         const passesScope =
-          filter.scope === "all"
-            ? true
-            : filter.scope === "owned"
-            ? owned
-            : !owned;
+          filter.scope === "all" ? true : filter.scope === "owned" ? owned : !owned;
         const passesRarity = !filter.rarity || filter.rarity === r;
-        const passesSearch =
-          !filter.search ||
-          name.toLowerCase().includes(filter.search.toLowerCase());
+        const passesSearch = !filter.search || name.toLowerCase().includes(filter.search.toLowerCase());
         if (!(passesScope && passesRarity && passesSearch)) return "";
+
         const ownClass = owned ? `owned rarity-${r}` : "locked";
 
-        // Check for NEW status from localStorage or entry.new
+        // NEW badge
         const getNewSet = () => {
-          try {
-            return new Set(
-              JSON.parse(localStorage.getItem("Wish.newIds") || "[]")
-            );
-          } catch {
-            return new Set();
-          }
+          try { return new Set(JSON.parse(localStorage.getItem("Wish.newIds") || "[]")); } catch { return new Set(); }
         };
-        const isNewFromSet = getNewSet().has(url);
-        const isNewFromEntry = entry?.new;
-        const isNew = isNewFromSet || isNewFromEntry;
+        const isNew = getNewSet().has(url) || !!entry?.new;
         const newBadge = isNew ? '<div class="Wish-new">NEW!</div>' : "";
 
-        // PixieBel mystery mask for locked state
+        // Pixie mystery mask when locked
         const isPixieBel = /(PixieBel \(bonus\)\.gif)$/i.test(url);
-        const pixieUnlockedState = pixieUnlocked();
-        const mysteryOverlay =
-          !owned && isPixieBel
-            ? '<div class="mystery-cover"><div class="mystery-text">?</div></div>'
-            : "";
-
-        // Add disabled class for locked PixieBel
-        const disabledClass =
-          isPixieBel && !pixieUnlockedState ? " dex-disabled" : "";
+        const mysteryOverlay = !owned && isPixieBel ? '<div class="mystery-cover"><div class="mystery-text">?</div></div>' : "";
 
         return `
-          <div class="dex-card ${ownClass}${disabledClass}" data-url="${url}" tabindex="0">
-          <div class="rarity-ring"></div>
+          <div class="dex-card ${ownClass}" data-url="${url}" tabindex="0">
+            <div class="rarity-ring"></div>
             <div class="dex-stars">${stars(r)}</div>
             <img src="${url}" alt="${name}" loading="lazy" decoding="async" />
             ${mysteryOverlay}
-            ${
-              owned
-                ? `<span class="dex-count">x${entry.count || 1}</span>`
-                : `<span class="dex-locked">?</span>`
-            }
+            ${owned ? `<span class=\"dex-count\">x${entry.count || 1}</span>` : `<span class=\"dex-locked\">?</span>`}
             <div class="dex-name">${name}</div>
             ${newBadge}
           </div>`;
       })
       .join("");
 
+    const d = DX();
+    const headerTpl = d.header || "MikuDex • Owned: {owned} / {total}";
+    const header = headerTpl.replace("{owned}", ownedCount).replace("{total}", totalCount);
     container.innerHTML = `
       <div class="dex-pokedex">
-        <div class="dex-header">MikuDex • Owned: ${ownedCount} / ${totalCount}</div>
+        <div class="dex-header">${header}</div>
         ${buildControlsHtml(filter)}
         <div class="dex-grid">${tiles}</div>
       </div>`;
@@ -225,232 +195,189 @@
     if (searchInp) {
       let searchTimeout;
       searchInp.oninput = () => {
+        const caretStart = searchInp.selectionStart || 0;
+        const caretEnd = searchInp.selectionEnd || caretStart;
         const newFilter = { ...filter, search: searchInp.value.trim() };
         saveFilter(newFilter);
-        // Use proper debouncing to prevent input deselection
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => renderInto(container), 300);
+        searchTimeout = setTimeout(() =>
+          renderInto(container, { keepSearchFocus: true, caretStart, caretEnd }),
+        180);
       };
-      // Prevent search from losing focus during typing
-      searchInp.addEventListener("blur", (e) => {
-        // Re-focus if blur was caused by our re-rendering
-        if (e.relatedTarget === null) {
-          setTimeout(() => {
-            if (document.activeElement !== searchInp) {
-              searchInp.focus();
-            }
-          }, 0);
-        }
-      });
     }
 
-    // Tile popovers
+    // Restore focus and caret position for search input if requested
+    if (options.keepSearchFocus) {
+      const si = container.querySelector('#dexSearch');
+      if (si) {
+        si.focus();
+        const cs = Number.isFinite(options.caretStart) ? options.caretStart : si.value.length;
+        const ce = Number.isFinite(options.caretEnd) ? options.caretEnd : cs;
+        try { si.setSelectionRange(cs, ce); } catch (_) {}
+      }
+    }
+
+    // Tile handlers
     container.querySelectorAll(".dex-card").forEach((card) => {
       const url = card.getAttribute("data-url");
       const isPixieBel = /(PixieBel \(bonus\)\.gif)$/i.test(url);
-      const pixieUnlockedState = pixieUnlocked();
-      const isDisabled = isPixieBel && !pixieUnlockedState;
+      const lockedPixie = isPixieBel && !pixieUnlocked();
 
       card.addEventListener("click", () => {
-        // Block clicks on PixieBel if not unlocked
-        if (isDisabled) {
-          // Show a subtle hint instead of opening details
-          if (window.Hearts?.loveToast) {
-            window.Hearts.loveToast(
-              "This legendary companion remains hidden... 🔒✨"
-            );
-          }
+        if (lockedPixie) {
+          const t = DX();
+          window.Hearts?.loveToast?.(t.hiddenToast || "This legendary companion remains hidden... 🔒✨");
           return;
         }
-
         openDetails(url);
       });
-
-      // Also block keyboard access (Enter key) for disabled cards
       card.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && isDisabled) {
-          e.preventDefault();
-          if (window.Hearts?.loveToast) {
-            window.Hearts.loveToast(
-              "This legendary companion remains hidden... 🔒✨"
-            );
-          }
-        }
+        if (e.key === "Enter") card.click();
       });
     });
 
-    // Clear new flags when Dex renders (but preserve the localStorage NEW set)
-    let collChanged = false;
-    Object.keys(coll).forEach((k) => {
-      if (coll[k].new) {
-        delete coll[k].new;
-        collChanged = true;
-      }
-    });
-    if (collChanged) setColl(coll);
+    // Clear NEW flags in collection (preserve Wish.newIds for badges)
+    const collection = getColl();
+    let changed = false;
+    for (const k of Object.keys(collection)) {
+      if (collection[k] && collection[k].new) { delete collection[k].new; changed = true; }
+    }
+    if (changed) setColl(collection);
   }
 
   function openDetails(url) {
-    const meta =
-      typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
-    const name =
-      meta?.name ||
-      meta?.title ||
-      (url.split("/").pop() || "Miku").replace(/\.[a-z0-9]+$/i, "");
-    const rarity =
-      meta?.rarity ||
-      (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
+    const existing = document.querySelector(".image-modal");
+    if (existing) return updateModalContent(existing, url);
+    createNewModal(url);
+  }
+
+  function updateModalContent(modal, url) {
+    const panel = modal.querySelector(".image-panel");
+    if (!panel) return;
+    panel.classList.add("transitioning");
+    // Play camera sound on navigation
+    try { window.SFX?.play?.("extra.camera"); } catch {}
+    setTimeout(() => {
+      populateModalContent(modal, url);
+      panel.classList.remove("transitioning");
+    }, 120);
+  }
+
+  function createNewModal(url) {
+    const modal = document.createElement("div");
+    modal.className = "image-modal";
+    const d = DX();
+    modal.innerHTML = `<div class="image-panel"><div class="loading">${d.loading || 'Loading...'}</div></div>`;
+    document.body.appendChild(modal);
+    populateModalContent(modal, url);
+    setupModalHandlers(modal);
+    try { window.SFX?.play?.("extra.camera"); } catch {}
+    setTimeout(() => modal.classList.add("open"), 10);
+  }
+
+  function populateModalContent(modal, url) {
+    const meta = typeof window.getMikuMeta === "function" ? window.getMikuMeta(url) : null;
+    const name = meta?.name || meta?.title || (url.split("/").pop() || "Miku").replace(/\.[a-z0-9]+$/i, "");
+    const rarity = meta?.rarity || (/(PixieBel \(bonus\)\.gif)$/i.test(url) ? 6 : rarityFor(url));
     const videoUrl = meta?.song || meta?.video || "";
     const vid = ytIdFrom(videoUrl);
     const escapedVideoUrl = (videoUrl || "").replace(/'/g, "\\'");
-    const links = Array.isArray(meta?.links) ? meta.links : [];
     const coll = getColl();
     const entry = coll[url];
     const owned = !!entry;
+    const all = window.MIKU_IMAGES || [];
+    const idx = all.indexOf(url);
+    const hasPrev = idx > 0;
+    const hasNext = idx < all.length - 1;
+    const d = DX();
 
-    // Singer effects (fixed bonuses when set)
-    const sm =
-      (typeof window.getSingerScoreMult === "function"
-        ? getSingerScoreMult()
-        : 1) - 1;
-    const sh =
-      (typeof window.getSingerShieldMult === "function"
-        ? getSingerShieldMult()
-        : 1) - 1;
-    const rb =
-      typeof window.getSingerRareDropBonus === "function"
-        ? getSingerRareDropBonus()
-        : 0;
-    const effectsText = ""; //Effects: +${Math.round(Math.max(0, sm) * 100)}% score, +${Math.round(Math.max(0, sh) * 100)}% shield time, +${Math.round(Math.max(0, rb) * 100)}% rare drop`;
-
-    const ov = document.createElement("div");
-    ov.className = "image-modal";
-    ov.innerHTML = /*html*/ `
-      <div class="image-panel">
-        <div class="top">
-          <img src="${url}" alt="${name}" style="width:200px;height:auto;image-rendering:pixelated;border-radius:10px;border:2px solid var(--border);"/>
-          <div class="meta">
-            <h3>${name}</h3>
-            <div class="rarity-info">
-              <div>Rarity: ${stars(rarity)}</div>
-              <div style="font-size:12px;color:#596286;margin-top:4px">${effectsText}</div>
-            </div>
-            <div class="owned-info" style="margin-top:8px">
-              ${owned ? `Owned: x${entry.count || 1}` : "Owned: •"}
-            </div>
-            ${
-              meta?.description
-                ? `<div class="description" style="font-size:14px;color:var(--ink-soft);margin-top:8px;">${meta.description}</div>`
-                : ""
-            }
-            ${
-              meta?.song
-                ? `<div class="song-info" style="margin-top:8px;font-size:14px"><strong>Unlocks:</strong> ${
-                    meta.song.includes("youtube.com") ||
-                    meta.song.includes("youtu.be")
-                      ? "Music track in Jukebox"
-                      : meta.song
-                  }</div>`
-                : ""
-            }
-            ${
-              vid
-                ? `
-      <div class="video-container" style="margin-top:10px">
-        <iframe
-          style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px"
-          src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1"
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-          referrerpolicy="strict-origin-when-cross-origin"
-          loading="lazy"
-          onload="this.style.opacity=1"
-          onerror="window.handleVideoError && window.handleVideoError(this, '${escapedVideoUrl}')"
-        ></iframe>
-      </div>`
-                : ""
-            }
-
-   
-    
-  </div>
-</div>
-<div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
-  ${
-    owned
-      ? `<button class="pixel-btn" id="setSingerBtn">Set as Singer</button>`
-      : `<button class="pixel-btn" disabled>Win in Wish</button>`
-  }
-  <button class="pixel-btn" id="dexCloseBtn">Close</button>
+    const panel = modal.querySelector(".image-panel");
+    panel.innerHTML = /*html*/ `
+      <div class="modal-header">
+        <button class="nav-btn prev-btn ${!hasPrev ? 'disabled' : ''}" id="prevMikuBtn" ${!hasPrev ? 'disabled' : ''} data-url="${hasPrev ? all[idx - 1] : ''}">
+          <span class="nav-icon">◀</span>
+          <span class="nav-text">${d.navPrev || 'Previous'}</span>
+        </button>
+        <div class="modal-counter">${idx + 1} / ${all.length}</div>
+        <button class="nav-btn next-btn ${!hasNext ? 'disabled' : ''}" id="nextMikuBtn" ${!hasNext ? 'disabled' : ''} data-url="${hasNext ? all[idx + 1] : ''}">
+          <span class="nav-text">${d.navNext || 'Next'}</span>
+          <span class="nav-icon">▶</span>
+        </button>
+      </div>
+      <div class="top">
+        <img src="${url}" alt="${name}" style="width:200px;height:auto;image-rendering:pixelated;border-radius:10px;border:2px solid var(--border);"/>
+        <div class="meta">
+          <h3>${name}</h3>
+          <div class="rarity-info">
+            <div>${d.rarityText || 'Rarity:'} ${stars(rarity)}</div>
+            <div style="font-size:12px;color:#596286;margin-top:4px"></div>
+          </div>
+          <div class="owned-info" style="margin-top:8px">
+            ${owned ? (d.ownedTextOwned || 'Owned: x{n}').replace('{n}', entry.count || 1) : (d.ownedTextLocked || 'Owned: •')}
+          </div>
+          ${ meta?.description ? `<div class="description" style="font-size:14px;color:var(--ink-soft);margin-top:8px;">${meta.description}</div>` : '' }
+          ${ meta?.song ? `<div class="song-info" style="margin-top:8px;font-size:14px"><strong>${d.unlocksLabel || 'Unlocks:'}</strong> ${
+              (meta.song.includes('youtube.com') || meta.song.includes('youtu.be')) ? (d.unlocksMusic || 'Music track in Jukebox') : meta.song
+            }</div>` : '' }
+          ${ vid ? `
+            <div class="video-container" style="margin-top:10px">
+              <iframe style="width:100%;aspect-ratio:16/9;border:0;border-radius:8px" src="https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" loading="lazy" onload="this.style.opacity=1" onerror="window.handleVideoError && window.handleVideoError(this, '${escapedVideoUrl}')"></iframe>
+            </div>` : '' }
         </div>
+      </div>
+      <div class="actions" style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+        ${ owned ? `<button class="pixel-btn" id="setSingerBtn" data-url="${url}">${d.btnSetSinger || 'Set as Singer'}</button>` : `<button class="pixel-btn" disabled>${d.btnWinInWish || 'Win in Wish'}</button>` }
+        <button class="pixel-btn" id="dexCloseBtn">${d.btnClose || 'Close'}</button>
       </div>`;
+  }
 
-    document.body.appendChild(ov);
-
-    // Add event handlers
+  function setupModalHandlers(modal) {
     const close = () => {
-      try {
-        window.SFX?.play?.("ui.back");
-      } catch {}
-      ov.remove();
-      // Clear NEW flag when viewing details
-      if (entry?.new) {
-        delete entry.new;
-        setColl(coll);
-      }
-      // Also clear from NEW set
-      try {
-        const newSet = new Set(
-          JSON.parse(localStorage.getItem("Wish.newIds") || "[]")
-        );
-        if (newSet.has(url)) {
-          newSet.delete(url);
-          localStorage.setItem(
-            "Wish.newIds",
-            JSON.stringify(Array.from(newSet))
-          );
-        }
-      } catch {}
+      try { window.SFX?.play?.("ui.back"); } catch {}
+      modal.remove();
     };
 
-    ov.addEventListener("click", (e) => {
-      if (e.target === ov) close();
-    });
+    modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
 
-    document.addEventListener("keydown", function escHandler(e) {
+    const keyHandler = (e) => {
       if (e.key === "Escape") {
         close();
-        document.removeEventListener("keydown", escHandler);
+        document.removeEventListener("keydown", keyHandler);
+      } else if (e.key === "ArrowLeft") {
+        const prevBtn = modal.querySelector('#prevMikuBtn');
+        const prevUrl = prevBtn && !prevBtn.disabled ? prevBtn.getAttribute('data-url') : '';
+        if (prevUrl) { e.preventDefault(); try { window.SFX?.play?.('extra.camera'); } catch {}; updateModalContent(modal, prevUrl); }
+      } else if (e.key === "ArrowRight") {
+        const nextBtn = modal.querySelector('#nextMikuBtn');
+        const nextUrl = nextBtn && !nextBtn.disabled ? nextBtn.getAttribute('data-url') : '';
+        if (nextUrl) { e.preventDefault(); try { window.SFX?.play?.('extra.camera'); } catch {}; updateModalContent(modal, nextUrl); }
       }
-    });
+    };
+    document.addEventListener("keydown", keyHandler);
 
-    const closeBtn = ov.querySelector("#dexCloseBtn");
-    if (closeBtn) closeBtn.addEventListener("click", close);
-
-    const singerBtn = ov.querySelector("#setSingerBtn");
-    if (singerBtn) {
-      singerBtn.addEventListener("click", () => {
+    // Delegated clicks
+    modal.addEventListener('click', (e) => {
+      const t = e.target;
+      if (t.id === 'dexCloseBtn') {
+        close();
+      } else if (t.id === 'prevMikuBtn' || t.closest('#prevMikuBtn')) {
+        const btn = t.id === 'prevMikuBtn' ? t : t.closest('#prevMikuBtn');
+        const prevUrl = btn && !btn.disabled ? btn.getAttribute('data-url') : '';
+        if (prevUrl) { try { window.SFX?.play?.('extra.camera'); } catch {}; updateModalContent(modal, prevUrl); }
+      } else if (t.id === 'nextMikuBtn' || t.closest('#nextMikuBtn')) {
+        const btn = t.id === 'nextMikuBtn' ? t : t.closest('#nextMikuBtn');
+        const nextUrl = btn && !btn.disabled ? btn.getAttribute('data-url') : '';
+        if (nextUrl) { try { window.SFX?.play?.('extra.camera'); } catch {}; updateModalContent(modal, nextUrl); }
+      } else if (t.id === 'setSingerBtn') {
+        const url = t.getAttribute('data-url');
         try {
-          if (typeof window.singerSet === "function") {
-            window.singerSet(url);
-          } else {
-            // Fallback: set current singer URL
-            window.__currentSingerUrl = url;
-            localStorage.setItem("currentSinger", url);
-          }
+          if (typeof window.singerSet === "function") window.singerSet(url);
+          else { window.__currentSingerUrl = url; localStorage.setItem("currentSinger", url); }
           window.SFX?.play?.("ui.select");
         } catch {}
         close();
-      });
-    }
-
-    // Play modal open sound
-    try {
-      window.SFX?.play?.("extra.camera");
-    } catch {}
-
-    // Add open class for CSS animation
-    setTimeout(() => ov.classList.add("open"), 10);
+      }
+    });
   }
 
   function renderById(containerId) {
@@ -459,5 +386,5 @@
     renderInto(el);
   }
 
-  window.MikuDex = { renderInto: renderInto, renderById };
+  window.MikuDex = { renderInto, renderById };
 })();

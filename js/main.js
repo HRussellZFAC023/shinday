@@ -2,6 +2,27 @@
 // All functionality has been distributed to themed modules. This is pure orchestration.
 
 // ========== SITE INITIALIZATION ORCHESTRATOR ==========
+// Language preference bootstrap (runs before content.js renders splash)
+(() => {
+  try {
+    const params = new URLSearchParams((location && location.search) || "");
+    const urlLang = (params.get('lang') || '').toLowerCase();
+    const saved = localStorage.getItem('site.lang');
+    const nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+    const map = (code) => {
+      if (!code) return 'en';
+      if (code.startsWith('ja')) return 'ja';
+      if (code.startsWith('es')) return 'es';
+      if (code.startsWith('de')) return 'de';
+      if (code.startsWith('fr')) return 'fr';
+      if (code.startsWith('zh')) return 'zh';
+      return 'en';
+    };
+    const preferred = (urlLang && map(urlLang)) || saved || map(nav);
+    window.PREFERRED_LANG = preferred;
+    try { document.documentElement.setAttribute('lang', preferred); } catch(_) {}
+  } catch (_) {}
+})();
 console.log("🎵 Initializing Miku systems...");
 
 // Visitor counter (prefers Neocities API via AllOrigins; falls back gracefully)
@@ -107,6 +128,13 @@ window.initSite = function () {
   const visited = localStorage.getItem("pixelbelle-visited");
   if (!visited) {
     localStorage.setItem("pixelbelle-visited", "1");
-    window.Hearts.loveToast("Welcome to Baby Belle's Pixel Garden! ✨", "miku");
+    try {
+      const C = window.SITE_CONTENT || {};
+      const siteName = (C.site && (C.site.title || C.splash?.title)) || "the garden";
+      const msg = (C.alerts && C.alerts.welcome) || `Welcome to ${siteName}! ✨`;
+      window.Hearts.loveToast(msg, "miku");
+    } catch (_) {
+      window.Hearts.loveToast("Welcome! ✨", "miku");
+    }
   }
 };

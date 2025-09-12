@@ -77,7 +77,7 @@
 
     audio.addEventListener("error", () => {
       if (radioDisplayStatus)
-        radioDisplayStatus.textContent = "⚠️ Stream error";
+        radioDisplayStatus.textContent = (C.radio && (C.radio.streamError || C.radio.defaultStatus)) || "⚠️ Stream error";
       if (statusDot) statusDot.style.color = "#ff4d4d";
     });
 

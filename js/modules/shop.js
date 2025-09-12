@@ -316,12 +316,12 @@ window.shop = (function () {
           baitCount += 1;
           localStorage.setItem("diva.bait.count", String(baitCount));
           ensureItemsOverlay();
-          if (newStatus) newStatus.textContent = "Sweet decoy added! 🍪✨";
+          if (newStatus) newStatus.textContent = (window.SITE_CONTENT?.shop?.messages?.decoyAdded) || "Sweet decoy added! 🍪✨";
           updateItemsOverlay();
           if (SFX && SFX.play) SFX.play("ui.select");
         } else {
           playDeniedAnimation(newBtnDecoy);
-          if (newStatus) newStatus.textContent = "Not enough hearts! 💔";
+          if (newStatus) newStatus.textContent = (window.SITE_CONTENT?.shop?.messages?.notEnoughHearts) || "Not enough hearts! 💔";
           if (SFX && SFX.play) SFX.play("ui.unavailable");
         }
       });
@@ -335,7 +335,7 @@ window.shop = (function () {
         if (shieldUntil > now) {
           playDeniedAnimation(newBtnShield);
           if (newStatus)
-            newStatus.textContent = "Wait for current item to finish! 🥤";
+            newStatus.textContent = (window.SITE_CONTENT?.shop?.messages?.waitCurrentItem) || "Wait for current item to finish! 🥤";
           if (SFX && SFX.play) SFX.play("ui.unavailable");
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
@@ -351,7 +351,7 @@ window.shop = (function () {
           playPurchaseAnimation(newBtnShield);
           spendHearts(cost);
           activateHeartShield();
-          if (newStatus) newStatus.textContent = "Heart Shield activated! ⛨✨";
+          if (newStatus) newStatus.textContent = (window.SITE_CONTENT?.shop?.messages?.shieldOn) || "Heart Shield activated! ⛨✨";
           updateItemsOverlay();
           if (SFX && SFX.play) SFX.play("extra.fx2");
           if (window.ShimejiFunctions?.makeAllSpeak) {
@@ -363,7 +363,7 @@ window.shop = (function () {
         } else {
           playDeniedAnimation(newBtnShield);
           if (newStatus)
-            newStatus.textContent = `Need ${cost - have} more hearts! 💔`;
+            newStatus.textContent = (window.SITE_CONTENT?.shop?.messages?.notEnoughHearts) || `Need ${cost - have} more hearts! 💔`;
           if (SFX && SFX.play) SFX.play("ui.unavailable");
           if (window.ShimejiFunctions?.makeRandomSpeak) {
             window.ShimejiFunctions.makeRandomSpeak(
@@ -381,7 +381,7 @@ window.shop = (function () {
         const now = Date.now();
         if (potionUntil > now) {
           playDeniedAnimation(newBtnPotion);
-          if (newStatus) newStatus.textContent = "Potion already active!";
+          if (newStatus) newStatus.textContent = (window.SITE_CONTENT?.shop?.messages?.potionActive) || "Potion already active!";
           if (SFX && SFX.play) SFX.play("ui.unavailable");
           return;
         }
@@ -390,7 +390,7 @@ window.shop = (function () {
           spendHearts(cost);
           activateXPPotion(1000 * 60 * 15);
           ensureItemsOverlay();
-          if (newStatus) newStatus.textContent = "XP Potion activated! ✨";
+          if (newStatus) newStatus.textContent = (window.SITE_CONTENT?.shop?.messages?.xpPotionOn) || "XP Potion activated! ✨";
           updateItemsOverlay();
           if (SFX && SFX.play) SFX.play("extra.fx2");
           if (window.ShimejiFunctions?.makeRandomSpeak) {
@@ -401,7 +401,7 @@ window.shop = (function () {
           }
         } else {
           playDeniedAnimation(newBtnPotion);
-          if (newStatus) newStatus.textContent = "Not enough hearts! 💔";
+          if (newStatus) newStatus.textContent = (window.SITE_CONTENT?.shop?.messages?.notEnoughHearts) || "Not enough hearts! 💔";
           if (SFX && SFX.play) SFX.play("ui.unavailable");
         }
       });
@@ -413,7 +413,7 @@ window.shop = (function () {
         if (getHearts() >= cost) {
           playPurchaseAnimation(newBtnEgg);
           spendHearts(cost);
-          if (newStatus) newStatus.textContent = "Oh, it's hatching!?";
+          if (newStatus) newStatus.textContent = (window.SITE_CONTENT?.shop?.messages?.hatching || "Oh, it's hatching!?");
           if (SFX && SFX.play) SFX.play("extra.yo");
           if (window.ShimejiFunctions?.makeRandomSpeak)
             window.ShimejiFunctions.makeRandomSpeak(
@@ -437,7 +437,7 @@ window.shop = (function () {
         } else {
           playDeniedAnimation(newBtnEgg);
           if (newStatus)
-            newStatus.textContent = "Need more hearts for the egg!";
+            newStatus.textContent = (window.SITE_CONTENT?.shop?.messages?.needMoreForEgg) || "Need more hearts for the egg!";
           if (SFX && SFX.play) SFX.play("ui.unavailable");
         }
       });

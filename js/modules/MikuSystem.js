@@ -39,7 +39,8 @@ window.MikuSystem = (function () {
 
   // UI Management - NO MORE TRY BLOCKS!
   function updateNowPlaying(song) {
-    const title = song?.title || song?.name || "Online";
+    const C = window.SITE_CONTENT || {};
+    const title = song?.title || song?.name || C.radio?.defaultStatus || "Online";
     const displayEl = document.getElementById("radioDisplayStatus");
     if (displayEl) displayEl.textContent = title;
     localStorage.setItem("pixelbelle-now-playing", title);
@@ -54,8 +55,10 @@ window.MikuSystem = (function () {
       widget = document.createElement("div");
       widget.id = "divaInfo";
       widget.className = "hud-line";
+      const C = window.SITE_CONTENT || {};
+      const mikuLabel = (C.ui && C.ui.labels && C.ui.labels.miku) || 'Miku:';
       widget.innerHTML = `
-        <strong>Miku:</strong> <span id="divaInfoMiku">•</span>
+        <strong>${mikuLabel}</strong> <span id="divaInfoMiku">•</span>
       `;
       hudContainer.insertAdjacentElement("afterbegin", widget);
       return widget;
@@ -75,8 +78,10 @@ window.MikuSystem = (function () {
         border-radius:10px;background:#fff;display:flex;gap:12px;
         align-items:center;font-weight:800;color:#2b2b44
       `;
+      const C = window.SITE_CONTENT || {};
+      const mikuLabel = (C.ui && C.ui.labels && C.ui.labels.miku) || 'Miku:';
       widget.innerHTML = `
-        <div><strong>Miku:</strong> <span id="divaInfoMiku">•</span></div>
+        <div><strong>${mikuLabel}</strong> <span id="divaInfoMiku">•</span></div>
       `;
       fallbackContainer.insertAdjacentElement("afterbegin", widget);
     }
