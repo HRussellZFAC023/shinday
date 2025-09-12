@@ -56,7 +56,7 @@
       }
 
       async function getNeocitiesInfo(sitename) {
-        const base = "https://neocities.org/api/info?sitename=" + encodeURIComponent(sitename);
+        const base = "https://neocities.org/site/babybelleapi/info?sitename=" + encodeURIComponent(sitename);
         try {
           const data = await fetchJson(base);
           return data && data.info ? data.info : null;
