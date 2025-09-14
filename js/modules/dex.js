@@ -363,6 +363,7 @@
             ${owned ? (d.ownedTextOwned || 'Owned: x{n}').replace('{n}', entry.count || 1) : (d.ownedTextLocked || 'Owned: •')}
           </div>
           ${ meta?.description ? `<div class="description" style="font-size:14px;color:var(--ink-soft);margin-top:8px;">${meta.description}</div>` : '' }
+          ${ meta?.links && meta.links.length > 0 ? `<div class="links-info" style="margin-top:8px;font-size:12px"><strong>${d.linksLabel || 'Links:'}</strong><div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:6px">${meta.links.map(link => `<a href="${link}" target="_blank" rel="noopener" style="color:#4a90e2;text-decoration:none;padding:2px 6px;border:1px solid #4a90e2;border-radius:4px;font-size:11px;display:inline-block;transition:opacity 0.2s" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">🔗 ${link.replace(/^https?:\/\//, '').split('/')[0]}</a>`).join('')}</div></div>` : '' }
           ${ meta?.song ? `<div class="song-info" style="margin-top:8px;font-size:14px"><strong>${d.unlocksLabel || 'Unlocks:'}</strong> ${
               (meta.song.includes('youtube.com') || meta.song.includes('youtu.be')) ? (d.unlocksMusic || 'Music track in Jukebox') : meta.song
             }</div>` : '' }

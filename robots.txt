@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Ensure crawlers access main content rather than just the splash screen
+# Neocities preview bots will capture the full page.

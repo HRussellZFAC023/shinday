@@ -776,8 +776,11 @@
     static ring(x, y, color) {
       const el = document.createElement('div');
       el.className = 'ring-effect';
-      el.style.left = x + 'px';
-      el.style.top = y + 'px';
+      const size = 50;
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+      el.style.left = x - size / 2 + 'px';
+      el.style.top = y - size / 2 + 'px';
       el.style.borderColor = color;
       UI.elements.effectsLayer.appendChild(el);
       setTimeout(() => el.remove(), 500);
@@ -1168,22 +1171,24 @@
     }
     checkAnswer(answer, buttonIndex) {
       if (!State.currentQuestion) return;
-      // correct if answer matches
-      const correct = answer === State.currentQuestion.correct;
+      const buttons = UI.elements.answerGrid?.querySelectorAll('.answer-btn');
+      const clickedBtn = buttons?.[buttonIndex];
+      const correctText = State.currentQuestion.correct;
+      const correct = answer === correctText;
       if (!correct) {
-        // Wrong answers: show speech bubble with correct answer and treat as MISS
+        clickedBtn?.classList.add('incorrect');
         UI.updateStageSinger?.(State.currentGame, State.currentQuestion, true);
         this.processJudgment('MISS', false);
         return;
       }
+      buttons?.forEach((btn) => (btn.disabled = true));
+      clickedBtn?.classList.add('correct');
       // On correct answer determine judgment by note proximity
       let label = 'FINE';
       if (buttonIndex != null) {
         label = judgeFrontAndMaybeConsume(buttonIndex);
       }
       this.processJudgment(label, true);
-      // Disable buttons to prevent double clicks and schedule next question
-      UI.elements.answerGrid?.querySelectorAll('.answer-btn').forEach((btn) => (btn.disabled = true));
       setTimeout(() => {
         if (State.isPlaying) this.nextQuestion();
       }, 700);

@@ -213,6 +213,7 @@ window.SFX = (function initSfxEngine() {
   const ctxState = {
     ctx: null,
     master: null,
+    // Disable SFX by default until explicitly enabled
     enabled: true,
     volume: 0.6,
     elementMode: false, // fallback when CSP blocks fetch/decode
@@ -324,12 +325,19 @@ window.SFX = (function initSfxEngine() {
     const path = pick(arr);
     return playPath(path, opts);
   }
+  function updateButton() {
+    const btn = document.getElementById("toggleSfx");
+    if (!btn) return;
+    btn.textContent = ctxState.enabled ? "🔊" : "🔇";
+    btn.setAttribute("aria-pressed", ctxState.enabled ? "true" : "false");
+  }
   function setEnabled(on) {
     ctxState.enabled = !!on;
     localStorage.setItem(
       "pixelbelle-sfx-enabled",
       ctxState.enabled ? "1" : "0",
     );
+    updateButton();
   }
   function setVolume(v) {
     ctxState.volume = Math.min(1, Math.max(0, v));
@@ -338,9 +346,19 @@ window.SFX = (function initSfxEngine() {
   }
 
   const en = localStorage.getItem("pixelbelle-sfx-enabled");
-  if (en != null) ctxState.enabled = en === "1";
+  if (en == null) {
+    // No saved preference – default to disabled
+    ctxState.enabled = false;
+    localStorage.setItem("pixelbelle-sfx-enabled", "0");
+  } else {
+    ctxState.enabled = en === "1";
+  }
   const vol = parseFloat(localStorage.getItem("pixelbelle-sfx-volume") || "");
   if (isFinite(vol)) ctxState.volume = vol;
+
+  updateButton();
+  const btn = document.getElementById("toggleSfx");
+  if (btn) btn.addEventListener("click", () => setEnabled(!ctxState.enabled));
 
   function preloadFirst(keys = [], { perTick = 2, delay = 150 } = {}) {
     const paths = [];
