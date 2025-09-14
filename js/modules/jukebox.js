@@ -299,7 +299,7 @@
       // Update status indicator text
       try {
         const nowEl = document.getElementById('jukeboxNow');
-        if (nowEl) nowEl.textContent = '—';
+        if (nowEl) nowEl.textContent = '-';
       } catch (_) {}
       // Update system-wide now playing status
       try {
@@ -323,7 +323,7 @@
     wrap.innerHTML = `
       <strong>🎶 ${songLabel}</strong>
       <span id="jukeboxCurrent" style="font-weight:800;color:#596286">${
-        current ? current.title : "—"
+        current ? current.title : "-"
       }</span>
       <div class="spacer"></div>
       <button id="jukeboxOpen" class="pixel-btn">${btnLabel}</button>`;

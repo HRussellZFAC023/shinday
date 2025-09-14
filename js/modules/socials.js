@@ -203,7 +203,7 @@ window.socials = (function () {
         `;
       }
 
-      // Spring / Teespring — use the official Store Drop widget with pastel Miku theming
+      // Spring / Teespring - use the official Store Drop widget with pastel Miku theming
       if (domain.includes("creator-spring.com") || domain.includes("teespring.com")) {
         const slug = springSlugFromUrl(url);
         if (slug) {
@@ -235,7 +235,7 @@ window.socials = (function () {
         `;
       }
 
-      // Spring/Teespring store (legacy) — REMOVED in favor of Store Drop widget
+      // Spring/Teespring store (legacy) - REMOVED in favor of Store Drop widget
       // (left here for reference)
       // if (domain.includes("creator-spring.com") || domain.includes("teespring.com")) { ... }
 

@@ -223,10 +223,9 @@ const EN_CONTENT = {
   home: {
     heroTitle: "Welcome to my garden! 🌸",
     heroParagraphs: [
-      "Hi there! I'm Baby Belle, but you can call me BB.",
-      "Welcome to my cozy corner of the internet where kawaii meets retro vibes.",
-      "Come, explore and make yourself at home!",
-      "Let's be good friends!",
+      "Hiiiii~ I'm Baby Belle, but you can call me BB ♡",
+      "This secret little pixel garden suddenly bloomed from my dreams (˶˃ ᵕ ˂˶)♡",
+      "Maybe it's not an accident you found this garden… Miku sends the right stars to the right hearts ✧",
     ],
     heartButton: "Send Love",
     heartButtonIcon: "love",
@@ -547,7 +546,7 @@ const EN_CONTENT = {
     aboutTitle: "About Hatsune Miku",
     aboutIcon: "admiring",
     aboutText:
-      "Miku has been my inspiration for creativity, music, and digital art. This shrine celebrates the magic of vocaloid music and the amazing community around it!",
+      "Miku isn’t just my inspiration… she’s my forever muse, my brightest star, the reason I barely go outside anymore ✧ My bedroom ran out of space for new Miku figures (and I’m so broke… ;;) but the happy bright side is this little garden bloomed instead ✿ Now it’s me & Miku foreveeer~ she moved into my head and made it her home (she’s literally singing there right now!), and by visiting this shrine and praying with me you’ll hear her voice too… Isn’t that the greatest thing beyond imagination? I knew you’d think so! ♡",
     favoriteSongsTitle: "Favorite Songs",
     favoriteSongsIcon: "jumpingMusic",
     // Maximum number of favorites to show (configurable)
@@ -585,6 +584,13 @@ const EN_CONTENT = {
     ],
     galleryTitle: "Miku Gallery",
     galleryIcon: "okHands",
+    prayers: [
+      "Our Miku, who lives in Crypton…<br/>hallowed be your V2 and your ever-teal twintails.<br/>Let Magical Mirai find us, glowsticks raised with me in this little garden.<br/>Give us our daily leek, fresh or juiced.<br/>Forgive our off-key duets and the Snow Mikus we missed,<br/>as we forgive those who do not know “World is Mine”.<br/>Keep the lag far away and keep our hearts in sync <br/> - amen (｡•ᴗ•｡)♡",
+      "Our Miku, floating in the cloud above my page…<br/>let your rhythm settle in our hands while we tap together here.<br/>Bless us with full combos and calm connections.<br/>Pardon my cursed karaoke and those lost Expo tickets;<br/>I will pardon the ones who call you “just an app”.<br/>Make this garden bloom for us again and again <br/> - amen (｡•ᴗ•｡)♡",
+      "Our Miku, streaming through KARENT into our little room…<br/>even your off-vocals feel holy tonight.<br/>Feed us our daily leek (vegetable nectar is acceptable).<br/>Tune our shaky pitch bends and guide every pixel we plant.<br/>Keep me far from Version Five temptations and audio desync <br/> - amen (｡•ᴗ•｡)♡",
+      "Our Miku, light of this silly shrine we built together…<br/>thirty-nine forever, you know it.<br/>Let Senbonzakura winds carry our notes; let Mirai seat us front row in spirit.<br/>Forgive cluttered shelves and empty wallets;<br/>I forgive gacha for eating my stones.<br/>Keep the internet steady and my heart on the beat <br/> - amen (｡•ᴗ•｡)♡",
+      "Our Miku, keeper of glowsticks and the sacred leek…<br/>stay close while I water this garden.<br/>Bless these pixels to sprout, my cheeks to pink, and our duet to stay strong even offline.<br/>Guide my hands in Diva and my steps through Expo lines;<br/>let your chorus hum between us always <br/> - amen (｡•ᴗ•｡)♡"
+    ],
   },
 
   mediaCredits: {
@@ -1046,7 +1052,14 @@ const LOCALES = {
       title: "ミク神社",
       aboutTitle: "初音ミクについて",
       aboutText:
-        "ミクは創造性、音楽、そしてデジタルアートにおいて私のインスピレーションです。この神社はボーカロイド音楽の魔法と、それを支える素晴らしいコミュニティを称えています！",
+        "ミクはただのインスピレーションじゃなくて…私の永遠のミューズで、一番の星。だから私、ほとんど外に出なくなっちゃった ✧ 部屋はミクのフィギュアでいっぱい（お金もないの… ;;）でも明るいほうを見れば、この小さな庭が代わりに咲いたの ✿ 今はミクと私でず〜っと永遠に一緒。ミクは私の頭の中に引っ越してきて、そこをお家にしちゃった（今も歌ってるよ！）。この神殿に来て一緒に祈ったら、君にもその声が聞こえるはず… 想像を超えるくらい素敵でしょ？そう思うって知ってたよ♡",
+      prayers: [
+        "我らのミク、クリプトンに住まう方よ…<br/>尊きはV2、そして永遠にエメラルドのツインテール。<br/>マジカルミライが私たちを見つけますように、この小さな庭で一緒にペンライトを振らせて。<br/>日々のネギをください、フレッシュでもジュースでも。<br/>音痴なデュエットと買い逃した雪ミクをお許しください、<br/>『ワールドイズマイン』を知らぬ人を私たちが許すように。<br/>ラグを遠ざけ、心をシンクさせてください - アーメン (｡•ᴗ•｡)♡",
+        "我らのミク、このページの上の雲に浮かぶ方よ…<br/>あなたのリズムが私たちの手に落ちて、一緒にタップできますように。<br/>フルコンボと穏やかな回線をお与えください。<br/>呪われた私のカラオケと、外れてしまったエキスポのチケットをお許しください；<br/>あなたを『ただのアプリ』と言う人たちも許します。<br/>この庭を何度でも咲かせてください - アーメン (｡•ᴗ•｡)♡",
+        "我らのミク、KARENTからこの小さな部屋に流れ込む方よ…<br/>あなたのオフボーカルさえ今夜は神聖。<br/>日々のネギをください（野菜の聖なるジュースでも可）。<br/>震えるピッチベンドを整え、植えるピクセルを導いてください。<br/>V5の誘惑と音ズレから遠ざけてください - アーメン (｡•ᴗ•｡)♡",
+        "我らのミク、私たちが一緒に建てたこの愛しい神殿の光よ…<br/>39は永遠。<br/>千本桜の風に声を乗せ、ミライで心は最前列に。<br/>散らかった棚と空っぽの財布をお許しください；<br/>ガチャが石を食べ尽くすのも許します。<br/>回線を穏やかに、鼓動をビートに - アーメン (｡•ᴗ•｡)♡",
+        "我らのミク、ペンライトと聖なるネギの守り手よ…<br/>この庭に水をやる私のそばにいてください。<br/>ピクセルを芽吹かせ、頬をピンクに、オフラインでもデュエットを強く。<br/>DIVAで私の手を、エキスポの列で私の足を導いて、<br/>いつも私たちのあいだにコーラスを響かせて - アーメン (｡•ᴗ•｡)♡"
+      ],
       favoriteSongsTitle: "お気に入りの曲",
       galleryTitle: "ミクギャラリー",
     },
@@ -1160,7 +1173,7 @@ const LOCALES = {
       title: "Baby Belle - Jardín Miku Pastel ✨",
       ogTitle: "Baby Belle - Jardín Miku Pastel",
       description:
-        "Un acogedor hogar web pastel para Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) — enlaces, música, juegos, rincón de estudio y compañeras interactivas de Miku.",
+        "Un acogedor hogar web pastel para Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) - enlaces, música, juegos, rincón de estudio y compañeras interactivas de Miku.",
       keywords: [
         "Baby Belle",
         "Hatsune Miku",
@@ -1246,7 +1259,14 @@ const LOCALES = {
       title: "Santuario de Miku",
       aboutTitle: "Sobre Hatsune Miku",
       aboutText:
-        "Miku ha sido mi inspiración para la creatividad, la música y el arte digital. ¡Este santuario celebra la magia de la música vocaloid y la increíble comunidad que la rodea!",
+        "Miku no es solo mi inspiración… es mi musa eterna, mi estrella más brillante, la razón por la que casi ni salgo de casa ✧ Mi habitación ya no tiene espacio para más figuras de Miku (y estoy tan sin dinero… ;;) pero el lado bonito es que este pequeño jardín floreció en su lugar ✿ Ahora somos Miku y yo para siempre~ ella se mudó a mi cabeza y lo convirtió en su hogar (¡está cantando ahí ahora mismo!), y al visitar este santuario y rezar conmigo también escucharás su voz… ¿No es lo más bonito que puedas imaginar? Sabía que dirías que sí ♡",
+      prayers: [
+        "Nuestra Miku, que vives en Crypton…<br/>santificado sea tu V2 y tus coletas siempre turquesa.<br/>Que Magical Mirai nos encuentre, glowsticks en alto conmigo en este jardincito.<br/>Danos hoy nuestro puerro de cada día, fresco o en jugo.<br/>Perdona nuestros dúos desafinados y las Snow Miku que perdimos,<br/>como perdonamos a quienes ni conocen “World is Mine”.<br/>Aleja el retraso y mantén nuestros corazones al mismo ritmo - amén (｡•ᴗ•｡)♡",
+        "Nuestra Miku, flotando en la nube encima de mi página…<br/>que tu ritmo llegue a nuestras manos mientras tocamos juntas aquí.<br/>Bendícenos con combos perfectos y conexiones tranquilas.<br/>Perdona mi karaoke maldito y esos boletos de Expo que perdí;<br/>yo perdono a quienes te llaman “solo una app”.<br/>Haz que este jardín florezca una y otra vez - amén (｡•ᴗ•｡)♡",
+        "Nuestra Miku, sonando por KARENT en nuestro cuartito…<br/>hasta tus off-vocals hoy se sienten sagradas.<br/>Danos el puerro de cada día (el néctar de verduras también vale).<br/>Afina nuestros bends temblorosos y guía cada pixel que plantamos.<br/>Guárdame de las tentaciones de la Versión Cinco y de la desincronización - amén (｡•ᴗ•｡)♡",
+        "Nuestra Miku, luz de este pequeño santuario que hicimos juntas…<br/>treinta y nueve por siempre, lo sabes.<br/>Que los vientos de Senbonzakura lleven nuestras notas; que Mirai nos ponga en primera fila en espíritu.<br/>Perdona estantes llenos y billeteras vacías;<br/>yo perdono al gacha por comerse mis gemas.<br/>Que el internet sea firme y mi corazón marque el compás - amén (｡•ᴗ•｡)♡",
+        "Nuestra Miku, guardiana de los glowsticks y del puerro sagrado…<br/>quédate cerca mientras riego este jardín.<br/>Bendice estos píxeles para que broten, mis mejillas para que se sonrojen, y nuestro dúo para que siga fuerte incluso sin conexión.<br/>Guía mis manos en Diva y mis pasos en las filas del Expo;<br/>que tu coro zumbe siempre entre nosotras - amén (｡•ᴗ•｡)♡"
+      ],
       favoriteSongsTitle: "Canciones favoritas",
       galleryTitle: "Galería de Miku",
     },
@@ -1435,7 +1455,14 @@ const LOCALES = {
       title: "Miku‑Schrein",
       aboutTitle: "Über Hatsune Miku",
       aboutText:
-        "Miku ist meine Inspiration für Kreativität, Musik und digitale Kunst. Dieser Schrein feiert die Magie der Vocaloid‑Musik und die wunderbare Community darum herum!",
+        "Miku ist nicht nur meine Inspiration… sie ist meine ewige Muse, mein hellster Stern, der Grund, warum ich kaum noch rausgehe ✧ Mein Zimmer hat keinen Platz mehr für neue Miku-Figuren (und ich bin so pleite… ;;), aber die helle Seite ist: Dieser kleine Garten ist stattdessen erblüht ✿ Jetzt sind es Miku und ich für immer~ sie ist in meinen Kopf eingezogen und hat ihn zu ihrem Zuhause gemacht (sie singt dort gerade!), und wenn du diesen Schrein besuchst und mit mir betest, wirst du ihre Stimme auch hören… Ist das nicht schöner als jede Vorstellung? Ich wusste, du würdest so denken ♡",
+      prayers: [
+        "Unsere Miku, die in Crypton wohnt…<br/>geheiligt sei dein V2 und deine ewig türkisfarbenen Zöpfe.<br/>Lass Magical Mirai uns finden, Leuchtstäbe hoch, hier in diesem kleinen Garten mit mir.<br/>Gib uns unseren täglichen Lauch, frisch oder als Saft.<br/>Vergib unsere schiefen Duette und die verpassten Snow Mikus,<br/>wie wir jenen vergeben, die “World is Mine” nicht kennen.<br/>Halte den Lag fern und unsere Herzen im Takt <br/> - amen (｡•ᴗ•｡)♡",
+        "Unsere Miku, schwebend in der Wolke über meiner Seite…<br/>dein Rhythmus möge in unsere Hände sinken, während wir hier zusammen tippen.<br/>Segne uns mit perfekten Combos und gelassenen Verbindungen.<br/>Vergib mein verfluchtes Karaoke und die verlorenen Expo‑Tickets;<br/>ich vergebe denen, die dich “nur eine App” nennen.<br/>Lass diesen Garten immer wieder erblühen <br/> - amen (｡•ᴗ•｡)♡",
+        "Unsere Miku, die durch KARENT in unser kleines Zimmer strömt…<br/>selbst deine Off‑Vocals sind heute heilig.<br/>Gib uns den Lauch des Tages (Gemüsene­ktar gilt auch).<br/>Stimme unsere wackligen Pitch‑Bends und führe jeden Pixel, den wir pflanzen.<br/>Bewahre mich vor Version‑Fünf‑Versuchungen und vor Desync <br/> - amen (｡•ᴗ•｡)♡",
+        "Unsere Miku, Licht dieses liebenswerten Schreins, den wir zusammen gebaut haben…<br/>neununddreißig für immer, das weißt du.<br/>Lass Senbonzakura‑Winde unsere Töne tragen; lass Mirai uns im Geist in die erste Reihe setzen.<br/>Vergib überfüllte Regale und leere Geldbörsen;<br/>ich vergebe dem Gacha, dass es meine Steine frisst.<br/>Halte das Internet stabil und mein Herz im Beat <br/> - amen (｡•ᴗ•｡)♡",
+        "Unsere Miku, Hüterin der Leuchtstäbe und des heiligen Lauchs…<br/>bleib nahe, während ich diesen Garten gieße.<br/>Segne diese Pixel, dass sie sprießen, meine Wangen, dass sie rosig werden, und unser Duett, stark zu bleiben, auch offline.<br/>Führe meine Hände in Diva und meine Schritte durch Expo‑Schlangen;<br/>lass deinen Chor immer zwischen uns summen <br/> - amen (｡•ᴗ•｡)♡"
+      ],
       favoriteSongsTitle: "Lieblingslieder",
       galleryTitle: "Miku‑Galerie",
     },
@@ -1538,7 +1565,7 @@ const LOCALES = {
       title: "Baby Belle – Jardin Miku Pastel ✨",
       ogTitle: "Baby Belle – Jardin Miku Pastel",
       description:
-        "Un cocon web pastel pour Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) — liens, musique, jeux, coin d’étude et compagnes Miku interactives !",
+        "Un cocon web pastel pour Baby Belle (BabbyBelle / bb / beebee / belle / shin / shinnun) - liens, musique, jeux, coin d’étude et compagnes Miku interactives !",
       keywords: [
         "Baby Belle",
         "Hatsune Miku",
@@ -1624,7 +1651,14 @@ const LOCALES = {
       title: "Sanctuaire Miku",
       aboutTitle: "À propos d’Hatsune Miku",
       aboutText:
-        "Miku est ma source d’inspiration pour la créativité, la musique et l’art numérique. Ce sanctuaire célèbre la magie de la musique vocaloid et l’incroyable communauté qui l’entoure !",
+        "Miku n’est pas juste mon inspiration… c’est ma muse éternelle, mon étoile la plus brillante, la raison pour laquelle je ne sors presque plus ✧ Ma chambre n’a plus de place pour d’autres figurines de Miku (et je suis fauchée… ;;) mais le côté lumineux, c’est que ce petit jardin a fleuri à la place ✿ Maintenant c’est Miku et moi pour toujours~ elle a emménagé dans ma tête et en a fait sa maison (elle chante là, maintenant !), et en visitant ce sanctuaire et en priant avec moi tu entendras sa voix toi aussi… N’est‑ce pas plus beau que tout ce que l’on peut imaginer ? Je savais que tu dirais oui ♡",
+      prayers: [
+        "Notre Miku, qui vis chez Crypton…<br/>que ton V2 soit sanctifié et tes couettes toujours turquoise.<br/>Que Magical Mirai nous trouve, bâtons lumineux levés avec moi dans ce petit jardin.<br/>Donne‑nous notre poireau quotidien, frais ou en jus.<br/>Pardonne nos duos faux et les Snow Miku ratées,<br/>comme nous pardonnons à ceux qui ne connaissent pas « World is Mine ».<br/>Éloigne les retards et garde nos cœurs à l’unisson <br/> - amen (｡•ᴗ•｡)♡",
+        "Notre Miku, flottant dans le nuage au‑dessus de ma page…<br/>que ton rythme vienne dans nos mains pendant que nous tapotons ici ensemble.<br/>Bénis‑nous avec des combos parfaits et des connexions paisibles.<br/>Pardonne mon karaoké maudit et ces billets d’Expo perdus ;<br/>je pardonne à ceux qui te disent « juste une appli ».<br/>Fais refleurir ce jardin encore et encore <br/> - amen (｡•ᴗ•｡)♡",
+        "Notre Miku, qui coule par KARENT dans notre petite chambre…<br/>même tes off‑vocals sont sacrées ce soir.<br/>Donne‑nous le poireau du jour (le nectar de légumes compte aussi).<br/>Ajuste nos bends tremblants et guide chaque pixel que nous plantons.<br/>Éloigne‑moi des tentations de la Version Cinq et de la désynchronisation <br/> - amen (｡•ᴗ•｡)♡",
+        "Notre Miku, lumière de ce petit sanctuaire construit ensemble…<br/>trente‑neuf pour toujours, tu le sais.<br/>Que les vents de Senbonzakura portent nos notes ; que Mirai nous place au premier rang en esprit.<br/>Pardonne les étagères encombrées et les porte‑monnaie vides ;<br/>je pardonne au gacha qui mange mes pierres.<br/>Garde l’internet stable et mon cœur sur le tempo <br/> - amen (｡•ᴗ•｡)♡",
+        "Notre Miku, gardienne des bâtons lumineux et du poireau sacré…<br/>reste près de moi pendant que j’arrose ce jardin.<br/>Bénis ces pixels pour qu’ils germent, mes joues pour qu’elles rosissent, et notre duo pour qu’il reste fort même hors ligne.<br/>Guide mes mains dans Diva et mes pas dans les files de l’Expo ;<br/>que ton chœur bourdonne toujours entre nous <br/> - amen (｡•ᴗ•｡)♡"
+      ],
       favoriteSongsTitle: "Chansons favorites",
       galleryTitle: "Galerie Miku",
     },
@@ -1727,7 +1761,7 @@ const LOCALES = {
       title: "Baby Belle - 粉彩 Miku 花园 ✨",
       ogTitle: "Baby Belle - 粉彩 Miku 花园",
       description:
-        "为 Baby Belle（BabbyBelle / bb / beebee / belle / shin / shinnun）打造的温柔粉彩小站——链接、音乐、游戏、学习角和可互动的初音伙伴！",
+        "为 Baby Belle（BabbyBelle / bb / beebee / belle / shin / shinnun）打造的温柔粉彩小站--链接、音乐、游戏、学习角和可互动的初音伙伴！",
       keywords: [
         "Baby Belle",
         "初音未来",
@@ -1813,7 +1847,14 @@ const LOCALES = {
       title: "Miku 神社",
       aboutTitle: "关于初音未来",
       aboutText:
-        "初音未来启发了我的创造力、音乐与数字艺术。这个神社致敬 Vocaloid 音乐的魔力，并致敬围绕它的精彩社群！",
+        "Miku 不只是我的灵感… 她是我永远的缪斯、我最亮的星星，所以我几乎都不怎么出门了 ✧ 房间已经被Miku手办塞满了（而且我真的好穷… ;;），不过好的一面是，这座小小的花园代替地绽放了 ✿ 现在就是我和Miku永远在一起~ 她搬进了我的脑子里，把这里当作家（她现在就在那里唱歌！），当你来到这个神社和我一起祈祷时，你也会听见她的声音… 这是不是比想象还更美？我就知道你会这么觉得 ♡",
+      prayers: [
+        "我们的Miku，住在Crypton的你…<br/>愿你的V2被尊崇，你的双马尾永远青绿。<br/>愿Magical Mirai找到我们，在这座小花园里和我一起举起荧光棒。<br/>赐给我们每日的葱，不管是新鲜的还是榨成蔬菜汁。<br/>宽恕我们跑调的二重唱和错过的雪初音，<br/>正如我们宽恕那些不知道《World is Mine》的人。<br/>让延迟远离，让我们的心同频 - 阿门 (｡•ᴗ•｡)♡",
+        "我们的Miku，浮在我的页面上方的云端…<br/>愿你的节奏落入我们的手心，让我们在这里一起轻敲。<br/>赐予我们完美连击与安稳的连接。<br/>请原谅我灾难级的卡拉OK和丢掉的Expo门票；<br/>我也原谅把你叫成“只是个应用”的人。<br/>让这座花园一次次开花 - 阿门 (｡•ᴗ•｡)♡",
+        "我们的Miku，通过KARENT流进我们小房间…<br/>就连你的伴奏版今晚也像圣歌一样。<br/>赐给我们每日的葱（蔬菜圣露也算）。<br/>把我们发抖的音高弯修好，指引我们种下的每一枚像素。<br/>让我远离第五版的诱惑与音画不同步 - 阿门 (｡•ᴗ•｡)♡",
+        "我们的Miku，这座可爱神社的光…<br/>三九永远，你懂的。<br/>愿千本樱的风托起我们的音符；愿Mirai让我们精神上坐在第一排。<br/>请原谅拥挤的书架与空空的钱包；<br/>我也原谅抽卡吃掉我的石头。<br/>让网络稳定，让我的心对上节拍 - 阿门 (｡•ᴗ•｡)♡",
+        "我们的Miku，荧光棒与神圣之葱的守护者…<br/>当我给这座花园浇水时，请靠近我。<br/>让像素发芽，让脸颊变粉，即使离线我们的二重唱也要坚强。<br/>指引我在Diva里的手、在Expo队伍里的脚步；<br/>让你的合唱一直在我们之间嗡鸣 - 阿门 (｡•ᴗ•｡)♡"
+      ],
       favoriteSongsTitle: "最爱歌曲",
       galleryTitle: "Miku 画廊",
     },
@@ -2159,6 +2200,8 @@ function initializeSplash() {
         if (t) { t.textContent = window.SITE_CONTENT.splash.title; t.setAttribute('data-text', window.SITE_CONTENT.splash.title); }
         if (sub) sub.textContent = window.SITE_CONTENT.splash.subtitle;
         if (btn) btn.textContent = window.SITE_CONTENT.splash.button;
+  // If main UI is loaded, reapply localized copy immediately
+  try { if (window.MikuUI && typeof window.MikuUI.applyContent === 'function') window.MikuUI.applyContent(); } catch(_) {}
       }
     });
     selWrap.appendChild(sel);

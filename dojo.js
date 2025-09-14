@@ -1,4 +1,4 @@
-// Language Dojo × Project DIVA — Simplified OOP Refactor with improvements
+// Language Dojo × Project DIVA - Simplified OOP Refactor with improvements
 // This file contains the full logic for the Language Dojo mini‑games.  It
 // centralises all configuration, exposes an easy API for starting games and
 // manages state, UI updates, effects and scoring.  It has been updated to
@@ -651,7 +651,7 @@
       const surface = q.jp;
       const hira = q.reading;
       const en = q.meaning || '';
-      this.elements.typingTarget.textContent = `${surface} 【${hira}】 — ${en}`;
+      this.elements.typingTarget.textContent = `${surface} 【${hira}】 - ${en}`;
       // Prepare input
       const inp = this.elements.typingInput;
       inp.value = '';
@@ -685,7 +685,7 @@
       this.elements.greatCount && (this.elements.greatCount.textContent = State.judgmentCounts.GREAT);
       this.elements.fineCount && (this.elements.fineCount.textContent = State.judgmentCounts.FINE);
       this.elements.missCount && (this.elements.missCount.textContent = State.judgmentCounts.MISS);
-      // Reward display — concise & cute: two spans, no + or dot
+      // Reward display - concise & cute: two spans, no + or dot
       if (this.elements.rewardAmount) {
         const hearts = rewardsDisplay.hearts | 0;
         const xp = rewardsDisplay.xp | 0;
@@ -988,7 +988,7 @@
       const comboPts = Math.round((State.maxCombo || 0) * (CONFIG.scoringWeights.COMBO || 0));
       const voltagePts = Math.round((State.voltage || 0) * (CONFIG.scoringWeights.VOLTAGE || 0));
       const payoutScore = Math.max(0, score + comboPts + voltagePts);
-      // Display total (points) — based on payoutScore
+      // Display total (points) - based on payoutScore
       const total = CONFIG.rewards.BASE + payoutScore + level * CONFIG.rewards.LEVEL_MULT;
       // Hearts payout
       const hCfg = CONFIG.payouts.hearts;
@@ -1033,7 +1033,7 @@
           hudManager.awardHearts(rewards.hearts);
           hudManager.addXP(rewards.xp);
           // Pop a toast if available
-          const msg = `Session complete — Rank ${rank}. +${rewards.hearts} 💖, +${rewards.xp} XP!`;
+          const msg = `Session complete - Rank ${rank}. +${rewards.hearts} 💖, +${rewards.xp} XP!`;
           (window.Hearts?.loveToast?.(msg) || window.hearts?.lovetoast?.(msg)) || (function () {
             const t = document.createElement('div');
             t.style.cssText = 'position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#fff;border:2px solid var(--border);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);z-index:99999;color:#2b2b44;font-weight:700';

@@ -277,7 +277,7 @@ window.SFX = (function initSfxEngine() {
         el.crossOrigin = 'anonymous';
         el.preload = 'auto';
         el.volume = vol;
-        // Note: HTMLAudio doesn’t support detune/pan without WebAudio graph
+        // Note: HTMLAudio doesn't support detune/pan without WebAudio graph
         await el.play().catch(() => {});
       } catch {}
       return;

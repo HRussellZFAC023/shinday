@@ -673,10 +673,70 @@ window.MikuUI = (function () {
       }
       const aboutP = document.querySelector("#shrine .shrine-info p");
       if (aboutP && C.shrine.aboutText) aboutP.textContent = C.shrine.aboutText;
-      const listTitle = document.querySelectorAll("#shrine .shrine-info h3")[1];
-      if (listTitle && C.shrine.favoriteSongsTitle)
-        listTitle.textContent = C.shrine.favoriteSongsTitle;
-      const ul = document.querySelector("#shrine .song-list");
+
+      // Prayers box: show one rich-text prayer chosen at random and a small
+      // "another blessing" button that swaps to a different prayer.
+      try {
+        const prayers = Array.isArray(C.shrine.prayers) ? C.shrine.prayers : [];
+        const shrineInfo = document.querySelector('#shrine .shrine-info');
+        if (shrineInfo && prayers.length) {
+          // Create container only if not present
+          let pbox = shrineInfo.querySelector('.shrine-prayer-box');
+          if (!pbox) {
+            pbox = document.createElement('div');
+            pbox.className = 'shrine-prayer-box';
+            pbox.innerHTML = `
+              <div class="prayer-header">${window.MikuCore.mikuIcon('sparkle','✨')} <strong>today's prayer ✧</strong></div>
+              <div class="prayer-body" aria-live="polite"></div>
+              <div class="prayer-actions">
+                <button class="another-blessing">another blessing</button>
+              </div>
+            `;
+            // Insert after the about paragraph
+            if (aboutP && aboutP.parentNode) {
+              aboutP.parentNode.insertBefore(pbox, aboutP.nextSibling);
+            } else {
+              shrineInfo.appendChild(pbox);
+            }
+          }
+
+          const body = pbox.querySelector('.prayer-body');
+          const btn = pbox.querySelector('.another-blessing');
+          let lastIdx = -1;
+          const pick = () => {
+            if (!prayers.length) return '';
+            let idx = Math.floor(Math.random() * prayers.length);
+            // avoid repeating same prayer when possible
+            if (prayers.length > 1) {
+              let attempts = 0;
+              while (idx === lastIdx && attempts++ < 6) idx = Math.floor(Math.random() * prayers.length);
+            }
+            lastIdx = idx;
+            return prayers[idx];
+          };
+          const render = () => {
+            const html = pick();
+            // prayer text contains <br/> for lines; allow simple HTML
+            body.innerHTML = `<div class="prayer-text">${html}</div>`;
+          };
+          render();
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            render();
+            // subtle feedback
+            btn.classList.add('clicked');
+            setTimeout(()=>btn.classList.remove('clicked'), 350);
+          });
+        }
+      } catch (_) {}
+      const listTitle = document.querySelector("#shrine .shrine-favorites h3");
+      if (listTitle && C.shrine.favoriteSongsTitle) {
+        const songsIcon = C.shrine.favoriteSongsIcon
+          ? window.MikuCore.mikuIcon(C.shrine.favoriteSongsIcon, "🎵")
+          : "🎵";
+        listTitle.innerHTML = /*html*/ `${songsIcon} ${C.shrine.favoriteSongsTitle}`;
+      }
+      const ul = document.querySelector("#shrine .shrine-favorites .song-list");
       if (ul) {
         // Build a structured favorites list from config
         const maxN = Number.isFinite(C.shrine.favoriteSongsMax)

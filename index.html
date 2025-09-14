@@ -833,7 +833,6 @@
                       Open MikuDex
                     </button>
                   </div>
-                  <div id="mikuDex" class="Wish-collection hidden"></div>
                 </div>
               </div>
             </section>
@@ -853,13 +852,7 @@
                     <div class="candle">🕯️</div>
                   </div>
                 </div>
-                <div class="shrine-info">
-                  <h3>💙 About Hatsune Miku</h3>
-                  <p>
-                    Miku has been my inspiration for creativity, music, and
-                    digital art. This shrine celebrates the magic of vocaloid
-                    music and the amazing community around it!
-                  </p>
+                <div class="shrine-favorites">
                   <h3>🎵 Favorite Songs</h3>
                   <ul class="song-list">
                     <li>World is Mine - ryo</li>
@@ -868,11 +861,14 @@
                     <li>Love is War - ryo</li>
                   </ul>
                 </div>
-              </div>
-              <div class="image-gallery" id="mikuGallery"></div>
-              <br />
-              <div class="media-credits" id="mediaCredits">
-                <!-- Content populated by JavaScript from localization -->
+                <div class="shrine-info">
+                  <h3>💙 About Hatsune Miku</h3>
+                  <p>
+                    Miku has been my inspiration for creativity, music, and
+                    digital art. This shrine celebrates the magic of vocaloid
+                    music and the amazing community around it!
+                  </p>
+                </div>
               </div>
               <div class="collapsible-section">
                 <button class="collapsible-header" id="mikuSearchToggle">
@@ -892,26 +888,32 @@
                     ></iframe>
                   </div>
                 </div>
-                </div>
-                <div class="collapsible-section">
-                  <button class="collapsible-header" id="vocaloidDbToggle">
-                    <span id="vocaloidDbTitle">🎼 VocaloidDB</span>
-                    <span class="toggle-icon">▼</span>
-                  </button>
-                  <div
-                    class="collapsible-content collapsed"
-                    id="vocaloidDbContent"
-                  >
-                    <div class="game-widget">
-                      <iframe
-                        src="https://vocadb.net/"
-                        title="Vocaloid Database"
-                        style="width: 100%; height: 600px; border: none"
-                        loading="lazy"
-                      ></iframe>
-                    </div>
-                  </div>
               </div>
+              <div class="collapsible-section">
+                <button class="collapsible-header" id="vocaloidDbToggle">
+                  <span id="vocaloidDbTitle">🎼 VocaloidDB</span>
+                  <span class="toggle-icon">▼</span>
+                </button>
+                <div
+                  class="collapsible-content collapsed"
+                  id="vocaloidDbContent"
+                >
+                  <div class="game-widget">
+                    <iframe
+                      src="https://vocadb.net/"
+                      title="Vocaloid Database"
+                      style="width: 100%; height: 600px; border: none"
+                      loading="lazy"
+                    ></iframe>
+                  </div>
+                </div>
+              </div>
+              <div class="image-gallery" id="mikuGallery"></div>
+              <br />
+              <div class="media-credits" id="mediaCredits">
+                <!-- Content populated by JavaScript from localization -->
+              </div>
+              <div id="mikuDex" class="Wish-collection hidden"></div>
             </section>
           </main>
           <aside id="rightSidebar">

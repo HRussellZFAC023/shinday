@@ -81,7 +81,7 @@
       <span class="small">Select a mode below · Click on the canvas to answer</span>
     </div>
     <div class="hud">
-      <span class="pill" id="hudGame">Mode: —</span>
+      <span class="pill" id="hudGame">Mode: -</span>
       <span class="pill" id="hudScore">Score: 0</span>
       <span class="pill" id="hudStreak">Streak: 0</span>
     </div>
@@ -164,7 +164,7 @@
   }
 
   function setHUD(){
-    hudGame.textContent = `Mode: ${state.mode ? state.mode.toUpperCase() : '—'}`;
+    hudGame.textContent = `Mode: ${state.mode ? state.mode.toUpperCase() : '-'}`;
     hudScore.textContent = `Score: ${state.score}`;
     hudStreak.textContent = `Streak: ${state.streak}`;
   }
