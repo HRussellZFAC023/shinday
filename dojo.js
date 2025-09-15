@@ -14,14 +14,14 @@
   // README.md for guidance on how to tune them.
   const CONFIG = Object.freeze({
     timers: {
-      SONG_S: 60,        // seconds per game
-      QUESTION_S: 10,    // seconds per question
+      SONG_S: 60, // seconds per game
+      QUESTION_S: 10, // seconds per question
     },
     notes: {
-      BASE_FALL_MS: 2800,
-      PER_DIFF_MS: 180,
-      MIN_FALL_MS: 1100,
-      MAX_FALL_MS: 3000,
+      BASE_FALL_MS: 5600,
+      PER_DIFF_MS: 360,
+      MIN_FALL_MS: 2200,
+      MAX_FALL_MS: 6000,
       SPAWN_BASE_MS: 900,
       SPAWN_DIFF_STEP_MS: 60,
       SPAWN_MIN_MS: 400,
@@ -46,17 +46,17 @@
     payouts: {
       // Hearts roughly in the 25–75 range for typical songs.
       hearts: {
-        BASE: 20,           // base hearts for completing
-        SCORE_DIV: 300,     // hearts += floor(score / SCORE_DIV)
-        LEVEL_MULT: 2,      // hearts += level * LEVEL_MULT
-        MIN: 5,             // minimum hearts on completion
+        BASE: 20, // base hearts for completing
+        SCORE_DIV: 300, // hearts += floor(score / SCORE_DIV)
+        LEVEL_MULT: 2, // hearts += level * LEVEL_MULT
+        MIN: 5, // minimum hearts on completion
       },
       // XP tuned so early levels take ~2–4 songs; later, longer.
       xp: {
-        BASE: 10,           // base XP for completing
-        SCORE_DIV: 200,     // xp += floor(score / SCORE_DIV)
-        LEVEL_MULT: 1,      // xp += level * LEVEL_MULT
-        MIN: 5,             // minimum XP on completion
+        BASE: 10, // base XP for completing
+        SCORE_DIV: 200, // xp += floor(score / SCORE_DIV)
+        LEVEL_MULT: 1, // xp += level * LEVEL_MULT
+        MIN: 5, // minimum XP on completion
       },
     },
     // Score thresholds for letter ranks at the end of a song.  These
@@ -66,20 +66,20 @@
     // exactly the threshold you get that rank.  Ranks are checked from
     // highest to lowest.
     rankThresholds: [
-      { score: 9000, rank: 'SSS' },
-      { score: 7000, rank: 'SS' },
-      { score: 5000, rank: 'S' },
-      { score: 3000, rank: 'A' },
-      { score: 2000, rank: 'B' },
-      { score: 1000, rank: 'C' },
+      { score: 9000, rank: "SSS" },
+      { score: 7000, rank: "SS" },
+      { score: 5000, rank: "S" },
+      { score: 3000, rank: "A" },
+      { score: 2000, rank: "B" },
+      { score: 1000, rank: "C" },
     ],
     // Extra weights to fold combo and voltage into the payout score used
     // for Hearts/XP rewards (keeps UI score unchanged, but rewards feel better).
     scoringWeights: { COMBO: 25, VOLTAGE: 15 },
   });
 
-  const PS_SYMBOLS = ['△', '○', '×', '□'];
-  const LANE_TYPES = ['triangle', 'circle', 'cross', 'square'];
+  const PS_SYMBOLS = ["△", "○", "×", "□"];
+  const LANE_TYPES = ["triangle", "circle", "cross", "square"];
 
   // Small utility to clamp numbers to a range
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -107,10 +107,10 @@
       this.questProgress = { score: 0, coolHits: 0, maxCombo: 0 };
       this.questionQueue = [];
       this.currentQuestion = null;
-      this.vocabDirection = 'jp-en';
-      this.kanjiDirection = 'meaning-kanji';
+      this.vocabDirection = "jp-en";
+      this.kanjiDirection = "meaning-kanji";
       this.noteQueues = [[], [], [], []];
-      this.typingMaxTier = 'COOL';
+      this.typingMaxTier = "COOL";
       // Track whether the player has made a mistake yet in typing mode.
       this.typingMistakeMade = false;
     }
@@ -126,7 +126,7 @@
       this.judgmentCounts = { COOL: 0, GREAT: 0, FINE: 0, MISS: 0 };
       this.questionQueue = [];
       this.noteQueues = [[], [], [], []];
-      this.typingMaxTier = 'COOL';
+      this.typingMaxTier = "COOL";
       this.typingMistakeMade = false;
     }
   }
@@ -144,8 +144,8 @@
       const pick = vocabPool[Math.floor(Math.random() * vocabPool.length)];
       return {
         word: pick.word || pick.reading,
-        reading: pick.reading || '',
-        meaning: pick.meaning || '',
+        reading: pick.reading || "",
+        meaning: pick.meaning || "",
       };
     }
 
@@ -195,120 +195,120 @@
   class KanaUtils {
     constructor() {
       this.hiraToRomaMap = new Map([
-        ['あ', 'a'],
-        ['い', 'i'],
-        ['う', 'u'],
-        ['え', 'e'],
-        ['お', 'o'],
-        ['か', 'ka'],
-        ['き', 'ki'],
-        ['く', 'ku'],
-        ['け', 'ke'],
-        ['こ', 'ko'],
-        ['さ', 'sa'],
-        ['し', 'shi'],
-        ['す', 'su'],
-        ['せ', 'se'],
-        ['そ', 'so'],
-        ['た', 'ta'],
-        ['ち', 'chi'],
-        ['つ', 'tsu'],
-        ['て', 'te'],
-        ['と', 'to'],
-        ['な', 'na'],
-        ['に', 'ni'],
-        ['ぬ', 'nu'],
-        ['ね', 'ne'],
-        ['の', 'no'],
-        ['は', 'ha'],
-        ['ひ', 'hi'],
-        ['ふ', 'fu'],
-        ['へ', 'he'],
-        ['ほ', 'ho'],
-        ['ま', 'ma'],
-        ['み', 'mi'],
-        ['む', 'mu'],
-        ['め', 'me'],
-        ['も', 'mo'],
-        ['や', 'ya'],
-        ['ゆ', 'yu'],
-        ['よ', 'yo'],
-        ['ら', 'ra'],
-        ['り', 'ri'],
-        ['る', 'ru'],
-        ['れ', 're'],
-        ['ろ', 'ro'],
-        ['わ', 'wa'],
-        ['を', 'o'],
-        ['ん', 'n'],
-        ['が', 'ga'],
-        ['ぎ', 'gi'],
-        ['ぐ', 'gu'],
-        ['げ', 'ge'],
-        ['ご', 'go'],
-        ['ざ', 'za'],
-        ['じ', 'ji'],
-        ['ず', 'zu'],
-        ['ぜ', 'ze'],
-        ['ぞ', 'zo'],
-        ['だ', 'da'],
-        ['ぢ', 'ji'],
-        ['づ', 'zu'],
-        ['で', 'de'],
-        ['ど', 'do'],
-        ['ば', 'ba'],
-        ['び', 'bi'],
-        ['ぶ', 'bu'],
-        ['べ', 'be'],
-        ['ぼ', 'bo'],
-        ['ぱ', 'pa'],
-        ['ぴ', 'pi'],
-        ['ぷ', 'pu'],
-        ['ぺ', 'pe'],
-        ['ぽ', 'po'],
-        ['きゃ', 'kya'],
-        ['きゅ', 'kyu'],
-        ['きょ', 'kyo'],
-        ['しゃ', 'sha'],
-        ['しゅ', 'shu'],
-        ['しょ', 'sho'],
-        ['ちゃ', 'cha'],
-        ['ちゅ', 'chu'],
-        ['ちょ', 'cho'],
-        ['にゃ', 'nya'],
-        ['にゅ', 'nyu'],
-        ['にょ', 'nyo'],
-        ['ひゃ', 'hya'],
-        ['ひゅ', 'hyu'],
-        ['ひょ', 'hyo'],
-        ['みゃ', 'mya'],
-        ['みゅ', 'myu'],
-        ['みょ', 'myo'],
-        ['りゃ', 'rya'],
-        ['りゅ', 'ryu'],
-        ['りょ', 'ryo'],
-        ['ぎゃ', 'gya'],
-        ['ぎゅ', 'gyu'],
-        ['ぎょ', 'gyo'],
-        ['じゃ', 'ja'],
-        ['じゅ', 'ju'],
-        ['じょ', 'jo'],
-        ['びゃ', 'bya'],
-        ['びゅ', 'byu'],
-        ['びょ', 'byo'],
-        ['ぴゃ', 'pya'],
-        ['ぴゅ', 'pyu'],
-        ['ぴょ', 'pyo'],
-        ['っ', '*tsu*'],
+        ["あ", "a"],
+        ["い", "i"],
+        ["う", "u"],
+        ["え", "e"],
+        ["お", "o"],
+        ["か", "ka"],
+        ["き", "ki"],
+        ["く", "ku"],
+        ["け", "ke"],
+        ["こ", "ko"],
+        ["さ", "sa"],
+        ["し", "shi"],
+        ["す", "su"],
+        ["せ", "se"],
+        ["そ", "so"],
+        ["た", "ta"],
+        ["ち", "chi"],
+        ["つ", "tsu"],
+        ["て", "te"],
+        ["と", "to"],
+        ["な", "na"],
+        ["に", "ni"],
+        ["ぬ", "nu"],
+        ["ね", "ne"],
+        ["の", "no"],
+        ["は", "ha"],
+        ["ひ", "hi"],
+        ["ふ", "fu"],
+        ["へ", "he"],
+        ["ほ", "ho"],
+        ["ま", "ma"],
+        ["み", "mi"],
+        ["む", "mu"],
+        ["め", "me"],
+        ["も", "mo"],
+        ["や", "ya"],
+        ["ゆ", "yu"],
+        ["よ", "yo"],
+        ["ら", "ra"],
+        ["り", "ri"],
+        ["る", "ru"],
+        ["れ", "re"],
+        ["ろ", "ro"],
+        ["わ", "wa"],
+        ["を", "o"],
+        ["ん", "n"],
+        ["が", "ga"],
+        ["ぎ", "gi"],
+        ["ぐ", "gu"],
+        ["げ", "ge"],
+        ["ご", "go"],
+        ["ざ", "za"],
+        ["じ", "ji"],
+        ["ず", "zu"],
+        ["ぜ", "ze"],
+        ["ぞ", "zo"],
+        ["だ", "da"],
+        ["ぢ", "ji"],
+        ["づ", "zu"],
+        ["で", "de"],
+        ["ど", "do"],
+        ["ば", "ba"],
+        ["び", "bi"],
+        ["ぶ", "bu"],
+        ["べ", "be"],
+        ["ぼ", "bo"],
+        ["ぱ", "pa"],
+        ["ぴ", "pi"],
+        ["ぷ", "pu"],
+        ["ぺ", "pe"],
+        ["ぽ", "po"],
+        ["きゃ", "kya"],
+        ["きゅ", "kyu"],
+        ["きょ", "kyo"],
+        ["しゃ", "sha"],
+        ["しゅ", "shu"],
+        ["しょ", "sho"],
+        ["ちゃ", "cha"],
+        ["ちゅ", "chu"],
+        ["ちょ", "cho"],
+        ["にゃ", "nya"],
+        ["にゅ", "nyu"],
+        ["にょ", "nyo"],
+        ["ひゃ", "hya"],
+        ["ひゅ", "hyu"],
+        ["ひょ", "hyo"],
+        ["みゃ", "mya"],
+        ["みゅ", "myu"],
+        ["みょ", "myo"],
+        ["りゃ", "rya"],
+        ["りゅ", "ryu"],
+        ["りょ", "ryo"],
+        ["ぎゃ", "gya"],
+        ["ぎゅ", "gyu"],
+        ["ぎょ", "gyo"],
+        ["じゃ", "ja"],
+        ["じゅ", "ju"],
+        ["じょ", "jo"],
+        ["びゃ", "bya"],
+        ["びゅ", "byu"],
+        ["びょ", "byo"],
+        ["ぴゃ", "pya"],
+        ["ぴゅ", "pyu"],
+        ["ぴょ", "pyo"],
+        ["っ", "*tsu*"],
         // Additional mappings to improve IME labels: long vowel dash and voiced hiragana
-        ['ー', '-'],
-        ['ゔ', 'vu'],
-        ['づ', 'du'],
-        ['ぢ', 'di'],
+        ["ー", "-"],
+        ["ゔ", "vu"],
+        ["づ", "du"],
+        ["ぢ", "di"],
       ]);
     }
     kataToHira(str) {
-      return (str || '').replace(/[ァ-ン]/g, (ch) =>
+      return (str || "").replace(/[ァ-ン]/g, (ch) =>
         String.fromCharCode(ch.charCodeAt(0) - 0x60)
       );
     }
@@ -316,9 +316,9 @@
       // Convert a kana string to the IME romaji key sequence.  Handles
       // double consonants via the small tsu.  Unknown characters are passed
       // through unchanged.
-      if (!kana) return '';
+      if (!kana) return "";
       kana = this.kataToHira(kana);
-      let out = '';
+      let out = "";
       for (let i = 0; i < kana.length; ) {
         const two = kana.slice(i, i + 2);
         const one = kana[i];
@@ -327,11 +327,11 @@
           i += 2;
           continue;
         }
-        if (one === 'っ') {
+        if (one === "っ") {
           const nextRoma =
             this.hiraToRomaMap.get(kana.slice(i + 1, i + 3)) ||
             this.hiraToRomaMap.get(kana[i + 1]) ||
-            '';
+            "";
           if (nextRoma) out += nextRoma[0];
           i += 1;
           continue;
@@ -342,7 +342,7 @@
       return out;
     }
     normalize(input) {
-      return (input || '').toLowerCase().replace(/\s+/g, '');
+      return (input || "").toLowerCase().replace(/\s+/g, "");
     }
   }
   const Kana = new KanaUtils();
@@ -355,31 +355,31 @@
       if (!pool.length) return null;
       const entry = pool[Math.floor(Math.random() * pool.length)];
       const jp = entry.word || entry.reading;
-      const reading = entry.reading || '';
-      const en = entry.meaning || '';
-      if (State.vocabDirection === 'jp-en') {
-          const opts = new Set([en]);
-          while (opts.size < 4 && pool.length > 3) {
-            const d = pool[Math.floor(Math.random() * pool.length)]?.meaning;
-            if (d && d !== en) opts.add(d);
-          }
-          const options = [...opts].sort(() => Math.random() - 0.5);
-          return {
-            type: 'vocab',
-            prompt: { jp, reading },
-            correct: en,
-            options,
-            reading,
-          };
+      const reading = entry.reading || "";
+      const en = entry.meaning || "";
+      if (State.vocabDirection === "jp-en") {
+        const opts = new Set([en]);
+        while (opts.size < 4 && pool.length > 3) {
+          const d = pool[Math.floor(Math.random() * pool.length)]?.meaning;
+          if (d && d !== en) opts.add(d);
+        }
+        const options = [...opts].sort(() => Math.random() - 0.5);
+        return {
+          type: "vocab",
+          prompt: { jp, reading },
+          correct: en,
+          options,
+          reading,
+        };
       } else {
-          const opts = new Set([jp]);
-          while (opts.size < 4 && pool.length > 3) {
-            const d = pool[Math.floor(Math.random() * pool.length)];
-            const s = d?.word || d?.reading;
-            if (s && s !== jp) opts.add(s);
-          }
-          const options = [...opts].sort(() => Math.random() - 0.5);
-          return { type: 'vocab', prompt: { en }, correct: jp, options, reading };
+        const opts = new Set([jp]);
+        while (opts.size < 4 && pool.length > 3) {
+          const d = pool[Math.floor(Math.random() * pool.length)];
+          const s = d?.word || d?.reading;
+          if (s && s !== jp) opts.add(s);
+        }
+        const options = [...opts].sort(() => Math.random() - 0.5);
+        return { type: "vocab", prompt: { en }, correct: jp, options, reading };
       }
     }
     static async kanji() {
@@ -389,22 +389,22 @@
       const entry = pool[Math.floor(Math.random() * pool.length)];
       const kanji = entry.kanji;
       const meaning = entry.meaning;
-      if (State.kanjiDirection === 'meaning-kanji') {
-          const opts = new Set([kanji]);
-          while (opts.size < 4 && pool.length > 3) {
-            const d = pool[Math.floor(Math.random() * pool.length)]?.kanji;
-            if (d && d !== kanji) opts.add(d);
-          }
-          const options = [...opts].sort(() => Math.random() - 0.5);
-          return { type: 'kanji', prompt: meaning, correct: kanji, options };
+      if (State.kanjiDirection === "meaning-kanji") {
+        const opts = new Set([kanji]);
+        while (opts.size < 4 && pool.length > 3) {
+          const d = pool[Math.floor(Math.random() * pool.length)]?.kanji;
+          if (d && d !== kanji) opts.add(d);
+        }
+        const options = [...opts].sort(() => Math.random() - 0.5);
+        return { type: "kanji", prompt: meaning, correct: kanji, options };
       } else {
-          const opts = new Set([meaning]);
-          while (opts.size < 4 && pool.length > 3) {
-            const d = pool[Math.floor(Math.random() * pool.length)]?.meaning;
-            if (d && d !== meaning) opts.add(d);
-          }
-          const options = [...opts].sort(() => Math.random() - 0.5);
-          return { type: 'kanji', prompt: kanji, correct: meaning, options };
+        const opts = new Set([meaning]);
+        while (opts.size < 4 && pool.length > 3) {
+          const d = pool[Math.floor(Math.random() * pool.length)]?.meaning;
+          if (d && d !== meaning) opts.add(d);
+        }
+        const options = [...opts].sort(() => Math.random() - 0.5);
+        return { type: "kanji", prompt: kanji, correct: meaning, options };
       }
     }
     static async typing() {
@@ -412,18 +412,18 @@
       const pool = ApiService.getVocabPool(State.difficulty);
       const entry = pool.length
         ? pool[Math.floor(Math.random() * pool.length)]
-        : { word: 'fallback', reading: 'fallback', meaning: 'fallback' };
+        : { word: "fallback", reading: "fallback", meaning: "fallback" };
       const jp = entry.word || entry.reading;
-      const reading = entry.reading || '';
-      const meaning = entry.meaning || '';
+      const reading = entry.reading || "";
+      const meaning = entry.meaning || "";
       const keys = Kana.readingToKeys(reading);
       return {
-        type: 'typing',
+        type: "typing",
         jp,
         reading,
         meaning,
         keys,
-        typed: '',
+        typed: "",
         startTime: null,
       };
     }
@@ -437,43 +437,46 @@
     init() {
       // Grab all the elements we need once up front
       this.elements = {
-        menuPanel: byId('menuPanel'),
-        gameArea: byId('gameArea'),
-        userLevel: byId('userLevel'),
-        voltageBar: byId('voltageBar'),
-        comboCount: byId('comboCount'),
-        scoreValue: byId('scoreValue'),
-        songTimer: byId('songTimer'),
-        livesContainer: byId('livesContainer'),
-        judgmentDisplay: byId('judgmentDisplay'),
-        questionContent: byId('questionContent'),
-        answerGrid: byId('answerGrid'),
-        typingArea: byId('typingArea'),
-        typingTarget: byId('typingTarget'),
-        typingInput: byId('typingInput'),
-        typingFeedback: byId('typingFeedback'),
-        questionTimerBar: byId('questionTimerBar'),
-        questionTimerText: byId('questionTimerText'),
-        rhythmLanes: byId('rhythmLanes'),
-        songOverModal: byId('songOverModal'),
-        effectsLayer: byId('effectsLayer'),
-        difficultySlider: byId('difficultySlider'),
-        diffValue: byId('diffValue'),
-        diffLabel: byId('diffLabel'),
-        wodContent: byId('wodContent'),
-        wodNext: byId('wodNext'),
-        rankDisplay: byId('rankDisplay'),
-        coolCount: byId('coolCount'),
-        greatCount: byId('greatCount'),
-        fineCount: byId('fineCount'),
-        missCount: byId('missCount'),
-        rewardAmount: byId('rewardAmount'),
-        rewardBonus: byId('rewardBonus'),
-        stageSinger: byId('stageSinger'),
+        menuPanel: byId("menuPanel"),
+        gameArea: byId("gameArea"),
+        userLevel: byId("userLevel"),
+        voltageBar: byId("voltageBar"),
+        comboCount: byId("comboCount"),
+        scoreValue: byId("scoreValue"),
+        songTimer: byId("songTimer"),
+        livesContainer: byId("livesContainer"),
+        judgmentDisplay: byId("judgmentDisplay"),
+        questionContent: byId("questionContent"),
+        answerGrid: byId("answerGrid"),
+        typingArea: byId("typingArea"),
+        typingTarget: byId("typingTarget"),
+        typingInput: byId("typingInput"),
+        typingFeedback: byId("typingFeedback"),
+        questionTimerBar: byId("questionTimerBar"),
+        questionTimerText: byId("questionTimerText"),
+        rhythmLanes: byId("rhythmLanes"),
+        songOverModal: byId("songOverModal"),
+        effectsLayer: byId("effectsLayer"),
+        difficultySlider: byId("difficultySlider"),
+        diffValue: byId("diffValue"),
+        diffLabel: byId("diffLabel"),
+        wodContent: byId("wodContent"),
+        wodNext: byId("wodNext"),
+        rankDisplay: byId("rankDisplay"),
+        coolCount: byId("coolCount"),
+        greatCount: byId("greatCount"),
+        fineCount: byId("fineCount"),
+        missCount: byId("missCount"),
+        rewardAmount: byId("rewardAmount"),
+        rewardBonus: byId("rewardBonus"),
+        stageSinger: byId("stageSinger"),
       };
       this.setupEvents();
       // Load difficulty from localStorage if available
-      const savedDiff = parseInt(localStorage.getItem('dojoDifficulty') || '', 10);
+      const savedDiff = parseInt(
+        localStorage.getItem("dojoDifficulty") || "",
+        10
+      );
       if (!Number.isNaN(savedDiff) && savedDiff >= 1 && savedDiff <= 9) {
         State.difficulty = savedDiff;
       }
@@ -490,50 +493,69 @@
     }
     setupEvents() {
       // Difficulty slider
-      this.elements.difficultySlider?.addEventListener('input', (e) => {
+      this.elements.difficultySlider?.addEventListener("input", (e) => {
         State.difficulty = parseInt(e.target.value, 10);
         State.questionQueue = [];
-        localStorage.setItem('dojoDifficulty', String(State.difficulty));
+        localStorage.setItem("dojoDifficulty", String(State.difficulty));
         this.updateDifficultyDisplay();
         this.loadWordOfDay();
-        window.SFX?.play?.('ui.move');
+        window.SFX?.play?.("ui.move");
       });
       // Typing input handler
-      this.elements.typingInput?.addEventListener('input', (e) => {
-        if (State.currentGame === 'typing' && State.currentQuestion) {
+      this.elements.typingInput?.addEventListener("input", (e) => {
+        if (State.currentGame === "typing" && State.currentQuestion) {
           Game.checkTypingInput(e.target.value);
         }
       });
       // Direction selectors
-      const vocabSel = byId('vocabDirection');
-      const kanjiSel = byId('kanjiDirection');
-      vocabSel?.addEventListener('change', (e) => {
+      const vocabSel = byId("vocabDirection");
+      const kanjiSel = byId("kanjiDirection");
+      vocabSel?.addEventListener("change", (e) => {
         State.vocabDirection = e.target.value;
         // Update description text to reflect new vocab direction
         this.updateModeDescriptions();
       });
-      kanjiSel?.addEventListener('change', (e) => {
+      kanjiSel?.addEventListener("change", (e) => {
         State.kanjiDirection = e.target.value;
         // Update description text to reflect new kanji direction
         this.updateModeDescriptions();
       });
       // Answer button keyboard shortcuts (QWER)
-      document.addEventListener('keydown', (e) => {
-        if (!State.isPlaying || State.currentGame === 'typing') return;
+      document.addEventListener("keydown", (e) => {
+        if (!State.isPlaying || State.currentGame === "typing") return;
         const key = e.key.toLowerCase();
-        const idx = ['q', 'w', 'e', 'r'].indexOf(key);
+        const idx = ["q", "w", "e", "r"].indexOf(key);
         if (idx !== -1) {
-          const btn = this.elements.answerGrid?.querySelectorAll('.answer-btn')[idx];
+          const btn =
+            this.elements.answerGrid?.querySelectorAll(".answer-btn")[idx];
           btn?.click();
         }
       });
     }
     updateDifficultyDisplay() {
-      const D = (window.SITE_CONTENT && window.SITE_CONTENT.study && window.SITE_CONTENT.study.dojo) || {};
-      const fallback = ['Beginner','Easy','Standard','Hard','Expert','Master','Extreme','Chaos','Impossible'];
-      const labels = Array.isArray(D.difficulties) && D.difficulties.length ? D.difficulties : fallback;
+      const D =
+        (window.SITE_CONTENT &&
+          window.SITE_CONTENT.study &&
+          window.SITE_CONTENT.study.dojo) ||
+        {};
+      const fallback = [
+        "Beginner",
+        "Easy",
+        "Standard",
+        "Hard",
+        "Expert",
+        "Master",
+        "Extreme",
+        "Chaos",
+        "Impossible",
+      ];
+      const labels =
+        Array.isArray(D.difficulties) && D.difficulties.length
+          ? D.difficulties
+          : fallback;
       this.elements.diffValue.textContent = State.difficulty;
-      this.elements.diffLabel.textContent = labels[State.difficulty - 1] || (D.unknown || 'Unknown');
+      this.elements.diffLabel.textContent =
+        labels[State.difficulty - 1] || D.unknown || "Unknown";
     }
 
     /**
@@ -546,21 +568,39 @@
      * and whenever the direction selectors change.
      */
     updateModeDescriptions() {
-      const D = (window.SITE_CONTENT && window.SITE_CONTENT.study && window.SITE_CONTENT.study.dojo) || {};
+      const D =
+        (window.SITE_CONTENT &&
+          window.SITE_CONTENT.study &&
+          window.SITE_CONTENT.study.dojo) ||
+        {};
       // Vocab mode description
-      const vocabDesc = document.querySelector('.mode-btn.vocab-mode .mode-desc');
+      const vocabDesc = document.querySelector(
+        ".mode-btn.vocab-mode .mode-desc"
+      );
       if (vocabDesc) {
-        const dir = State.vocabDirection === 'jp-en' ? (D.dirJPEN || 'JP → EN') : (D.dirENJP || 'EN → JP');
-        vocabDesc.textContent = `${dir} ${D.multipleChoice || 'Multiple Choice'}`;
+        const dir =
+          State.vocabDirection === "jp-en"
+            ? D.dirJPEN || "JP → EN"
+            : D.dirENJP || "EN → JP";
+        vocabDesc.textContent = `${dir} ${
+          D.multipleChoice || "Multiple Choice"
+        }`;
       }
       // Kanji mode description
-      const kanjiDesc = document.querySelector('.mode-btn.kanji-mode .mode-desc');
+      const kanjiDesc = document.querySelector(
+        ".mode-btn.kanji-mode .mode-desc"
+      );
       if (kanjiDesc) {
-        const dir = State.kanjiDirection === 'meaning-kanji' ? (D.dirMeaningKanji || 'Meaning → Kanji') : (D.dirKanjiMeaning || 'Kanji → Meaning');
-        kanjiDesc.textContent = `${dir} ${D.byGrade || 'by Grade'}`;
+        const dir =
+          State.kanjiDirection === "meaning-kanji"
+            ? D.dirMeaningKanji || "Meaning → Kanji"
+            : D.dirKanjiMeaning || "Kanji → Meaning";
+        kanjiDesc.textContent = `${dir} ${D.byGrade || "by Grade"}`;
       }
       // Typing mode description
-      const typingDesc = document.querySelector('.mode-btn.typing-mode .mode-desc');
+      const typingDesc = document.querySelector(
+        ".mode-btn.typing-mode .mode-desc"
+      );
       if (typingDesc) {
         typingDesc.textContent = D.typingLabel || `Hiragana & Katakana Typing`;
       }
@@ -573,22 +613,26 @@
       this.elements.voltageBar.style.width = `${clamp(State.voltage, 0, 100)}%`;
       // Combo & score
       this.elements.comboCount.textContent = State.combo;
-      this.elements.scoreValue.textContent = (State.score || 0).toLocaleString();
+      this.elements.scoreValue.textContent = (
+        State.score || 0
+      ).toLocaleString();
       // Lives
-      this.elements.livesContainer?.querySelectorAll('.life').forEach((life, i) => {
-        life.classList.toggle('active', i < State.lives);
-      });
+      this.elements.livesContainer
+        ?.querySelectorAll(".life")
+        .forEach((life, i) => {
+          life.classList.toggle("active", i < State.lives);
+        });
       // Timer display (never show negative numbers)
       const st = Math.max(0, State.songTimer);
       const m = Math.floor(st / 60);
-      const s = String(st % 60).padStart(2, '0');
+      const s = String(st % 60).padStart(2, "0");
       this.elements.songTimer.textContent = `${m}:${s}`;
     }
     showJudgment(type) {
       const el = this.elements.judgmentDisplay;
       el.textContent = type;
       el.className = `judgment-display show ${type.toLowerCase()}`;
-      setTimeout(() => el.classList.remove('show'), 500);
+      setTimeout(() => el.classList.remove("show"), 500);
     }
     async loadWordOfDay() {
       const content = this.elements.wodContent;
@@ -596,10 +640,20 @@
       // Wait for JLPT data to be ready before fetching
       await (window.JLPT_READY || Promise.resolve());
       const wod = await ApiService.fetchWordOfDay(State.difficulty);
-      const D = (window.SITE_CONTENT && window.SITE_CONTENT.study && window.SITE_CONTENT.study.dojo) || {};
+      const D =
+        (window.SITE_CONTENT &&
+          window.SITE_CONTENT.study &&
+          window.SITE_CONTENT.study.dojo) ||
+        {};
       content.innerHTML = wod
-        ? `<div class="wod-word">${wod.word || ''}</div><div class="wod-reading">${wod.reading || ''}</div><div class="wod-meaning">${wod.meaning || ''}</div>`
-        : `<div class="wod-error">${(D.wod && D.wod.error) || 'Could not load word'}</div>`;
+        ? `<div class="wod-word">${
+            wod.word || ""
+          }</div><div class="wod-reading">${
+            wod.reading || ""
+          }</div><div class="wod-meaning">${wod.meaning || ""}</div>`
+        : `<div class="wod-error">${
+            (D.wod && D.wod.error) || "Could not load word"
+          }</div>`;
     }
     nextWordOfDay() {
       return this.loadWordOfDay();
@@ -608,83 +662,99 @@
       const content = this.elements.questionContent;
       const grid = this.elements.answerGrid;
       if (!content || !grid) return;
-      content.style.display = 'block';
-      grid.style.display = 'grid';
-      if (q.type === 'vocab') {
-        if (State.vocabDirection === 'jp-en') {
-          content.innerHTML = `<div class="question-jp">${q.prompt.jp}</div><div class="question-sub">${q.reading || ''}</div>`;
+      content.style.display = "block";
+      grid.style.display = "grid";
+      if (q.type === "vocab") {
+        if (State.vocabDirection === "jp-en") {
+          content.innerHTML = `<div class="question-jp">${
+            q.prompt.jp
+          }</div><div class="question-sub">${q.reading || ""}</div>`;
         } else {
-          content.innerHTML = `<div class="question-sub">English:</div><div class="question-jp">${q.prompt.en || ''}</div>`;
+          content.innerHTML = `<div class="question-sub">English:</div><div class="question-jp">${
+            q.prompt.en || ""
+          }</div>`;
         }
-        grid.innerHTML = '';
-        q.options.forEach((opt, i) => grid.appendChild(this.makeAnswerBtn(opt, i)));
-      } else if (q.type === 'kanji') {
-        if (State.kanjiDirection === 'meaning-kanji') {
+        grid.innerHTML = "";
+        q.options.forEach((opt, i) =>
+          grid.appendChild(this.makeAnswerBtn(opt, i))
+        );
+      } else if (q.type === "kanji") {
+        if (State.kanjiDirection === "meaning-kanji") {
           content.innerHTML = `<div class="question-sub">Meaning:</div><div class="question-jp">${q.prompt}</div>`;
         } else {
           content.innerHTML = `<div class="question-sub">Kanji:</div><div class="question-jp" style="font-size:60px;">${q.prompt}</div>`;
         }
-        grid.innerHTML = '';
-        q.options.forEach((opt, i) => grid.appendChild(this.makeAnswerBtn(opt, i)));
+        grid.innerHTML = "";
+        q.options.forEach((opt, i) =>
+          grid.appendChild(this.makeAnswerBtn(opt, i))
+        );
       }
 
       // Update the stage singer without showing the answer initially
       this.updateStageSinger?.(State.currentGame, q, false);
     }
     makeAnswerBtn(option, index) {
-      const btn = document.createElement('button');
-      btn.className = 'answer-btn';
-      btn.setAttribute('data-ps', LANE_TYPES[index]);
+      const btn = document.createElement("button");
+      btn.className = "answer-btn";
+      btn.setAttribute("data-ps", LANE_TYPES[index]);
       btn.innerHTML = `<span class="ps-symbol">${PS_SYMBOLS[index]}</span>${option}`;
-      btn.addEventListener('click', () => {
-        window.SFX?.play?.('ui.select');
+      btn.addEventListener("click", () => {
+        window.SFX?.play?.("ui.select");
         Game.checkAnswer(option, index);
       });
       return btn;
     }
     startTypingQuestion(q) {
       // Hide multiple choice elements
-      this.elements.questionContent.style.display = 'none';
-      this.elements.answerGrid.style.display = 'none';
-      this.elements.typingArea.style.display = 'block';
+      this.elements.questionContent.style.display = "none";
+      this.elements.answerGrid.style.display = "none";
+      this.elements.typingArea.style.display = "block";
       // Compose target line: kanji/surface + hiragana + english
       const surface = q.jp;
       const hira = q.reading;
-      const en = q.meaning || '';
+      const en = q.meaning || "";
       this.elements.typingTarget.textContent = `${surface} 【${hira}】 - ${en}`;
       // Prepare input
       const inp = this.elements.typingInput;
-      inp.value = '';
+      inp.value = "";
       // Clear any previous hint text and remove the placeholder.  We create
       // a separate hint element that will display the exact key sequence
       // needed once the user makes a mistake.  Until then it remains empty.
-      inp.dataset.hint = '';
+      inp.dataset.hint = "";
       if (!this.elements.typingHint) {
-        const hintEl = document.createElement('div');
-        hintEl.className = 'typing-hint';
-        hintEl.id = 'typingHint';
+        const hintEl = document.createElement("div");
+        hintEl.className = "typing-hint";
+        hintEl.id = "typingHint";
         // Insert the hint just before the feedback element so it sits
         // directly beneath the input field.
-        this.elements.typingArea.insertBefore(hintEl, this.elements.typingFeedback);
+        this.elements.typingArea.insertBefore(
+          hintEl,
+          this.elements.typingFeedback
+        );
         this.elements.typingHint = hintEl;
       }
       // Reset hint content at the start of each typing question
-      this.elements.typingHint.textContent = '';
-      this.elements.typingFeedback.textContent = '';
+      this.elements.typingHint.textContent = "";
+      this.elements.typingFeedback.textContent = "";
       inp.focus();
       // Update the stage singer without showing the answer initially
-      this.updateStageSinger?.('typing', q, false);
+      this.updateStageSinger?.("typing", q, false);
 
       // Reset mistake flag at the start of each typing question
       State.typingMistakeMade = false;
     }
     showSongOverModal(rank, rewardsDisplay) {
       // Update counts
-      this.elements.rankDisplay && (this.elements.rankDisplay.textContent = rank);
-      this.elements.coolCount && (this.elements.coolCount.textContent = State.judgmentCounts.COOL);
-      this.elements.greatCount && (this.elements.greatCount.textContent = State.judgmentCounts.GREAT);
-      this.elements.fineCount && (this.elements.fineCount.textContent = State.judgmentCounts.FINE);
-      this.elements.missCount && (this.elements.missCount.textContent = State.judgmentCounts.MISS);
+      this.elements.rankDisplay &&
+        (this.elements.rankDisplay.textContent = rank);
+      this.elements.coolCount &&
+        (this.elements.coolCount.textContent = State.judgmentCounts.COOL);
+      this.elements.greatCount &&
+        (this.elements.greatCount.textContent = State.judgmentCounts.GREAT);
+      this.elements.fineCount &&
+        (this.elements.fineCount.textContent = State.judgmentCounts.FINE);
+      this.elements.missCount &&
+        (this.elements.missCount.textContent = State.judgmentCounts.MISS);
       // Reward display - concise & cute: two spans, no + or dot
       if (this.elements.rewardAmount) {
         const hearts = rewardsDisplay.hearts | 0;
@@ -697,25 +767,27 @@
         `;
       }
       if (this.elements.rewardBonus) {
-        this.elements.rewardBonus.textContent = rewardsDisplay.cuteLine || 'base + score boost + level perk';
+        this.elements.rewardBonus.textContent =
+          rewardsDisplay.cuteLine || "base + score boost + level perk";
       }
       // Ensure the modal is pinned to the viewport by placing it at body level
       const modal = this.elements.songOverModal;
       if (modal && modal.parentElement !== document.body) {
         document.body.appendChild(modal);
       }
-      modal?.classList.add('show');
+      modal?.classList.add("show");
     }
     applyMenuCovers() {
-      const covers = (window.SITE_CONTENT || window.SRC || {})?.images?.menuCovers;
+      const covers = (window.SITE_CONTENT || window.SRC || {})?.images
+        ?.menuCovers;
       if (!covers) return;
       const setBg = (el, url) => {
         if (!el || !url) return;
         el.style.background = `linear-gradient(rgba(255,255,255,0.5), rgba(255,255,255,0.5)), url('${url}') center/cover no-repeat`;
       };
-      setBg(document.querySelector('.mode-btn.vocab-mode'), covers.vocab);
-      setBg(document.querySelector('.mode-btn.kanji-mode'), covers.kanji);
-      setBg(document.querySelector('.mode-btn.typing-mode'), covers.kotoba);
+      setBg(document.querySelector(".mode-btn.vocab-mode"), covers.vocab);
+      setBg(document.querySelector(".mode-btn.kanji-mode"), covers.kanji);
+      setBg(document.querySelector(".mode-btn.typing-mode"), covers.kotoba);
     }
 
     /**
@@ -731,40 +803,49 @@
       const el = this.elements.stageSinger;
       if (!el) return;
       if (!gameType) {
-        el.innerHTML = '';
+        el.innerHTML = "";
         return;
       }
       // Resolve a singer image URL robustly, with fallbacks for fresh sessions
       let mikuUrl = window.MikuSystem?.getCurrentMikuUrl?.();
       if (!mikuUrl) {
-        const pool = Array.isArray(window.MIKU_IMAGES) ? window.MIKU_IMAGES : [];
-        const pick = pool.find((u) => /\/assets\/pixel-miku\//i.test(u)) || pool[0];
+        const pool = Array.isArray(window.MIKU_IMAGES)
+          ? window.MIKU_IMAGES
+          : [];
+        const pick =
+          pool.find((u) => /\/assets\/pixel-miku\//i.test(u)) || pool[0];
         if (pick) {
           mikuUrl = pick;
-          try { window.MikuSystem?.setCurrentMiku?.(pick); } catch {}
+          try {
+            window.MikuSystem?.setCurrentMiku?.(pick);
+          } catch {}
         } else if (
           window.MIKU_IMAGES_READY &&
-          typeof window.MIKU_IMAGES_READY.then === 'function'
+          typeof window.MIKU_IMAGES_READY.then === "function"
         ) {
           window.MIKU_IMAGES_READY.then(() => {
-            try { this.updateStageSinger(gameType, q, showAnswer); } catch {}
+            try {
+              this.updateStageSinger(gameType, q, showAnswer);
+            } catch {}
           });
-          el.innerHTML = '';
+          el.innerHTML = "";
           return;
         } else {
-          el.innerHTML = '';
+          el.innerHTML = "";
           return;
         }
       }
-      let bubbleText = '';
+      let bubbleText = "";
       // Only show speech bubble when showAnswer is true (on errors)
-      if (showAnswer && gameType === 'typing' && q) {
-        bubbleText = q.keys || '';
+      if (showAnswer && gameType === "typing" && q) {
+        bubbleText = q.keys || "";
       } else if (showAnswer && q) {
-        bubbleText = q.correct || '';
+        bubbleText = q.correct || "";
       }
       const imgTag = `<img src="${mikuUrl}" alt="Miku">`;
-      const bubbleTag = bubbleText ? `<div class="speech-bubble">${bubbleText}</div>` : '';
+      const bubbleTag = bubbleText
+        ? `<div class="speech-bubble">${bubbleText}</div>`
+        : "";
       el.innerHTML = imgTag + bubbleTag;
     }
   }
@@ -774,43 +855,43 @@
   // ===== Effects =====
   class EffectsManager {
     static ring(x, y, color) {
-      const el = document.createElement('div');
-      el.className = 'ring-effect';
+      const el = document.createElement("div");
+      el.className = "ring-effect";
       const size = 50;
-      el.style.width = size + 'px';
-      el.style.height = size + 'px';
-      el.style.left = x - size / 2 + 'px';
-      el.style.top = y - size / 2 + 'px';
+      el.style.width = size + "px";
+      el.style.height = size + "px";
+      el.style.left = x - size / 2 + "px";
+      el.style.top = y - size / 2 + "px";
       el.style.borderColor = color;
       UI.elements.effectsLayer.appendChild(el);
       setTimeout(() => el.remove(), 500);
     }
     static burst(x, y, color) {
       for (let i = 0; i < 8; i++) {
-        const p = document.createElement('div');
-        p.className = 'burst-particle';
-        p.style.left = x + 'px';
-        p.style.top = y + 'px';
+        const p = document.createElement("div");
+        p.className = "burst-particle";
+        p.style.left = x + "px";
+        p.style.top = y + "px";
         p.style.background = color;
-        p.style.setProperty('--tx', (Math.random() - 0.5) * 100 + 'px');
-        p.style.setProperty('--ty', (Math.random() - 0.5) * 100 + 'px');
+        p.style.setProperty("--tx", (Math.random() - 0.5) * 100 + "px");
+        p.style.setProperty("--ty", (Math.random() - 0.5) * 100 + "px");
         UI.elements.effectsLayer.appendChild(p);
         setTimeout(() => p.remove(), 800);
       }
     }
     static spawnNote(laneIndex, durationMs) {
-      const lanes = UI.elements.rhythmLanes?.querySelectorAll('.lane');
+      const lanes = UI.elements.rhythmLanes?.querySelectorAll(".lane");
       const lane = lanes?.[laneIndex];
       if (!lane) return;
-      const note = document.createElement('div');
+      const note = document.createElement("div");
       note.className = `falling-note ${LANE_TYPES[laneIndex]}`;
       note.textContent = PS_SYMBOLS[laneIndex];
-      note.style.left = '10px';
+      note.style.left = "10px";
       note.style.animationDuration = `${durationMs}ms`;
       // Ensure the note does not jump back to the top after finishing its
       // animation.  Setting animationFillMode to forwards preserves the
       // element's final state until it is removed.
-      note.style.animationFillMode = 'forwards';
+      note.style.animationFillMode = "forwards";
       const noteData = {
         element: note,
         spawnTime: Date.now(),
@@ -821,7 +902,9 @@
       lane.appendChild(note);
       setTimeout(() => {
         note.remove();
-        const idx = State.noteQueues[laneIndex].findIndex((n) => n.element === note);
+        const idx = State.noteQueues[laneIndex].findIndex(
+          (n) => n.element === note
+        );
         if (idx !== -1) State.noteQueues[laneIndex].splice(idx, 1);
       }, durationMs + 200);
       return note;
@@ -850,7 +933,7 @@
         } catch {}
       };
       def(
-        'lives',
+        "lives",
         () => State.lives,
         (v) => {
           State.lives = v | 0;
@@ -858,14 +941,14 @@
         }
       );
       def(
-        'maxLives',
+        "maxLives",
         () => this._maxLives,
         (v) => {
           this._maxLives = v | 0;
         }
       );
       def(
-        'score',
+        "score",
         () => State.score,
         (v) => {
           State.score = v | 0;
@@ -873,7 +956,7 @@
         }
       );
       def(
-        'voltage',
+        "voltage",
         () => State.voltage,
         (v) => {
           State.voltage = clamp(v | 0, 0, 100);
@@ -881,7 +964,7 @@
         }
       );
       def(
-        'combo',
+        "combo",
         () => State.combo,
         (v) => {
           State.combo = v | 0;
@@ -889,14 +972,14 @@
         }
       );
       def(
-        'counts',
+        "counts",
         () => State.judgmentCounts,
         (v) => {
-          if (v && typeof v === 'object') State.judgmentCounts = v;
+          if (v && typeof v === "object") State.judgmentCounts = v;
         }
       );
       def(
-        'notes',
+        "notes",
         () => this._notes,
         (v) => {
           this._notes = v | 0;
@@ -904,24 +987,24 @@
       );
     }
     flashJudge(cardId, label) {
-      const card = document.getElementById(cardId || 'languageDojoCard');
-      const el = card?.querySelector('.judge-echo');
+      const card = document.getElementById(cardId || "languageDojoCard");
+      const el = card?.querySelector(".judge-echo");
       if (el) {
         el.textContent = label;
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0) scale(1)';
+        el.style.opacity = "1";
+        el.style.transform = "translateY(0) scale(1)";
         setTimeout(() => {
-          el.style.opacity = '0';
-          el.style.transform = 'translateY(-6px) scale(.96)';
+          el.style.opacity = "0";
+          el.style.transform = "translateY(-6px) scale(.96)";
         }, 350);
       }
       this.pulseCard(cardId);
       // Play the appropriate result sound
       const map = {
-        COOL: 'result.perfect',
-        GREAT: 'result.great',
-        FINE: 'result.standard',
-        MISS: 'result.miss',
+        COOL: "result.perfect",
+        GREAT: "result.great",
+        FINE: "result.standard",
+        MISS: "result.miss",
       };
       const id = map[label];
       id && window.SFX?.play?.(id);
@@ -929,13 +1012,13 @@
     pulseCard(id) {
       const c = document.getElementById(id);
       if (!c) return;
-      c.style.transition = 'box-shadow .15s ease, transform .15s ease';
+      c.style.transition = "box-shadow .15s ease, transform .15s ease";
       const pre = c.style.boxShadow;
-      c.style.boxShadow = '0 0 0 3px rgba(165,148,249,.65) inset';
-      c.style.transform = 'translateY(-1px)';
+      c.style.boxShadow = "0 0 0 3px rgba(165,148,249,.65) inset";
+      c.style.transform = "translateY(-1px)";
       setTimeout(() => {
-        c.style.boxShadow = pre || '';
-        c.style.transform = '';
+        c.style.boxShadow = pre || "";
+        c.style.transform = "";
       }, 160);
     }
     addVoltage(delta, cardId) {
@@ -943,14 +1026,17 @@
       UI.updateHUD();
       const card = document.getElementById(cardId);
       if (card) {
-        card.style.outline = `2px solid rgba(165,148,249,${Math.min(0.5, 0.1 + State.voltage / 80)})`;
-        setTimeout(() => (card.style.outline = ''), 240);
+        card.style.outline = `2px solid rgba(165,148,249,${Math.min(
+          0.5,
+          0.1 + State.voltage / 80
+        )})`;
+        setTimeout(() => (card.style.outline = ""), 240);
       }
     }
     addCombo(cardId) {
       State.combo++;
       UI.updateHUD();
-      const el = document.getElementById(cardId)?.querySelector('.judge-echo');
+      const el = document.getElementById(cardId)?.querySelector(".judge-echo");
       if (el) el.textContent = `COMBO ${State.combo}`;
     }
     resetCombo() {
@@ -961,9 +1047,9 @@
       if (State.lives <= 0) return;
       State.lives--;
       UI.updateHUD();
-      this.flashJudge(cardId, 'MISS');
+      this.flashJudge(cardId, "MISS");
       if (State.lives <= 0) {
-        this.Session?.finish?.({ reason: 'lives' });
+        this.Session?.finish?.({ reason: "lives" });
       }
     }
     awardHearts(n) {
@@ -980,85 +1066,107 @@
       for (const { score: threshold, rank } of CONFIG.rankThresholds) {
         if (score >= threshold) return rank;
       }
-      return 'D';
+      return "D";
     }
     // Calculate rewards for display and the actual hearts/XP payout.
     rewards() {
-      const level = window.Progression?.getProgress?.().level || State.userLevel || 1;
+      const level =
+        window.Progression?.getProgress?.().level || State.userLevel || 1;
       const score = State.score | 0;
       // Fold combo and voltage into a payout-only score bonus (keeps on-screen
       // score stable during play, but rewards feel better at the end)
-      const comboPts = Math.round((State.maxCombo || 0) * (CONFIG.scoringWeights.COMBO || 0));
-      const voltagePts = Math.round((State.voltage || 0) * (CONFIG.scoringWeights.VOLTAGE || 0));
+      const comboPts = Math.round(
+        (State.maxCombo || 0) * (CONFIG.scoringWeights.COMBO || 0)
+      );
+      const voltagePts = Math.round(
+        (State.voltage || 0) * (CONFIG.scoringWeights.VOLTAGE || 0)
+      );
       const payoutScore = Math.max(0, score + comboPts + voltagePts);
       // Display total (points) - based on payoutScore
-      const total = CONFIG.rewards.BASE + payoutScore + level * CONFIG.rewards.LEVEL_MULT;
+      const total =
+        CONFIG.rewards.BASE + payoutScore + level * CONFIG.rewards.LEVEL_MULT;
       // Hearts payout
       const hCfg = CONFIG.payouts.hearts;
-      const heartsRaw = (hCfg.BASE | 0) + Math.floor(payoutScore / (hCfg.SCORE_DIV | 1)) + level * (hCfg.LEVEL_MULT | 0);
+      const heartsRaw =
+        (hCfg.BASE | 0) +
+        Math.floor(payoutScore / (hCfg.SCORE_DIV | 1)) +
+        level * (hCfg.LEVEL_MULT | 0);
       const hearts = Math.max(hCfg.MIN | 0, heartsRaw | 0);
       // XP payout
       const xCfg = CONFIG.payouts.xp;
-      const xpRaw = (xCfg.BASE | 0) + Math.floor(payoutScore / (xCfg.SCORE_DIV | 1)) + level * (xCfg.LEVEL_MULT | 0);
+      const xpRaw =
+        (xCfg.BASE | 0) +
+        Math.floor(payoutScore / (xCfg.SCORE_DIV | 1)) +
+        level * (xCfg.LEVEL_MULT | 0);
       const xp = Math.max(xCfg.MIN | 0, xpRaw | 0);
       // Single cute descriptor line; no math shown in UI
-      const cuteLine = 'base + score boost + level perk';
+      const cuteLine = "base + score boost + level perk";
       return { total, level, score: payoutScore, hearts, xp, cuteLine };
     }
     initializeSession() {
-      this.Session = window.Session = window.Session || (() => {
-        let tId = null;
-        let endsAt = 0;
-        const renderTimer = () => {
-          const remain = Math.max(0, Math.floor((endsAt - Date.now()) / 1000));
-          const el = byId('hudLevelText');
-          if (el) {
-            const m = Math.floor(remain / 60);
-            const s = String(remain % 60).padStart(2, '0');
-            el.textContent = `Session ${m}:${s}`;
-          }
-          if (remain <= 0) finish({ reason: 'time' });
-        };
-        const start = ({ seconds } = {}) => {
-          State.resetRuntime();
-          const dur = seconds || 180;
-          endsAt = Date.now() + dur * 1000;
-          clearInterval(tId);
-          tId = setInterval(renderTimer, 1000);
-          renderTimer();
-        };
-        const finish = ({ reason } = {}) => {
-          clearInterval(tId);
-          tId = null;
-          const rank = hudManager.calcRank();
-          const rewards = hudManager.rewards();
-          // Award hearts and XP at the end of the session (balanced payouts)
-          hudManager.awardHearts(rewards.hearts);
-          hudManager.addXP(rewards.xp);
-          // Pop a toast if available
-          const msg = `Session complete - Rank ${rank}. +${rewards.hearts} 💖, +${rewards.xp} XP!`;
-          (window.Hearts?.loveToast?.(msg) || window.hearts?.lovetoast?.(msg)) || (function () {
-            const t = document.createElement('div');
-            t.style.cssText = 'position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#fff;border:2px solid var(--border);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);z-index:99999;color:#2b2b44;font-weight:700';
-            t.textContent = msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 2200);
-          })();
-        };
-        return { start, finish };
-      })();
+      this.Session = window.Session =
+        window.Session ||
+        (() => {
+          let tId = null;
+          let endsAt = 0;
+          const renderTimer = () => {
+            const remain = Math.max(
+              0,
+              Math.floor((endsAt - Date.now()) / 1000)
+            );
+            const el = byId("hudLevelText");
+            if (el) {
+              const m = Math.floor(remain / 60);
+              const s = String(remain % 60).padStart(2, "0");
+              el.textContent = `Session ${m}:${s}`;
+            }
+            if (remain <= 0) finish({ reason: "time" });
+          };
+          const start = ({ seconds } = {}) => {
+            State.resetRuntime();
+            const dur = seconds || 180;
+            endsAt = Date.now() + dur * 1000;
+            clearInterval(tId);
+            tId = setInterval(renderTimer, 1000);
+            renderTimer();
+          };
+          const finish = ({ reason } = {}) => {
+            clearInterval(tId);
+            tId = null;
+            const rank = hudManager.calcRank();
+            const rewards = hudManager.rewards();
+            // Award hearts and XP at the end of the session (balanced payouts)
+            hudManager.awardHearts(rewards.hearts);
+            hudManager.addXP(rewards.xp);
+            // Pop a toast if available
+            const msg = `Session complete - Rank ${rank}. +${rewards.hearts} 💖, +${rewards.xp} XP!`;
+            window.Hearts?.loveToast?.(msg) ||
+              window.hearts?.lovetoast?.(msg) ||
+              (function () {
+                const t = document.createElement("div");
+                t.style.cssText =
+                  "position:fixed;left:50%;top:20px;transform:translateX(-50%);background:#fff;border:2px solid var(--border);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow);z-index:99999;color:#2b2b44;font-weight:700";
+                t.textContent = msg;
+                document.body.appendChild(t);
+                setTimeout(() => t.remove(), 2200);
+              })();
+          };
+          return { start, finish };
+        })();
       // Tie session start to global events if the site has a global session manager
-      document.addEventListener('vocab-start', () => this.Session.start());
-      document.addEventListener('kanji-start', () => this.Session.start());
-      document.addEventListener('kotoba-start', () => this.Session.start());
-      document.addEventListener('miku-chat-start', () => this.Session.start());
+      document.addEventListener("vocab-start", () => this.Session.start());
+      document.addEventListener("kanji-start", () => this.Session.start());
+      document.addEventListener("kotoba-start", () => this.Session.start());
+      document.addEventListener("miku-chat-start", () => this.Session.start());
     }
   }
   const hudManager = new HUDManager();
   // Provide a global flashJudge bridge so other modules (e.g., Quests) can hook it.
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     window.flashJudge = function (cardId, label) {
-      try { hudManager.flashJudge(cardId, label); } catch {}
+      try {
+        hudManager.flashJudge(cardId, label);
+      } catch {}
       return true;
     };
   }
@@ -1073,22 +1181,22 @@
     async start(gameType) {
       State.currentGame = gameType;
       State.resetRuntime();
-      window.SFX?.play?.('sega.tag');
-      UI.elements.menuPanel.style.display = 'none';
-      UI.elements.gameArea.style.display = 'block';
+      window.SFX?.play?.("sega.tag");
+      UI.elements.menuPanel.style.display = "none";
+      UI.elements.gameArea.style.display = "block";
       // Toggle the typing-active class on the body so CSS can adjust layout
-      if (typeof document !== 'undefined' && document.body) {
-        document.body.classList.toggle('typing-active', gameType === 'typing');
+      if (typeof document !== "undefined" && document.body) {
+        document.body.classList.toggle("typing-active", gameType === "typing");
       }
       // If a global HUD exists attach it
-      window.attachDivaHud?.('languageDojoCard');
+      window.attachDivaHud?.("languageDojoCard");
       if (window.DivaSessionOptIn) {
         const evtName =
-          gameType === 'vocab'
-            ? 'vocab-start'
-            : gameType === 'kanji'
-            ? 'kanji-start'
-            : 'kotoba-start';
+          gameType === "vocab"
+            ? "vocab-start"
+            : gameType === "kanji"
+            ? "kanji-start"
+            : "kotoba-start";
         document.dispatchEvent(new Event(evtName));
       }
       Object.assign(window.HUD || {}, {
@@ -1098,23 +1206,17 @@
         combo: 0,
       });
       // Setup UI for typing vs multiple choice
-      if (gameType === 'typing') {
-        UI.elements.answerGrid.style.display = 'none';
-        UI.elements.typingArea.style.display = 'block';
-        UI.elements.rhythmLanes.style.display = 'none';
+      if (gameType === "typing") {
+        UI.elements.answerGrid.style.display = "none";
+        UI.elements.typingArea.style.display = "block";
+        UI.elements.rhythmLanes.style.display = "none";
       } else {
-        UI.elements.answerGrid.style.display = 'grid';
-        UI.elements.typingArea.style.display = 'none';
-        UI.elements.rhythmLanes.style.display = 'flex';
+        UI.elements.answerGrid.style.display = "grid";
+        UI.elements.typingArea.style.display = "none";
+        UI.elements.rhythmLanes.style.display = "flex";
         this.noteInterval = setInterval(() => {
-          Effects.spawnNote(
-            Math.floor(Math.random() * 4),
-            getNoteDurationMs()
-          );
-        }, Math.max(
-          CONFIG.notes.SPAWN_MIN_MS,
-          CONFIG.notes.SPAWN_BASE_MS - State.difficulty * CONFIG.notes.SPAWN_DIFF_STEP_MS
-        ));
+          Effects.spawnNote(Math.floor(Math.random() * 4), getNoteDurationMs());
+        }, Math.max(CONFIG.notes.SPAWN_MIN_MS, CONFIG.notes.SPAWN_BASE_MS - State.difficulty * CONFIG.notes.SPAWN_DIFF_STEP_MS));
       }
 
       // Initialise the stage singer when a game starts (no question yet) so the
@@ -1137,58 +1239,67 @@
         return;
       }
       const pct = (State.questionTimer / CONFIG.timers.QUESTION_S) * 100;
-      UI.elements.questionTimerBar.style.width = pct + '%';
+      UI.elements.questionTimerBar.style.width = pct + "%";
       UI.elements.questionTimerText.textContent = State.questionTimer;
     }
     async nextQuestion() {
       // Ensure we have at least one question ready
       if (!State.questionQueue.length) {
         const gen =
-          State.currentGame === 'vocab'
+          State.currentGame === "vocab"
             ? QuestionGenerator.vocab
-            : State.currentGame === 'kanji'
+            : State.currentGame === "kanji"
             ? QuestionGenerator.kanji
             : QuestionGenerator.typing;
         const q = await gen();
         if (q) State.questionQueue.push(q);
       }
       const q = State.questionQueue.shift();
-      if (!q) return console.error('No questions available');
+      if (!q) return console.error("No questions available");
       State.currentQuestion = q;
       State.questionTimer = CONFIG.timers.QUESTION_S;
       clearInterval(this.questionInterval);
-      this.questionInterval = setInterval(() => this.updateQuestionTimer(), 1000);
-      if (State.currentGame === 'typing') {
+      this.questionInterval = setInterval(
+        () => this.updateQuestionTimer(),
+        1000
+      );
+      if (State.currentGame === "typing") {
         // Record start time for timing calculations
         q.startTime = Date.now();
-        State.typingMaxTier = 'COOL';
+        State.typingMaxTier = "COOL";
         UI.startTypingQuestion(q);
-        window.SFX?.play?.('ui.teleport');
+        window.SFX?.play?.("ui.teleport");
       } else {
         UI.showQuestion(q);
-        window.SFX?.play?.('ui.change');
+        window.SFX?.play?.("ui.change");
       }
     }
     checkAnswer(answer, buttonIndex) {
       if (!State.currentQuestion) return;
-      const buttons = UI.elements.answerGrid?.querySelectorAll('.answer-btn');
+      const buttons = UI.elements.answerGrid?.querySelectorAll(".answer-btn");
       const clickedBtn = buttons?.[buttonIndex];
       const correctText = State.currentQuestion.correct;
       const correct = answer === correctText;
       if (!correct) {
-        clickedBtn?.classList.add('incorrect');
+        clickedBtn?.classList.add("incorrect");
         UI.updateStageSinger?.(State.currentGame, State.currentQuestion, true);
-        this.processJudgment('MISS', false);
+  // Pass clicked button so effects (rings) originate from the button
+  this.processJudgment('MISS', false, clickedBtn || null);
         return;
       }
       buttons?.forEach((btn) => (btn.disabled = true));
-      clickedBtn?.classList.add('correct');
+      clickedBtn?.classList.add("correct");
       // On correct answer determine judgment by note proximity
-      let label = 'FINE';
+      let label = "FINE";
       if (buttonIndex != null) {
-        label = judgeFrontAndMaybeConsume(buttonIndex);
+        const btnEl = buttons?.[buttonIndex] || null;
+        label = judgeFrontAndMaybeConsume(buttonIndex, btnEl);
+        // Pass the clicked button element to processJudgment so effects can
+        // originate from the UI control.
+        this.processJudgment(label, true, btnEl);
+      } else {
+        this.processJudgment(label, true);
       }
-      this.processJudgment(label, true);
       setTimeout(() => {
         if (State.isPlaying) this.nextQuestion();
       }, 700);
@@ -1198,8 +1309,8 @@
       const q = State.currentQuestion;
       // Normalised kana reading and canonical key sequence
       const kanaTarget = Kana.normalize(Kana.kataToHira(q.reading));
-      const keysTarget = Kana.normalize(q.keys || '');
-      const kanjiTarget = Kana.normalize(q.jp || ''); // Add kanji as valid input
+      const keysTarget = Kana.normalize(q.keys || "");
+      const kanjiTarget = Kana.normalize(q.jp || ""); // Add kanji as valid input
       // Normalise the user's typed input (accept romaji or kana)
       let typedRaw = Kana.normalize(Kana.kataToHira(input));
       // Unify romaji synonyms to canonical forms for comparison.  This allows
@@ -1209,47 +1320,51 @@
       const unifySynonyms = (str, targetKeys) => {
         let s = str;
         // Long vowel dash: unify Japanese long dash and hyphen
-        s = s.replace(/ー/g, '-');
+        s = s.replace(/ー/g, "-");
         // Common IME variations
-        s = s.replace(/si/g, 'shi');
-        s = s.replace(/ti/g, 'chi');
-        s = s.replace(/tu/g, 'tsu');
-        s = s.replace(/hu/g, 'fu');
-        s = s.replace(/zi/g, 'ji');
+        s = s.replace(/si/g, "shi");
+        s = s.replace(/ti/g, "chi");
+        s = s.replace(/tu/g, "tsu");
+        s = s.replace(/hu/g, "fu");
+        s = s.replace(/zi/g, "ji");
         // If the expected keys are 'du' (づ) accept 'dzu' or 'zu'
-        if (targetKeys === 'du') {
-          s = s.replace(/dzu/g, 'du');
-          s = s.replace(/zu/g, 'du');
+        if (targetKeys === "du") {
+          s = s.replace(/dzu/g, "du");
+          s = s.replace(/zu/g, "du");
         }
         // If the expected keys are 'di' (ぢ) accept 'ji'
-        if (targetKeys === 'di') {
-          s = s.replace(/ji/g, 'di');
+        if (targetKeys === "di") {
+          s = s.replace(/ji/g, "di");
         }
         return s;
       };
       const unifiedTyped = unifySynonyms(typedRaw, keysTarget);
       const unifiedKeys = unifySynonyms(keysTarget, keysTarget);
       // If the player has completed the answer (kanji, kana reading, or romanised key sequence)
-      // judge based on remaining time. Do not penalise mid-typing mistakes; judgment depends 
+      // judge based on remaining time. Do not penalise mid-typing mistakes; judgment depends
       // solely on how much time is left when the answer is complete.
-      if (unifiedTyped === kanjiTarget || unifiedTyped === kanaTarget || unifiedTyped === unifiedKeys) {
+      if (
+        unifiedTyped === kanjiTarget ||
+        unifiedTyped === kanaTarget ||
+        unifiedTyped === unifiedKeys
+      ) {
         clearInterval(this.questionInterval);
         const remaining = State.questionTimer;
         let judgment;
         // Determine grade based on remaining seconds: ≤3→FINE, ≤6→GREAT, else→COOL
         if (remaining <= 3) {
-          judgment = 'FINE';
+          judgment = "FINE";
         } else if (remaining <= 6) {
-          judgment = 'GREAT';
+          judgment = "GREAT";
         } else {
-          judgment = 'COOL';
+          judgment = "COOL";
         }
         this.processJudgment(judgment, true);
-        UI.elements.typingFeedback.textContent = 'Correct!';
-        UI.elements.typingFeedback.className = 'typing-feedback correct';
+        UI.elements.typingFeedback.textContent = "Correct!";
+        UI.elements.typingFeedback.className = "typing-feedback correct";
         // Clear hint after correct answer
         if (UI.elements.typingHint) {
-          UI.elements.typingHint.style.display = 'none';
+          UI.elements.typingHint.style.display = "none";
         }
         setTimeout(() => {
           if (State.isPlaying) this.nextQuestion();
@@ -1259,15 +1374,19 @@
       // If current input is a prefix of the expected reading, keys, or kanji (after
       // normalisation) do nothing.  This prevents premature hints while the
       // user is still typing correctly.
-      if (kanaTarget.startsWith(typedRaw) || unifiedKeys.startsWith(unifiedTyped) || kanjiTarget.startsWith(typedRaw)) {
-        UI.elements.typingFeedback.textContent = '';
+      if (
+        kanaTarget.startsWith(typedRaw) ||
+        unifiedKeys.startsWith(unifiedTyped) ||
+        kanjiTarget.startsWith(typedRaw)
+      ) {
+        UI.elements.typingFeedback.textContent = "";
         return;
       }
       // A wrong keystroke: show the hint if not already shown.
       if (!State.typingMistakeMade) {
         State.typingMistakeMade = true;
         // Show speech bubble with answer
-        UI.updateStageSinger?.('typing', q, true);
+        UI.updateStageSinger?.("typing", q, true);
         const inpEl = UI.elements.typingInput;
         if (inpEl) {
           inpEl.dataset.hint = q.keys;
@@ -1275,10 +1394,11 @@
         // window.SFX?.play?.('quiz.bad');
       }
       // Keep feedback empty to avoid flicker on mistakes
-      UI.elements.typingFeedback.textContent = '';
+      UI.elements.typingFeedback.textContent = "";
     }
-    processJudgment(judgment, correct) {
-      State.judgmentCounts[judgment] = (State.judgmentCounts[judgment] || 0) + 1;
+    processJudgment(judgment, correct, originEl) {
+      State.judgmentCounts[judgment] =
+        (State.judgmentCounts[judgment] || 0) + 1;
       if (correct) {
         // Add score and update combo/voltage
         const base = CONFIG.scoringPerHit[judgment] || 0;
@@ -1290,34 +1410,64 @@
         const vDelta = CONFIG.voltagePerHit[judgment] || 0;
         State.voltage = clamp(State.voltage + vDelta, 0, 100);
         // Quest progress updates
-        State.questProgress.score = Math.max(State.questProgress.score, State.score);
-        if (judgment === 'COOL') {
+        State.questProgress.score = Math.max(
+          State.questProgress.score,
+          State.score
+        );
+        if (judgment === "COOL") {
           State.questProgress.coolHits++;
           // Ensure daily quest 'Hit 10 COOL judgments' progresses even if quests.js loads after dojo
-          try { window.Quests?.inc && window.Quests.inc('cool-judges', 1); } catch {}
+          try {
+            window.Quests?.inc && window.Quests.inc("cool-judges", 1);
+          } catch {}
         }
-        State.questProgress.maxCombo = Math.max(State.questProgress.maxCombo, State.combo);
-        // Effects and HUD updates
-        const cx = innerWidth / 2;
-        const cy = innerHeight / 2;
-        const colors = { COOL: '#35a7ff', GREAT: '#00c853', FINE: '#ffb300' };
-        Effects.ring(cx, cy, colors[judgment] || '#aaa');
-        Effects.burst(cx, cy, colors[judgment] || '#aaa');
+        State.questProgress.maxCombo = Math.max(
+          State.questProgress.maxCombo,
+          State.combo
+        );
+        // Effects and HUD updates: prefer originEl for effect position when
+        // available (e.g., clicked answer button).  Fall back to screen
+        // centre.
+        let cx = innerWidth / 2;
+        let cy = innerHeight / 2;
+        try {
+          if (
+            originEl &&
+            typeof originEl.getBoundingClientRect === "function"
+          ) {
+            const r = originEl.getBoundingClientRect();
+            cx = r.left + r.width / 2;
+            cy = r.top + r.height / 2;
+          }
+        } catch (_) {}
+        const colors = { COOL: "#35a7ff", GREAT: "#00c853", FINE: "#ffb300" };
+        Effects.ring(cx, cy, colors[judgment] || "#aaa");
+        Effects.burst(cx, cy, colors[judgment] || "#aaa");
         // Update global HUD counts
         if (window.HUD) {
-          window.HUD.counts = window.HUD.counts || { COOL: 0, GREAT: 0, FINE: 0, SAD: 0 };
+          window.HUD.counts = window.HUD.counts || {
+            COOL: 0,
+            GREAT: 0,
+            FINE: 0,
+            SAD: 0,
+          };
           window.HUD.counts[judgment] = (window.HUD.counts[judgment] || 0) + 1;
         }
         // Route via global to allow quests module to hook COOL counts
-        (window.flashJudge && window.flashJudge('languageDojoCard', judgment)) || hudManager.flashJudge('languageDojoCard', judgment);
-        hudManager.addVoltage(CONFIG.voltagePerHit[judgment] || 0, 'languageDojoCard');
-        hudManager.addCombo('languageDojoCard');
+        (window.flashJudge &&
+          window.flashJudge("languageDojoCard", judgment)) ||
+          hudManager.flashJudge("languageDojoCard", judgment);
+        hudManager.addVoltage(
+          CONFIG.voltagePerHit[judgment] || 0,
+          "languageDojoCard"
+        );
+        hudManager.addCombo("languageDojoCard");
       } else {
         // Wrong answer: reset combo and lose life
         State.combo = 0;
         hudManager.resetCombo();
-        hudManager.loseLife('languageDojoCard');
-        window.SFX?.play?.('result.miss');
+        hudManager.loseLife("languageDojoCard");
+        window.SFX?.play?.("result.miss");
         if (State.lives <= 0) {
           this.endSong();
           return;
@@ -1327,18 +1477,20 @@
       UI.updateHUD();
     }
     timeUp() {
-      window.SFX?.play?.('quiz.timeup');
+      window.SFX?.play?.("quiz.timeup");
       // On timeout treat as MISS and highlight correct answer
-      this.processJudgment('MISS', false);
+      this.processJudgment("MISS", false);
       // If this was a multiple choice question, highlight the correct answer visually
-      if (State.currentGame !== 'typing' && State.currentQuestion) {
+      if (State.currentGame !== "typing" && State.currentQuestion) {
         const correct = State.currentQuestion.correct;
-        UI.elements.answerGrid?.querySelectorAll('.answer-btn').forEach((btn) => {
-          if (btn.textContent.includes(correct)) {
-            btn.classList.add('correct');
-          }
-          btn.disabled = true;
-        });
+        UI.elements.answerGrid
+          ?.querySelectorAll(".answer-btn")
+          .forEach((btn) => {
+            if (btn.textContent.includes(correct)) {
+              btn.classList.add("correct");
+            }
+            btn.disabled = true;
+          });
       }
       setTimeout(() => {
         if (State.isPlaying) this.nextQuestion();
@@ -1355,7 +1507,7 @@
         State.noteQueues[i] = [];
       });
       // Finish session (awards hearts & XP)
-      hudManager.Session?.finish?.({ reason: 'time' });
+      hudManager.Session?.finish?.({ reason: "time" });
       // Show results
       const rank = hudManager.calcRank();
       const rewards = hudManager.rewards();
@@ -1370,13 +1522,13 @@
         q.forEach((n) => n.element?.remove());
         State.noteQueues[i] = [];
       });
-      UI.elements.songOverModal?.classList.remove('show');
-      UI.elements.gameArea.style.display = 'none';
-      UI.elements.menuPanel.style.display = 'block';
+      UI.elements.songOverModal?.classList.remove("show");
+      UI.elements.gameArea.style.display = "none";
+      UI.elements.menuPanel.style.display = "block";
       State.lives = 5;
       // Remove the typing-active class and clear the singer when returning
-      if (typeof document !== 'undefined' && document.body) {
-        document.body.classList.remove('typing-active');
+      if (typeof document !== "undefined" && document.body) {
+        document.body.classList.remove("typing-active");
       }
       UI.updateStageSinger?.(null, null);
       UI.updateHUD();
@@ -1386,16 +1538,19 @@
 
   // ===== Note judging helpers =====
   function getNoteDurationMs() {
-    const dur = CONFIG.notes.BASE_FALL_MS - State.difficulty * CONFIG.notes.PER_DIFF_MS;
+    const dur =
+      CONFIG.notes.BASE_FALL_MS - State.difficulty * CONFIG.notes.PER_DIFF_MS;
     return clamp(dur, CONFIG.notes.MIN_FALL_MS, CONFIG.notes.MAX_FALL_MS);
   }
   function getLaneTarget(laneIndex) {
-    const lane = UI.elements.rhythmLanes?.querySelectorAll('.lane')?.[laneIndex];
+    const lane =
+      UI.elements.rhythmLanes?.querySelectorAll(".lane")?.[laneIndex];
     if (!lane) return null;
+    // Prefer explicit lane target elements used by the markup/CSS. Keep a
+    // backward-compatible fallback order in case classnames differ.
     return (
-      lane.querySelector('.target') ||
-      lane.querySelector('.rhythm-target') ||
-      lane.querySelector('.hit-zone') ||
+      lane.querySelector(".hit-zone") ||
+      lane.querySelector(".lane-target") ||
       lane
     );
   }
@@ -1427,27 +1582,27 @@
     }
     return bestIdx;
   }
-  function judgeFrontAndMaybeConsume(laneIndex) {
+  function judgeFrontAndMaybeConsume(laneIndex, originEl) {
     const target = getLaneTarget(laneIndex);
     const queue = State.noteQueues[laneIndex];
-    if (!target || !queue.length) return 'FINE';
+    if (!target || !queue.length) return "FINE";
     const idx = getClosestIndex(laneIndex);
-    if (idx === -1) return 'FINE';
+    if (idx === -1) return "FINE";
     const note = queue[idx];
     const dist = distanceToTargetTop(note.element, target);
     let label;
     if (dist <= CONFIG.judge.COOL_PX) {
-      label = 'COOL';
+      label = "COOL";
     } else {
       const nRect = note.element.getBoundingClientRect();
       const tRect = target.getBoundingClientRect();
       if (rectsIntersect(nRect, tRect) || dist <= CONFIG.judge.GREAT_PX) {
-        label = 'GREAT';
+        label = "GREAT";
       } else {
-        label = 'FINE';
+        label = "FINE";
       }
     }
-    if (label !== 'FINE') {
+    if (label !== "FINE") {
       queue.splice(idx, 1);
       note.element.remove();
     }
@@ -1456,50 +1611,52 @@
 
   // ===== Global functions =====
   window.startGame = function (gameType) {
-    window.SFX?.play?.('ui.select');
+    window.SFX?.play?.("ui.select");
     Game.start(gameType);
   };
   window.nextWordOfDay = function () {
     // Advance to the next word
-    window.SFX?.play?.('ui.change');
+    window.SFX?.play?.("ui.change");
     UI.nextWordOfDay();
 
     // Mirror the "Send Love" action when requesting a new word
     try {
       const Hearts = window.Hearts || {};
-      const btn = document.activeElement && document.activeElement.id === 'wodNext'
-        ? document.activeElement
-        : document.getElementById('wodNext');
+      const btn =
+        document.activeElement && document.activeElement.id === "wodNext"
+          ? document.activeElement
+          : document.getElementById("wodNext");
 
       // Award a small heart and celebrate
-      if (typeof Hearts.addHearts === 'function') Hearts.addHearts(1);
+      if (typeof Hearts.addHearts === "function") Hearts.addHearts(1);
 
       // Visual feedback near the button if available
-      if (btn && typeof btn.getBoundingClientRect === 'function') {
+      if (btn && typeof btn.getBoundingClientRect === "function") {
         const r = btn.getBoundingClientRect();
-        if (typeof Hearts.createFloatingHeart === 'function') {
+        if (typeof Hearts.createFloatingHeart === "function") {
           Hearts.createFloatingHeart(r.left + r.width / 2, r.top);
         }
-        if (typeof Hearts.createSparkleEffect === 'function') {
+        if (typeof Hearts.createSparkleEffect === "function") {
           Hearts.createSparkleEffect(btn);
         }
       }
 
-      if (typeof Hearts.shimejiCelebrate === 'function') Hearts.shimejiCelebrate();
+      if (typeof Hearts.shimejiCelebrate === "function")
+        Hearts.shimejiCelebrate();
       // Optional click sfx to match the heart button feel
-      window.SFX?.play?.('hearts.click');
+      window.SFX?.play?.("hearts.click");
     } catch (_) {}
   };
   window.backToMenu = function () {
-    window.SFX?.play?.('ui.back');
+    window.SFX?.play?.("ui.back");
     Game.backToMenu();
   };
 
   // ===== Initialize on DOM ready =====
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener("DOMContentLoaded", () => {
     UI.init();
     UI.applyMenuCovers?.();
-    console.log('Language Dojo × Project DIVA initialised!');
+    console.log("Language Dojo × Project DIVA initialised!");
   });
-  console.log('Language Dojo initialised!');
+  console.log("Language Dojo initialised!");
 })();

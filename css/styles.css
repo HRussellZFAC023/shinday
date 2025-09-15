@@ -916,20 +916,7 @@ main {
 }
 
 /* Fancy vibes for specific link types */
-.quick-links a.link-insta {
-  background: linear-gradient(135deg, #F5E1A4, #E8B4CB, #D1A3E1);
-  color: #6B4C93;
-  font-weight: 800;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
-  border: 2px solid #E8B4CB;
-  box-shadow: 0 3px 10px rgba(232, 180, 203, 0.3);
-}
-
-.quick-links a.link-insta:hover {
-  background: linear-gradient(135deg, #E8B4CB, #D1A3E1, #B794D1);
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 20px rgba(232, 180, 203, 0.4);
-}
+/* duplicate quick-links block removed (original exists earlier) */
 
 .quick-links a.link-discord {
   background: linear-gradient(135deg, #B8A9FF, #A696E8);
@@ -6372,13 +6359,13 @@ a[data-visitor-counter] .badge:hover {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: -20px;
+  top: -120px;
   width: 18px;
   height: 18px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #fff, #7dd3fc);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  animation: divaFall linear forwards;
+  animation: divaFall ease-out forwards;
   cursor: pointer;
   z-index: 2;
 }
@@ -6399,7 +6386,8 @@ a[data-visitor-counter] .badge:hover {
 }
 @keyframes divaFall {
   from {
-    top: -20px;
+    /* Start further above the lane to increase visible fall height */
+    top: -120px;
   }
   to {
     top: calc(100% - 14px);
@@ -6727,8 +6715,6 @@ a[data-visitor-counter] .badge:hover {
   }
 }
 
-}
-
 .content-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -6857,3 +6843,11 @@ a[data-visitor-counter] .badge:hover {
   font-weight: 800;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
   border: 2px solid #E8B4CB;
+  box-shadow: 0 3px 10px rgba(232, 180, 203, 0.3);
+}
+
+.quick-links a.link-insta:hover {
+  background: linear-gradient(135deg, #E8B4CB, #D1A3E1, #B794D1);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(232, 180, 203, 0.4);
+}

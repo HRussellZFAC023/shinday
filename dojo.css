@@ -776,7 +776,7 @@
   font-weight: 900;
   color: white;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  animation: noteFall 2s linear;
+  animation: noteFall 2s ease-out;
 }
 
 .falling-note.triangle {
@@ -1299,10 +1299,12 @@
 
 @keyframes noteFall {
   from {
-    top: -40px;
+    /* Start much higher so notes fall from above the visible lane */
+    top: -140px;
   }
   to {
-    top: 100%;
+    /* End slightly past the bottom to allow fade-out to trigger cleanly */
+    top: calc(100% + 20px);
   }
 }
 
