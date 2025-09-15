@@ -37,7 +37,7 @@
     <meta property="og:locale" id="metaOgLocale" content="en_US" />
     <meta
       property="og:image"
-      content="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png"
+      content="./assets/miku_hatsune_5_270x162.webp"
       id="metaOgImage"
     />
 
@@ -67,7 +67,7 @@
     <meta
       name="twitter:image"
       id="metaTwitterImage"
-      content="./assets/miku_hatsune_5_by_makiilu_d4uklnz-fullview.png"
+      content="./assets/miku_hatsune_5_270x162.webp"
     />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -205,8 +205,8 @@
         @import url('./css/styles.css');
 
         /* Override for noscript - show main content */
-        #splash { display: none; }
-        #mainSite { display: block !important; visibility: visible !important; }
+  #splash { display: none !important; }
+  #mainSite { display: block !important; visibility: visible !important; }
 
         /* Hide interactive elements that won't work without JS */
         #cursorTrail,
@@ -838,9 +838,9 @@
                     <button
                       id="toggleSfx"
                       class="pixel-btn radio-btn"
-                      aria-pressed="false"
+                      aria-pressed="true"
                     >
-                      🔇
+                      🔊
                     </button>
                   </div>
                 </div>
@@ -904,6 +904,7 @@
                   <span id="visitorCount" class="counter-number">1,337</span>
                 </a>
               </div>
+              </div>
             <!-- Moved Web Badges to left sidebar under Site Stats -->
             <div class="widget">
               <h3>💫 Web Badges</h3>
@@ -942,7 +943,7 @@
                   <img src="https://cloverbell.neocities.org/buttons/amivicky-5.gif" alt="amivicky" class="web-badge" loading="lazy">
                 </a>
               </div>
-            </div>
+            <!-- </div> -->
           </aside>
 
           <!-- Main content -->

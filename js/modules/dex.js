@@ -113,7 +113,11 @@
 
   function renderInto(container, opts) {
     const options = opts || {};
-    if (!container || !poolReady()) return;
+  if (!container || !poolReady()) return;
+  // If the target container was left with the noscript fallback class,
+  // remove it so noscript-specific CSS (which forces small fixed widths)
+  // doesn't override the dynamic MikuDex styles.
+  try { container.classList.remove && container.classList.remove('noscript-dex'); } catch(_) {}
 
     const coll = getColl();
     const base = (window.MIKU_IMAGES || []).slice();

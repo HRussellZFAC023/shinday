@@ -213,7 +213,7 @@ window.SFX = (function initSfxEngine() {
   const ctxState = {
     ctx: null,
     master: null,
-    // Disable SFX by default until explicitly enabled
+    // Enable SFX by default unless explicitly disabled
     enabled: true,
     volume: 0.6,
     elementMode: false, // fallback when CSP blocks fetch/decode
@@ -347,9 +347,9 @@ window.SFX = (function initSfxEngine() {
 
   const en = localStorage.getItem("pixelbelle-sfx-enabled");
   if (en == null) {
-    // No saved preference – default to disabled
-    ctxState.enabled = false;
-    localStorage.setItem("pixelbelle-sfx-enabled", "0");
+    // No saved preference – default to enabled
+    ctxState.enabled = true;
+    localStorage.setItem("pixelbelle-sfx-enabled", "1");
   } else {
     ctxState.enabled = en === "1";
   }
