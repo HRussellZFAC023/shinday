@@ -25,13 +25,14 @@
 })();
 console.log("🎵 Initializing Miku systems...");
 
-// Visitor counter (prefers Neocities API via AllOrigins; falls back gracefully)
-(async function () {
+// Visitor counter (prefers Neocities API via GitHub Pages proxy; falls back gracefully)
+async function initVisitorCounter() {
   const el = document.getElementById("visitorCount");
   if (!el) return;
 
   const FALLBACK_KEY = "pixelbelle-visitors";
   const SITE_NAME = "babybelle"; // used for image fallback badge
+  const PROXY_TIMEOUT = 9000;
 
   async function setLocalFallback() {
     const c = (parseInt(localStorage.getItem(FALLBACK_KEY) || "0", 10) || 0) + 1;
@@ -46,12 +47,12 @@ console.log("🎵 Initializing Miku systems...");
       let wrap = el.closest(".visitor-counter");
       if (!wrap) return false;
       // Ensure wrapper is an anchor so the entire box is clickable
-      if (wrap.tagName.toLowerCase() !== 'a') {
-        const a = document.createElement('a');
-        a.className = wrap.className || 'visitor-counter';
-        a.setAttribute('data-visitor-counter', '');
-        a.setAttribute('target', '_blank');
-        a.setAttribute('rel', 'noopener');
+      if (wrap.tagName.toLowerCase() !== "a") {
+        const a = document.createElement("a");
+        a.className = wrap.className || "visitor-counter";
+        a.setAttribute("data-visitor-counter", "");
+        a.setAttribute("target", "_blank");
+        a.setAttribute("rel", "noopener");
         // preserve position in DOM
         wrap.parentNode.replaceChild(a, wrap);
         a.appendChild(wrap);
@@ -59,8 +60,8 @@ console.log("🎵 Initializing Miku systems...");
       }
 
       // Clear the textual counter label when showing an image badge fallback
-      const existingLabel = wrap.querySelector('.counter-label');
-      if (existingLabel) existingLabel.textContent = '';
+      const existingLabel = wrap.querySelector(".counter-label");
+      if (existingLabel) existingLabel.textContent = "";
 
       const img = document.createElement("img");
       img.alt = "visitor count";
@@ -69,19 +70,38 @@ console.log("🎵 Initializing Miku systems...");
       img.src = tpl.replace("{site}", SITE_NAME);
 
       // Replace inner content with image (and keep label element if needed for layout)
-      wrap.innerHTML = '';
+      wrap.innerHTML = "";
       wrap.appendChild(img);
 
       // If SITE_CONTENT provides a stats URL, use it for the anchor href
-      const statsUrl = (window.SITE_CONTENT && window.SITE_CONTENT.status && window.SITE_CONTENT.status.statsUrl) || `https://neocities.org/site/${SITE_NAME}`;
-      try { wrap.setAttribute('href', statsUrl); } catch(_) {}
+      const statsUrl =
+        (window.SITE_CONTENT && window.SITE_CONTENT.status && window.SITE_CONTENT.status.statsUrl) ||
+        `https://neocities.org/site/${SITE_NAME}`;
+      try {
+        wrap.setAttribute("href", statsUrl);
+      } catch (_) {}
       return true;
     } catch (_) {
       return false;
     }
   }
 
-  try {
+  async function fetchViaProxy() {
+    const proxyBridge = window.CspProxy;
+    const proxyUrl = window.SITE_CONTENT?.proxy?.pageUrl;
+    if (!proxyBridge || !proxyUrl) throw new Error("proxy unavailable");
+    await proxyBridge.ensure(proxyUrl);
+    const res = await proxyBridge.request(
+      "fetchNeocitiesInfo",
+      { sitename: SITE_NAME },
+      PROXY_TIMEOUT
+    );
+    const count = res && (res.views ?? res.hits);
+    if (count == null) throw new Error("missing count");
+    return count;
+  }
+
+  async function fetchViaAllOrigins() {
     const neocitiesInfo = "https://neocities.org/api/info?sitename=" + encodeURIComponent(SITE_NAME);
     const url = "https://api.allorigins.win/raw?url=" + encodeURIComponent(neocitiesInfo);
     const res = await fetch(url, { cache: "no-store" });
@@ -94,30 +114,48 @@ console.log("🎵 Initializing Miku systems...");
       data = JSON.parse(txt);
     }
     const v = (data && data.info && (data.info.views ?? data.info.hits)) || null;
-    if (v != null) {
-      el.textContent = String(v);
-      return;
-    }
-    throw new Error("missing count");
-  } catch (err) {
-    // Likely blocked by CSP on Neocities free, or network error
-    // Try iframe proxy if configured
-    try {
-      if (window.CspProxy && window.SITE_CONTENT?.proxy?.pageUrl) {
-        await window.CspProxy.ensure(window.SITE_CONTENT.proxy.pageUrl);
-        const res = await window.CspProxy.request("fetchNeocitiesInfo", { sitename: SITE_NAME }, 9000);
-        const v = res && (res.views ?? res.hits);
-        if (v != null) {
-          el.textContent = String(v);
-          return;
-        }
-      }
-    } catch (_) {}
-
-    // Prefer an image badge fallback if configured; otherwise use local counter
-    if (!setImageBadgeFallback()) await setLocalFallback();
+    if (v == null) throw new Error("missing count");
+    return v;
   }
-})();
+
+  try {
+    const viaProxy = await fetchViaProxy();
+    el.textContent = String(viaProxy);
+    return;
+  } catch (proxyError) {
+    console.warn("[Visitor Counter] Proxy fetch failed", proxyError);
+  }
+
+  try {
+    const viaApi = await fetchViaAllOrigins();
+    el.textContent = String(viaApi);
+    return;
+  } catch (apiError) {
+    console.warn("[Visitor Counter] Direct fetch fallback failed", apiError);
+  }
+
+  // Prefer an image badge fallback if configured; otherwise use local counter
+  if (!setImageBadgeFallback()) await setLocalFallback();
+}
+
+function scheduleVisitorCounter() {
+  const run = () => {
+    initVisitorCounter().catch((err) => {
+      console.error("[Visitor Counter] Initialization failed", err);
+    });
+  };
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    run();
+  } else {
+    document.addEventListener(
+      "DOMContentLoaded",
+      run,
+      { once: true }
+    );
+  }
+}
+
+scheduleVisitorCounter();
 
 // Initialize games if available
 // window.Games.initialize();
