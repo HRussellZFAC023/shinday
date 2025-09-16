@@ -6851,3 +6851,109 @@ a[data-visitor-counter] .badge:hover {
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 8px 20px rgba(232, 180, 203, 0.4);
 }
+
+/* === Trip canvas filters === */
+button[data-friend],
+button[data-location] {
+  --filter-color: var(--accent);
+  --filter-fg: var(--ink);
+  --filter-bg: rgba(43, 43, 68, 0.06);
+  appearance: none;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: var(--filter-bg);
+  color: var(--filter-fg);
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.55rem 1.1rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(43, 43, 68, 0.08);
+  user-select: none;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
+
+button[data-friend]:not(.is-active):not([data-active="true"]):not([aria-pressed="true"]):hover,
+button[data-location]:not(.is-active):not([data-active="true"]):not([aria-pressed="true"]):hover {
+  background: rgba(43, 43, 68, 0.12);
+  transform: translateY(-1px);
+}
+
+button[data-friend]:focus-visible,
+button[data-location]:focus-visible {
+  outline: 3px solid var(--filter-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+button[data-friend].is-active,
+button[data-location].is-active,
+button[data-friend][data-active="true"],
+button[data-location][data-active="true"],
+button[data-friend][aria-pressed="true"],
+button[data-location][aria-pressed="true"] {
+  background: var(--filter-color);
+  border-color: var(--filter-color);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(43, 43, 68, 0.2);
+}
+
+button[data-friend].is-active:hover,
+button[data-location].is-active:hover,
+button[data-friend][data-active="true"]:hover,
+button[data-location][data-active="true"]:hover,
+button[data-friend][aria-pressed="true"]:hover,
+button[data-location][aria-pressed="true"]:hover {
+  box-shadow: 0 12px 22px rgba(43, 43, 68, 0.25);
+  transform: translateY(-2px);
+}
+
+button[data-friend] {
+  --filter-color: var(--accent-2);
+}
+
+button[data-location="osaka"] {
+  --filter-color: #2d3a64;
+}
+
+button[data-location="kyoto"] {
+  --filter-color: #c84e4e;
+}
+
+button[data-location="kobe"] {
+  --filter-color: #7FAFAE;
+}
+
+button[data-location="tokyo"] {
+  --filter-color: #eecad0;
+  --filter-fg: #2b2b44;
+}
+
+button[data-location="work"] {
+  --filter-color: #9a948c;
+  --filter-fg: #2b2b44;
+}
+
+button[data-location].is-active,
+button[data-location][data-active="true"],
+button[data-location][aria-pressed="true"] {
+  color: #fff;
+}
+
+button[data-location="tokyo"].is-active,
+button[data-location="tokyo"][data-active="true"],
+button[data-location="tokyo"][aria-pressed="true"],
+button[data-location="work"].is-active,
+button[data-location="work"][data-active="true"],
+button[data-location="work"][aria-pressed="true"] {
+  color: #2b2b44;
+}
