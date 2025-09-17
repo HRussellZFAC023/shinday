@@ -4,18 +4,26 @@ window.Hearts = (function () {
   const LOVE_TOASTS = C.love?.toasts || ["ありがとう！💖"];
   const LOVE_MILESTONES = C.love?.milestones || [];
   const SFX = window.SFX;
-  let heartCount = parseInt(
-    localStorage.getItem("pixelbelle-hearts") || "0",
-    10
-  );
+  let heartCount = 0;
   let lastMilestone = parseInt(
     localStorage.getItem("pixelbelle-last-milestone") || "0",
     10
   );
 
+  heartCount = readStoredHeartCount();
+
+  function readStoredHeartCount() {
+    const stored = parseInt(localStorage.getItem("pixelbelle-hearts") || "0", 10);
+    if (Number.isNaN(stored)) return 0;
+    return Math.max(0, stored);
+  }
+
   function updateCounters() {
+    heartCount = readStoredHeartCount();
     const el = document.getElementById("heartCount");
-    if (el) el.textContent = heartCount;
+    if (el) el.textContent = String(heartCount);
+    const hudEl = document.getElementById("gameHeartCount");
+    if (hudEl) hudEl.textContent = String(heartCount);
   }
 
   function loveToast(text) {

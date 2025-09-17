@@ -863,10 +863,14 @@
       el.style.left = x - size / 2 + "px";
       el.style.top = y - size / 2 + "px";
       el.style.borderColor = color;
-      UI.elements.effectsLayer.appendChild(el);
+      const layer = UI.elements.effectsLayer;
+      if (!layer) return;
+      layer.appendChild(el);
       setTimeout(() => el.remove(), 500);
     }
     static burst(x, y, color) {
+      const layer = UI.elements.effectsLayer;
+      if (!layer) return;
       for (let i = 0; i < 8; i++) {
         const p = document.createElement("div");
         p.className = "burst-particle";
@@ -875,7 +879,7 @@
         p.style.background = color;
         p.style.setProperty("--tx", (Math.random() - 0.5) * 100 + "px");
         p.style.setProperty("--ty", (Math.random() - 0.5) * 100 + "px");
-        UI.elements.effectsLayer.appendChild(p);
+        layer.appendChild(p);
         setTimeout(() => p.remove(), 800);
       }
     }
@@ -1283,8 +1287,8 @@
       if (!correct) {
         clickedBtn?.classList.add("incorrect");
         UI.updateStageSinger?.(State.currentGame, State.currentQuestion, true);
-  // Pass clicked button so effects (rings) originate from the button
-  this.processJudgment('MISS', false, clickedBtn || null);
+        // Pass clicked button and its lane index so effects originate from the UI control.
+        this.processJudgment("MISS", false, clickedBtn || null, buttonIndex);
         return;
       }
       buttons?.forEach((btn) => (btn.disabled = true));
@@ -1296,7 +1300,7 @@
         label = judgeFrontAndMaybeConsume(buttonIndex, btnEl);
         // Pass the clicked button element to processJudgment so effects can
         // originate from the UI control.
-        this.processJudgment(label, true, btnEl);
+        this.processJudgment(label, true, btnEl, buttonIndex);
       } else {
         this.processJudgment(label, true);
       }
@@ -1396,7 +1400,7 @@
       // Keep feedback empty to avoid flicker on mistakes
       UI.elements.typingFeedback.textContent = "";
     }
-    processJudgment(judgment, correct, originEl) {
+    processJudgment(judgment, correct, originEl, laneIndex) {
       State.judgmentCounts[judgment] =
         (State.judgmentCounts[judgment] || 0) + 1;
       if (correct) {
@@ -1430,16 +1434,34 @@
         // centre.
         let cx = innerWidth / 2;
         let cy = innerHeight / 2;
+        let originRect = null;
         try {
           if (
             originEl &&
             typeof originEl.getBoundingClientRect === "function"
           ) {
-            const r = originEl.getBoundingClientRect();
-            cx = r.left + r.width / 2;
-            cy = r.top + r.height / 2;
+            originRect = originEl.getBoundingClientRect();
           }
         } catch (_) {}
+        if (
+          !originRect &&
+          typeof laneIndex === "number" &&
+          laneIndex >= 0
+        ) {
+          try {
+            const fallback = getLaneTarget(laneIndex);
+            if (
+              fallback &&
+              typeof fallback.getBoundingClientRect === "function"
+            ) {
+              originRect = fallback.getBoundingClientRect();
+            }
+          } catch (_) {}
+        }
+        if (originRect) {
+          cx = originRect.left + originRect.width / 2;
+          cy = originRect.top + originRect.height / 2;
+        }
         const colors = { COOL: "#35a7ff", GREAT: "#00c853", FINE: "#ffb300" };
         Effects.ring(cx, cy, colors[judgment] || "#aaa");
         Effects.burst(cx, cy, colors[judgment] || "#aaa");
