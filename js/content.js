@@ -572,10 +572,10 @@ const EN_MIKUS = [
       "https://vocaloid.fandom.com/wiki/Love_is_War",
       "https://www.mikucollection.com/en/art-gallery/hatsune-miku-love-is-war/184"
     ],
-    "song": "https://www.youtube.com/watch?v=T4Jww4V2Q0w",
-    "title": "LOVE IS WAR -初音ミク- (STEREO; Supercell)",
+    "song": "https://www.youtube.com/watch?v=SmX5cnQ1YAg",
+    "title": "Love Is War (Miku Hatsune) (Original)",
     "filename": "034 - Love Is War.png",
-    "image": "https://img.youtube.com/vi/T4Jww4V2Q0w/hqdefault.jpg"
+    "image": "https://img.youtube.com/vi/SmX5cnQ1YAg/hqdefault.jpg"
   },
   {
     "id": 35,
@@ -1051,10 +1051,10 @@ const EN_MIKUS = [
       "https://vocaloid.fandom.com/wiki/Racing_Miku",
       "https://www.mikucollection.com/en/art-gallery/racing-miku-2019/185"
     ],
-    "song": "https://www.youtube.com/watch?v=pUH9vCsvq08",
-    "title": "春嵐 / 初音ミク",
+    "song": "https://www.youtube.com/watch?v=UDjeGjcFolA",
+    "title": "Clean Tears - SAKURA feat.初音ミク",
     "filename": "065 - Racing Miku 2019 spring.png",
-    "image": "https://img.youtube.com/vi/XFpI6f6XvkI/hqdefault.jpg"
+    "image": "https://img.youtube.com/vi/UDjeGjcFolA/hqdefault.jpg"
   },
   {
     "id": 66,
