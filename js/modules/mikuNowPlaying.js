@@ -1,11 +1,20 @@
 (function () {
-  // Resolve mikus.json item from current singer image path
+  // Resolve localized Miku entry from current singer image path
+  function cloneList(list) {
+    if (!Array.isArray(list)) return [];
+    return list.map((item) => ({
+      ...item,
+      alt_names: Array.isArray(item?.alt_names) ? item.alt_names.slice() : [],
+      links: Array.isArray(item?.links) ? item.links.slice() : [],
+    }));
+  }
+
   async function loadMikus() {
-    const res = await fetch("./assets/pixel-miku/mikus.json", {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error("mikus.json");
-    return await res.json();
+    if (Array.isArray(window.SITE_CONTENT?.mikus) && window.SITE_CONTENT.mikus.length)
+      return cloneList(window.SITE_CONTENT.mikus);
+    if (window.MIKU_META && typeof window.MIKU_META === "object")
+      return cloneList(Object.values(window.MIKU_META));
+    return [];
   }
 
   function selectedMikuUrl() {
@@ -80,4 +89,7 @@
 
   // Initial paint soon after load
   setTimeout(refresh, 50);
+  document.addEventListener("site-content-ready", () => {
+    refresh();
+  });
 })();
