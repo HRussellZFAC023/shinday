@@ -467,10 +467,10 @@ const EN_MIKUS = [
       "https://www.mikucollection.com/en/art-gallery/hatsune-miku-symphony-2018-2019/202",
       "https://www.mikucollection.com/en/figure-details/nendoroid-1039-hatsune-miku-symphony-2018-2019-ver/266"
     ],
-    "song": "https://www.youtube.com/watch?v=dQLzXFpdWj0yss",
+    "song": "https://www.youtube.com/watch?v=dQLzXFpdWj0",
     "title": "【初音ミク】39みゅーじっく！【オリジナルMV】",
     "filename": "027 - Miku Symphony 2018 (maid).png",
-    "image": "https://img.youtube.com/vi/OuLZlZ18APQ/hqdefault.jpg"
+    "image": "https://img.youtube.com/vi/dQLzXFpdWj0/hqdefault.jpg"
   },
   {
     "id": 28,
