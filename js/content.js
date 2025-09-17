@@ -257,10 +257,10 @@ const EN_MIKUS = [
       "https://vocaloid.fandom.com/wiki/Rolling_Girl",
       "https://project-diva.fandom.com/wiki/Rolling_Girl"
     ],
-    "song": "https://www.youtube.com/watch?v=vnw8zURAxkU",
-    "title": "wowaka 【ローリンガール】 feat. 初音ミク / wowaka - Rollin Girl (Official Video) ft. Hatsune Miku",
+    "song": "https://www.youtube.com/watch?v=NIqm73xsias",
+    "title": "Rolling Girl - Hatsune Miku",
     "filename": "014 - Rolling Girl Miku.png",
-    "image": "https://img.youtube.com/vi/vnw8zURAxkU/hqdefault.jpg",
+    "image": "https://img.youtube.com/vi/NIqm73xsias/hqdefault.jpg",
     "artist": "wowaka"
   },
   {
@@ -322,10 +322,10 @@ const EN_MIKUS = [
       "https://vocaloid.fandom.com/wiki/Senbonzakura",
       "https://www.mikucollection.com/en/art-gallery/hatsune-miku-senbonzakura/123"
     ],
-    "song": "https://www.youtube.com/watch?v=F1tWiEPc5yg",
-    "title": "Hatsune Miku (prod. Kurousa-P / WhiteFlame) - Senbonzakura - Lyrics (Kan/Rom/Eng)",
+    "song": "https://www.youtube.com/watch?v=Mqps4anhz0Q",
+    "title": "Senbonzakura - Hatsune Miku",
     "filename": "018 - Senbonzakura Miku.png",
-    "image": "https://img.youtube.com/vi/F1tWiEPc5yg/hqdefault.jpg"
+    "image": "https://img.youtube.com/vi/Mqps4anhz0Q/hqdefault.jpg"
   },
   {
     "id": 19,
@@ -369,10 +369,10 @@ const EN_MIKUS = [
       "https://en.wikipedia.org/wiki/Deco*27",
       "https://project-diva.fandom.com/wiki/Alien_Alien"
     ],
-    "song": "https://www.youtube.com/watch?v=s_jun2mfsgM",
-    "title": "【 Alien Alien! エイリアンエイリアン 】Hatsune Miku Magical Mirai 2017 初音ミク「マジカルミライ 2017」",
+    "song": "https://www.youtube.com/watch?v=H-NBZ0axyRA",
+    "title": "「4K 60 fps」 Alien Alien エイリアンエイリアン feat Hatsune Miku   Project DIVA Arcade Future Tone",
     "filename": "021 - Alien Alien Miku.png",
-    "image": "https://img.youtube.com/vi/s_jun2mfsgM/hqdefault.jpg"
+    "image": "https://img.youtube.com/vi/H-NBZ0axyRA/hqdefault.jpg"
   },
   {
     "id": 22,
@@ -557,10 +557,10 @@ const EN_MIKUS = [
       "https://fanloid.fandom.com/wiki/Shiteyan'yo",
       "https://fanloid.fandom.com/wiki/Category:Fanloid"
     ],
-    "song": "https://www.youtube.com/watch?v=UyezZVAgnxw",
-    "title": "Hatsune Miku: Project DIVA Future Tone - [PV] \"Ievan Polkka\"",
+    "song": "https://www.youtube.com/watch?v=72MzTnG6kg4",
+    "title": "[MMD] Magnet [Shiteyan'yo & Larval Rin]",
     "filename": "033 - Shiteyan'yo (Legs Miku).png",
-    "image": "https://img.youtube.com/vi/UyezZVAgnxw/hqdefault.jpg"
+    "image": "https://img.youtube.com/vi/72MzTnG6kg4/hqdefault.jpg"
   },
   {
     "id": 34,
@@ -1051,8 +1051,8 @@ const EN_MIKUS = [
       "https://vocaloid.fandom.com/wiki/Racing_Miku",
       "https://www.mikucollection.com/en/art-gallery/racing-miku-2019/185"
     ],
-    "song": "https://www.youtube.com/watch?v=XFpI6f6XvkI",
-    "title": "[KARENT Special] 初音ミク 10th Anniversary / Hatsune Miku 10th Anniversary",
+    "song": "https://www.youtube.com/watch?v=pUH9vCsvq08",
+    "title": "春嵐 / 初音ミク",
     "filename": "065 - Racing Miku 2019 spring.png",
     "image": "https://img.youtube.com/vi/XFpI6f6XvkI/hqdefault.jpg"
   },
@@ -1111,8 +1111,8 @@ const EN_MIKUS = [
       "https://vocaloid.fandom.com/wiki/Racing_Miku",
       "https://www.mikucollection.com/en/art-gallery/racing-miku-2021/149"
     ],
-    "song": "https://www.youtube.com/watch?v=HUzLUGKwQJc",
-    "title": "Odds&Ends",
+    "song": "https://www.youtube.com/watch?v=sK92X82T3Sk",
+    "title": "【初音ミク】Blue Star feat. 初音ミク (MIKU EXPO ver.)【MIKU EXPO 2016】",
     "filename": "069 - Racing Miku 2021 summer.png",
     "image": "https://img.youtube.com/vi/HUzLUGKwQJc/hqdefault.jpg"
   },
@@ -1126,8 +1126,8 @@ const EN_MIKUS = [
       "https://vocaloid.fandom.com/wiki/Racing_Miku",
       "https://www.mikucollection.com/en/art-gallery/racing-miku-2021/149"
     ],
-    "song": "https://www.youtube.com/watch?v=XFpI6f6XvkI",
-    "title": "[KARENT Special] 初音ミク 10th Anniversary / Hatsune Miku 10th Anniversary",
+    "song": "https://www.youtube.com/watch?v=HW6rfTKgwYw",
+    "title": "【初音ミク】桜前線異常ナシ【オリジナル曲】",
     "filename": "070 - Racing Miku 2021 spring.png",
     "image": "https://img.youtube.com/vi/XFpI6f6XvkI/hqdefault.jpg"
   },
