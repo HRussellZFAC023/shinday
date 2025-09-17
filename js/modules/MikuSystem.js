@@ -1,12 +1,25 @@
 // 🎵 MIKU NOW PLAYING SYSTEM - CONSOLIDATED AND PERFECT 🎵
 window.MikuSystem = (function () {
   // Core Miku data management
+  function cloneList(list) {
+    if (!Array.isArray(list)) return [];
+    return list.map((item) => ({
+      ...item,
+      alt_names: Array.isArray(item?.alt_names) ? item.alt_names.slice() : [],
+      links: Array.isArray(item?.links) ? item.links.slice() : [],
+    }));
+  }
+
+  function resolveMikus() {
+    if (Array.isArray(window.SITE_CONTENT?.mikus) && window.SITE_CONTENT.mikus.length)
+      return cloneList(window.SITE_CONTENT.mikus);
+    if (window.MIKU_META && typeof window.MIKU_META === "object")
+      return cloneList(Object.values(window.MIKU_META));
+    return [];
+  }
+
   async function loadMikusData() {
-    const res = await fetch("./assets/pixel-miku/mikus.json", {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error("Failed to load Miku data");
-    return res.json();
+    return resolveMikus();
   }
 
   function getCurrentMikuUrl() {
@@ -149,6 +162,10 @@ window.MikuSystem = (function () {
     document.addEventListener("miku-images-ready", refreshFloatingMikus, {
       once: true,
     });
+
+  document.addEventListener("site-content-ready", () => {
+    refresh();
+  });
 
   // Public API
   return {
