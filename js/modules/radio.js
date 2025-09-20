@@ -10,7 +10,11 @@
     const statusDot = document.getElementById("statusDot");
 
     const STREAM_URL = "https://vocaloid.radioca.st/stream";
+    const STREAM_BASE_URL = STREAM_URL;
     let audio = null;
+    let shouldBePlaying = false;
+    let reconnectTimer = null;
+    let reconnectAttempts = 0;
 
     if (window.AudioMod && typeof AudioMod.initRadio === "function") {
       AudioMod.initRadio();
@@ -33,7 +37,57 @@
     }
 
     window.__radioAudio = audio;
+    const streamErrorStatus =
+      (C.radio && (C.radio.streamError || C.radio.defaultStatus)) ||
+      "⚠️ Stream error";
+    const reconnectingStatus =
+      (C.radio && C.radio.reconnectingStatus) || "Reconnecting...";
+
+    function cancelReconnect() {
+      if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+      }
+      reconnectAttempts = 0;
+    }
+
+    function nextStreamUrl() {
+      const sep = STREAM_BASE_URL.includes("?") ? "&" : "?";
+      return `${STREAM_BASE_URL}${sep}_=${Date.now()}`;
+    }
+
+    function reloadStream() {
+      const wasPlaying = shouldBePlaying;
+      try {
+        audio.pause();
+      } catch (_) {}
+      audio.src = nextStreamUrl();
+      audio.load();
+      if (wasPlaying) {
+        const playPromise = audio.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => {
+            scheduleReconnect();
+          });
+        }
+      }
+    }
+
+    function scheduleReconnect() {
+      if (!shouldBePlaying) return;
+      if (reconnectTimer) return;
+      const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 15000);
+      reconnectAttempts += 1;
+      if (radioDisplayStatus) radioDisplayStatus.textContent = reconnectingStatus;
+      if (statusDot) statusDot.style.color = "#ffbf00";
+      reconnectTimer = setTimeout(() => {
+        reconnectTimer = null;
+        reloadStream();
+      }, delay);
+    }
     window.__pauseRadio = () => {
+      shouldBePlaying = false;
+      cancelReconnect();
       audio.pause();
       const status = C.radio?.stoppedStatus || "Radio Stopped";
       if (radioDisplayStatus) radioDisplayStatus.textContent = status;
@@ -57,6 +111,8 @@
     if (playBtn)
       playBtn.addEventListener("click", () => {
         // Only show placeholder if we don't yet have a track title
+        shouldBePlaying = true;
+        cancelReconnect();
         if (!lastTitle) {
           const status = C.radio?.playingStatus || "Now Playing";
           if (radioDisplayStatus) radioDisplayStatus.textContent = status;
@@ -64,7 +120,13 @@
         if (onlineStatus)
           onlineStatus.textContent = C.status?.radioOnLabel || "";
         if (window.__stopBgm) window.__stopBgm(true);
-        audio.play().catch(() => {});
+        const playPromise = audio.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => {
+            stopEqualizer();
+            scheduleReconnect();
+          });
+        }
         startEqualizer();
         if (statusDot) statusDot.style.color = "#00ff00";
         startMetadataPolling();
@@ -83,13 +145,31 @@
         if (typeof window.__pauseRadio === "function") window.__pauseRadio();
       });
 
-    audio.addEventListener("error", () => {
-      if (radioDisplayStatus)
-        radioDisplayStatus.textContent = (C.radio && (C.radio.streamError || C.radio.defaultStatus)) || "⚠️ Stream error";
+    function handleStreamFailure() {
+      if (radioDisplayStatus) radioDisplayStatus.textContent = streamErrorStatus;
+      if (onlineStatus) onlineStatus.textContent = C.status?.radioOffLabel || "";
       if (statusDot) statusDot.style.color = "#ff4d4d";
+      stopEqualizer();
+      scheduleReconnect();
+    }
+
+    audio.addEventListener("error", () => {
+      handleStreamFailure();
+    });
+    audio.addEventListener("stalled", () => {
+      handleStreamFailure();
+    });
+    audio.addEventListener("ended", () => {
+      handleStreamFailure();
     });
 
     audio.addEventListener("playing", () => {
+      cancelReconnect();
+      shouldBePlaying = true;
+      if (onlineStatus)
+        onlineStatus.textContent = C.status?.radioOnLabel || "";
+      if (statusDot) statusDot.style.color = "#00ff00";
+      startEqualizer();
       // Avoid overwriting the fetched title if we already have one
       if (!lastTitle) {
         const status = C.radio?.playingStatus || "Now Playing";
@@ -284,9 +364,13 @@
     }
 
     audio.addEventListener("pause", () => {
+      stopEqualizer();
       if (metaTimer) {
         clearInterval(metaTimer);
         metaTimer = null;
+      }
+      if (shouldBePlaying) {
+        scheduleReconnect();
       }
     });
   }
